@@ -17,6 +17,7 @@ S3_BUCKET="heroku-buildpack-nodejs"
 # parse and derive params
 BUILD_DIR=$1
 CACHE_DIR=$2
+if [ -z "$BUILDPACK_CACHE" ]; then BUILDPACK_CACHE="/tmp"; fi
 LP_DIR=`cd $(dirname $0); cd ..; pwd`
 
 function error() {
@@ -52,7 +53,11 @@ function run_npm() {
 }
 
 function manifest_versions() {
-  curl "http://${S3_BUCKET}.s3.amazonaws.com/manifest.${1}" -s -o - | tr -s '\n' ' '
+  if [ -f "${BUILDPACK_CACHE}/manifest.${1}" ]; then
+    cat "${BUILDPACK_CACHE}/manifest.${1}" | tr -s '\n' ' '
+  else
+    curl "http://${S3_BUCKET}.s3.amazonaws.com/manifest.${1}" -s -o - | tr -s '\n' ' '
+  fi
 }
 
 function resolve_version() {
@@ -91,14 +96,41 @@ function package_resolve_version() {
   fi
 }
 
+function package_fetch_from_cache() {
+  filename=$1
+  destination=$2
+
+  source="${BUILDPACK_CACHE}/$filename"
+  if [ ! -f $source ]; then
+    return 1
+  else
+    cp $source $destination
+    return 0
+  fi
+}
+
+function package_fetch_from_curl() {
+  filename=$1
+  destination=$2
+
+  package="http://${S3_BUCKET}.s3.amazonaws.com/$filename"
+  curl $package -s -o $destination
+}
+
 function package_download() {
   engine="$1"
   version="$2"
   location="$3"
 
   mkdir -p $location
-  package="http://${S3_BUCKET}.s3.amazonaws.com/$engine-$version.tgz"
-  curl $package -s -o - | tar xzf - -C $location
+  package_name="$engine-$version.tgz"
+  destination="."
+
+  package_fetch_from_cache $package_name $destination
+  if [ $? != 0 ]; then
+    package_fetch_from_curl $package_name $destination
+  fi
+  tar xzf $package_name -C $location
 }
 
 bootstrap_node=$(mktmpdir bootstrap_node)

@@ -54,6 +54,16 @@ testProfileCreated() {
   assertCapturedSuccess
 }
 
+testCombineLocalAndHerokuManifestVersions() {
+  BUILDPACK_CACHE=/tmp
+  echo -e "1.2.3\n10.3.3\n0.0.0\n0.8.0" > $BUILDPACK_CACHE/manifest.nodejs
+  compile "package-json-nonexistant-version"
+
+  assertCapturedError 1 "10.3.3 1.2.3"       # Sorting of major, minor, patch level\
+  assertCapturedError 1 "0.4.7 0.0.0"        # Reverse sorted and merged
+  assertCapturedError 1 "0.8.1 0.8.0 0.6.20" # Uniqness
+}
+
 ## utils ########################################
 
 pushd $(dirname 0) >/dev/null

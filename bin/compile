@@ -53,11 +53,14 @@ function run_npm() {
 }
 
 function manifest_versions() {
-  if [ -f "${BUILDPACK_CACHE}/manifest.${1}" ]; then
-    cat "${BUILDPACK_CACHE}/manifest.${1}" | tr -s '\n' ' '
-  else
-    curl "http://${S3_BUCKET}.s3.amazonaws.com/manifest.${1}" -s -o - | tr -s '\n' ' '
-  fi
+  (
+    [ -f "${BUILDPACK_CACHE}/manifest.${1}" ] && cat "${BUILDPACK_CACHE}/manifest.${1}";
+    curl "http://${S3_BUCKET}.s3.amazonaws.com/manifest.${1}" -s -o -
+  ) |
+    tr '.' ' ' | # sort -t does not seem to work, making input space separated
+    sort -run -k1 -k2 -k3 |
+    tr ' ' '.' |
+    tr -s '\n' ' '
 }
 
 function resolve_version() {

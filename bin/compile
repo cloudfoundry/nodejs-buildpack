@@ -222,12 +222,13 @@ INCLUDE_PATH="$VENDORED_NODE/include"
 export CPATH="$INCLUDE_PATH"
 export CPPPATH="$INCLUDE_PATH"
 
-# install dependencies with npm
-echo "-----> Installing dependencies with npm"
-run_npm "install --production"
-run_npm "rebuild"
-echo "Dependencies installed" | indent
-
+if [ "${useNpm}" == "true" ]; then
+	# install dependencies with npm
+	echo "-----> Installing dependencies with npm"
+	run_npm "install --production"
+	run_npm "rebuild"
+	echo "Dependencies installed" | indent
+fi
 echo "-----> Building runtime environment"
 mkdir -p $BUILD_DIR/.profile.d
 echo "export PATH=\"\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\"" > $BUILD_DIR/.profile.d/nodejs.sh

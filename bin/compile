@@ -55,6 +55,18 @@ PATH=$PATH:$build_dir/vendor/node/bin
 # Run subsequent node/npm commands from the build path
 cd $build_dir
 
+# Scope config var availability only to `npm install`
+(
+  if [ "$env_file" ]; then
+    status "Importing application config vars"
+    export $(egrep -v "^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)" "$env_file")
+  fi
+
+  status "Installing dependencies"
+  # Make npm output to STDOUT instead of its default STDERR
+  npm install --userconfig $build_dir/.npmrc --production 2>&1 | indent
+)
+
 # If node_modules directory is checked into source control then
 # rebuild any native deps. Otherwise, restore from the build cache.
 if test -d $build_dir/node_modules; then
@@ -68,18 +80,6 @@ elif test -d $cache_dir/node_modules; then
   status "Pruning cached dependencies not specified in package.json"
   npm prune 2>&1 | indent
 fi
-
-# Scope config var availability only to `npm install`
-(
-  if [ "$env_file" ]; then
-    status "Importing application config vars"
-    export $(egrep -v "^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)" "$env_file")
-  fi
-
-  status "Installing dependencies"
-  # Make npm output to STDOUT instead of its default STDERR
-  npm install --userconfig $build_dir/.npmrc --production 2>&1 | indent
-)
 
 status "Caching node_modules directory for future builds"
 rm -rf $cache_dir/node_modules

@@ -58,7 +58,7 @@ cd $build_dir
 # If node_modules directory is checked into source control then
 # rebuild any native deps. Otherwise, restore from the build cache.
 if test -d $build_dir/node_modules; then
-  for i in * ; do
+  for i in node_modules/* ; do
     if [ -d "$i" ]; then
       cd "$i"
       (

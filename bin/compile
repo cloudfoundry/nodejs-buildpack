@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-echo this system is...>&1
-uname -a>&1
-
 set -e            # fail fast
 set -o pipefail   # don't ignore exit codes when piping output
 # set -x          # enable debugging

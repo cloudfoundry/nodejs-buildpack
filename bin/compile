@@ -61,7 +61,7 @@ if test -d $build_dir/node_modules; then
   cd node_modules
   for i in * ; do
     if [ -d "$i" ]; then
-      if [test -f "$i"/package.json] [ ! -d "$i"/node_modules ]; then
+      if [ -f "$i"/package.json] [ ! -d "$i"/node_modules ]; then
         cd "$i"
         (
           if [ "$env_file" ]; then

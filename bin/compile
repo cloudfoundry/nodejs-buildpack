@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-echo this system is...
-echo $(uname -a)
+this system is...>&1 | indent
+uname -a>&1 | indent
 
 set -e            # fail fast
 set -o pipefail   # don't ignore exit codes when piping output

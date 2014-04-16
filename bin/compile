@@ -19,9 +19,19 @@ trap cat_npm_debug_log ERR
 
 # Look in package.json's engines.node field for a semver range
 semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
+buildpack_absolute="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/.. && pwd )"
 
-# Resolve node version using semver.io
-node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
+
+if test -d $buildpack_absolute/dependencies
+then
+  node_version=`cat $buildpack_absolute/node_version.txt`
+  status "Offline mode. Using node v$node_version"
+else
+  # Resolve node version using semver.io
+  node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
+  echo -n Node version: 
+  echo $node_version
+fi
 
 # Recommend using semver ranges in a safe manner
 if [ "$semver_range" == "null" ]; then
@@ -41,18 +51,26 @@ else
   status "Resolved node version: $node_version"
 fi
 
-# Download node from Heroku's S3 mirror of nodejs.org/dist
-status "Downloading and installing node"
-node_url="http://s3pository.heroku.com/node/v$node_version/node-v$node_version-linux-x64.tar.gz"
-curl $node_url -s -o - | tar xzf - -C $build_dir
+if test -d $buildpack_absolute/dependencies
+then
+  status "Using node package from dependencies directory"
+  tar xzf $buildpack_absolute/dependencies/node-v$node_version-linux-x64.tar.gz -C $build_dir
+else
+  # Download node from Heroku's S3 mirror of nodejs.org/dist
+  status "Downloading and installing node"
+  node_url="http://s3pository.heroku.com/node/v$node_version/node-v$node_version-linux-x64.tar.gz"
+  curl $node_url -s -o - | tar xzf - -C $build_dir
+fi
 
 # Move node (and npm) into ./vendor and make them executable
 mkdir -p $build_dir/vendor
 mv $build_dir/node-v$node_version-linux-x64 $build_dir/vendor/node
+
 chmod +x $build_dir/vendor/node/bin/*
 PATH=$build_dir/vendor/node/bin:$PATH
 
 # Run subsequent node/npm commands from the build path
+
 cd $build_dir
 
 # If node_modules directory is checked into source control then

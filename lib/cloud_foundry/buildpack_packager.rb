@@ -1,5 +1,6 @@
 require 'zip'
 require 'tmpdir'
+require 'open-uri'
 
 module CloudFoundry
   module BuildpackPackager
@@ -9,15 +10,10 @@ module CloudFoundry
         /\.{1,2}$/
     ]
 
-    DEPENDENCIES = [
-      "http://nodejs.org/dist/node-v0.10.26.tar.gz"
-    ]
-
     class << self
       def package
         Dir.mktmpdir do |temp_dir|
           copy_buildpack_contents(temp_dir)
-          `curl https://semver.io/node/resolve -o #{temp_dir}/node_version.txt`
           download_dependencies(temp_dir) unless ENV['ONLINE']
           compress_buildpack(temp_dir)
         end
@@ -33,8 +29,14 @@ module CloudFoundry
         dependency_path = File.join(target_path, 'dependencies')
 
         run_cmd "mkdir -p #{dependency_path}"
-        version = `cat #{target_path}/node_version.txt`
-        run_cmd "cd #{dependency_path}; curl http://nodejs.org/dist/v#{version}/node-v#{version}-linux-x64.tar.gz -O"
+
+        dependencies.each do |version|
+          run_cmd "cd #{dependency_path}; curl http://nodejs.org/dist/v#{version}/node-v#{version}-linux-x64.tar.gz -O"
+        end
+      end
+
+      def dependencies
+        open("https://semver.io/node/versions").read.split("\n")
       end
 
       def in_pack?(file)

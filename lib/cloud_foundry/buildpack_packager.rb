@@ -1,6 +1,6 @@
 require 'zip'
 require 'tmpdir'
-require 'open-uri'
+require 'json'
 
 module CloudFoundry
   module BuildpackPackager
@@ -30,15 +30,15 @@ module CloudFoundry
 
         run_cmd "mkdir -p #{dependency_path}"
 
+        run_cmd "mkdir -p tmp; curl https://semver.io/node.json > tmp/versions.json"
+
         dependencies.each do |version|
           run_cmd "cd #{dependency_path}; curl http://nodejs.org/dist/v#{version}/node-v#{version}-linux-x64.tar.gz -O"
         end
-
-        run_cmd "mkdir -p tmp; curl https://semver.io/node.json > tmp/versions.json"
       end
 
       def dependencies
-        open("https://semver.io/node/versions").read.split("\n")
+        JSON.parse(File.read("tmp/versions.json"))["versions"]
       end
 
       def in_pack?(file)

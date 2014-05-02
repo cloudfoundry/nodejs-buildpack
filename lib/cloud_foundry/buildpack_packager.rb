@@ -33,6 +33,8 @@ module CloudFoundry
         dependencies.each do |version|
           run_cmd "cd #{dependency_path}; curl http://nodejs.org/dist/v#{version}/node-v#{version}-linux-x64.tar.gz -O"
         end
+
+        run_cmd "mkdir -p tmp; curl https://semver.io/node.json > tmp/versions.json"
       end
 
       def dependencies

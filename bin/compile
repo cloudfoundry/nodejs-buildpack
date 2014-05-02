@@ -20,9 +20,15 @@ trap cat_npm_debug_log ERR
 # Look in package.json's engines.node field for a semver range
 semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
 
+buildpack_absolute="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/.. && pwd )"
+
 # Resolve node version using semver.io
-node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
-echo $node_version
+if test -d $buildpack_absolute/dependencies
+then
+  node_version=$($bp_dir/bin/node $bp_dir/lib/version_resolver.js "$semver_range")
+else
+  node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
+fi
 
 # Recommend using semver ranges in a safe manner
 if [ "$semver_range" == "null" ]; then
@@ -41,8 +47,6 @@ else
   status "Requested node range:  $semver_range"
   status "Resolved node version: $node_version"
 fi
-
-buildpack_absolute="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/.. && pwd )"
 
 if test -d $buildpack_absolute/dependencies
 then

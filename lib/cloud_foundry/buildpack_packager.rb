@@ -30,15 +30,15 @@ module CloudFoundry
 
         run_cmd "mkdir -p #{dependency_path}"
 
-        run_cmd "mkdir -p tmp; curl https://semver.io/node.json > tmp/versions.json"
+        run_cmd "mkdir -p #{target_path}/tmp; curl https://semver.io/node.json > #{target_path}/tmp/versions.json"
 
-        dependencies.each do |version|
+        dependencies(target_path).each do |version|
           run_cmd "cd #{dependency_path}; curl http://nodejs.org/dist/v#{version}/node-v#{version}-linux-x64.tar.gz -O"
         end
       end
 
-      def dependencies
-        JSON.parse(File.read("tmp/versions.json"))["versions"]
+      def dependencies(target_path)
+        JSON.parse(File.read("#{target_path}/tmp/versions.json"))["versions"]
       end
 
       def in_pack?(file)

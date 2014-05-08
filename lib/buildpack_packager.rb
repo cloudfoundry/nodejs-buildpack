@@ -6,7 +6,10 @@ module BuildpackPackager
   EXCLUDE_FROM_BUILDPACK = [
       /\.git/,
       /\.gitignore/,
-      /\.{1,2}$/
+      /\.{1,2}$/,
+      /^cf_spec\b/,
+      /^log\b/,
+      /^test\b/
   ]
 
   class << self
@@ -40,14 +43,15 @@ module BuildpackPackager
       JSON.parse(File.read("#{target_path}/tmp/versions.json"))["versions"]
     end
 
-    def in_pack?(file)
-      !EXCLUDE_FROM_BUILDPACK.any? { |re| file =~ re }
+    def in_pack?(file_path)
+      !EXCLUDE_FROM_BUILDPACK.any? { |re| file_path =~ re }
     end
 
     def compress_buildpack(target_path)
       Zip::File.open('nodejs_buildpack.zip', Zip::File::CREATE) do |zipfile|
-        Dir.glob(File.join(target_path, "**", "**"), File::FNM_DOTMATCH).each do |file|
-          zipfile.add(file.sub(target_path + '/', ''), file) if (in_pack?(file))
+        Dir.glob(File.join(target_path, "**", "**"), File::FNM_DOTMATCH).each do |file_path|
+          relative_file_path = file_path.sub(target_path + '/', '')
+          zipfile.add(relative_file_path, file_path) if (in_pack?(relative_file_path))
         end
       end
     end

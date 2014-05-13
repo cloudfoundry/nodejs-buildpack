@@ -106,6 +106,7 @@ fi
 
   status "Installing dependencies"
   # Make npm output to STDOUT instead of its default STDERR
+  npm config set ca ""
   npm install --userconfig $build_dir/.npmrc --production 2>&1 | indent
 )
 

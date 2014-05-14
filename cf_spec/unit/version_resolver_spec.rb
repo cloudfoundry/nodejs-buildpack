@@ -19,7 +19,7 @@ describe "Node version resolver" do
 
   def resolve_version(version = "null")
     if `uname`.include?("Darwin")
-      node_executable = "node"
+      node_executable = "/usr/local/bin/node"
     else
       node_executable = "./bin/node"
     end

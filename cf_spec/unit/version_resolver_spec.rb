@@ -1,5 +1,6 @@
 $: << 'cf_spec'
-require 'spec_helper'
+require 'bundler/setup'
+require 'machete'
 require 'json'
 require 'fileutils'
 

@@ -9,12 +9,12 @@ describe "Node version resolver" do
   # https://github.com/isaacs/node-semver
 
   before do
-    FileUtils.mkdir_p("tmp")
-    FileUtils.cp_r("cf_spec/fixtures/versions.json", "tmp/versions.json")
+    FileUtils.mkdir_p("files")
+    FileUtils.cp_r("cf_spec/fixtures/versions.json", "files/versions.json")
   end
 
   after do
-    FileUtils.rm_f("tmp")
+    FileUtils.rm_f("files")
   end
 
   def resolve_version(version = "null")

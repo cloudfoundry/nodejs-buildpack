@@ -1,66 +1,20 @@
-require 'zip'
-require 'tmpdir'
+require 'base_packager'
 require 'json'
 
-module BuildpackPackager
-  EXCLUDE_FROM_BUILDPACK = [
-      /\.git/,
-      /\.gitignore/,
-      /\.{1,2}$/,
-      /^cf_spec\b/,
-      /^log\b/,
-      /^test\b/
-  ]
+class BuildpackPackager < BasePackager
+  def dependencies
+    run_cmd "curl https://semver.io/node.json -o ../files/versions.json --create-dirs"
 
-  class << self
-    def package(mode)
-      Dir.mktmpdir do |temp_dir|
-        copy_buildpack_contents(temp_dir)
-        download_dependencies(temp_dir) if mode == :offline
-        compress_buildpack(temp_dir)
-      end
+    versions = JSON.parse(File.read("../files/versions.json"))["versions"]
+
+    versions.map do |version|
+      "http://nodejs.org/dist/v#{version}/node-v#{version}-linux-x64.tar.gz"
     end
+  end
 
-    private
-
-    def copy_buildpack_contents(target_path)
-      run_cmd "cp -r * #{target_path}"
-    end
-
-    def download_dependencies(target_path)
-      dependency_path = File.join(target_path, 'dependencies')
-
-      run_cmd "mkdir -p #{dependency_path}"
-
-      run_cmd "mkdir -p #{target_path}/tmp; curl https://semver.io/node.json > #{target_path}/tmp/versions.json"
-
-      dependencies(target_path).each do |version|
-        run_cmd "cd #{dependency_path}; curl http://nodejs.org/dist/v#{version}/node-v#{version}-linux-x64.tar.gz -O"
-      end
-    end
-
-    def dependencies(target_path)
-      JSON.parse(File.read("#{target_path}/tmp/versions.json"))["versions"]
-    end
-
-    def in_pack?(file_path)
-      !EXCLUDE_FROM_BUILDPACK.any? { |re| file_path =~ re }
-    end
-
-    def compress_buildpack(target_path)
-      Zip::File.open('nodejs_buildpack.zip', Zip::File::CREATE) do |zipfile|
-        Dir.glob(File.join(target_path, "**", "**"), File::FNM_DOTMATCH).each do |file_path|
-          relative_file_path = file_path.sub(target_path + '/', '')
-          zipfile.add(relative_file_path, file_path) if (in_pack?(relative_file_path))
-        end
-      end
-    end
-
-    def run_cmd(cmd)
-      puts "$ #{cmd}"
-      `#{cmd}`
-    end
+  def excluded_files
+    []
   end
 end
 
-BuildpackPackager.package(ARGV.first.to_sym)
+BuildpackPackager.new("nodejs", ARGV.first.to_sym).package

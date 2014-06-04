@@ -3,7 +3,7 @@ require 'json'
 
 class BuildpackPackager < BasePackager
   def dependencies
-    run_cmd "mkdir #{target_path}/files"
+    run_cmd "mkdir -p #{target_path}/files"
     run_cmd "curl https://semver.io/node.json > #{target_path}/files/versions.json"
 
     versions = JSON.parse(File.read("#{target_path}/files/versions.json"))["versions"]

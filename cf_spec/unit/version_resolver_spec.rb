@@ -27,35 +27,37 @@ describe "Node version resolver" do
     `#{node_executable} lib/version_resolver.js "#{version}"`.strip
   end
 
-  describe "supporting ranges" do
-    it "resolves no version" do
-      resolve_version.should == '0.10.27'
+  describe 'supporting ranges' do
+    it 'resolves no version' do
+      expect(resolve_version).to eql('0.10.27')
     end
 
-    it { resolve_version('0.10.13').should == '0.10.13' }
-    it { resolve_version('0.10.13+build2012').should eql '0.10.13' }
-    it { resolve_version('>0.10.13').should eql '0.10.14' }
-    it { resolve_version('<0.10.13').should eql '0.10.12' }
-    it { resolve_version('>=0.10.14').should eql '0.10.14' }
-    it { resolve_version('>=0.10.15').should eql '0.11.0' }
-    it { resolve_version('<=0.10.14').should eql '0.10.14' }
-    it { resolve_version('<=0.10.15').should eql '0.10.14' }
-
-    describe "when there's a stable version in the range" do
-      it { resolve_version('0.10.11 - 0.10.14').should eql '0.10.14' }
+    it 'resolves common variants' do
+      expect(resolve_version('0.10.13')).to eql '0.10.13'
+      expect(resolve_version('0.10.13+build2012')).to eql '0.10.13'
+      expect(resolve_version('>0.10.13')).to eql '0.10.14'
+      expect(resolve_version('<0.10.13')).to eql '0.10.12'
+      expect(resolve_version('>=0.10.14')).to eql '0.10.14'
+      expect(resolve_version('>=0.10.15')).to eql '0.11.0'
+      expect(resolve_version('<=0.10.14')).to eql '0.10.14'
+      expect(resolve_version('<=0.10.15')).to eql '0.10.14'
+      expect(resolve_version('~0.9.0')).to eql '0.9.1'
+      expect(resolve_version('^0.9')).to eql '0.9.1'
+      expect(resolve_version('^0.0.1')).to eql '0.0.1'
+      expect(resolve_version('0.10.x')).to eql '0.10.14'
+      expect(resolve_version('0.x')).to eql '0.10.14'
+      expect(resolve_version('x')).to eql '0.10.14'
+      expect(resolve_version('*')).to eql '0.10.14'
+      expect(resolve_version('')).to eql '0.10.14'
     end
 
-    describe "when there isn't a stable version in the range" do
-      it { resolve_version('0.10.30 - 0.13.0').should eql '0.11.0' }
+    specify "when there's a stable version in the range" do
+      expect(resolve_version('0.10.11 - 0.10.14')).to eql '0.10.14'
     end
 
-    it { resolve_version('~0.9.0').should eql '0.9.1' }
-    it { resolve_version('^0.9').should eql '0.9.1' }
-    it { resolve_version('^0.0.1').should eql '0.0.1' }
-    it { resolve_version('0.10.x').should eql '0.10.14' }
-    it { resolve_version('0.x').should eql '0.10.14' }
-    it { resolve_version('x').should eql '0.10.14' }
-    it { resolve_version('*').should eql '0.10.14' }
-    it { resolve_version('').should eql '0.10.14' }
+    specify "when there isn't a stable version in the range" do
+      expect(resolve_version('0.10.30 - 0.13.0')).to eql '0.11.0'
+    end
+
   end
 end

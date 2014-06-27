@@ -1,10 +1,21 @@
 #!/usr/bin/env bash
 
-if [ $# -eq 0 ] || ([ "$1" != "online" ] && [ "$1" != "offline" ]); then
-  echo "Usage:"
-  echo "  ./package [online|offline]"
-  exit 1
-fi
+language='nodejs'
 
-bundle
-bundle exec ruby lib/buildpack_packager.rb "$1"
+dependencies=(`curl -s https://semver.io/node/versions | awk '{ printf "http://s3pository.heroku.com/node/v%s/node-v%s-linux-x64.tar.gz ", $1, $1 }'`)
+
+excluded_files=(
+  '.git/'
+  '.gitignore'
+  '.gitmodules'
+  'cf_spec/'
+  'log/'
+  'test/'
+  'bin/package'
+  'buildpack-packager/'
+)
+
+BIN="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $BIN/../buildpack-packager/lib/packager
+
+package_buildpack $@

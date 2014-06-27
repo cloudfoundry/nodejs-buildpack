@@ -16,6 +16,10 @@ excluded_files=(
 )
 
 BIN="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+mkdir -p $BIN/../files
+curl https://semver.io/node.json > $BIN/../files/versions.json
+
 source $BIN/../buildpack-packager/lib/packager
 
 package_buildpack $@

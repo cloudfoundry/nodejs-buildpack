@@ -4,6 +4,8 @@ A Cloud Foundry [buildpack](http://docs.cloudfoundry.org/buildpacks/) for Node b
 
 This is based on the [Heroku buildpack] (https://github.com/heroku/heroku-buildpack-nodejs).
 
+Additional documentation can be found at the [CloundFoundry.org](http://docs.cloudfoundry.org/buildpacks/).
+
 ## Usage
 
 This buildpack will get used if you have a `package.json` file in your project's root directory.

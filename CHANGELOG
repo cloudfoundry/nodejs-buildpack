@@ -1,3 +1,27 @@
+v1.0.1 Jul 22, 2014
+====================
+
+* Improve documentation and make the README CF specific.
+  (https://www.pivotaltracker.com/story/show/69192654)
+  (https://www.pivotaltracker.com/story/show/73157816)
+
+* Switch to new Cloud Foundry offline dependency framework
+  (https://www.pivotaltracker.com/story/show/73384192)
+
+* Improve version imprinting
+  (https://www.pivotaltracker.com/story/show/73384192)
+
+* Use Ruby 2.1.1 for packaging
+
+* Add test app without vendored dependencies
+
+* Use Procfile instead of startup command for test apps
+
+* Fix: Offline mode should not attempt to use public networks
+  (https://www.pivotaltracker.com/story/show/73420832)
+
+* Fix: NomNom attempts to reach out to a public network
+
 v1.0.0 May 19, 2014
 ===================
 

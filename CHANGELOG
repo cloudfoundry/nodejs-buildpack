@@ -1,3 +1,18 @@
+v1.0.2 Sep 22, 2014
+====================
+
+* Support for new semver JSON response format
+
+* Update buildpack-packager
+  (https://www.pivotaltracker.com/story/show/79126294)
+  (https://www.pivotaltracker.com/story/show/77627098)
+
+* Update Machete
+
+* Merge upstream changes
+  * broken link to CONTRIBUTING.md
+  * npm reverted to a backwards compatible cert
+
 v1.0.1 Jul 22, 2014
 ====================
 

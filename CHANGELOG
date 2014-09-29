@@ -1,3 +1,12 @@
+v1.0.3 Sep 29, 2014
+====================
+
+* Merge upstream change:
+  * Resolve issue with bower failing to build against commit hashes
+    (https://github.com/heroku/heroku-buildpack-nodejs/issues/99)
+    (https://github.com/heroku/heroku-buildpack-nodejs/pull/121)
+
+
 v1.0.2 Sep 22, 2014
 ====================
 

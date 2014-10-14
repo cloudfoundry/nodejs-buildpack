@@ -4,3 +4,5 @@
 tmp
 files
 log/
+/nodejs_buildpack-offline-v[0-9\.]*.zip
+/nodejs_buildpack-v[0-9\.]*.zip

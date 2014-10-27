@@ -77,6 +77,26 @@ cd $build_dir
 # If node_modules directory is checked into source control then
 # rebuild any native deps. Otherwise, restore from the build cache.
 if test -d $build_dir/node_modules; then
+  cd node_modules
+  for i in * ; do
+    if [ -d "$i" ]; then
+      if [ -f "$i"/package.json ] && [ ! -d "$i"/node_modules ]; then
+        cd "$i"
+        (
+          if [ "$env_file" ]; then
+            status "Importing application config vars"
+            export $(egrep -v "^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)" "$env_file")
+          fi
+        
+          status "Installing dependencies"
+          # Make npm output to STDOUT instead of its default STDERR
+          npm install --userconfig $build_dir/.npmrc --production 2>&1 | indent
+        )
+        cd ..
+      fi
+    fi
+  done
+  cd ..
   status "Found existing node_modules directory; skipping cache"
   status "Rebuilding any native dependencies"
   npm rebuild 2>&1 | indent

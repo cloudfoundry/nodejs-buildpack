@@ -74,10 +74,53 @@ PATH=$build_dir/vendor/node/bin:$PATH
 # Run subsequent node/npm commands from the build path
 cd $build_dir
 
+function npm_install {
+  # Scope config var availability only to `npm install`
+  (
+    if [ -d "$env_dir" ]; then
+      status "Exporting config vars to environment"
+      export_env_dir $env_dir
+    fi
+
+    status "Installing dependencies"
+    # Make npm output to STDOUT instead of its default STDERR
+    npm install --userconfig $build_dir/.npmrc --production 2>&1 | indent
+  )
+}  
+
 # If node_modules directory is checked into source control then
 # rebuild any native deps. Otherwise, restore from the build cache.
 if test -d $build_dir/node_modules; then
   status "Found existing node_modules directory; skipping cache"
+
+  node_modules_dirs=()
+
+  function dive {
+    p=$1
+    if [[ $p != */ ]]; then
+      p="$p/"
+    fi
+
+    for i in "$p"node_modules/*/ ; do
+      if [ -d "$i" ] && [ -f "$i"/package.json ]; then
+        node_modules_dirs+=($i)
+        status "Found 'own' node module: $i"
+        dive $i
+      fi
+    done
+  }
+
+  dive $build_dir
+
+  status "Found ${#node_modules_dirs[@]} 'own' modules"
+
+  for (( idx=${#node_modules_dirs[@]}-1 ; idx>=0 ; idx-- )) ; do
+    cd "${node_modules_dirs[idx]}"
+    npm_install
+  done
+
+  cd $build_dir
+
   status "Rebuilding any native dependencies"
   npm rebuild 2>&1 | indent
 elif test -d $cache_dir/node/node_modules; then
@@ -94,17 +137,7 @@ elif test -d $cache_dir/node/node_modules; then
 
 fi
 
-# Scope config var availability only to `npm install`
-(
-  if [ -d "$env_dir" ]; then
-    status "Exporting config vars to environment"
-    export_env_dir $env_dir
-  fi
-
-  status "Installing dependencies"
-  # Make npm output to STDOUT instead of its default STDERR
-  npm install --userconfig $build_dir/.npmrc --production 2>&1 | indent
-)
+npm_install
 
 # Persist goodies like node-version in the slug
 mkdir -p $build_dir/.heroku

@@ -28,7 +28,7 @@ Using cached system dependencies is accomplished by overriding curl during stagi
 In offline mode we [use the semver node_module](bin/compile#L30-32) (as opposed to http://semver.io) to resolve the correct node version. The semver.io service has an additional preference for stable versions not present in the node module version. We wrap the node module using [lib/version_resolver.js](lib/version_resolver.js) to add back this functionality.
 
 ### App Dependencies in Offline Mode
-Offline mode expects each app to use npm to manage dependencies. `npm install` will vendor your dependencies into `/node_modules`. 
+Offline mode expects each app to use npm to manage dependencies. `npm install` will vendor your dependencies into `/node_modules`.
 
 ## Building
 1. Make sure you have fetched submodules
@@ -56,27 +56,7 @@ Offline mode expects each app to use npm to manage dependencies. `npm install` w
 
 ### Run the tests
 
-There are [Machete](https://github.com/pivotal-cf-experimental/machete) based integration tests available in [cf_spec](cf_spec).
-
-The test script is included in machete and can be run as follows:
-
-```bash
-BUNDLE_GEMFILE=cf.Gemfile bundle install
-git submodule update --init
-`BUNDLE_GEMFILE=cf.Gemfile bundle show machete`/scripts/buildpack-build [mode]
-```
-
-`buildpack-build` will create a buildpack in one of two modes and upload it to your local bosh-lite based Cloud Foundry installations.
-
-Valid modes:
-
-online : Dependencies can be fetched from the internet.
-
-offline : System dependencies, such as python, are installed from a cache included in the buildpack.
-
-The tests expect two Cloud Foundry installations to be present, an online one at 10.244.0.34 and an offline one at 10.245.0.34.
-
-We use [bosh-lite](https://github.com/cloudfoundry/bosh-lite) for the online instance and [bosh-lite-2nd-instance](https://github.com/cf-buildpacks/bosh-lite-2nd-instance) for the offline instance.
+See the [Machete](https://github.com/cf-buildpacks/machete) CF buildpack test framework for more information.
 
 ### Pull Requests
 

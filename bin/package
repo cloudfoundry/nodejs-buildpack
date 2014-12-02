@@ -37,6 +37,8 @@ done
 
 echo $versfile > $BIN/../files/versions.json
 
-source $BIN/../buildpack-packager/lib/packager
+oifs=$IFS
+IFS=','
+$BIN/../buildpack-packager/bin/buildpack-packager $language "${dependencies[*]}" "${excluded_files[*]}" $1
+IFS=$oifs
 
-package_buildpack $@

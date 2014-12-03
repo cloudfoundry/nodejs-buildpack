@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-language='nodejs'
 dependencies=()
 excludes=()
 
@@ -13,17 +12,6 @@ for version in `curl -s https://semver.io/node/versions`; do
       excludes+=($version)
    fi
 done
-
-excluded_files=(
-  '.git/'
-  '.gitignore'
-  '.gitmodules'
-  'cf_spec/'
-  'log/'
-  'test/'
-  'bin/package'
-  'buildpack-packager/'
-)
 
 BIN="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -37,8 +25,5 @@ done
 
 echo $versfile > $BIN/../files/versions.json
 
-oifs=$IFS
-IFS=','
-$BIN/../buildpack-packager/bin/buildpack-packager $language "${dependencies[*]}" "${excluded_files[*]}" $1
-IFS=$oifs
+echo "${dependencies[*]}"
 

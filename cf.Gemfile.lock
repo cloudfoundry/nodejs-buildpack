@@ -1,7 +1,7 @@
 GIT
   remote: git://github.com/cf-buildpacks/buildpack-packager.git
-  revision: 7ba0ede6907606fdd82f9308de34a20e5e69eeda
-  ref: 7ba0ede
+  revision: 1b99559d5b745fa8c6228ee405ea8babcf778005
+  ref: 1b99559
   specs:
     buildpack-packager (0.0.1)
       activesupport (~> 4.1.8)

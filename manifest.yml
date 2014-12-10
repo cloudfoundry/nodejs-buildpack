@@ -10,6 +10,7 @@ exclude_files:
 - test/
 - bin/package
 - buildpack-packager/
+- nodejs_buildpack-*v*.zip
 
 url_to_dependency_map:
 - match: node\/v(\d+\.\d+\.\d+)

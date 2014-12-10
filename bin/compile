@@ -15,11 +15,12 @@ export BUILDPACK_PATH=$bp_dir
 source $bp_dir/compile-extensions/lib/common
 # END CF Common
 
-# Fix leak
-unset GIT_DIR
-
 # Load some convenience functions like status(), echo(), and indent()
 source $bp_dir/bin/common.sh
+
+# Fix leak
+status "Resetting git environment"
+unset GIT_DIR
 
 # Output npm debug info on error
 trap cat_npm_debug_log ERR
@@ -84,7 +85,7 @@ elif test -d $cache_dir/node/node_modules; then
   cp -r $cache_dir/node/node_modules $build_dir/
 
   status "Pruning cached dependencies not specified in package.json"
-  npm prune 2>&1 | indent
+  npm prune --production 2>&1 | indent
 
   if test -f $cache_dir/node/.heroku/node-version && [ $(cat $cache_dir/node/.heroku/node-version) != "$node_version" ]; then
     status "Node version changed since last build; rebuilding dependencies"

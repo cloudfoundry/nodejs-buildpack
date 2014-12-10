@@ -1,3 +1,23 @@
+v1.1.0 Dec 10, 2014
+====================
+
+* Merge upstream changes
+  (https://www.pivotaltracker.com/story/show/83960086)
+  * Prune devDependencies from cache
+    (https://github.com/heroku/heroku-buildpack-nodejs/pull/115)
+
+* Introduce new offline dependency packaging system
+  (https://www.pivotaltracker.com/story/show/82513994)
+  (https://www.pivotaltracker.com/story/show/83886038)
+
+* Introduce new runtime dependency translation system
+  (https://www.pivotaltracker.com/story/show/82513994)
+  (https://www.pivotaltracker.com/story/show/83483872)
+  (https://www.pivotaltracker.com/story/show/83504664)
+
+* Update the README with Machete instructions
+  (https://www.pivotaltracker.com/story/show/82692644)
+
 v1.0.4 Sep 30, 2014
 ====================
 

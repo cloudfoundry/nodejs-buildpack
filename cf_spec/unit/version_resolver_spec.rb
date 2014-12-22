@@ -10,11 +10,13 @@ describe "Node version resolver" do
 
   before do
     FileUtils.mkdir_p("files")
+    FileUtils.mv("files/versions.json", "files/versions.original")
     FileUtils.cp_r("cf_spec/fixtures/versions.json", "files/versions.json")
   end
 
   after do
-    FileUtils.rm_f("files")
+    FileUtils.rm_f("files/versions.json")
+    FileUtils.mv("files/versions.original", "files/versions.json")
   end
 
   def resolve_version(version = "null")

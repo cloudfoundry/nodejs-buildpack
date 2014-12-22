@@ -1,4 +1,5 @@
 {
+  "comment": "THIS FILE IS A FIXTURE TO SUPPORT TESTING, DO NOT USE IN PRODUCTION.",
   "stable": "0.10.27",
   "all": [
     "0.0.1",

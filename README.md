@@ -14,43 +14,50 @@ This buildpack will get used if you have a `package.json` file in your project's
 cf push my_app -b https://github.com/cloudfoundry/buildpack-nodejs.git
 ```
 
-## Cloud Foundry Extensions - Offline Mode
+## Cloud Foundry Extensions - Cached Dependencies
 
-The primary purpose of extending the heroku buildpack is to cache system dependencies for firewalled or other non-internet accessible environments. This is called 'offline' mode.
+The primary purpose of extending the heroku buildpack is to cache system dependencies for partially or fully disconnected environments.
+Historically, this was called 'offline' mode.
+It is now called 'Cached dependencies'.
 
-'offline' buildpacks can be used in any environment where you would prefer the system dependencies to be cached instead of fetched from the internet.
+Cached buildpacks can be used in any environment where you would prefer the dependencies to be cached instead of fetched from the internet.
 
-The list of what is cached is maintained in [bin/package](bin/package).
+The list of what is cached is maintained in [the manifest](manifest.yml). For a description of the manifest file, see the [buildpack packager documentation](https://github.com/cf-buildpacks/buildpack-packager/blob/master/README.md#manifest)
 
-Using cached system dependencies is accomplished by overriding curl during staging. See [bin/compile](bin/compile#L14-18)
+The buildpack consumes cached system dependencies during staging by translating remote urls. Search for 'translate_dependency_url' in this repo to see examples.
 
 ### Additional extensions
-In offline mode we [use the semver node_module](bin/compile#L30-32) (as opposed to http://semver.io) to resolve the correct node version. The semver.io service has an additional preference for stable versions not present in the node module version. We wrap the node module using [lib/version_resolver.js](lib/version_resolver.js) to add back this functionality.
+In cached mode, [use the semver node_module](bin/compile#L30-32) (as opposed to http://semver.io) to resolve the correct node version. The semver.io service has an additional preference for stable versions not present in the node module version. We wrap the node module using [lib/version_resolver.js](lib/version_resolver.js) to add back this functionality.
 
-### App Dependencies in Offline Mode
-Offline mode expects each app to use npm to manage dependencies. `npm install` will vendor your dependencies into `/node_modules`.
+### App Dependencies in Cached Mode
+Cached (offline) mode expects each app to use npm to manage dependencies. `npm install` will vendor your dependencies into `/node_modules`.
 
 ## Building
 1. Make sure you have fetched submodules
 
-    ```bash
-    git submodule update --init
-    ```
+  ```bash
+  git submodule update --init
+  ```
+1. Get latest buildpack dependencies
 
-  1. Build the buildpack
+  ```shell
+  BUNDLE_GEMFILE=cf.Gemfile bundle
+  ```
 
-    ```bash
-    bin/package [ online | offline ]
-    ```
+1. Build the buildpack
 
-  1. Use in Cloud Foundry
+  ```shell
+  BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-packager [ online | offline ]
+  ```
 
-      Upload the buildpack to your Cloud Foundry and optionally specify it by name
+1. Use in Cloud Foundry
 
-      ```bash
-      cf create-buildpack custom_node_buildpack node_buildpack-offline-custom.zip 1
-      cf push my_app -b custom_node_buildpack
-      ```
+  Upload the buildpack to your Cloud Foundry and optionally specify it by name
+
+  ```bash
+  cf create-buildpack custom_node_buildpack node_buildpack-offline-custom.zip 1
+  cf push my_app -b custom_node_buildpack
+  ```
 
 ## Contributing
 

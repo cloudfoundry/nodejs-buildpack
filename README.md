@@ -14,23 +14,23 @@ This buildpack will get used if you have a `package.json` file in your project's
 cf push my_app -b https://github.com/cloudfoundry/buildpack-nodejs.git
 ```
 
-## Cloud Foundry Extensions - Cached Dependencies
+## Disconnected environments
+To use this buildpack on Cloud Foundry, where the Cloud Foundry instance limits some or all internet activity, please read the [Disconnected Environments documentation](https://github.com/cf-buildpacks/buildpack-packager/blob/master/doc/disconnected_environments.md).
 
-The primary purpose of extending the heroku buildpack is to cache system dependencies for partially or fully disconnected environments.
-Historically, this was called 'offline' mode.
-It is now called 'Cached dependencies'.
+### Vendoring app dependencies
+As stated in the [Disconnected Environments documentation](https://github.com/cf-buildpacks/buildpack-packager/blob/master/doc/disconnected_environments.md), your application must 'vendor' it's dependencies.
 
-Cached buildpacks can be used in any environment where you would prefer the dependencies to be cached instead of fetched from the internet.
+For the NodeJS buildpack, use ```npm```:
 
-The list of what is cached is maintained in [the manifest](manifest.yml). For a description of the manifest file, see the [buildpack packager documentation](https://github.com/cf-buildpacks/buildpack-packager/blob/master/README.md#manifest)
+```shell 
+cd <your app dir>
+npm install install # vendors into /node_modules
+```
 
-The buildpack consumes cached system dependencies during staging by translating remote urls. Search for 'translate_dependency_url' in this repo to see examples.
+```cf push``` uploads your vendored dependencies.
 
 ### Additional extensions
 In cached mode, [use the semver node_module](bin/compile#L30-32) (as opposed to http://semver.io) to resolve the correct node version. The semver.io service has an additional preference for stable versions not present in the node module version. We wrap the node module using [lib/version_resolver.js](lib/version_resolver.js) to add back this functionality.
-
-### App Dependencies in Cached Mode
-Cached (offline) mode expects each app to use npm to manage dependencies. `npm install` will vendor your dependencies into `/node_modules`.
 
 ## Building
 1. Make sure you have fetched submodules

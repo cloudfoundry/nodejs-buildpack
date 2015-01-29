@@ -24,7 +24,7 @@ For the NodeJS buildpack, use ```npm```:
 
 ```shell 
 cd <your app dir>
-npm install install # vendors into /node_modules
+npm install # vendors into /node_modules
 ```
 
 ```cf push``` uploads your vendored dependencies.

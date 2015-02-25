@@ -21,252 +21,336 @@ dependencies:
 - name: node
   version: 0.8.6
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.6-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.7
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.7-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.8
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.8-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.9
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.9-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.10
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.10-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.11
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.11-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.12
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.12-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.13
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.13-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.14
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.14-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.15
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.15-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.16
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.16-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.17
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.17-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.18
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.18-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.19
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.19-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.20
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.20-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.21
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.21-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.22
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.22-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.23
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.23-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.24
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.24-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.25
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.25-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.26
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.26-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.27
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.27-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.8.28
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.28-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.9.1
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.1-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.9.2
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.2-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.9.3
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.3-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.9.4
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.4-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.9.5
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.5-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.9.6
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.6-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.9.7
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.7-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.9.8
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.8-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.9.9
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.9-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.9.10
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.10-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.9.11
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.11-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.9.12
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.12-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.0
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.0-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.1
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.1-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.2
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.2-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.3
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.3-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.4
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.4-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.5
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.5-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.6
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.6-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.7
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.7-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.8
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.8-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.9
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.9-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.10
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.10-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.11
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.11-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.12
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.12-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.13
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.13-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.14
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.14-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.15
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.15-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.16
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.16-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.17
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.17-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.18
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.18-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.19
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.19-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.20
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.20-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.21
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.21-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.22
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.22-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.23
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.23-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.24
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.24-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.25
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.25-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.26
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.26-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.27
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.27-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.28
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.28-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.29
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.29-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.30
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.30-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.31
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.31-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.32
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.32-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.10.33
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.33-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.0
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.0-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.1
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.1-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.2
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.2-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.3
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.3-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.4
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.4-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.5
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.5-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.6
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.6-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.7
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.7-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.8
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.8-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.9
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.9-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.10
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.10-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.11
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.11-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.12
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.12-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.13
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.13-linux-x64.tar.gz
+  cf_stacks: all
 - name: node
   version: 0.11.14
   uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.14-linux-x64.tar.gz
+  cf_stacks: all

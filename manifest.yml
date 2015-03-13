@@ -19,13 +19,6 @@ url_to_dependency_map:
 
 dependencies:
   - name: node
-    version: 0.8.6
-    uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.6-linux-x64.tar.gz
-    md5: e8d92d46201ba6e61ee748fc85ad2afa
-    cf_stacks:
-      - lucid64
-      - cflinuxfs2
-  - name: node
     version: 0.8.7
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.7-linux-x64.tar.gz
     md5: 7a3bb324b1ad1864162a5ff6e9e5e012
@@ -366,7 +359,6 @@ dependencies:
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.14-linux-x64.tar.gz
     md5: 3a5b08dc92cc54ece1645bb47a33331b
     cf_stacks:
-      - lucid64
       - cflinuxfs2
   - name: node
     version: 0.10.15
@@ -534,7 +526,6 @@ dependencies:
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.4-linux-x64.tar.gz
     md5: 24f4412ef76de3cd44e993d79c9ee59a
     cf_stacks:
-      - lucid64
       - cflinuxfs2
   - name: node
     version: 0.11.5

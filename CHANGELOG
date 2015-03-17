@@ -1,3 +1,19 @@
+v1.3.0 Mar 17, 2015
+====================
+
+* Support cflinuxfs2 stack.
+  (https://www.pivotaltracker.com/story/show/88174344)
+
+* Removed versions 0.8.6, 0.10.14, and 0.11.4
+  (https://www.pivotaltracker.com/story/show/90294404)
+	(https://www.pivotaltracker.com/story/show/90366324)
+
+* Reference git repos by https in cf.Gemfile
+  (https://www.pivotaltracker.com/story/show/90365848)
+
+* Add checksum to `manifest.yml` for all binaries.
+	(https://www.pivotaltracker.com/story/show/89503124)
+
 v1.1.1 Dec 22, 2014
 ====================
 

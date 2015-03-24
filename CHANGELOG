@@ -1,3 +1,12 @@
+v1.2.1 Mar 24, 2015
+====================
+
+* Add support for node binary version 0.12.0
+	(https://www.pivotaltracker.com/story/show/89792504)
+
+* Add support for node binary version 0.10.38
+	(https://www.pivotaltracker.com/story/show/90724656)
+
 v1.2.0 Mar 17, 2015
 ====================
 

@@ -47,7 +47,7 @@ In cached mode, [use the semver node_module](bin/compile#L30-32) (as opposed to 
 1. Build the buildpack
 
   ```shell
-  BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-packager [ online | offline ]
+  BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-packager [ cached | uncached ]
   ```
 
 1. Use in Cloud Foundry
@@ -69,6 +69,12 @@ See the [Machete](https://github.com/cf-buildpacks/machete) CF buildpack test fr
 
 1. Fork the project
 1. Submit a pull request
+
+### Updating nodejs versions
+
+The buildpacks supports disconnected environments, which means `semver.io` cannot be reached for node version resolution. If a new version of node is added to the `manifest.yml` it must be added to `files/versions.json`.
+
+*NOTE:* If it happens to be the latest stable release, update the `stable` key in `files/versions.json`.
 
 ## Reporting Issues
 

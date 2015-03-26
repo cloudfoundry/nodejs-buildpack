@@ -1,3 +1,10 @@
+v1.2.2 Mar 26, 2015
+====================
+
+* Default to latest stable verion 0.12.0 in cached mode
+	(https://www.pivotaltracker.com/story/show/89792504)
+
+
 v1.2.1 Mar 24, 2015
 ====================
 

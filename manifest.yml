@@ -311,6 +311,7 @@ dependencies:
     md5: bd90c722623ba236e8869bb838e7801d
     cf_stacks:
       - lucid64
+
       - cflinuxfs2
   - name: node
     version: 0.10.8

@@ -5,6 +5,10 @@ describe 'CF NodeJS Buildpack' do
   subject(:app) { Machete.deploy_app(app_name) }
   let(:browser) { Machete::Browser.new(app) }
 
+  after do
+    Machete::CF::DeleteApp.new.execute(app)
+  end
+
   context 'with cached buildpack dependencies' do
     context 'in an offline environment', if: Machete::BuildpackMode.offline? do
       let(:app_name) { 'node_web_app' }

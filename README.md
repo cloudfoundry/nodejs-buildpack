@@ -53,11 +53,30 @@ In cached mode, [use the semver node_module](bin/compile#L30-32) (as opposed to 
 1. Use in Cloud Foundry
 
   Upload the buildpack to your Cloud Foundry and optionally specify it by name
-
   ```bash
   cf create-buildpack custom_node_buildpack node_buildpack-offline-custom.zip 1
   cf push my_app -b custom_node_buildpack
   ```
+
+## Options
+
+### Specify a node version
+
+Set engines.node in package.json to the semver range
+(or specific version) of node you'd like to use.
+(It's a good idea to make this the same version you use during development)
+
+```json
+"engines": {
+  "node": "0.11.x"
+}
+```
+
+```json
+"engines": {
+  "node": "0.10.33"
+}
+```
 
 ## Contributing
 

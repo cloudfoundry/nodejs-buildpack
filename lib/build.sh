@@ -2,13 +2,6 @@ build_failed() {
   head "Build failed"
   echo ""
   cat $warnings | indent
-  info "We're sorry this build is failing! If you can't find the issue in application code,"
-  info "please submit a ticket so we can help: https://help.heroku.com/"
-  info "You can also try reverting to our legacy Node.js buildpack:"
-  info "heroku config:set BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-nodejs#v63"
-  info ""
-  info "Love,"
-  info "Heroku"
 }
 
 build_succeeded() {
@@ -87,7 +80,6 @@ read_current_state() {
 
   export NPM_CONFIG_PRODUCTION=${NPM_CONFIG_PRODUCTION:-true}
   export NODE_MODULES_CACHE=${NODE_MODULES_CACHE:-true}
-  export BUILD_CLEAN=${BUILD_CLEAN:-false}
 }
 
 show_current_state() {
@@ -101,7 +93,6 @@ show_current_state() {
 
   printenv | grep ^NPM_CONFIG_ | indent
   info "NODE_MODULES_CACHE=$NODE_MODULES_CACHE"
-  info "BUILD_CLEAN=$BUILD_CLEAN"
 }
 
 install_node() {
@@ -117,13 +108,13 @@ install_node() {
   fi
 
   # Download node from Heroku's S3 mirror of nodejs.org/dist
-  status "Downloading and installing node $node_engine..."
+  info "Downloading and installing node $node_engine..."
   node_url="http://s3pository.heroku.com/node/v$node_engine/node-v$node_engine-linux-x64.tar.gz"
   (curl `translate_dependency_url $node_url` -s --fail -o - | tar xzf - -C $build_dir)  || (echo -e "\n-----> Resource $node_url does not exist." 1>&2 ; exit 22)
 
   # Move node (and npm) into .heroku/node and make them executable
   mkdir -p $build_dir/vendor
-  mv $build_dir/node-v$node_version-linux-x64 $build_dir/vendor/node
+  mv $build_dir/node-v$node_engine-linux-x64 $build_dir/vendor/node
   chmod +x $build_dir/vendor/node/bin/*
   PATH=$build_dir/vendor/node/bin:$PATH
 }
@@ -177,19 +168,9 @@ build_dependencies() {
     info "Rebuilding any native modules for this architecture"
     npm rebuild 2>&1 | indent
 
-  elif ! $BUILD_CLEAN && [ $cache_status == "valid" ]; then
-    info "Restoring node modules from cache"
-    cp -r $cache_dir/node/node_modules $build_dir/
-    info "Pruning unused dependencies"
-    npm prune 2>&1
-    info "Installing any new modules"
-    npm install --userconfig $build_dir/.npmrc 2>&1
-
   else
     info "Installing node modules"
     npm install --unsafe-perm --quiet --userconfig $build_dir/.npmrc 2>&1 | indent
-    info "Deduping dependency tree"
-    npm dedupe 2>&1
   fi
 }
 
@@ -214,9 +195,8 @@ ensure_procfile() {
 write_profile() {
   info "Creating runtime environment"
   mkdir -p $build_dir/.profile.d
-  echo "export PATH=\"\$HOME/.heroku/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\"" > $build_dir/.profile.d/nodejs.sh
-  echo "export NODE_HOME=\"\$HOME/.heroku/node\"" >> $build_dir/.profile.d/nodejs.sh
-  cat $bp_dir/lib/concurrency.sh >> $build_dir/.profile.d/nodejs.sh
+  echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\"" > $build_dir/.profile.d/nodejs.sh
+  echo "export NODE_HOME=\"\$HOME/vendor/node\"" >> $build_dir/.profile.d/nodejs.sh
 }
 
 write_export() {

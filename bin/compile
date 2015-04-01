@@ -33,7 +33,7 @@ source $bp_dir/lib/warnings.sh
 unset GIT_DIR
 
 # Output version
-status "Node.js Buildpack v$bp_version"
+info "Node.js Buildpack v$bp_version"
 
 trap build_failed ERR
 
@@ -43,10 +43,10 @@ head "Reading application state"
 read_current_state
 show_current_state
 
-warn_node_engine "$node_engine"
+warn_semver_range "$semver_range"
 warn_node_modules "$modules_source"
 
-install_node "$node_engine"
+install_node "$semver_range"
 install_npm
 
 ####### Build the project's dependencies
@@ -62,11 +62,12 @@ ensure_procfile "$start_method" "$build_dir"
 warn_start "$start_method"
 
 ####### Finalize the build
+cat $build_dir/Procfile
 
 head "Finalizing build"
 write_profile
-write_export
-clean_npm
+# write_export
+# clean_npm
 clean_cache
 create_cache
 build_succeeded

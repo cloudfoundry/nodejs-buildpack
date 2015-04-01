@@ -1,4 +1,7 @@
 // web.js
+
+console.log("***************************I'm running!********************************")
+
 var express = require("express");
 var logfmt = require("logfmt");
 var app = express();

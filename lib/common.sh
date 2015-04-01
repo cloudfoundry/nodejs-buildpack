@@ -16,11 +16,9 @@ info() {
 
 warning() {
   local tip=$1
-  local url=$2
   echo "WARNING: $tip" >> $warnings
-  echo "${url:-https://devcenter.heroku.com/articles/nodejs-support}" >> $warnings
   echo "" >> $warnings
-}
+  }
 
 achievement() {
   local msg=$1

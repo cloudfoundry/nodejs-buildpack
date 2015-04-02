@@ -23,11 +23,13 @@ export BUILDPACK_PATH=$bp_dir
 source $bp_dir/compile-extensions/lib/common
 # END CF Common
 
-
 # Load dependencies
 source $bp_dir/lib/common.sh
 source $bp_dir/lib/build.sh
 source $bp_dir/lib/warnings.sh
+
+# Bust app cache if CF_STACK has switched since cache was written
+validate_app_cache "$cache_dir"
 
 # Avoid GIT_DIR leak from previous build steps
 unset GIT_DIR
@@ -71,3 +73,7 @@ write_profile
 clean_cache
 create_cache
 build_succeeded
+
+# Store value of CF_STACK as of cache-writing
+store_stack_value "$cache_dir"
+

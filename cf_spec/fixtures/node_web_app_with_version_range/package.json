@@ -12,7 +12,9 @@
     "logfmt": "~1.1.2",
     "express": "~4.0.0"
   },
-  "engines" : { "node" : "0.12.2" },
+  "engines" : {
+    "node" : ">0.12.0"
+  },
 
   "repository" :
   {

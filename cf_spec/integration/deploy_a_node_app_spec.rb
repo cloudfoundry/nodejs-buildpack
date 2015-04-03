@@ -29,7 +29,19 @@ describe 'CF NodeJS Buildpack' do
       browser.visit_path('/')
       expect(browser).to have_body('Hello, World!')
       expect(app).not_to have_logged('Restoring node modules from cache')
+    end
+  end
 
+  describe 'with non-specific version' do
+    context 'app specifies version range' do
+      let(:app_name) { 'node_web_app_with_version_range' }
+
+      specify do
+        expect(app).to be_running
+
+        browser.visit_path('/')
+        expect(browser).to have_body('Hello, World!')
+      end
     end
   end
 
@@ -61,6 +73,8 @@ describe 'CF NodeJS Buildpack' do
           expect(browser).to have_body('Hello, World!')
         end
       end
+
+
 
       context 'app has no dependencies' do
         let(:app_name) { 'node_web_app_no_dependencies' }

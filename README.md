@@ -57,6 +57,11 @@ In cached mode, [use the semver node_module](bin/compile#L30-32) (as opposed to 
   cf create-buildpack custom_node_buildpack node_buildpack-offline-custom.zip 1
   cf push my_app -b custom_node_buildpack
   ```
+## Supported binary dependencies
+
+The NodeJS buildpack only supports the two most recent stable patches for each dependency in the [manifest.yml](manifest.yml).
+
+If you want to use previously supported dependency versions, copy them from [.deprecated.manifest.yml](.deprecated.manifest.yml) into [manifest.yml](manifest.yml)
 
 ## Options
 

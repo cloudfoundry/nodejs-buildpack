@@ -61,20 +61,7 @@ In cached mode, [use the semver node_module](bin/compile#L30-32) (as opposed to 
 
 ## Contributing
 
-### Run the tests
-
-See the [Machete](https://github.com/cf-buildpacks/machete) CF buildpack test framework for more information.
-
-### Pull Requests
-
-1. Fork the project
-1. Submit a pull request
-
-### Updating nodejs versions
-
-The buildpacks supports disconnected environments, which means `semver.io` cannot be reached for node version resolution. If a new version of node is added to the `manifest.yml` it must be added to `files/versions.json`.
-
-*NOTE:* If it happens to be the latest stable release, update the `stable` key in `files/versions.json`.
+Find our guidelines [here](./CONTRIBUTING.md).
 
 ## Reporting Issues
 

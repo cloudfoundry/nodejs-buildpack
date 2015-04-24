@@ -65,14 +65,12 @@ dependencies:
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.15-linux-x64.tar.gz
     md5: eaec6219f25aff616675159c9717dcb9
     cf_stacks:
-      - lucid64
       - cflinuxfs2
   - name: node
     version: 0.11.16
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.16-linux-x64.tar.gz
     md5: c667ab595837821f61306c9d2d3dd3b3
     cf_stacks:
-      - lucid64
       - cflinuxfs2
   - name: node
     version: 0.12.1

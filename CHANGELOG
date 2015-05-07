@@ -1,3 +1,13 @@
+v1.3.1 May 07, 2015
+====================
+
+* Add all Node.js versions to versions.json, resolving an issue for cached
+  buildpacks and old Node.js versions
+  (https://www.pivotaltracker.com/n/projects/1042066/stories/93717296)
+* Bump buildpack-packager to support custom buildpack manifests.
+* Remove unsupported Node.js versions for for lucid64
+  (https://www.pivotaltracker.com/n/projects/1042066/stories/93218340)
+
 v1.3.0 Apr 17, 2015
 ====================
 

@@ -62,7 +62,7 @@ In cached mode, [use the semver node_module](bin/compile#L30-32) (as opposed to 
 
 The NodeJS buildpack only supports the two most recent stable patches for each dependency in the [manifest.yml](manifest.yml).
 
-If you want to use previously supported dependency versions, copy them from [.deprecated.manifest.yml](.deprecated.manifest.yml) into [manifest.yml](manifest.yml)
+If you want to use previously supported dependency versions, provide the `--use-custom-manifest=manifest-including-unsupported.yml` option to `buildpack-packager`.
 
 ## Options
 

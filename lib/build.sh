@@ -159,7 +159,6 @@ install_npm() {
 }
 
 build_dependencies() {
-  restore_cache
 
   if [ "$modules_source" == "" ]; then
     info "Skipping dependencies (no source for node_modules)"
@@ -167,8 +166,11 @@ build_dependencies() {
   elif [ "$modules_source" == "prebuilt" ]; then
     info "Rebuilding any native modules for this architecture"
     npm rebuild 2>&1 | indent
+    info "Installing any new modules"
+    npm install --unsafe-perm --quiet --userconfig $build_dir/.npmrc 2>&1 | indent
 
   else
+    restore_cache
     info "Installing node modules"
     npm install --unsafe-perm --quiet --userconfig $build_dir/.npmrc 2>&1 | indent
   fi

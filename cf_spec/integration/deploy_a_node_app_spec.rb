@@ -9,11 +9,11 @@ describe 'CF NodeJS Buildpack' do
     Machete::CF::DeleteApp.new.execute(app)
   end
 
-  describe 'switching stacks' do
+  context 'when switching stacks while deploying the same stack' do
     subject(:app) { Machete.deploy_app(app_name, stack: 'lucid64') }
     let(:app_name) { 'node_web_app_no_dependencies' }
 
-    specify do
+    it 'does cleans up the app cache' do
       expect(app).to be_running(60)
 
       browser.visit_path('/')
@@ -32,41 +32,39 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
-  describe 'with non-specific version' do
-    context 'app specifies version range' do
-      let(:app_name) { 'node_web_app_with_version_range' }
+  context 'when specifying a range for the nodeJS version in the package.json' do
+    let(:app_name) { 'node_web_app_with_version_range' }
 
-      specify do
-        expect(app).to be_running
+    it 'resolves to a nodeJS version successfully' do
+      expect(app).to be_running
+      expect(app).to_not have_logged 'Downloading and installing node 0.12.0'
+      expect(app).to have_logged /Downloading and installing node \d+\.\d+\.\d+/
 
-        browser.visit_path('/')
-        expect(browser).to have_body('Hello, World!')
-      end
+      browser.visit_path('/')
+      expect(browser).to have_body('Hello, World!')
     end
   end
 
-  context 'with cached buildpack dependencies' do
-    context 'in an offline environment', if: Machete::BuildpackMode.offline? do
-      let(:app_name) { 'node_web_app' }
+  context 'with cached buildpack dependencies', if: Machete::BuildpackMode.offline? do
+    let(:app_name) { 'node_web_app' }
 
-      specify do
-        expect(app).to be_running
+    it 'successfully deploys' do
+      expect(app).to be_running
 
-        browser.visit_path('/')
-        expect(browser).to have_body('Hello, World!')
+      browser.visit_path('/')
+      expect(browser).to have_body('Hello, World!')
 
-        expect(app.host).not_to have_internet_traffic
-      end
+      expect(app.host).not_to have_internet_traffic
     end
   end
 
   context 'without cached buildpack dependencies' do
     context 'in an online environment', if: Machete::BuildpackMode.online? do
-
-      context 'app has dependencies' do
+      context 'and the app has vendored dependencies' do
         let(:app_name) { 'node_web_app' }
 
-        specify do
+        it 'successfully deploys and includes the dependencies' do
+          expect(Dir).to exist("cf_spec/fixtures/#{app_name}/node_modules")
           expect(app).to be_running
 
           browser.visit_path('/')
@@ -74,14 +72,13 @@ describe 'CF NodeJS Buildpack' do
         end
       end
 
-
-
-      context 'app has no dependencies' do
+      context 'and the app has no vendored dependencies' do
         let(:app_name) { 'node_web_app_no_dependencies' }
 
-        specify do
-          expect(Dir.exists?("cf_spec/fixtures/#{app_name}/node_modules")).to eql false
+        it 'successfully deploys and vendors the dependencies' do
+          expect(Dir).to_not exist("cf_spec/fixtures/#{app_name}/node_modules")
           expect(app).to be_running
+          expect(app).to have_file 'app/node_modules'
 
           browser.visit_path('/')
           expect(browser).to have_body('Hello, World!')

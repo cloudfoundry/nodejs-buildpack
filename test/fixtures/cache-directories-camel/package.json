@@ -6,10 +6,14 @@
     "type" : "git",
     "url" : "http://github.com/example/example.git"
   },
-  "dependencies": {
-    "forcefailure": "*"
-  },
   "engines": {
-    "node": "*"
-  }
+    "node": "0.10.18"
+  },
+  "dependencies": {
+    "bower": "1.3.12"
+  },
+  "scripts": {
+    "postinstall": "bower install --allow-root"
+  },
+  "cacheDirectories": ["bower_components", "node_modules"]
 }

@@ -16,7 +16,9 @@ info() {
 
 warning() {
   local tip=$1
-  echo "WARNING: $tip" >> $warnings
+  local url=$2
+  echo "- $tip" >> $warnings
+  echo "  ${url:-http://docs.cloudfoundry.org/buildpacks/node/node-tips.html}" >> $warnings
   echo "" >> $warnings
   }
 

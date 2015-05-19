@@ -1,14 +1,14 @@
 build_failed() {
+  local warn=$(cat $warnings)
   head "Build failed"
   echo ""
-  cat $warnings | indent
+  echo "$warn" | indent
 }
 
 build_succeeded() {
   head "Build succeeded!"
   echo ""
   (npm ls --depth=0 || true) 2>/dev/null | indent
-  cat $warnings | indent
 }
 
 get_start_method() {
@@ -158,9 +158,7 @@ install_npm() {
   fi
 }
 
-build_dependencies() {
-  restore_cache
-
+function build_dependencies() {
   if [ "$modules_source" == "" ]; then
     info "Skipping dependencies (no source for node_modules)"
 
@@ -169,6 +167,7 @@ build_dependencies() {
     npm rebuild 2>&1 | indent
 
   else
+    restore_cache
     info "Installing node modules"
     npm install --unsafe-perm --quiet --userconfig $build_dir/.npmrc 2>&1 | indent
   fi
@@ -288,6 +287,11 @@ cache_directories() {
   local key=".cache_directories"
   local check=$(key_exist $package_json $key)
   local result=-1
+  if [ "$check" != -1 ]; then
+    result=$(read_json "$package_json" "$key[]")
+  fi
+  local key=".cacheDirectories"
+  local check=$(key_exist $package_json $key)
   if [ "$check" != -1 ]; then
     result=$(read_json "$package_json" "$key[]")
   fi

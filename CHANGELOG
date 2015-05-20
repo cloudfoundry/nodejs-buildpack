@@ -1,3 +1,9 @@
+v1.3.2 May 20, 2015
+====================
+
+* Merge upstream changes from Heroku up to SHA d8fbb5b05be58c863f0c67f4e0e394c83b0ab5a3
+  (https://www.pivotaltracker.com/story/show/93482010)
+
 v1.3.1 May 07, 2015
 ====================
 

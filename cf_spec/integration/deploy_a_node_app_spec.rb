@@ -64,7 +64,6 @@ describe 'CF NodeJS Buildpack' do
         let(:app_name) { 'node_web_app' }
 
         it 'successfully deploys and includes the dependencies' do
-          expect(Dir).to exist("cf_spec/fixtures/#{app_name}/node_modules")
           expect(app).to be_running
 
           browser.visit_path('/')
@@ -76,8 +75,8 @@ describe 'CF NodeJS Buildpack' do
         let(:app_name) { 'node_web_app_no_dependencies' }
 
         it 'successfully deploys and vendors the dependencies' do
-          expect(Dir).to_not exist("cf_spec/fixtures/#{app_name}/node_modules")
           expect(app).to be_running
+          expect(Dir).to_not exist("cf_spec/fixtures/#{app_name}/node_modules")
           expect(app).to have_file 'app/node_modules'
 
           browser.visit_path('/')

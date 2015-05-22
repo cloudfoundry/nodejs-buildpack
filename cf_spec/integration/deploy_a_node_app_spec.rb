@@ -45,44 +45,40 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
-  context 'with cached buildpack dependencies', if: Machete::BuildpackMode.offline? do
+  context 'with an app that has vendored dependencies' do
     let(:app_name) { 'node_web_app_with_vendored_dependencies' }
 
-    it 'successfully deploys' do
-      expect(app).to be_running
+    context 'with an uncached buildpack', if: Machete::BuildpackMode.online? do
+      it 'successfully deploys and includes the dependencies' do
+        expect(app).to be_running
 
-      browser.visit_path('/')
-      expect(browser).to have_body('Hello, World!')
+        browser.visit_path('/')
+        expect(browser).to have_body('Hello, World!')
+      end
+    end
 
-      expect(app.host).not_to have_internet_traffic
+    context 'with a cached buildpack', if: Machete::BuildpackMode.offline? do
+      it 'deploys without hitting the internet' do
+        expect(app).to be_running
+
+        browser.visit_path('/')
+        expect(browser).to have_body('Hello, World!')
+
+        expect(app.host).not_to have_internet_traffic
+      end
     end
   end
 
-  context 'without cached buildpack dependencies' do
-    context 'in an online environment', if: Machete::BuildpackMode.online? do
-      context 'and the app has vendored dependencies' do
-        let(:app_name) { 'node_web_app_with_vendored_dependencies' }
+  context 'with an app with no vendored dependencies' do
+    let(:app_name) { 'node_web_app_no_vendored_dependencies' }
 
-        it 'successfully deploys and includes the dependencies' do
-          expect(app).to be_running
+    it 'successfully deploys and vendors the dependencies' do
+      expect(app).to be_running
+      expect(Dir).to_not exist("cf_spec/fixtures/#{app_name}/node_modules")
+      expect(app).to have_file 'app/node_modules'
 
-          browser.visit_path('/')
-          expect(browser).to have_body('Hello, World!')
-        end
-      end
-
-      context 'and the app has no vendored dependencies' do
-        let(:app_name) { 'node_web_app_no_vendored_dependencies' }
-
-        it 'successfully deploys and vendors the dependencies' do
-          expect(app).to be_running
-          expect(Dir).to_not exist("cf_spec/fixtures/#{app_name}/node_modules")
-          expect(app).to have_file 'app/node_modules'
-
-          browser.visit_path('/')
-          expect(browser).to have_body('Hello, World!')
-        end
-      end
+      browser.visit_path('/')
+      expect(browser).to have_body('Hello, World!')
     end
   end
 end

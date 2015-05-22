@@ -81,4 +81,21 @@ describe 'CF NodeJS Buildpack' do
       expect(browser).to have_body('Hello, World!')
     end
   end
+
+  context 'with an incomplete package.json' do
+    let (:app_name) { 'node_web_app_with_incomplete_package_json' }
+
+    it 'does not overwrite the vendored modules not listed in package.json' do
+      expect(app).to be_running
+
+      replacement_app = Machete::App.new(app_name, Machete::Host.create)
+      app_push_command = Machete::CF::PushApp.new
+      app_push_command.execute(replacement_app)
+      expect(replacement_app).to be_running
+
+      expect(app).to have_file("app/node_modules/logfmt")
+      expect(app).to have_file("app/node_modules/express")
+      expect(app).to have_file("app/node_modules/hashish")
+    end
+  end
 end

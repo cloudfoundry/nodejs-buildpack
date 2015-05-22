@@ -82,6 +82,17 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
+  context 'with an incomplete node_modules directory' do
+    let (:app_name) { 'node_web_app_with_incomplete_node_modules' }
+
+    it 'downloads missing dependencies from package.json' do
+      expect(app).to be_running
+      expect(Dir).to_not exist("cf_spec/fixtures/node_web_app_with_incomplete_node_modules/node_modules/hashish")
+      expect(app).to have_file("app/node_modules/hashish")
+      expect(app).to have_file("app/node_modules/express")
+    end
+  end
+
   context 'with an incomplete package.json' do
     let (:app_name) { 'node_web_app_with_incomplete_package_json' }
 

@@ -11,7 +11,7 @@ describe 'CF NodeJS Buildpack' do
 
   context 'when switching stacks while deploying the same stack' do
     subject(:app) { Machete.deploy_app(app_name, stack: 'lucid64') }
-    let(:app_name) { 'node_web_app_no_dependencies' }
+    let(:app_name) { 'node_web_app_no_vendored_dependencies' }
 
     it 'does cleans up the app cache' do
       expect(app).to be_running(60)
@@ -46,7 +46,7 @@ describe 'CF NodeJS Buildpack' do
   end
 
   context 'with cached buildpack dependencies', if: Machete::BuildpackMode.offline? do
-    let(:app_name) { 'node_web_app' }
+    let(:app_name) { 'node_web_app_with_vendored_dependencies' }
 
     it 'successfully deploys' do
       expect(app).to be_running
@@ -61,7 +61,7 @@ describe 'CF NodeJS Buildpack' do
   context 'without cached buildpack dependencies' do
     context 'in an online environment', if: Machete::BuildpackMode.online? do
       context 'and the app has vendored dependencies' do
-        let(:app_name) { 'node_web_app' }
+        let(:app_name) { 'node_web_app_with_vendored_dependencies' }
 
         it 'successfully deploys and includes the dependencies' do
           expect(app).to be_running
@@ -72,7 +72,7 @@ describe 'CF NodeJS Buildpack' do
       end
 
       context 'and the app has no vendored dependencies' do
-        let(:app_name) { 'node_web_app_no_dependencies' }
+        let(:app_name) { 'node_web_app_no_vendored_dependencies' }
 
         it 'successfully deploys and vendors the dependencies' do
           expect(app).to be_running

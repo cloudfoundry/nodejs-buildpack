@@ -1,3 +1,10 @@
+v1.3.3 May 22, 2015
+====================
+
+* Fix bugs regarding package.json and node_modules directory interaction
+  (https://www.pivotaltracker.com/story/show/94525966)
+  (https://www.pivotaltracker.com/story/show/94516870)
+
 v1.3.2 May 20, 2015
 ====================
 

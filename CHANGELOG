@@ -1,3 +1,12 @@
+v1.3.4 Jun 08, 2015
+====================
+
+* Add support for nodejs 0.12.4
+  (https://www.pivotaltracker.com/story/show/95004952)
+
+* Provide more explicit error message for missing options
+  (https://www.pivotaltracker.com/story/show/95473896)
+
 v1.3.3 May 22, 2015
 ====================
 

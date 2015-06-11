@@ -18,29 +18,6 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
-  context 'when switching stacks while deploying the same stack' do
-    subject(:app) { Machete.deploy_app(app_name, stack: 'lucid64') }
-    let(:app_name) { 'node_web_app_no_vendored_dependencies' }
-
-    it 'does cleans up the app cache' do
-      expect(app).to be_running(60)
-
-      browser.visit_path('/')
-      expect(browser).to have_body('Hello, World!')
-
-      replacement_app = Machete::App.new(app_name, Machete::Host.create, stack: 'cflinuxfs2')
-
-      app_push_command = Machete::CF::PushApp.new
-      app_push_command.execute(replacement_app)
-
-      expect(replacement_app).to be_running(60)
-
-      browser.visit_path('/')
-      expect(browser).to have_body('Hello, World!')
-      expect(app).not_to have_logged('Restoring node modules from cache')
-    end
-  end
-
   context 'when specifying a range for the nodeJS version in the package.json' do
     let(:app_name) { 'node_web_app_with_version_range' }
 

@@ -23,42 +23,36 @@ dependencies:
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.27-linux-x64.tar.gz
     md5: 35e2b21a7879a2dd97ff198f19519850
     cf_stacks:
-      - lucid64
       - cflinuxfs2
   - name: node
     version: 0.8.28
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.8.28-linux-x64.tar.gz
     md5: 623d6b50f550034074b5928e05ab1a45
     cf_stacks:
-      - lucid64
       - cflinuxfs2
   - name: node
     version: 0.9.11
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.11-linux-x64.tar.gz
     md5: df07d58f3e8f49fd7203c8920eed9850
     cf_stacks:
-      - lucid64
       - cflinuxfs2
   - name: node
     version: 0.9.12
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.9.12-linux-x64.tar.gz
     md5: a228712b02ef2e8ae4f08378869104ba
     cf_stacks:
-      - lucid64
       - cflinuxfs2
   - name: node
     version: 0.10.37
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.37-linux-x64.tar.gz
     md5: ad487cb3d4d0fe2c710cffbd25e4f238
     cf_stacks:
-      - lucid64
       - cflinuxfs2
   - name: node
     version: 0.10.38
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.38-linux-x64.tar.gz
     md5: 8893f1f5ce16c612ba2805432edc0138
     cf_stacks:
-      - lucid64
       - cflinuxfs2
   - name: node
     version: 0.11.15
@@ -77,12 +71,10 @@ dependencies:
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.12.2-linux-x64.tar.gz
     md5: 2cfce07dc35ee1ffe875e166b541df35
     cf_stacks:
-      - lucid64
       - cflinuxfs2
   - name: node
     version: 0.12.4
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.12.4-linux-x64.tar.gz
     md5: a4fd80871c4362d98a52b54ecb45d915
     cf_stacks:
-      - lucid64
       - cflinuxfs2

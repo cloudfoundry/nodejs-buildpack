@@ -9,15 +9,6 @@ describe 'CF NodeJS Buildpack' do
     Machete::CF::DeleteApp.new.execute(app)
   end
 
-  context 'when the app does not contain a Procfile and a server.js file' do
-    let(:app_name) { 'node_app_that_wont_start' }
-
-    it 'gives a helpful error message' do
-      expect(app).to_not be_running
-      expect(app).to have_logged 'No Procfile, package.json start script, or server.js file found'
-    end
-  end
-
   context 'when specifying a range for the nodeJS version in the package.json' do
     let(:app_name) { 'node_web_app_with_version_range' }
 

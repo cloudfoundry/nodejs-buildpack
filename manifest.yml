@@ -21,31 +21,31 @@ dependencies:
   - name: node
     version: 0.8.27
     uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-0.8.27-linux-x64.tar.gz
-    md5: 64dd5c242098aa38a20b7878e7c25b3a
+    md5: daa177af7c9fb7420bac24562f32aed7
     cf_stacks:
       - cflinuxfs2
   - name: node
     version: 0.8.28
     uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-0.8.28-linux-x64.tar.gz
-    md5: acff934b1412954003ba6d986dc84c25
+    md5: 596381cfa3507df291a3258abff652cb
     cf_stacks:
       - cflinuxfs2
   - name: node
     version: 0.9.11
     uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-0.9.11-linux-x64.tar.gz
-    md5: b45abf36cc1c63608848215606fc602e
+    md5: 2f2eee626720f888252cdf6ad7485314
     cf_stacks:
       - cflinuxfs2
   - name: node
     version: 0.9.12
     uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-0.9.12-linux-x64.tar.gz
-    md5: 951bf712e16db473558ae58f1cf9c4f3
+    md5: 5953291c7b63c90cb54a3d4b5adbf920
     cf_stacks:
       - cflinuxfs2
   - name: node
     version: 0.10.38
     uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-0.10.38-linux-x64.tar.gz
-    md5: 8e8ef815fb089c37f3a22b43f4047917
+    md5: a4beb0c4717a0be0f517e5155f698f94
     cf_stacks:
       - cflinuxfs2
   - name: node
@@ -57,19 +57,19 @@ dependencies:
   - name: node
     version: 0.11.15
     uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-0.11.15-linux-x64.tar.gz
-    md5: 0fc3dda33d9ca663c7942075514b2c81
+    md5: 257fc41682fd438d6d058cbf512138f1
     cf_stacks:
       - cflinuxfs2
   - name: node
     version: 0.11.16
     uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-0.11.16-linux-x64.tar.gz
-    md5: 26161d0f068fa218a8b080d999ed53f9
+    md5: 53152c1cf2c316d690cee95fc9f003db
     cf_stacks:
       - cflinuxfs2
   - name: node
     version: 0.12.4
     uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-0.12.4-linux-x64.tar.gz
-    md5: bf55c807261a5db3c284da289055e8be
+    md5: 8479f8865c584a05a002ba3551f71ce5
     cf_stacks:
       - cflinuxfs2
   - name: node

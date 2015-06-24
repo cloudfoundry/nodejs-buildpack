@@ -1,3 +1,15 @@
+v1.3.5 Jun 24, 2015
+====================
+
+* Merge upstream changes from Heroku (sha: f1b195427424922274807151e0dd8d1948d03ebb):
+  * Improvements to app caching logic
+
+* Remove lucid-specific binaries from manifest.yml
+	(https://www.pivotaltracker.com/story/show/96135874)
+
+* Give helpful message on unsupported stacks
+  (https://www.pivotaltracker.com/story/show/96590188)
+
 v1.3.4 Jun 08, 2015
 ====================
 

@@ -25,7 +25,7 @@ describe 'CF NodeJS Buildpack' do
   context 'with an app that has vendored dependencies' do
     let(:app_name) { 'node_web_app_with_vendored_dependencies' }
 
-    context 'with an uncached buildpack', if: Machete::BuildpackMode.online? do
+    context 'with an uncached buildpack', if: Machete::BuildpackMode.uncached? do
       it 'successfully deploys and includes the dependencies' do
         expect(app).to be_running
 
@@ -34,7 +34,7 @@ describe 'CF NodeJS Buildpack' do
       end
     end
 
-    context 'with a cached buildpack', if: Machete::BuildpackMode.offline? do
+    context 'with a cached buildpack', if: Machete::BuildpackMode.cached? do
       it 'deploys without hitting the internet' do
         expect(app).to be_running
 

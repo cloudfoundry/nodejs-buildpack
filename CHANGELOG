@@ -1,3 +1,9 @@
+v1.4.1 Jul 09, 2015
+====================
+
+* Security upgrade to nodejs 0.12.6
+  (https://www.pivotaltracker.com/story/show/98683546)
+
 v1.4.0 Jun 24, 2015
 ====================
 

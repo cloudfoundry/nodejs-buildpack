@@ -492,8 +492,8 @@ dependencies:
       - cflinuxfs2
   - name: node
     version: 0.10.40
-    uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.40-linux-x64.tar.gz
-    md5: efacca570a6ed176a9a3ba18957301b6
+    uri: https://pivotal-buildpacks.s3.amazonaws.com/node/beta-binaries/node-0.10.40-linux-x64.tar.gz
+    md5: 45605248cc0541c760d98ee227cc5cee
     cf_stacks:
       - cflinuxfs2
   - name: node

@@ -1,3 +1,11 @@
+v1.4.2 Jul 13, 2015
+====================
+
+* Security upgrade to nodejs 0.12.7
+  Add support for node version 0.10.40
+  Remove support for node version 0.10.37
+  (https://www.pivotaltracker.com/story/show/98855140)
+
 v1.4.1 Jul 09, 2015
 ====================
 

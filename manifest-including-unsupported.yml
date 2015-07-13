@@ -491,6 +491,12 @@ dependencies:
       - lucid64
       - cflinuxfs2
   - name: node
+    version: 0.10.40
+    uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.10.40-linux-x64.tar.gz
+    md5: efacca570a6ed176a9a3ba18957301b6
+    cf_stacks:
+      - cflinuxfs2
+  - name: node
     version: 0.11.0
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.0-linux-x64.tar.gz
     md5: fda656d4a8691fd5103c91c7e22b7860

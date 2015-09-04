@@ -47,7 +47,7 @@ In cached mode, [use the semver node_module](bin/compile#L30-32) (as opposed to 
 1. Build the buildpack
 
   ```shell
-  BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-packager [ cached | uncached ]
+  BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-packager [ --cached | --uncached ]
   ```
 
 1. Use in Cloud Foundry

@@ -23,6 +23,7 @@ install_nodejs() {
 
   echo "Downloading and installing node $version..."
   local download_url="http://s3pository.heroku.com/node/v$version/node-v$version-$os-$cpu.tar.gz"
+  echo "Downloaded [`translate_dependency_url $download_url`]"
   (curl `translate_dependency_url $download_url` -s --fail -o - | tar xzf - -C /tmp)  || (echo -e "\n-----> Resource $download_url does not exist." 1>&2 ; exit 22)
   mv /tmp/node-v$version-$os-$cpu/* $dir
   chmod +x $dir/bin/*

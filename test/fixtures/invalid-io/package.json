@@ -7,13 +7,8 @@
     "url" : "http://github.com/example/example.git"
   },
   "dependencies": {
-    "hashish": "*"
   },
   "engines": {
-    "iojs": "1.0.x",
-    "npm": "2.11.x"
-  },
-  "scripts": {
-    "postinstall": "echo \"detected node version:\" `node --version`"
+    "iojs": "2.0.99"
   }
 }

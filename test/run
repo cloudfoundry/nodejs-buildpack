@@ -1,6 +1,111 @@
 #!/usr/bin/env bash
 # See README.md for info on running these tests.
 
+testBuildWithUserCacheDirectoriesCamel() {
+  cache=$(mktmpdir)
+
+  compile "cache-directories-camel" $cache
+  assertCaptured "- non/existent (nothing to cache)"
+  assertEquals "1" "$(ls -1 $cache/node/server | grep node_modules | wc -l | tr -d ' ')"
+  assertEquals "1" "$(ls -1 $cache/node/client | grep node_modules | wc -l | tr -d ' ')"
+  assertCapturedSuccess
+
+  compile "cache-directories-camel" $cache
+  assertCaptured "Loading 3 from cacheDirectories"
+  assertCaptured "- server/node_modules"
+  assertCaptured "- client/node_modules"
+  assertCaptured "- non/existent (not cached - skipping)"
+  assertCapturedSuccess
+}
+
+testConcurrency1X() {
+  LOG_CONCURRENCY=true MEMORY_AVAILABLE=512 capture $(pwd)/profile/nodejs.sh
+  assertCaptured "Detected 512 MB available memory, 512 MB limit per process (WEB_MEMORY)"
+  assertCaptured "Recommending WEB_CONCURRENCY=1"
+  assertCapturedSuccess
+}
+
+testConcurrency2X() {
+  LOG_CONCURRENCY=true MEMORY_AVAILABLE=1024 capture $(pwd)/profile/nodejs.sh
+  assertCaptured "Detected 1024 MB available memory, 512 MB limit per process (WEB_MEMORY)"
+  assertCaptured "Recommending WEB_CONCURRENCY=2"
+  assertCapturedSuccess
+}
+
+testConcurrencyPerformanceM() {
+  LOG_CONCURRENCY=true MEMORY_AVAILABLE=2560 capture $(pwd)/profile/nodejs.sh
+  assertCaptured "Detected 2560 MB available memory, 512 MB limit per process (WEB_MEMORY)"
+  assertCaptured "Recommending WEB_CONCURRENCY=5"
+  assertCapturedSuccess
+}
+
+testConcurrencyPX() {
+  LOG_CONCURRENCY=true MEMORY_AVAILABLE=6144 capture $(pwd)/profile/nodejs.sh
+  assertCaptured "Detected 6144 MB available memory, 512 MB limit per process (WEB_MEMORY)"
+  assertCaptured "Recommending WEB_CONCURRENCY=12"
+  assertCapturedSuccess
+}
+
+testConcurrencyCustomLimit() {
+  LOG_CONCURRENCY=true MEMORY_AVAILABLE=1024 WEB_MEMORY=256 capture $(pwd)/profile/nodejs.sh
+  assertCaptured "Detected 1024 MB available memory, 256 MB limit per process (WEB_MEMORY)"
+  assertCaptured "Recommending WEB_CONCURRENCY=4"
+  assertCapturedSuccess
+}
+
+testConcurrencySaneMaximum() {
+  LOG_CONCURRENCY=true MEMORY_AVAILABLE=6144 WEB_MEMORY=32 capture $(pwd)/profile/nodejs.sh
+  assertCaptured "Detected 6144 MB available memory, 32 MB limit per process (WEB_MEMORY)"
+  assertCaptured "Recommending WEB_CONCURRENCY=32"
+  assertCapturedSuccess
+}
+
+testInvalidNode() {
+  compile "invalid-node"
+  assertCaptured "Downloading and installing node 0.11.33"
+  assertCaptured "Unable to download node 0.11.33"
+  assertCapturedError
+}
+
+testInvalidIo() {
+  compile "invalid-io"
+  assertCaptured "Downloading and installing iojs 2.0.99"
+  assertCaptured "Unable to download iojs 2.0.99"
+  assertCapturedError
+}
+
+testBuildWithCache() {
+  cache=$(mktmpdir)
+
+  compile "stable-node" $cache
+  assertCaptured "Skipping cache (new runtime"
+  assertEquals "1" "$(ls -1 $cache/node | grep node_modules | wc -l | tr -d ' ')"
+  assertCapturedSuccess
+
+  compile "stable-node" $cache
+  assertNotCaptured "- node_modules (not cached - skipping)"
+  assertCapturedSuccess
+
+  rm -rf "$cache/node/node_modules"
+  compile "stable-node" $cache
+  assertCaptured "- node_modules (not cached - skipping)"
+  assertCapturedSuccess
+}
+
+testSignatureInvalidation() {
+  cache=$(mktmpdir)
+  env_dir=$(mktmpdir)
+
+  compile "node-0.12.6" $cache
+  assertCaptured "Downloading and installing node 0.12.6"
+  assertCapturedSuccess
+
+  compile "node-0.12.7" $cache
+  assertCaptured "Downloading and installing node 0.12.7"
+  assertCaptured "Skipping cache (new runtime"
+  assertCapturedSuccess
+}
+
 testModulesCheckedIn() {
   cache=$(mktmpdir)
   compile "modules-checked-in" $cache
@@ -58,6 +163,7 @@ testIoJs() {
   compile "iojs"
   assertCaptured "engines.iojs (package.json):  1.0."
   assertCaptured "Downloading and installing iojs 1.0."
+  assertNotCaptured "Downloading and installing npm"
   assertCapturedSuccess
 }
 
@@ -204,19 +310,6 @@ testNodeModulesCached() {
   assertCapturedSuccess
 }
 
-testBuildWithCache() {
-  cache=$(mktmpdir)
-
-  compile "stable-node" $cache
-  assertCaptured "- node_modules (not cached - skipping)"
-  assertEquals "1" "$(ls -1 $cache/node | grep node_modules | wc -l | tr -d ' ')"
-  assertCapturedSuccess
-
-  compile "stable-node" $cache
-  assertNotCaptured "- node_modules (not cached - skipping)"
-  assertCapturedSuccess
-}
-
 testBuildWithUserCacheDirectories() {
   cache=$(mktmpdir)
 
@@ -233,22 +326,9 @@ testBuildWithUserCacheDirectories() {
   assertCapturedSuccess
 }
 
-testBuildWithUserCacheDirectoriesCamel() {
-  cache=$(mktmpdir)
 
-  compile "cache-directories-camel" $cache
-  assertCaptured "- non/existent (nothing to cache)"
-  assertEquals "1" "$(ls -1 $cache/node/server | grep node_modules | wc -l | tr -d ' ')"
-  assertEquals "1" "$(ls -1 $cache/node/client | grep node_modules | wc -l | tr -d ' ')"
-  assertCapturedSuccess
 
-  compile "cache-directories-camel" $cache
-  assertCaptured "Loading 3 from cacheDirectories"
-  assertCaptured "- server/node_modules"
-  assertCaptured "- client/node_modules"
-  assertCaptured "- non/existent (not cached - skipping)"
-  assertCapturedSuccess
-}
+
 
 testUserConfig() {
   compile "userconfig"
@@ -369,42 +449,6 @@ testMultiExport() {
   assertFileContains "/.heroku/node\"" "${bp_dir}/export"
   assertCapturedSuccess
 }
-
-testConcurrency1X() {
-  MEMORY_AVAILABLE=512 capture $(pwd)/profile/nodejs.sh
-  assertCaptured "Detected 512 MB available memory, 512 MB limit per process (WEB_MEMORY)"
-  assertCaptured "Recommending WEB_CONCURRENCY=1"
-  assertCapturedSuccess
-}
-
-testConcurrency2X() {
-  MEMORY_AVAILABLE=1024 capture $(pwd)/profile/nodejs.sh
-  assertCaptured "Detected 1024 MB available memory, 512 MB limit per process (WEB_MEMORY)"
-  assertCaptured "Recommending WEB_CONCURRENCY=2"
-  assertCapturedSuccess
-}
-
-testConcurrencyPX() {
-  MEMORY_AVAILABLE=6144 capture $(pwd)/profile/nodejs.sh
-  assertCaptured "Detected 6144 MB available memory, 512 MB limit per process (WEB_MEMORY)"
-  assertCaptured "Recommending WEB_CONCURRENCY=12"
-  assertCapturedSuccess
-}
-
-testConcurrencyCustomLimit() {
-  MEMORY_AVAILABLE=1024 WEB_MEMORY=256 capture $(pwd)/profile/nodejs.sh
-  assertCaptured "Detected 1024 MB available memory, 256 MB limit per process (WEB_MEMORY)"
-  assertCaptured "Recommending WEB_CONCURRENCY=4"
-  assertCapturedSuccess
-}
-
-testConcurrencySaneMaximum() {
-  MEMORY_AVAILABLE=6144 WEB_MEMORY=32 capture $(pwd)/profile/nodejs.sh
-  assertCaptured "Detected 6144 MB available memory, 32 MB limit per process (WEB_MEMORY)"
-  assertCaptured "Recommending WEB_CONCURRENCY=32"
-  assertCapturedSuccess
-}
-
 
 # Utils
 

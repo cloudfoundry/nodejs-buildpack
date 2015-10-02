@@ -1,5 +1,18 @@
 # Node.js Buildpack Changelog
 
+## Pending
+
+Fixes modules-checked-in reference URL
+
+## v82 (2015-09-30)
+
+Detects bower+angular resolution failures
+Detects missing grunt/gulp/bower failures
+
+## v81 (2015-09-24)
+
+Supports WEB_CONCURRENCY=28 for Performance-L dynos
+
 ## v80 (2015-08-14)
 
 Fixes not defaulting to `NODE_ENV=production` during runtime

@@ -1,8 +1,28 @@
 # Node.js Buildpack Changelog
 
-## Pending
+## v86 (2015-10-08)
 
-Fixes modules-checked-in reference URL
+Fixes piped output buffering issues
+
+## v85 (2015-10-08)
+
+Fixes piped output buffering issues (unsuccessful)
+
+- https://github.com/heroku/heroku-buildpack-nodejs/issues/273
+
+## v84 (2015-10-08)
+
+Replaces sed with awk for output formatting
+
+- large output (from assets or npm 3) was crashing sed ('resource unavailable')
+
+## v83 (2015-10-05)
+
+Caching improvements
+
+- Fixes modules-checked-in reference URL
+- When cache restoration is disabled, empties the cache instead of saving it
+- Adds bower_components as a default cache target
 
 ## v82 (2015-09-30)
 

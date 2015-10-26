@@ -26,6 +26,7 @@ install_nodejs() {
   echo "Downloaded [`translate_dependency_url $download_url`]"
   curl `translate_dependency_url $download_url` --silent --fail -o /tmp/node.tar.gz || (echo "Unable to download node $version; does it exist?" && false)
   tar xzf /tmp/node.tar.gz -C /tmp
+  rm -rf $dir/*
   mv /tmp/node-v$version-$os-$cpu/* $dir
   chmod +x $dir/bin/*
 }

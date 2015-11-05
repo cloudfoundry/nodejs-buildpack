@@ -659,9 +659,9 @@ dependencies:
     cf_stacks:
       - cflinuxfs2
   - name: node
-    version: 4.2.1
-    uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-4.2.1-linux-x64.tgz
-    md5: 27ed652f55f92a9f4e140a8257f7bb44
+    version: 4.2.2
+    uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-4.2.2-linux-x64.tgz
+    md5: 72a6cb07a11dcfdbf6aa75a70333b341
     cf_stacks:
       - cflinuxfs2
 

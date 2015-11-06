@@ -47,12 +47,13 @@ In cached mode, [use the semver node_module](bin/compile#L30-32) (as opposed to 
 1. Build the buildpack
 
   ```shell
-  BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-packager [ cached | uncached ]
+  BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-packager [ --cached | --uncached ]
   ```
 
 1. Use in Cloud Foundry
 
   Upload the buildpack to your Cloud Foundry and optionally specify it by name
+  
   ```bash
   cf create-buildpack custom_node_buildpack node_buildpack-offline-custom.zip 1
   cf push my_app -b custom_node_buildpack
@@ -60,9 +61,18 @@ In cached mode, [use the semver node_module](bin/compile#L30-32) (as opposed to 
 
 ## Supported binary dependencies
 
-The NodeJS buildpack only supports the two most recent stable patches for each dependency in the [manifest.yml](manifest.yml).
+The buildpack only supports the stable patches for each dependency listed in the [manifest.yml](manifest.yml) and [releases page](https://github.com/cloudfoundry/nodejs-buildpack/releases).
 
-If you want to use previously supported dependency versions, provide the `--use-custom-manifest=manifest-including-unsupported.yml` option to `buildpack-packager`.
+
+If you try to use a binary that is not currently supported, staging your app will fail and you will see the following error message:
+
+```
+       Could not get translated url, exited with: DEPENDENCY_MISSING_IN_MANIFEST: ...
+ !
+ !     exit
+ !
+Staging failed: Buildpack compilation step failed
+```
 
 ## Options
 

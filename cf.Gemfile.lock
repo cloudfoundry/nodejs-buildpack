@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/cf-buildpacks/machete
-  revision: 13055daee5501b3908fe4022b27f0ff9b05128b9
-  tag: v0.0.17
+  revision: 0a1710de1f680a602f67f5eff60e9a424acca467
+  tag: v0.0.20
   specs:
-    machete (0.0.17)
+    machete (0.0.20)
       httparty
 
 GIT
-  remote: https://github.com/cloudfoundry-incubator/buildpack-packager
-  revision: 58ccd566aee3e1dbfd1810256e3e41eb39d14d54
-  tag: v2.2.3
+  remote: https://github.com/cloudfoundry/buildpack-packager
+  revision: ae3ac1feefe81cfe2881b39423be201ba38b1615
+  tag: v2.2.5
   specs:
-    buildpack-packager (2.2.3)
+    buildpack-packager (2.2.5)
       activesupport (~> 4.1.8)
       kwalify
       terminal-table (~> 1.4.5)
@@ -19,7 +19,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (4.1.12)
+    activesupport (4.1.13)
       i18n (~> 0.6, >= 0.6.9)
       json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
@@ -27,14 +27,14 @@ GEM
       tzinfo (~> 1.1)
     coderay (1.1.0)
     diff-lcs (1.2.5)
-    httparty (0.13.5)
+    httparty (0.13.7)
       json (~> 1.8)
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
-    json (1.8.2)
+    json (1.8.3)
     kwalify (0.7.2)
     method_source (0.8.2)
-    minitest (5.7.0)
+    minitest (5.8.0)
     multi_xml (0.5.5)
     pry (0.10.1)
       coderay (~> 1.1.0)
@@ -72,4 +72,4 @@ DEPENDENCIES
   rspec-instafail
 
 BUNDLED WITH
-   1.10.5
+   1.10.6

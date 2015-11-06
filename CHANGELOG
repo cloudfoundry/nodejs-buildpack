@@ -1,3 +1,15 @@
+v1.5.1 Nov 06, 2015
+====================
+
+* Add support for Node 4.2.2
+  https://github.com/cloudfoundry/nodejs-buildpack/issues/32
+
+* `bin/detect` outputs buildpack details
+  (https://www.pivotaltracker.com/story/show/100757820)
+
+* Merged upstream v75..v86 (see `CHANGELOG.md`)
+
+
 v1.5.0 Jul 20, 2015
 ====================
 

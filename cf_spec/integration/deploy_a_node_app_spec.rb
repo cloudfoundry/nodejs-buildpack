@@ -25,16 +25,17 @@ describe 'CF NodeJS Buildpack' do
   context 'with an app that has vendored dependencies' do
     let(:app_name) { 'node_web_app_with_vendored_dependencies' }
 
-    context 'with an uncached buildpack', if: Machete::BuildpackMode.uncached? do
+    context 'with an uncached buildpack', :uncached do
       it 'successfully deploys and includes the dependencies' do
         expect(app).to be_running
 
         browser.visit_path('/')
         expect(browser).to have_body('Hello, World!')
+        expect(app).to have_logged(/Downloaded \[https:\/\/.*\]/)
       end
     end
 
-    context 'with a cached buildpack', if: Machete::BuildpackMode.cached? do
+    context 'with a cached buildpack', :cached do
       it 'deploys without hitting the internet' do
         expect(app).to be_running
 
@@ -42,6 +43,7 @@ describe 'CF NodeJS Buildpack' do
         expect(browser).to have_body('Hello, World!')
 
         expect(app.host).not_to have_internet_traffic
+        expect(app).to have_logged(/Downloaded \[file:\/\/.*\]/)
       end
     end
   end

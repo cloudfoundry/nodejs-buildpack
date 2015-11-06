@@ -20,19 +20,24 @@ detect_memory() {
   local limit=$(ulimit -u)
 
   case $limit in
-    256) echo "512";;
-    512) echo "1024";;
-    32768) echo "6144";;
+    256) echo "512";;      # Standard-1X
+    512) echo "1024";;     # Standard-2X
+    16384) echo "2560";;   # Performance-M
+    32768) echo "14336";;  # Performance-L
     *) echo "$default";;
   esac
 }
 
 export PATH="$HOME/.heroku/node/bin:$HOME/bin:$HOME/node_modules/.bin:$PATH"
 export NODE_HOME="$HOME/.heroku/node"
+export NODE_ENV=${NODE_ENV:-production}
 
 calculate_concurrency
-log_concurrency
 
 export MEMORY_AVAILABLE=$MEMORY_AVAILABLE
 export WEB_MEMORY=$WEB_MEMORY
 export WEB_CONCURRENCY=$WEB_CONCURRENCY
+
+if [ "$LOG_CONCURRENCY" = "true" ]; then
+  log_concurrency
+fi

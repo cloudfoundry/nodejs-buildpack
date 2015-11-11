@@ -22,6 +22,26 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
+  context 'with an unreleased nodejs version' do
+    let(:app_name) { 'node_web_app_with_unreleased_version' }
+
+    it 'resolves to a nodeJS version successfully' do
+      expect(app).to_not be_running
+      expect(app).to have_logged 'Downloading and installing node 9000.0.0'
+      expect(app).to have_logged 'Unable to download node 9000.0.0; does it exist?'
+    end
+  end
+
+  context 'with an unsupported, but released, nodejs version' do
+    let(:app_name) { 'node_web_app_with_unsupported_version' }
+
+    it 'resolves to a nodeJS version successfully' do
+      expect(app).to_not be_running
+      expect(app).to have_logged 'Downloading and installing node 4.1.1'
+      expect(app).to have_logged 'Unable to download node 4.1.1; does it exist?'
+    end
+  end
+
   context 'with an app that has vendored dependencies' do
     let(:app_name) { 'node_web_app_with_vendored_dependencies' }
 

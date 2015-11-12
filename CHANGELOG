@@ -1,3 +1,9 @@
+v1.5.2 Nov 12, 2015
+====================
+* Gracefully handle unsupported or unreleased node builds and avoid using
+heroku binaries.
+  (https://www.pivotaltracker.com/story/show/107939290)
+
 v1.5.1 Nov 06, 2015
 ====================
 

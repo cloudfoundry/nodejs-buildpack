@@ -28,7 +28,8 @@ describe 'CF NodeJS Buildpack' do
     it 'resolves to a nodeJS version successfully' do
       expect(app).to_not be_running
       expect(app).to have_logged 'Downloading and installing node 9000.0.0'
-      expect(app).to have_logged /Unable to download node 9000\.0\.0; does it exist\?\n[^\n]+-----> Build failed/m
+      expect(app).to_not have_logged 'Downloaded ['
+      expect(app).to have_logged /DEPENDENCY MISSING IN MANIFEST: node 9000\.0\.0.*-----> Build failed/m
     end
   end
 
@@ -38,7 +39,8 @@ describe 'CF NodeJS Buildpack' do
     it 'resolves to a nodeJS version successfully' do
       expect(app).to_not be_running
       expect(app).to have_logged 'Downloading and installing node 4.1.1'
-      expect(app).to have_logged /Unable to download node 4\.1\.1; does it exist\?\n[^\n]+-----> Build failed/m
+      expect(app).to_not have_logged 'Downloaded ['
+      expect(app).to have_logged /DEPENDENCY MISSING IN MANIFEST: node 4\.1\.1.*-----> Build failed/m
     end
   end
 

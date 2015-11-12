@@ -24,7 +24,7 @@ install_nodejs() {
   echo "Downloading and installing node $version..."
   local download_url="http://s3pository.heroku.com/node/v$version/node-v$version-$os-$cpu.tar.gz"
   echo "Downloaded [`translate_dependency_url $download_url`]"
-  curl `translate_dependency_url $download_url` --silent --fail -o /tmp/node.tar.gz || (echo "Unable to download node $version; does it exist?" && false)
+  curl "`translate_dependency_url $download_url`" --silent --fail -o /tmp/node.tar.gz || (echo "Unable to download node $version; does it exist?" && false)
   tar xzf /tmp/node.tar.gz -C /tmp
   rm -rf $dir/*
   mv /tmp/node-v$version-$os-$cpu/* $dir

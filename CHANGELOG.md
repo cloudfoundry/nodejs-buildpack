@@ -1,9 +1,12 @@
 # Node.js Buildpack Changelog
 
-## Pending
+## v87 (2015-11-03)
 
-Enables compiling the same directory multiple times
-Updates tests for Node v5
+Several edge-case fixes
+
+- Enables compiling the same directory multiple times
+- Updates tests for Node v5
+- Moves node_modules/.bin binaries to last on the PATH
 
 ## v86 (2015-10-08)
 

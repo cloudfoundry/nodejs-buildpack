@@ -28,7 +28,7 @@ describe 'CF NodeJS Buildpack' do
     it 'resolves to a nodeJS version successfully' do
       expect(app).to_not be_running
       expect(app).to have_logged 'Downloading and installing node 9000.0.0'
-      expect(app).to have_logged 'Unable to download node 9000.0.0; does it exist?'
+      expect(app).to have_logged /Unable to download node 9000\.0\.0; does it exist\?\n[^\n]+-----> Build failed/m
     end
   end
 
@@ -38,7 +38,7 @@ describe 'CF NodeJS Buildpack' do
     it 'resolves to a nodeJS version successfully' do
       expect(app).to_not be_running
       expect(app).to have_logged 'Downloading and installing node 4.1.1'
-      expect(app).to have_logged 'Unable to download node 4.1.1; does it exist?'
+      expect(app).to have_logged /Unable to download node 4\.1\.1; does it exist\?\n[^\n]+-----> Build failed/m
     end
   end
 

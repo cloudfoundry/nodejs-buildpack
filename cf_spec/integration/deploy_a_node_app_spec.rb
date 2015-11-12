@@ -25,7 +25,7 @@ describe 'CF NodeJS Buildpack' do
   context 'with an unreleased nodejs version' do
     let(:app_name) { 'node_web_app_with_unreleased_version' }
 
-    it 'resolves to a nodeJS version successfully' do
+    it 'displays a nice error messages and gracefully fails' do
       expect(app).to_not be_running
       expect(app).to have_logged 'Downloading and installing node 9000.0.0'
       expect(app).to_not have_logged 'Downloaded ['
@@ -36,7 +36,7 @@ describe 'CF NodeJS Buildpack' do
   context 'with an unsupported, but released, nodejs version' do
     let(:app_name) { 'node_web_app_with_unsupported_version' }
 
-    it 'resolves to a nodeJS version successfully' do
+    it 'displays a nice error messages and gracefully fails' do
       expect(app).to_not be_running
       expect(app).to have_logged 'Downloading and installing node 4.1.1'
       expect(app).to_not have_logged 'Downloaded ['

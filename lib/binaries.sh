@@ -12,6 +12,7 @@ install_nodejs() {
   local dir="$2"
 
   if needs_resolution "$version"; then
+    echo "Resolving node version ${version:-(latest stable)} via semver.io..."
     version=$($BP_DIR/bin/node $BP_DIR/lib/version_resolver.js "$version")
   fi
 

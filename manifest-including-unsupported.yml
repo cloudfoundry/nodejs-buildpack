@@ -502,6 +502,12 @@ dependencies:
     cf_stacks:
       - cflinuxfs2
   - name: node
+    version: 0.10.41
+    uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-0.10.41-linux-x64.tgz
+    md5: 4258bc50d36bf0e6ee54073ffff464c5
+    cf_stacks:
+      - cflinuxfs2
+  - name: node
     version: 0.11.0
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/binaries/node-v0.11.0-linux-x64.tar.gz
     md5: fda656d4a8691fd5103c91c7e22b7860
@@ -659,9 +665,27 @@ dependencies:
     cf_stacks:
       - cflinuxfs2
   - name: node
+    version: 0.12.9
+    uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-0.12.9-linux-x64.tgz
+    md5: 3c12a476889cc04787527faf74a57e37
+    cf_stacks:
+      - cflinuxfs2
+  - name: node
     version: 4.2.2
     uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-4.2.2-linux-x64.tgz
     md5: 72a6cb07a11dcfdbf6aa75a70333b341
+    cf_stacks:
+      - cflinuxfs2
+  - name: node
+    version: 4.2.3
+    uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-4.2.3-linux-x64.tgz
+    md5: de92b362a2b5e464553aafd812475122
+    cf_stacks:
+      - cflinuxfs2
+  - name: node
+    version: 5.1.1
+    uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-5.1.1-linux-x64.tgz
+    md5: 32c173cffe8f561d8d7498a84e71bada
     cf_stacks:
       - cflinuxfs2
 

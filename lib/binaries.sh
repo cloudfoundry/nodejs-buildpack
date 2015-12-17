@@ -18,7 +18,7 @@ install_nodejs() {
 
   echo "Downloading and installing node $version..."
   local download_url="http://s3pository.heroku.com/node/v$version/node-v$version-$os-$cpu.tar.gz"
-  curl "`translate_dependency_url $download_url`" --silent --fail -o /tmp/node.tar.gz || (>&2 $BP_DIR/compile-extensions/bin/recommend_dependency $download_url && false)
+  curl "`translate_dependency_url $download_url`" --silent --fail --retry 5 --retry-max-time 15 -o /tmp/node.tar.gz || (>&2 $BP_DIR/compile-extensions/bin/recommend_dependency $download_url && false)
   echo "Downloaded [`translate_dependency_url $download_url`]"
   tar xzf /tmp/node.tar.gz -C /tmp
   rm -rf $dir/*
@@ -32,12 +32,12 @@ install_iojs() {
 
   if needs_resolution "$version"; then
     echo "Resolving iojs version ${version:-(latest stable)} via semver.io..."
-    version=$(curl --silent --get --data-urlencode "range=${version}" https://semver.herokuapp.com/iojs/resolve)
+    version=$(curl --silent --get  --retry 5 --retry-max-time 15 --data-urlencode "range=${version}" https://semver.herokuapp.com/iojs/resolve)
   fi
 
   echo "Downloading and installing iojs $version..."
   local download_url="https://iojs.org/dist/v$version/iojs-v$version-$os-$cpu.tar.gz"
-  curl "$download_url" --silent --fail -o /tmp/node.tar.gz || (echo "Unable to download iojs $version; does it exist?" && false)
+  curl "$download_url" --silent --fail --retry 5 --retry-max-time 15 -o /tmp/node.tar.gz || (echo "Unable to download iojs $version; does it exist?" && false)
   tar xzf /tmp/node.tar.gz -C /tmp
   mv /tmp/iojs-v$version-$os-$cpu/* $dir
   chmod +x $dir/bin/*
@@ -51,7 +51,7 @@ install_npm() {
   else
     if needs_resolution "$version"; then
       echo "Resolving npm version ${version} via semver.io..."
-      version=$(curl --silent --get --data-urlencode "range=${version}" https://semver.herokuapp.com/npm/resolve)
+      version=$(curl --silent --get --retry 5 --retry-max-time 15 --data-urlencode "range=${version}" https://semver.herokuapp.com/npm/resolve)
     fi
     if [[ `npm --version` == "$version" ]]; then
       echo "npm `npm --version` already installed with node"

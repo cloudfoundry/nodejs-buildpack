@@ -1,4 +1,5 @@
-# CloudFoundry build pack: Node.js
+# Cloud Foundry Node.js Buildpack
+[![CF Slack](https://s3.amazonaws.com/buildpacks-assets/buildpacks-slack.svg)](http://slack.cloudfoundry.org)
 
 A Cloud Foundry [buildpack](http://docs.cloudfoundry.org/buildpacks/) for Node based apps.
 

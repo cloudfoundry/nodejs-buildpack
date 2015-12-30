@@ -1,5 +1,13 @@
 # Contributing
 
+## Contributing Guidelines
+
+All pull request authors must have a Contributor License Agreement (CLA) on-file with us. Please sign the appropriate CLA ([individual](http://cloudfoundry.org/pdfs/CFF_Individual_CLA.pdf) or [corporate](http://cloudfoundry.org/pdfs/CFF_Corporate_CLA.pdf)).
+
+When sending signed CLA please provide your github username in case of individual CLA or the list of github usernames that can make pull requests on behalf of your organization.
+
+If you are confident that you're covered under a Corporate CLA, please make sure you've publicized your membership in the appropriate Github Org, per these instructions.
+
 ## Run the tests
 
 See the [Machete](https://github.com/cf-buildpacks/machete) CF buildpack test framework for more information.
@@ -10,9 +18,3 @@ See the [Machete](https://github.com/cf-buildpacks/machete) CF buildpack test fr
 1. Submit a pull request
 
 **NOTE:** When submitting a pull request, *please make sure to target the `develop` branch*, so that your changes are up-to-date and easy to integrate with the most recent work on the buildpack. Thanks!
-## Updating nodejs versions
-
-The buildpacks supports disconnected environments, which means `semver.io` cannot be reached for node version resolution. If a new version of node is added to the `manifest.yml` it must be added to `files/versions.json`.
-
-*NOTE:* If it happens to be the latest stable release, update the `stable` key in `files/versions.json`.
-

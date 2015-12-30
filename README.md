@@ -110,6 +110,11 @@ Set engines.node in package.json to the semver range
 
 Find our guidelines [here](./CONTRIBUTING.md).
 
+## Help and Support
+
+Join the #buildpacks channel in our [Slack community] (http://slack.cloudfoundry.org/) 
+
+
 ## Reporting Issues
 
 Open an issue on this project

@@ -64,7 +64,7 @@ describe 'CF NodeJS Buildpack' do
         browser.visit_path('/')
         expect(browser).to have_body('Hello, World!')
 
-        expect(app.host).not_to have_internet_traffic
+        expect(app).not_to have_internet_traffic
         expect(app).to have_logged(/Downloaded \[file:\/\/.*\]/)
       end
     end

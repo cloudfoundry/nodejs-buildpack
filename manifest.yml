@@ -31,18 +31,6 @@ dependencies:
     cf_stacks:
       - cflinuxfs2
   - name: node
-    version: 0.11.15
-    uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-0.11.15-linux-x64.tar.gz
-    md5: 257fc41682fd438d6d058cbf512138f1
-    cf_stacks:
-      - cflinuxfs2
-  - name: node
-    version: 0.11.16
-    uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-0.11.16-linux-x64.tar.gz
-    md5: 53152c1cf2c316d690cee95fc9f003db
-    cf_stacks:
-      - cflinuxfs2
-  - name: node
     version: 0.12.7
     uri: https://pivotal-buildpacks.s3.amazonaws.com/node/beta-binaries/node-0.12.7-linux-x64.tar.gz
     md5: 2b966ce7cceda8bcb6aba43eb99b81cf

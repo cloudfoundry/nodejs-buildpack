@@ -14,7 +14,7 @@ describe 'CF NodeJS Buildpack' do
 
     it 'resolves to a nodeJS version successfully' do
       expect(app).to be_running
-      expect(app).to_not have_logged 'Downloading and installing node 0.12.0'
+      expect(app).to_not have_logged 'Downloading and installing node 4.2.0'
       expect(app).to have_logged /Downloading and installing node \d+\.\d+\.\d+/
 
       browser.visit_path('/')

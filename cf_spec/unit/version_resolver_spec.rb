@@ -8,25 +8,16 @@ describe "Node version resolver" do
 
   # https://github.com/isaacs/node-semver
 
-  before do
-    FileUtils.mkdir_p("files")
-    FileUtils.mv("files/versions.json", "files/versions.original")
-    FileUtils.cp_r("cf_spec/fixtures/versions.json", "files/versions.json")
-  end
-
-  after do
-    FileUtils.rm_f("files/versions.json")
-    FileUtils.mv("files/versions.original", "files/versions.json")
-  end
-
-  def resolve_version(version = "null")
+  def resolve_version(version = "")
     if `uname`.include?("Darwin")
       node_executable = "/usr/local/bin/node"
     else
       node_executable = "./bin/node"
     end
 
-    `#{node_executable} lib/version_resolver.js "#{version}"`.strip
+    stable_version = '0.10.27'
+    versions_arr_as_json = ["0.0.1", "0.9.1", "0.10.12", "0.10.13", "0.10.14", "0.11.0"].to_json
+    `#{node_executable} lib/version_resolver.js "#{version}" "#{versions_arr_as_json.inspect}" #{stable_version}`.strip
   end
 
   describe 'supporting ranges' do
@@ -50,7 +41,6 @@ describe "Node version resolver" do
       expect(resolve_version('0.x')).to eql '0.10.14'
       expect(resolve_version('x')).to eql '0.10.14'
       expect(resolve_version('*')).to eql '0.10.14'
-      expect(resolve_version('')).to eql '0.10.14'
     end
 
     specify "when there's a stable version in the range" do

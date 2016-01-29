@@ -63,6 +63,7 @@ warn_missing_package_json "$BUILD_DIR"
 
 create_env() {
   write_profile "$BP_DIR" "$BUILD_DIR"
+  write_export "$BP_DIR" "$BUILD_DIR"
   export_env_dir "$ENV_DIR"
   create_default_env
 }

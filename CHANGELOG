@@ -1,3 +1,16 @@
+v1.5.6 Feb 29, 2016
+====================
+* Add node versions v0.12.10, v0.10.42, v4.3.1, v5.7.0
+
+  * Remove node versions v0.12.7, v0.10.40, v4.2.5, v5.5.0
+  (https://pivotaltracker.com/story/show/114348831)
+
+* Merge remote-tracking branch 'upstream/master' into develop
+  (https://github.com/cloudfoundry/nodejs-buildpack/commit/6fd264ec732bac5f8cceb86f733457a65ef351b0)
+  * Merge pull request #286 from afeld/patch-1
+
+  * use HTTPS for downloading Node
+
 v1.5.5 Jan 26, 2016
 ====================
 

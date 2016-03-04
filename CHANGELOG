@@ -1,3 +1,12 @@
+v1.5.7 Mar 04, 2016
+====================
+
+* Add v0.12.11 and v0.10.43, removed v0.12.09 and v0.10.41
+  (https://www.pivotaltracker.com/story/show/114974911)
+
+* Added v4.3.2 and v5.7.1, removed v5.7.0 and v4.3.1
+  (https://www.pivotaltracker.com/story/show/114951809)
+
 v1.5.6 Feb 29, 2016
 ====================
 * Add node versions v0.12.10, v0.10.42, v4.3.1, v5.7.0

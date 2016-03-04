@@ -27,7 +27,7 @@ describe 'CF NodeJS Buildpack' do
 
     it 'resolves to the stable nodeJS version successfully' do
       expect(app).to be_running
-      expect(app).to have_logged /Downloading and installing node 0\.12\.9/
+      expect(app).to have_logged /Downloading and installing node 0\.12\.11/
 
       browser.visit_path('/')
       expect(browser).to have_body('Hello, World!')

@@ -88,7 +88,7 @@ describe 'CF NodeJS Buildpack' do
     it 'successfully deploys and vendors the dependencies' do
       expect(app).to be_running
       expect(Dir).to_not exist("cf_spec/fixtures/#{app_name}/node_modules")
-      expect(app).to have_file 'app/node_modules'
+      expect(app).to have_file '/app/node_modules'
 
       browser.visit_path('/')
       expect(browser).to have_body('Hello, World!')
@@ -101,8 +101,8 @@ describe 'CF NodeJS Buildpack' do
     it 'downloads missing dependencies from package.json' do
       expect(app).to be_running
       expect(Dir).to_not exist("cf_spec/fixtures/node_web_app_with_incomplete_node_modules/node_modules/hashish")
-      expect(app).to have_file("app/node_modules/hashish")
-      expect(app).to have_file("app/node_modules/express")
+      expect(app).to have_file("/app/node_modules/hashish")
+      expect(app).to have_file("/app/node_modules/express")
     end
   end
 
@@ -117,9 +117,9 @@ describe 'CF NodeJS Buildpack' do
       app_push_command.execute(replacement_app)
       expect(replacement_app).to be_running
 
-      expect(app).to have_file("app/node_modules/logfmt")
-      expect(app).to have_file("app/node_modules/express")
-      expect(app).to have_file("app/node_modules/hashish")
+      expect(app).to have_file("/app/node_modules/logfmt")
+      expect(app).to have_file("/app/node_modules/express")
+      expect(app).to have_file("/app/node_modules/hashish")
     end
   end
 end

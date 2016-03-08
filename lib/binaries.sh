@@ -12,7 +12,6 @@ install_nodejs() {
   local dir="$2"
 
   if needs_resolution "$version"; then
-    echo "Resolving node version ${version:-(latest stable)} via semver.io..."
     BP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
     versions_as_json=$(ruby -e "require 'yaml'; print YAML.load_file('$BP_DIR/manifest.yml')['dependencies'].select {|dep| dep['name'] == 'node' }.map {|dep| dep['version']}")
     stable_version='0.12.11'

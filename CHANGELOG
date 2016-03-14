@@ -1,3 +1,15 @@
+v1.5.8 Mar 14, 2016
+====================
+
+* Add v0.12.12, v4.4.0, and v5.8.0, removed v0.12.10, v4.3.2, and v5.7.1
+  (https://www.pivotaltracker.com/story/show/114974911)
+
+* Revert upstream pre/post build scripts
+  (https://www.pivotaltracker.com/story/show/1115592677)
+
+* Remove old log message about resolving version via semver.io
+  (https://www.pivotaltracker.com/story/show/114725733)
+
 v1.5.7 Mar 04, 2016
 ====================
 

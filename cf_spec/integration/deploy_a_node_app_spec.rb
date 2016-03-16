@@ -26,7 +26,7 @@ describe 'CF NodeJS Buildpack' do
 
     it 'resolves to the stable nodeJS version successfully' do
       expect(app).to be_running
-      expect(app).to have_logged /Downloading and installing node 0\.12\.11/
+      expect(app).to have_logged /Downloading and installing node 4\.\d+\.\d+/
 
       browser.visit_path('/')
       expect(browser).to have_body('Hello, World!')
@@ -111,7 +111,7 @@ describe 'CF NodeJS Buildpack' do
     it 'does not overwrite the vendored modules not listed in package.json' do
       expect(app).to be_running
 
-      replacement_app = Machete::App.new(app_name, Machete::Host.create)
+      replacement_app = Machete::App.new(app_name)
       app_push_command = Machete::CF::PushApp.new
       app_push_command.execute(replacement_app)
       expect(replacement_app).to be_running

@@ -1,25 +1,25 @@
 GIT
   remote: https://github.com/cloudfoundry/buildpack-packager
-  revision: c020bd67a31d7664337646d0efa4869c7b8c3717
-  tag: v2.2.6
+  revision: 77ef3ffd08f902c084da4653e5373fc26ee816ea
+  tag: v2.2.7
   specs:
-    buildpack-packager (2.2.6)
+    buildpack-packager (2.2.7)
       activesupport (~> 4.1.8)
       kwalify
       terminal-table (~> 1.4.5)
 
 GIT
   remote: https://github.com/cloudfoundry/machete
-  revision: e7f24fef0195230c085e774789b6a995a86143a7
-  tag: v0.0.33
+  revision: 9c17e9f342569ed50998dec1df7480d0e06ebf5f
+  tag: v0.0.34
   specs:
-    machete (0.0.33)
+    machete (0.0.34)
       httparty
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (4.1.14)
+    activesupport (4.1.15)
       i18n (~> 0.6, >= 0.6.9)
       json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
@@ -34,7 +34,7 @@ GEM
     json (1.8.3)
     kwalify (0.7.2)
     method_source (0.8.2)
-    minitest (5.8.3)
+    minitest (5.8.4)
     multi_xml (0.5.5)
     pry (0.10.3)
       coderay (~> 1.1.0)

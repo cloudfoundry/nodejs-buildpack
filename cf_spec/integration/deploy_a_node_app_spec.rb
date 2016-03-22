@@ -121,4 +121,22 @@ describe 'CF NodeJS Buildpack' do
       expect(app).to have_file("/app/node_modules/hashish")
     end
   end
+
+  context 'in an air gapped environment' do
+    let (:app_name) { 'node_web_app_for_airgapped_environment' }
+
+    before(:each) do
+      `cf unbind-staging-security-group public_networks`
+      `cf unbind-staging-security-group dns`
+    end
+
+    after(:each) do
+      `cf bind-staging-security-group public_networks`
+      `cf bind-staging-security-group dns`
+    end
+
+    it 'does not overwrite the vendored modules not listed in package.json' do
+      expect(app).to be_running
+    end
+  end
 end

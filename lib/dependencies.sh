@@ -22,7 +22,7 @@ rebuild_node_modules() {
   if [ -e $build_dir/package.json ]; then
     cd $build_dir
     echo "Rebuilding any native modules"
-    npm rebuild 2>&1
+    npm rebuild --nodedir=$build_dir/.heroku/node 2>&1
     if [ -e $build_dir/npm-shrinkwrap.json ]; then
       echo "Installing any new modules (package.json + shrinkwrap)"
     else

@@ -135,7 +135,7 @@ describe 'CF NodeJS Buildpack' do
       `cf bind-staging-security-group dns`
     end
 
-    it 'does not overwrite the vendored modules not listed in package.json' do
+    it 'is running' do
       expect(app).to be_running
     end
   end

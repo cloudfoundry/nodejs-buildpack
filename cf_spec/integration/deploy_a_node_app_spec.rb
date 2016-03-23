@@ -122,21 +122,24 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
-  context 'in an air gapped environment' do
-    let (:app_name) { 'node_web_app_for_airgapped_environment' }
+  context 'with a cached buildpack', :cached do
+    context 'in an air gapped environment' do
+      let (:app_name) { 'node_web_app_for_airgapped_environment' }
 
-    before(:each) do
-      `cf unbind-staging-security-group public_networks`
-      `cf unbind-staging-security-group dns`
-    end
+      before(:each) do
+        `cf unbind-staging-security-group public_networks`
+        `cf unbind-staging-security-group dns`
+      end
 
-    after(:each) do
-      `cf bind-staging-security-group public_networks`
-      `cf bind-staging-security-group dns`
-    end
+      after(:each) do
+        `cf bind-staging-security-group public_networks`
+        `cf bind-staging-security-group dns`
+      end
 
-    it 'is running' do
-      expect(app).to be_running
+      it 'is running' do
+        expect(app).to be_running
+        expect(app).not_to have_internet_traffic
+      end
     end
   end
 end

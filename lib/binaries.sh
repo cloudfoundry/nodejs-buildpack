@@ -8,23 +8,28 @@ needs_resolution() {
 }
 
 install_nodejs() {
-  local version="$1"
+  local requested_version="$1"
+  local resolved_version=$requested_version
   local dir="$2"
 
-  if needs_resolution "$version"; then
+  if needs_resolution "$requested_version"; then
     BP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
     versions_as_json=$(ruby -e "require 'yaml'; print YAML.load_file('$BP_DIR/manifest.yml')['dependencies'].select {|dep| dep['name'] == 'node' }.map {|dep| dep['version']}")
     stable_version=$(cat $BP_DIR/manifest.yml | grep -oh "4\.[0-9]*\.[0-9]*$")
-    version=$($BP_DIR/bin/node $BP_DIR/lib/version_resolver.js "$version" "$versions_as_json" "$stable_version")
+    resolved_version=$($BP_DIR/bin/node $BP_DIR/lib/version_resolver.js "$requested_version" "$versions_as_json" "$stable_version")
   fi
 
-  echo "Downloading and installing node $version..."
-  local download_url="https://s3pository.heroku.com/node/v$version/node-v$version-$os-$cpu.tar.gz"
+  if [[ "$resolved_version" = "undefined" ]]; then
+    echo "Downloading and installing node $requested_version..."
+  else
+    echo "Downloading and installing node $resolved_version..."
+  fi
+  local download_url="https://s3pository.heroku.com/node/v$resolved_version/node-v$resolved_version-$os-$cpu.tar.gz"
   curl "`translate_dependency_url $download_url`" --silent --fail --retry 5 --retry-max-time 15 -o /tmp/node.tar.gz || (>&2 $BP_DIR/compile-extensions/bin/recommend_dependency $download_url && false)
   echo "Downloaded [`translate_dependency_url $download_url`]"
   tar xzf /tmp/node.tar.gz -C /tmp
   rm -rf $dir/*
-  mv /tmp/node-v$version-$os-$cpu/* $dir
+  mv /tmp/node-v$resolved_version-$os-$cpu/* $dir
   chmod +x $dir/bin/*
 }
 

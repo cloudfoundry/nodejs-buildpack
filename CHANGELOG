@@ -1,3 +1,22 @@
+v1.5.9 Mar 30, 2016
+====================
+
+* Add nodejs 4.4.1 and 5.9.1, remove nodejs 4.4.0 and 5.9.0
+  (https://www.pivotaltracker.com/story/show/116416441)
+
+* Improve error messaging for unsupported versions and unable to resolve version strings
+  (https://www.pivotaltracker.com/story/show/115735397)
+
+* Specified location of native module headers for npm rebuild command. Fixes [#115780623]
+  (https://www.pivotaltracker.com/story/show/115735397)
+
+* Add nodejs 5.9.0, remove 5.8.0
+  (https://www.pivotaltracker.com/story/show/116036807)
+
+* set stable release for nodejs to latest 4.x
+  (https://www.pivotaltracker.com/story/show/115599647)
+
+
 v1.5.8 Mar 14, 2016
 ====================
 

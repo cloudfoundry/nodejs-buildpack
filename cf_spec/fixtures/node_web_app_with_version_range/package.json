@@ -10,8 +10,7 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "logfmt": "~1.1.2",
-    "express": "~4.0.0",
-    "bson-ext": "^0.1.13"
+    "express": "~4.0.0"
   },
   "engines" : {
     "node" : "~>4"

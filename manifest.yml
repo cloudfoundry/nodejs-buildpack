@@ -54,3 +54,9 @@ dependencies:
     md5: 8776bd99fdb350c538db65f060089b00
     cf_stacks:
       - cflinuxfs2
+  - name: node
+    version: 5.10.1
+    uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-5.10.1-linux-x64.tgz
+    md5: f332e386efc785cf18c505db11d2569c
+    cf_stacks:
+      - cflinuxfs2

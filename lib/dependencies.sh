@@ -33,3 +33,8 @@ rebuild_node_modules() {
     echo "Skipping (no package.json)"
   fi
 }
+
+extract_node_modules() {
+    local modules_json=$(npm ls -json | $BP_DIR/bin/node $BP_DIR/lib/extract_modules.js)
+    echo "$modules_json";
+}

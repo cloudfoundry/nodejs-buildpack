@@ -15,8 +15,8 @@ install_nodejs() {
   if needs_resolution "$requested_version"; then
     BP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
     versions_as_json=$(ruby -e "require 'yaml'; print YAML.load_file('$BP_DIR/manifest.yml')['dependencies'].select {|dep| dep['name'] == 'node' }.map {|dep| dep['version']}")
-    stable_version=$(cat $BP_DIR/manifest.yml | grep -oh "4\.[0-9]*\.[0-9]*$" | tail -1)
-    resolved_version=$($BP_DIR/bin/node $BP_DIR/lib/version_resolver.js "$requested_version" "$versions_as_json" "$stable_version")
+    stable_major_version=4
+    resolved_version=$($BP_DIR/bin/node $BP_DIR/lib/version_resolver.js "$requested_version" "$versions_as_json" "$stable_major_version")
   fi
 
   if [[ "$resolved_version" = "undefined" ]]; then

@@ -92,6 +92,10 @@ describe 'CF NodeJS Buildpack' do
       browser.visit_path('/')
       expect(browser).to have_body('Hello, World!')
     end
+
+    it "uses a proxy during staging if present", :uncached do
+      expect(app).to use_proxy_during_staging
+    end
   end
 
   context 'with an incomplete node_modules directory' do

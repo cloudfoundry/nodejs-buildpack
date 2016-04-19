@@ -64,6 +64,12 @@ npm install # vendors into /node_modules
 ### Additional extensions
 In cached mode, [use the semver node_module](bin/compile#L30-32) (as opposed to http://semver.io) to resolve the correct node version. The semver.io service has an additional preference for stable versions not present in the node module version. We wrap the node module using [lib/version_resolver.js](lib/version_resolver.js) to add back this functionality.
 
+## Proxy Support
+
+If you need to use a proxy to download dependencies during staging, you can set
+the `http_proxy` and/or `https_proxy` environment variables. For more information, see
+the [Proxy Usage Docs](http://docs.cloudfoundry.org/buildpacks/proxy-usage.html).
+
 ## Building
 1. Make sure you have fetched submodules
 

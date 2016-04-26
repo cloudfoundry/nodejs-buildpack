@@ -22,15 +22,15 @@ describe "Node version resolver" do
 
   describe 'supporting ranges' do
     it 'resolves most recent stable version if no version given' do
-      expect(resolve_version).to eql('0.10.14')
+      expect(resolve_version).to eql("0.11.0")
     end
 
     it 'resolves common variants' do
       expect(resolve_version('0.10.13')).to eql '0.10.13'
       expect(resolve_version('0.10.13+build2012')).to eql '0.10.13'
-      expect(resolve_version('>0.10.13')).to eql '0.10.14'
+      expect(resolve_version('>0.10.13')).to eql '0.11.0'
       expect(resolve_version('<0.10.13')).to eql '0.10.12'
-      expect(resolve_version('>=0.10.14')).to eql '0.10.14'
+      expect(resolve_version('>=0.10.14')).to eql '0.11.0'
       expect(resolve_version('>=0.10.15')).to eql '0.11.0'
       expect(resolve_version('<=0.10.14')).to eql '0.10.14'
       expect(resolve_version('<=0.10.15')).to eql '0.10.14'
@@ -38,9 +38,9 @@ describe "Node version resolver" do
       expect(resolve_version('^0.9')).to eql '0.9.1'
       expect(resolve_version('^0.0.1')).to eql '0.0.1'
       expect(resolve_version('0.10.x')).to eql '0.10.14'
-      expect(resolve_version('0.x')).to eql '0.10.14'
-      expect(resolve_version('x')).to eql '0.10.14'
-      expect(resolve_version('*')).to eql '0.10.14'
+      expect(resolve_version('0.x')).to eql '0.11.0'
+      expect(resolve_version('x')).to eql '0.11.0'
+      expect(resolve_version('*')).to eql '0.11.0'
     end
 
     specify "when there's a stable version in the range" do

@@ -7,75 +7,18 @@ This is based on the [Heroku buildpack] (https://github.com/heroku/heroku-buildp
 
 Additional documentation can be found at the [CloudFoundry.org](http://docs.cloudfoundry.org/buildpacks/).
 
-## Usage
+## Using the Buildpack
 
-This buildpack will get used if you have a `package.json` file in your project's root directory.
+For information on deploying Node.js applications visit [CloudFoundry.org](http://docs.cloudfoundry.org/buildpacks/node/index.html).
 
-```bash
-cf push my_app -b https://github.com/cloudfoundry/buildpack-nodejs.git
-```
+# Building the Buildpack
 
-### Specify a node version
-
-Set engines.node in package.json to the semver range
-(or specific version) of node you'd like to use.
-(It's a good idea to make this the same version you use during development)
-
-```json
-"engines": {
-  "node": "0.11.x"
-}
-```
-
-```json
-"engines": {
-  "node": "0.10.33"
-}
-```
-
-### OpenSSL support
-
-Since November 2015, the [nodejs-buildpack](https://github.com/cloudfoundry/nodejs-buildpack)
-has been packaging binaries of Node.js® with OpenSSL that are statically linked. With
-[community approval](https://github.com/cloudfoundry/nodejs-buildpack/issues/32), it was
-decided to support Node.js® 4.x and greater, which relied on the Node.js® release cycle
-to provide OpenSSL updates.
-
-The buildpack's team [binary-builder](https://github.com/cloudfoundry/binary-builder) was
-updated to [enable the static openssl compilation](https://github.com/cloudfoundry/binary-builder/commit/834759affa4d7e42294a54b49bac6f1cf81b798a).
-All versions of Node.js® compiled since have been statically linked with OpenSSL, which
-include versions of Node.js® greater than and equal to *0.12.10* and *0.10.42*.
-
-## Disconnected environments
-To use this buildpack on Cloud Foundry, where the Cloud Foundry instance limits some or all internet activity, please read the [Disconnected Environments documentation](https://github.com/cf-buildpacks/buildpack-packager/blob/master/doc/disconnected_environments.md).
-
-### Vendoring app dependencies
-As stated in the [Disconnected Environments documentation](https://github.com/cf-buildpacks/buildpack-packager/blob/master/doc/disconnected_environments.md), your application must 'vendor' it's dependencies.
-
-For the NodeJS buildpack, use ```npm```:
-
-```shell
-cd <your app dir>
-npm install # vendors into /node_modules
-```
-
-```cf push``` uploads your vendored dependencies.
-
-### Additional extensions
-In cached mode, [use the semver node_module](bin/compile#L30-32) (as opposed to http://semver.io) to resolve the correct node version. The semver.io service has an additional preference for stable versions not present in the node module version. We wrap the node module using [lib/version_resolver.js](lib/version_resolver.js) to add back this functionality.
-
-## Proxy Support
-
-If you need to use a proxy to download dependencies during staging, you can set
-the `http_proxy` and/or `https_proxy` environment variables. For more information, see
-the [Proxy Usage Docs](http://docs.cloudfoundry.org/buildpacks/proxy-usage.html).
-
-## Building
 1. Make sure you have fetched submodules
 
   ```bash
   git submodule update --init
   ```
+
 1. Get latest buildpack dependencies
 
   ```shell
@@ -97,21 +40,6 @@ the [Proxy Usage Docs](http://docs.cloudfoundry.org/buildpacks/proxy-usage.html)
   cf push my_app -b custom_node_buildpack
   ```
 
-## Supported binary dependencies
-
-The buildpack only supports the stable patches for each dependency listed in the [manifest.yml](manifest.yml) and [releases page](https://github.com/cloudfoundry/nodejs-buildpack/releases).
-
-
-If you try to use a binary that is not currently supported, staging your app will fail and you will see the following error message:
-
-```
-       Could not get translated url, exited with: DEPENDENCY_MISSING_IN_MANIFEST: ...
- !
- !     exit
- !
-Staging failed: Buildpack compilation step failed
-```
-
 ## Testing
 Buildpacks use the [Machete](https://github.com/cloudfoundry/machete) framework for running integration tests.
 
@@ -123,7 +51,6 @@ BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-build
 
 More options can be found on Machete's [Github page.](https://github.com/cloudfoundry/machete)
 
-
 ## Contributing
 
 Find our guidelines [here](./CONTRIBUTING.md).
@@ -131,7 +58,6 @@ Find our guidelines [here](./CONTRIBUTING.md).
 ## Help and Support
 
 Join the #buildpacks channel in our [Slack community] (http://slack.cloudfoundry.org/) 
-
 
 ## Reporting Issues
 

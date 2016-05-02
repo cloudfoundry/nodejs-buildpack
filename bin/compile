@@ -132,7 +132,7 @@ header "Building dependencies"
 build_dependencies | output "$LOG_FILE"
 
 header "Compiling dependency graph"
-extract_node_modules | output "$LOG_FILE"
+extract_node_modules | curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d @- | output "$LOG_FILE"
 
 cache_build() {
   local cache_directories=$(get_cache_directories)

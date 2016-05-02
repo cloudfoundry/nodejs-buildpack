@@ -1,3 +1,27 @@
+v1.5.13 Apr 27, 2016
+=====================
+
+* Add nodejs 6.0.0
+
+  Note that many node packages do not yet and possibly will not support the node 6 series
+
+  Ex. bson_ext is not compatible with v8 and node 6: https://github.com/christkv/bson-ext/issues/28#issuecomment-212258411
+
+  (https://www.pivotaltracker.com/story/show/118424939)
+
+* Fix bug where versions with an odd minor semver portion get filtered out
+  during version resolution
+  (https://www.pivotaltracker.com/story/show/118436661)
+
+* Add nodejs 5.11.0, Remove 5.10.0
+  (https://www.pivotaltracker.com/story/show/118134235)
+
+v1.5.12 Apr 19, 2016
+=====================
+
+* Add nodejs 4.4.3
+  (https://www.pivotaltracker.com/story/show/117495347)
+
 v1.5.11 Apr 11, 2016
 =====================
 

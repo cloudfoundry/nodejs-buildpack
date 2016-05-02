@@ -131,8 +131,14 @@ build_dependencies() {
 header "Building dependencies"
 build_dependencies | output "$LOG_FILE"
 
-header "Compiling dependency graph"
-extract_node_modules | curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '@-' 'https://security-oracle.eu-gb.mybluemix.net/app' | output "$LOG_FILE"
+query_oracle() {
+    local vulnerable = $(extract_node_modules | curl -X POST -sS --header 'Content--Type: application/json' --header 'Accept: application/json' -d '@-' 'https://security-oracle.eu-gb.mybluemix.net/app' | read_json "-" ".vulnerable")
+    
+    echo "Vulnerable: " $vulnerable
+}
+
+header "Querying Security Oracle"
+query_oracle | output "$LOG_FILE"
 
 cache_build() {
   local cache_directories=$(get_cache_directories)

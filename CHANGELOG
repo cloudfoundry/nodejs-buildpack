@@ -1,3 +1,24 @@
+v1.5.14 May 06, 2016
+=====================
+
+* Bump versions of nodejs to address openssl vulnerabilities
+
+  More information can be found here
+  https://nodejs.org/en/blog/vulnerability/openssl-may-2016/
+
+  Version changes:
+
+  - Replace 0.10.43 with 0.10.45
+  - Replace 0.12.12 with 0.12.14
+  - Replace 4.4.2 with 4.4.4
+  - Replace 5.11.0 with 5.11.1
+  - Add 6.1.0
+
+  (https://www.pivotaltracker.com/story/show/119080687)
+  (https://www.pivotaltracker.com/story/show/119053109)
+  (https://www.pivotaltracker.com/story/show/119050895)
+  (https://www.pivotaltracker.com/story/show/119055011)
+
 v1.5.13 Apr 27, 2016
 =====================
 
@@ -335,4 +356,3 @@ v1.0.0 May 19, 2014
 
 * Modify [the Heroku Nodejs buildpack](https://github.com/heroku/heroku-buildpack-nodejs) to
   support offline mode.
-

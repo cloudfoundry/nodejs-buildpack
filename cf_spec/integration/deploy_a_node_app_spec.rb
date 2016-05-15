@@ -21,6 +21,30 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
+  context 'when specifying a version 5 for the nodeJS version in the package.json' do
+    let(:app_name) { 'node_web_app_with_version_5' }
+
+    it 'resolves to a nodeJS version successfully' do
+      expect(app).to be_running
+      expect(app).to have_logged /Downloading and installing node 5\.\d+\.\d+/
+
+      browser.visit_path('/')
+      expect(browser).to have_body('Hello, World!')
+    end
+  end
+
+  context 'when specifying a version 6 for the nodeJS version in the package.json' do
+    let(:app_name) { 'node_web_app_with_version_6' }
+
+    it 'resolves to a nodeJS version successfully' do
+      expect(app).to be_running
+      expect(app).to have_logged /Downloading and installing node 6\.\d+\.\d+/
+
+      browser.visit_path('/')
+      expect(browser).to have_body('Hello, World!')
+    end
+  end
+
   context 'when not specifying a nodeJS version in the package.json' do
     let(:app_name) { 'node_web_app_without_version' }
 
@@ -91,6 +115,10 @@ describe 'CF NodeJS Buildpack' do
 
       browser.visit_path('/')
       expect(browser).to have_body('Hello, World!')
+    end
+
+    it "uses a proxy during staging if present", :uncached do
+      expect(app).to use_proxy_during_staging
     end
   end
 

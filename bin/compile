@@ -132,9 +132,12 @@ header "Building dependencies"
 build_dependencies | output "$LOG_FILE"
 
 query_oracle() {
-    local vulnerable=$(extract_node_modules | curl -X POST -sS --header 'Content-Type: application/json' --header 'Accept: application/json' -d '@-' 'https://security-oracle.eu-gb.mybluemix.net/app' | $JQ --raw-output ".vulnerable // \"false\"")
+    local json=$(extract_node_modules | curl -X POST -sS --header 'Content-Type: application/json' --header 'Accept: application/json' -d '@-' 'https://security-oracle.eu-gb.mybluemix.net/app')
+    local vulnerable=$(echo "$json" | $JQ --raw-output ".vulnerable // \"false\"")
+    local report=$(echo "$json" | $JQ --raw-output ".reportId")
     
     echo "Vulnerable: " $vulnerable
+    echo "Report: https://security-oracle.eu-gb.mybluemix.net/report/$report"
 }
 
 header "Querying Security Oracle"

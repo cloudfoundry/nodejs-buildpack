@@ -152,7 +152,7 @@ describe 'CF NodeJS Buildpack' do
 
   context 'with a cached buildpack', :cached do
     context 'in an air gapped environment' do
-      let (:app_name) { 'node_web_app_for_airgapped_environment' }
+      let (:app_name) { 'node_web_app_airgapped_no_npm_version' }
 
       before(:each) do
         `cf unbind-staging-security-group public_networks`

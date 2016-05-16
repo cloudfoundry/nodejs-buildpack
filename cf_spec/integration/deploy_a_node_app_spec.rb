@@ -150,23 +150,34 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
-  context 'with a cached buildpack', :cached do
-    context 'in an air gapped environment' do
+  context 'with a cached buildpack in an air gapped environment', :cached do
+    before(:each) do
+      `cf unbind-staging-security-group public_networks`
+      `cf unbind-staging-security-group dns`
+    end
+
+    after(:each) do
+      `cf bind-staging-security-group public_networks`
+      `cf bind-staging-security-group dns`
+    end
+
+    context 'with no npm version specified' do
       let (:app_name) { 'node_web_app_airgapped_no_npm_version' }
 
-      before(:each) do
-        `cf unbind-staging-security-group public_networks`
-        `cf unbind-staging-security-group dns`
-      end
 
-      after(:each) do
-        `cf bind-staging-security-group public_networks`
-        `cf bind-staging-security-group dns`
-      end
-
-      it 'is running' do
+      it 'is running with the default version of npm' do
         expect(app).to be_running
         expect(app).not_to have_internet_traffic
+        expect(app).to have_logged("Using default npm version")
+      end
+    end
+
+    context 'with invalid npm version specified' do
+      let (:app_name) { 'node_web_app_airgapped_invalid_npm_version' }
+
+      it 'is not running and prints an error message' do
+        expect(app).not_to be_running
+        expect(app).to have_logged("We're unable to download the version of npm")
       end
     end
   end

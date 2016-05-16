@@ -50,6 +50,12 @@ install_iojs() {
   chmod +x $dir/bin/*
 }
 
+download_failed() {
+  echo "We're unable to download the version of npm you've provided (${1})."
+  echo "Please remove the npm version specification in package.json"
+  exit 1
+}
+
 install_npm() {
   local version="$1"
 
@@ -58,13 +64,16 @@ install_npm() {
   else
     if needs_resolution "$version"; then
       echo "Resolving npm version ${version} via semver.io..."
-      version=$(curl --silent --get --retry 5 --retry-max-time 15 --data-urlencode "range=${version}" https://semver.herokuapp.com/npm/resolve)
+      version=$(curl --silent --get --retry 5 --retry-max-time 15 --data-urlencode "range=${version}" https://semver.herokuapp.com/npm/resolve || echo failed)
+      if [ "$version" = "failed" ]; then
+        download_failed $1
+      fi
     fi
     if [[ `npm --version` == "$version" ]]; then
       echo "npm `npm --version` already installed with node"
     else
       echo "Downloading and installing npm $version (replacing version `npm --version`)..."
-      npm install --unsafe-perm --quiet -g npm@$version 2>&1 >/dev/null
+      npm install --unsafe-perm --quiet -g npm@$version 2>&1 >/dev/null || download_failed $version
     fi
   fi
 }

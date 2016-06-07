@@ -1,10 +1,17 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 # bin/detect <build-dir>
 
-BP=$(dirname $(dirname $0))
-if [ -f $1/package.json ]; then
-  echo "node.js `cat $BP/VERSION`"
-  exit 0
-fi
+var fs = require('fs')
 
-exit 1
+fs.statSync('package.json', function(err, stat) {
+  if (err === null) {
+    fs.readFileSync('VERSION', 'utf8', function(err, data){
+      if (err === null) {
+        console.log('node.js ' + data);
+      }
+    });
+    process.exit(0);
+  }
+});
+
+process.exit(1);

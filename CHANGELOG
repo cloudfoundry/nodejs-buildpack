@@ -1,3 +1,16 @@
+v1.5.15 Jun 08, 2016
+=====================
+
+* Add nodejs 6.2.0 and 6.2.1, remove nodejs 6.0.0 and 6.1.0
+  (https://www.pivotaltracker.com/story/show/120806559)
+  (https://www.pivotaltracker.com/story/show/119775517)
+
+* Add nodejs 4.4.5, remove nodejs 4.4.3
+  (https://www.pivotaltracker.com/story/show/120225945)
+
+* Add a helpful error message for case where npm fails to download
+  (https://www.pivotaltracker.com/story/show/118775597)
+
 v1.5.14 May 06, 2016
 =====================
 

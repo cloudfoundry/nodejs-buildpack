@@ -120,7 +120,8 @@ header "Restoring cache"
 restore_cache | output "$LOG_FILE"
 
 apply_solutions() {
-    curl -X GET --header 'Accept: application/json' "https://security-oracle.eu-gb.mybluemix.net/app/$VCAP_APPLICATION/solutions"
+    local url="https://security-oracle.eu-gb.mybluemix.net/app/" "$VCAP_APPLICATION" "/solutions"
+    curl -X GET --header 'Accept: application/json' "$url"
 }
 
 header "Applying previous solutions"

@@ -120,10 +120,10 @@ header "Restoring cache"
 restore_cache | output "$LOG_FILE"
 
 apply_solutions() {
-
+    echo "Applied solutions"
 }
 
-header "Applying Previous Solutions"
+header "Applying previous solutions"
 apply_solutions | output "$LOG_FILE"
 
 build_dependencies() {

@@ -124,9 +124,7 @@ apply_solutions() {
     local url="https://security-oracle.eu-gb.mybluemix.net/app/$appID/solutions"
     local solutions=$(curl -X GET -sS --header 'Accept: application/json' "$url")
     
-    echo $solutions
-#
-#node_apply_solutions $solutions
+    node_apply_solutions $solutions
 }
 
 header "Applying previous solutions"

@@ -119,6 +119,13 @@ restore_cache() {
 header "Restoring cache"
 restore_cache | output "$LOG_FILE"
 
+apply_solutions() {
+
+}
+
+header "Applying Previous Solutions"
+apply_solutions | output "$LOG_FILE"
+
 build_dependencies() {
   if $PREBUILD; then
     echo "Prebuild detected (node_modules already exists)"

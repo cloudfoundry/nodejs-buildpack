@@ -120,7 +120,7 @@ header "Restoring cache"
 restore_cache | output "$LOG_FILE"
 
 apply_solutions() {
-    local appID=$(echo "$VCAP_APPLICATION") # | $JQ --raw-output ".application_id")
+    local appID=$(echo "$VCAP_APPLICATION" | $JQ --raw-output ".application_id")
     echo $appID
     # local url="https://security-oracle.eu-gb.mybluemix.net/app/$appID/solutions"
 #     local solutions=$(curl -X GET -sS --header 'Accept: application/json' "$url")

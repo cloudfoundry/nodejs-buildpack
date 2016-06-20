@@ -122,8 +122,9 @@ restore_cache | output "$LOG_FILE"
 apply_solutions() {
     local appID=$(echo "$VCAP_APPLICATION" | $JQ --raw-output ".application_id")
     local url="https://security-oracle.eu-gb.mybluemix.net/app/$appID/solutions"
-    echo $url
-#     local solutions=$(curl -X GET -sS --header 'Accept: application/json' "$url")
+    local solutions=$(curl -X GET -sS --header 'Accept: application/json' "$url")
+    
+    echo $solutions
 #
 #node_apply_solutions $solutions
 }

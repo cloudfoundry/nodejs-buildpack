@@ -67,14 +67,14 @@ dependencies:
     cf_stacks:
       - cflinuxfs2
   - name: node
-    version: 6.2.0
-    uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-6.2.0-linux-x64.tgz
-    md5: 4b2cec883aef329fcc1131bdb64c724d
-    cf_stacks:
-      - cflinuxfs2
-  - name: node
     version: 6.2.1
     uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-6.2.1-linux-x64.tgz
     md5: 619a748a2b23f3e0189cf8c3f291b8d3
+    cf_stacks:
+      - cflinuxfs2
+  - name: node
+    version: 6.2.2
+    uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-6.2.2-linux-x64.tgz
+    md5: e54ef4e2637d8cc8125a8ccc67c47951
     cf_stacks:
       - cflinuxfs2

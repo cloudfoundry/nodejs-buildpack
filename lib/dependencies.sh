@@ -41,5 +41,7 @@ extract_node_modules() {
 
 node_apply_solutions() {
     local solutions=$1
-    cat "package.json" | $BP_DIR/bin/node $BP_DIR/lib/apply_solutions.js "$solutions" > package.json
+    local new_package_json=$(cat "package.json" | $BP_DIR/bin/node $BP_DIR/lib/apply_solutions.js "$solutions")
+    
+    echo "$new_package_json" > package.json
 }

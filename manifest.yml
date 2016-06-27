@@ -43,15 +43,15 @@ dependencies:
     cf_stacks:
       - cflinuxfs2
   - name: node
-    version: 4.4.4
-    uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-4.4.4-linux-x64.tgz
-    md5: 8beeb9a17a81b9832a1ccce02e6d6897
-    cf_stacks:
-      - cflinuxfs2
-  - name: node
     version: 4.4.5
     uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-4.4.5-linux-x64.tgz
     md5: b2893ffdf42e2c3614872ced633feeea
+    cf_stacks:
+      - cflinuxfs2
+  - name: node
+    version: 4.4.6
+    uri: https://pivotal-buildpacks.s3.amazonaws.com/concourse-binaries/node/node-4.4.6-linux-x64.tgz
+    md5: 33822ae3f92ac9586d73dee3c42a4bf2
     cf_stacks:
       - cflinuxfs2
   - name: node

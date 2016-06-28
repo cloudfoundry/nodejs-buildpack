@@ -1,3 +1,21 @@
+v1.5.16 Jun 28, 2016
+=====================
+
+* Add nodejs 0.10.46, remove nodejs 0.10.44
+  (https://www.pivotaltracker.com/story/show/122177127)
+
+* Add nodejs 0.12.15, remove nodejs 0.12.13
+  (https://www.pivotaltracker.com/story/show/122177127)
+
+* Add nodejs 4.4.6, remove nodejs 4.4.4
+  (https://www.pivotaltracker.com/story/show/122177127)
+
+* Add nodejs 5.12.0, remove nodejs 5.10.1
+  (https://www.pivotaltracker.com/story/show/122177127)
+
+* Add nodejs 6.2.2. Remove nodejs 6.2.0
+  (https://www.pivotaltracker.com/story/show/121759045)
+
 v1.5.15 Jun 08, 2016
 =====================
 

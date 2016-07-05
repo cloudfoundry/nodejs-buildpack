@@ -49,7 +49,7 @@ To test a buildpack, run the following command from the buildpack's directory:
 BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-build
 ```
 
-More options can be found on Machete's [Github page.](https://github.com/cloudfoundry/machete)
+More options can be found on Machete's [GitHub page.](https://github.com/cloudfoundry/machete)
 
 ### Contributing
 
@@ -57,7 +57,7 @@ Find our guidelines [here](./CONTRIBUTING.md).
 
 ### Help and Support
 
-Join the #buildpacks channel in our [Slack community] (http://slack.cloudfoundry.org/) 
+Join the #buildpacks channel in our [Slack community] (http://slack.cloudfoundry.org/)
 
 ### Reporting Issues
 

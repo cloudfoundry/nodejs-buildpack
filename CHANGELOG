@@ -1,3 +1,15 @@
+v1.5.17 Jul 15, 2016
+=====================
+
+* Make buildpacks.cloudfoundry.org the default url for buildpack dependencies
+  (https://www.pivotaltracker.com/story/show/121757949)
+
+* Update node to 4.4.7
+  (https://www.pivotaltracker.com/story/show/123264921)
+
+* Update node to 6.3.0
+  (https://www.pivotaltracker.com/story/show/125266811)
+
 v1.5.16 Jun 28, 2016
 =====================
 

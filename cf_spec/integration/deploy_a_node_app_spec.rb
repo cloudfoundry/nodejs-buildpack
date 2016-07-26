@@ -164,11 +164,15 @@ describe 'CF NodeJS Buildpack' do
     context 'with no npm version specified' do
       let (:app_name) { 'node_web_app_airgapped_no_npm_version' }
 
+      subject(:app) do
+        Machete.deploy_app(app_name, env: {'BP_DEBUG' => '1'})
+      end
 
       it 'is running with the default version of npm' do
         expect(app).to be_running
         expect(app).not_to have_internet_traffic
         expect(app).to have_logged("Using default npm version")
+        expect(app).to have_logged('DEBUG: default_version_for node is')
       end
     end
 

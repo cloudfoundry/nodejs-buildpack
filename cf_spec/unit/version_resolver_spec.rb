@@ -15,14 +15,14 @@ describe "Node version resolver" do
       node_executable = "./bin/node"
     end
 
-    stable_version = '0'
+    default_version = '4.1.1'
     versions_arr_as_json = ["0.0.1", "0.9.1", "0.10.12", "0.10.13", "0.10.14", "0.11.0"].to_json
-    `#{node_executable} lib/version_resolver.js "#{version}" "#{versions_arr_as_json.inspect}" #{stable_version}`.strip
+    `#{node_executable} lib/version_resolver.js "#{version}" "#{versions_arr_as_json.inspect}" #{default_version}`.strip
   end
 
   describe 'supporting ranges' do
-    it 'resolves most recent stable version if no version given' do
-      expect(resolve_version).to eql("0.11.0")
+    it 'resolves default version if no version given' do
+      expect(resolve_version).to eql("4.1.1")
     end
 
     it 'resolves common variants' do

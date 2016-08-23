@@ -4,11 +4,11 @@ require 'json'
 require 'fileutils'
 
 def new_relic_license_key
-  `source lib/vendor/new_relic/install.sh && echo $NEW_RELIC_LICENSE_KEY`.strip
+  `source lib/vendor/new_relic/install.sh && echo ${NEW_RELIC_LICENSE_KEY-}`.strip
 end
 
 def new_relic_app_name
-  `source lib/vendor/new_relic/install.sh && echo $NEW_RELIC_APP_NAME`.strip
+  `source lib/vendor/new_relic/install.sh && echo ${NEW_RELIC_APP_NAME-}`.strip
 end
 
 describe "New Relic Installer" do

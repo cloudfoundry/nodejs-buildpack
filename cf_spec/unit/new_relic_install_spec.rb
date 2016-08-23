@@ -2,19 +2,14 @@ $: << 'cf_spec'
 require 'bundler/setup'
 require 'json'
 require 'fileutils'
-
-def new_relic_license_key
-  `source lib/vendor/new_relic/install.sh && echo ${NEW_RELIC_LICENSE_KEY-}`.strip
-end
-
-def new_relic_app_name
-  `source lib/vendor/new_relic/install.sh && echo ${NEW_RELIC_APP_NAME-}`.strip
-end
+require 'tmpdir'
 
 describe "New Relic Installer" do
   let(:buildpack_dir) { File.join(File.expand_path(File.dirname(__FILE__)), '..', '..') }
+  let(:build_dir)     { Dir.mktmpdir }
   let(:app_name)      { 'unit-test-app' }
   let(:app_guid)      { 'fff-fff-fff-fff' }
+  let(:profile_d_new_relic) { File.join(build_dir, '.profile.d', 'new-relic-setup.sh') }
 
   before do
     ENV["BP_DIR"] = buildpack_dir
@@ -26,7 +21,14 @@ describe "New Relic Installer" do
   end
 
   after do
+    FileUtils.rm_rf(build_dir) if defined? build_dir
     ENV["VCAP_APPLICATION"] = nil
+  end
+
+  subject do
+    Dir.chdir(buildpack_dir) do
+      `lib/vendor/new_relic/install.sh #{build_dir}`
+    end
   end
 
   context 'vcap services contains newrelic' do
@@ -43,12 +45,18 @@ describe "New Relic Installer" do
       ENV["VCAP_SERVICES"] = nil
     end
 
-    context 'NEW_RELIC_LICENSE_KEY not set' do
+    context 'NEW_RELIC_LICENSE_KEY and NEW_RELIC_APP_NAME not set' do
+
       it "sets the NEW_RELIC_LICENSE_KEY variable from VCAP_SERVICES" do
-        buildpack_dir = File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
-        Dir.chdir(buildpack_dir) do
-          expect(new_relic_license_key).to eq("new_relic_license_key_set_by_service_binding")
-        end
+        subject
+        profile_d_contents = File.read(profile_d_new_relic)
+        expect(profile_d_contents).to include('export NEW_RELIC_LICENSE_KEY=new_relic_license_key_set_by_service_binding')
+      end
+
+      it "sets the NEW_RELIC_APP_NAME variable" do
+        subject
+        profile_d_contents = File.read(profile_d_new_relic)
+        expect(profile_d_contents).to include('export NEW_RELIC_APP_NAME=unit-test-app_fff-fff-fff-fff')
       end
     end
 
@@ -61,20 +69,16 @@ describe "New Relic Installer" do
         ENV["NEW_RELIC_LICENSE_KEY"] = nil
       end
 
-      it "does not modify NEW_RELIC_LICENSE_KEY" do
-        buildpack_dir = File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
-        Dir.chdir(buildpack_dir) do
-          expect(new_relic_license_key).to eq("license_key_in_env_var")
-        end
-      end
-    end
-
-    context 'NEW_RELIC_APP_NAME not set' do
       it "sets the NEW_RELIC_APP_NAME variable" do
-        buildpack_dir = File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
-        Dir.chdir(buildpack_dir) do
-          expect(new_relic_app_name).to eq(app_name + '_' + app_guid)
-        end
+        subject
+        profile_d_contents = File.read(profile_d_new_relic)
+        expect(profile_d_contents).to include('export NEW_RELIC_APP_NAME=unit-test-app_fff-fff-fff-fff')
+      end
+
+      it "does not modify NEW_RELIC_LICENSE_KEY" do
+        subject
+        profile_d_contents = File.read(profile_d_new_relic)
+        expect(profile_d_contents).to_not include('NEW_RELIC_LICENSE_KEY')
       end
     end
 
@@ -88,10 +92,15 @@ describe "New Relic Installer" do
       end
 
       it "does not modify NEW_RELIC_APP_NAME" do
-        buildpack_dir = File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
-        Dir.chdir(buildpack_dir) do
-          expect(new_relic_app_name).to eq("new_relic_app_name")
-        end
+        subject
+        profile_d_contents = File.read(profile_d_new_relic)
+        expect(profile_d_contents).to_not include('NEW_RELIC_APP_NAME')
+      end
+
+      it "sets the NEW_RELIC_LICENSE_KEY variable from VCAP_SERVICES" do
+        subject
+        profile_d_contents = File.read(profile_d_new_relic)
+        expect(profile_d_contents).to include('export NEW_RELIC_LICENSE_KEY=new_relic_license_key_set_by_service_binding')
       end
     end
 
@@ -106,33 +115,17 @@ describe "New Relic Installer" do
         ENV["NEW_RELIC_APP_NAME"] = nil
       end
 
-      it "does not modify NEW_RELIC_LICENSE_KEY" do
-        buildpack_dir = File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
-        Dir.chdir(buildpack_dir) do
-          expect(new_relic_app_name).to eq("new_relic_app_name")
-        end
-      end
-
-      it "does not modify NEW_RELIC_APP_NAME" do
-        buildpack_dir = File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
-        Dir.chdir(buildpack_dir) do
-          expect(new_relic_app_name).to eq("new_relic_app_name")
-        end
+      it 'does not create .profile.e/new-relic-setup.sh file' do
+        subject
+        expect(File.exist?(profile_d_new_relic)).to be_falsey
       end
     end
   end
 
   context 'vcap services does not contain newrelic' do
-    it "does not set the NEW_RELIC_LICENSE_KEY variable" do
-      Dir.chdir(buildpack_dir) do
-        expect(new_relic_license_key).to eq("")
-      end
-    end
-
-    it "does not set the NEW_RELIC_APP_NAME variable" do
-      Dir.chdir(buildpack_dir) do
-        expect(new_relic_app_name).to eq("")
-      end
+    it 'does not create .profile.e/new-relic-setup.sh file' do
+      subject
+      expect(File.exist?(profile_d_new_relic)).to be_falsey
     end
   end
 end

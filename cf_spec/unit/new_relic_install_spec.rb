@@ -27,17 +27,12 @@ describe "New Relic Installer" do
 
   subject do
     Dir.chdir(buildpack_dir) do
-      `lib/vendor/new_relic/install.sh #{build_dir}`
+      `. lib/vendor/new_relic/install.sh #{build_dir}`
     end
   end
 
-  context 'vcap services contains newrelic' do
+  context 'vcap services' do
     before do
-      vcap_services = {"newrelic":[{
-        "credentials": {
-          "licenseKey": "new_relic_license_key_set_by_service_binding"
-        }}]
-      }
       ENV["VCAP_SERVICES"] = vcap_services.to_json
     end
 
@@ -45,87 +40,100 @@ describe "New Relic Installer" do
       ENV["VCAP_SERVICES"] = nil
     end
 
-    context 'NEW_RELIC_LICENSE_KEY and NEW_RELIC_APP_NAME not set' do
+    context 'contains newrelic' do
+      let(:vcap_services) {
+        {
+          "newrelic":[{
+            "credentials": {
+              "licenseKey": "new_relic_license_key_set_by_service_binding"
+            }
+          }]
+        }
+      }
 
-      it "sets the NEW_RELIC_LICENSE_KEY variable from VCAP_SERVICES" do
-        subject
-        profile_d_contents = File.read(profile_d_new_relic)
-        expect(profile_d_contents).to include('export NEW_RELIC_LICENSE_KEY=new_relic_license_key_set_by_service_binding')
+      context 'NEW_RELIC_LICENSE_KEY and NEW_RELIC_APP_NAME not set' do
+        it "sets the NEW_RELIC_LICENSE_KEY variable from VCAP_SERVICES" do
+          subject
+          profile_d_contents = File.read(profile_d_new_relic)
+          expect(profile_d_contents).to include('export NEW_RELIC_LICENSE_KEY=new_relic_license_key_set_by_service_binding')
+        end
+
+        it "sets the NEW_RELIC_APP_NAME variable" do
+          subject
+          profile_d_contents = File.read(profile_d_new_relic)
+          expect(profile_d_contents).to include('export NEW_RELIC_APP_NAME=unit-test-app_fff-fff-fff-fff')
+        end
       end
 
-      it "sets the NEW_RELIC_APP_NAME variable" do
-        subject
-        profile_d_contents = File.read(profile_d_new_relic)
-        expect(profile_d_contents).to include('export NEW_RELIC_APP_NAME=unit-test-app_fff-fff-fff-fff')
+      context 'NEW_RELIC_LICENSE_KEY set' do
+        before do
+          ENV["NEW_RELIC_LICENSE_KEY"] = "license_key_in_env_var"
+        end
+
+        after do
+          ENV["NEW_RELIC_LICENSE_KEY"] = nil
+        end
+
+        it "sets the NEW_RELIC_APP_NAME variable" do
+          subject
+          profile_d_contents = File.read(profile_d_new_relic)
+          expect(profile_d_contents).to include('export NEW_RELIC_APP_NAME=unit-test-app_fff-fff-fff-fff')
+        end
+
+        it "does not modify NEW_RELIC_LICENSE_KEY" do
+          subject
+          profile_d_contents = File.read(profile_d_new_relic)
+          expect(profile_d_contents).to_not include('NEW_RELIC_LICENSE_KEY')
+        end
+      end
+
+      context 'NEW_RELIC_APP_NAME set' do
+        before do
+          ENV["NEW_RELIC_APP_NAME"] = "new_relic_app_name"
+        end
+
+        after do
+          ENV["NEW_RELIC_APP_NAME"] = nil
+        end
+
+        it "does not modify NEW_RELIC_APP_NAME" do
+          subject
+          profile_d_contents = File.read(profile_d_new_relic)
+          expect(profile_d_contents).to_not include('NEW_RELIC_APP_NAME')
+        end
+
+        it "sets the NEW_RELIC_LICENSE_KEY variable from VCAP_SERVICES" do
+          subject
+          profile_d_contents = File.read(profile_d_new_relic)
+          expect(profile_d_contents).to include('export NEW_RELIC_LICENSE_KEY=new_relic_license_key_set_by_service_binding')
+        end
+      end
+
+      context 'NEW_RELIC_APP_NAME and NEW_RELIC_LICENSE_KEY set' do
+        before do
+          ENV["NEW_RELIC_LICENSE_KEY"] = "license_key_in_env_var"
+          ENV["NEW_RELIC_APP_NAME"] = "new_relic_app_name"
+        end
+
+        after do
+          ENV["NEW_RELIC_LICENSE_KEY"] = nil
+          ENV["NEW_RELIC_APP_NAME"] = nil
+        end
+
+        it 'does not create .profile.e/new-relic-setup.sh file' do
+          subject
+          expect(File.exist?(profile_d_new_relic)).to be_falsey
+        end
       end
     end
 
-    context 'NEW_RELIC_LICENSE_KEY set' do
-      before do
-        ENV["NEW_RELIC_LICENSE_KEY"] = "license_key_in_env_var"
-      end
+    context 'does not contain newrelic' do
+      let(:vcap_services) { {} }
 
-      after do
-        ENV["NEW_RELIC_LICENSE_KEY"] = nil
-      end
-
-      it "sets the NEW_RELIC_APP_NAME variable" do
-        subject
-        profile_d_contents = File.read(profile_d_new_relic)
-        expect(profile_d_contents).to include('export NEW_RELIC_APP_NAME=unit-test-app_fff-fff-fff-fff')
-      end
-
-      it "does not modify NEW_RELIC_LICENSE_KEY" do
-        subject
-        profile_d_contents = File.read(profile_d_new_relic)
-        expect(profile_d_contents).to_not include('NEW_RELIC_LICENSE_KEY')
-      end
-    end
-
-    context 'NEW_RELIC_APP_NAME set' do
-      before do
-        ENV["NEW_RELIC_APP_NAME"] = "new_relic_app_name"
-      end
-
-      after do
-        ENV["NEW_RELIC_APP_NAME"] = nil
-      end
-
-      it "does not modify NEW_RELIC_APP_NAME" do
-        subject
-        profile_d_contents = File.read(profile_d_new_relic)
-        expect(profile_d_contents).to_not include('NEW_RELIC_APP_NAME')
-      end
-
-      it "sets the NEW_RELIC_LICENSE_KEY variable from VCAP_SERVICES" do
-        subject
-        profile_d_contents = File.read(profile_d_new_relic)
-        expect(profile_d_contents).to include('export NEW_RELIC_LICENSE_KEY=new_relic_license_key_set_by_service_binding')
-      end
-    end
-
-    context 'NEW_RELIC_APP_NAME and NEW_RELIC_LICENSE_KEY set' do
-      before do
-        ENV["NEW_RELIC_LICENSE_KEY"] = "license_key_in_env_var"
-        ENV["NEW_RELIC_APP_NAME"] = "new_relic_app_name"
-      end
-
-      after do
-        ENV["NEW_RELIC_LICENSE_KEY"] = nil
-        ENV["NEW_RELIC_APP_NAME"] = nil
-      end
-
-      it 'does not create .profile.e/new-relic-setup.sh file' do
+      it 'does not create .profile.d/new-relic-setup.sh file' do
         subject
         expect(File.exist?(profile_d_new_relic)).to be_falsey
       end
-    end
-  end
-
-  context 'vcap services does not contain newrelic' do
-    it 'does not create .profile.e/new-relic-setup.sh file' do
-      subject
-      expect(File.exist?(profile_d_new_relic)).to be_falsey
     end
   end
 end

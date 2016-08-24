@@ -9,10 +9,6 @@ exports.config = {
    * Array of application names.
    */
   app_name: ['My Application'],
-  /**
-   * Your New Relic license key.
-   */
-  license_key: 'fake_new_relic_file_key',
   logging: {
     /**
      * Level at which to log. 'trace' is most useful to New Relic when diagnosing

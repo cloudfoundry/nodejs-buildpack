@@ -38,8 +38,7 @@ source $BP_DIR/lib/environment.sh
 source $BP_DIR/lib/binaries.sh
 source $BP_DIR/lib/cache.sh
 source $BP_DIR/lib/dependencies.sh
-
-$BP_DIR/lib/vendor/new_relic/install.sh $BUILD_DIR
+source $BP_DIR/lib/vendor/new_relic/install.sh $BUILD_DIR
 
 ### Handle errors
 

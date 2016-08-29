@@ -3,6 +3,7 @@ require 'bundler/setup'
 require 'json'
 require 'fileutils'
 require 'tmpdir'
+require 'open3'
 
 describe "New Relic Installer" do
   let(:buildpack_dir) { File.join(File.expand_path(File.dirname(__FILE__)), '..', '..') }
@@ -27,7 +28,7 @@ describe "New Relic Installer" do
 
   subject do
     Dir.chdir(buildpack_dir) do
-      `lib/vendor/new_relic/install.sh #{build_dir}`
+      @stdout, @stderr, @status = Open3.capture3("lib/vendor/new_relic/install.sh #{build_dir}")
     end
   end
 
@@ -54,12 +55,14 @@ describe "New Relic Installer" do
       context 'NEW_RELIC_LICENSE_KEY and NEW_RELIC_APP_NAME not set' do
         it "sets the NEW_RELIC_LICENSE_KEY variable from VCAP_SERVICES" do
           subject
+          expect(@status).to be_success
           profile_d_contents = File.read(profile_d_new_relic)
           expect(profile_d_contents).to include('export NEW_RELIC_LICENSE_KEY=new_relic_license_key_set_by_service_binding')
         end
 
         it "sets the NEW_RELIC_APP_NAME variable" do
           subject
+          expect(@status).to be_success
           profile_d_contents = File.read(profile_d_new_relic)
           expect(profile_d_contents).to include('export NEW_RELIC_APP_NAME=unit-test-app_fff-fff-fff-fff')
         end
@@ -76,12 +79,14 @@ describe "New Relic Installer" do
 
         it "sets the NEW_RELIC_APP_NAME variable" do
           subject
+          expect(@status).to be_success
           profile_d_contents = File.read(profile_d_new_relic)
           expect(profile_d_contents).to include('export NEW_RELIC_APP_NAME=unit-test-app_fff-fff-fff-fff')
         end
 
         it "does not modify NEW_RELIC_LICENSE_KEY" do
           subject
+          expect(@status).to be_success
           profile_d_contents = File.read(profile_d_new_relic)
           expect(profile_d_contents).to_not include('NEW_RELIC_LICENSE_KEY')
         end
@@ -98,12 +103,14 @@ describe "New Relic Installer" do
 
         it "does not modify NEW_RELIC_APP_NAME" do
           subject
+          expect(@status).to be_success
           profile_d_contents = File.read(profile_d_new_relic)
           expect(profile_d_contents).to_not include('NEW_RELIC_APP_NAME')
         end
 
         it "sets the NEW_RELIC_LICENSE_KEY variable from VCAP_SERVICES" do
           subject
+          expect(@status).to be_success
           profile_d_contents = File.read(profile_d_new_relic)
           expect(profile_d_contents).to include('export NEW_RELIC_LICENSE_KEY=new_relic_license_key_set_by_service_binding')
         end
@@ -122,6 +129,7 @@ describe "New Relic Installer" do
 
         it 'does not create .profile.d/new-relic-setup.sh file' do
           subject
+          expect(@status).to be_success
           expect(File.exist?(profile_d_new_relic)).to be_falsey
         end
       end
@@ -132,6 +140,23 @@ describe "New Relic Installer" do
 
       it 'does not create .profile.d/new-relic-setup.sh file' do
         subject
+        expect(@status).to be_success
+        expect(File.exist?(profile_d_new_relic)).to be_falsey
+      end
+    end
+
+    context 'VCAP_SERVICES is not present in environment' do
+      let(:vcap_services) { {} }
+
+      subject do
+        Dir.chdir(buildpack_dir) do
+          @stdout, @stderr, @status = Open3.capture3("unset VCAP_SERVICES; lib/vendor/new_relic/install.sh #{build_dir}")
+        end
+      end
+
+      it 'does not create .profile.d/new-relic-setup.sh file' do
+        subject
+        expect(@status).to be_success
         expect(File.exist?(profile_d_new_relic)).to be_falsey
       end
     end

@@ -27,7 +27,7 @@ describe "New Relic Installer" do
 
   subject do
     Dir.chdir(buildpack_dir) do
-      `. lib/vendor/new_relic/install.sh #{build_dir}`
+      `lib/vendor/new_relic/install.sh #{build_dir}`
     end
   end
 

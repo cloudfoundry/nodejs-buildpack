@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source $SCRIPT_PATH/../../json.sh
+
 BUILD_DIR=$1
+BP_DIR=$SCRIPT_PATH/../../..
+
+. $SCRIPT_PATH/../../json.sh
 
 VCAP_SERVICES_NEW_RELIC_LICENSE_KEY=$(echo $VCAP_SERVICES | $JQ --raw-output .newrelic[0].credentials.licenseKey)
 VCAP_APPLICATION_GUID=$(echo $VCAP_APPLICATION | $JQ --raw-output .application_id)

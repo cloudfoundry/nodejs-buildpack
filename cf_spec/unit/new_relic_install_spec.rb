@@ -120,7 +120,7 @@ describe "New Relic Installer" do
           ENV["NEW_RELIC_APP_NAME"] = nil
         end
 
-        it 'does not create .profile.e/new-relic-setup.sh file' do
+        it 'does not create .profile.d/new-relic-setup.sh file' do
           subject
           expect(File.exist?(profile_d_new_relic)).to be_falsey
         end

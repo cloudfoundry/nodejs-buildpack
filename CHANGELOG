@@ -1,3 +1,24 @@
+v1.5.19 Sep 01, 2016
+=====================
+
+* Add node 4.5.0, remove node 4.4.6
+  (https://www.pivotaltracker.com/story/show/128431641)
+
+* Add node 6.4.0, remove node 6.3.0
+  (https://www.pivotaltracker.com/story/show/128863283)
+
+* Add node 6.5.0, remove node 6.3.1
+  (https://www.pivotaltracker.com/story/show/129366607)
+
+* Add support for New Relic configuration through service binding
+  (https://www.pivotaltracker.com/story/show/110040634)
+
+* Filter credentials from dependency urls printed during staging
+  (https://www.pivotaltracker.com/story/show/126514693)
+
+* Add default_versions support for specifying node default version
+  (https://www.pivotaltracker.com/story/show/126394943)
+
 v1.5.18 Jul 25, 2016
 =====================
 

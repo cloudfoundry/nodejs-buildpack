@@ -1,22 +1,16 @@
-warnings=$(mktemp -t heroku-buildpack-nodejs-XXXX)
+warnings=$(mktemp -t cloudfoundry-nodejs-buildpack-XXXX)
 
 failure_message() {
   local warn="$(cat $warnings)"
   echo ""
-  echo "We're sorry this build is failing! You can troubleshoot common issues here:"
-  echo "https://devcenter.heroku.com/articles/troubleshooting-node-deploys"
+  echo "We're sorry this build is failing! You find more info about the nodejs buildpack here:"
+  echo "https://docs.cloudfoundry.org/buildpacks/node/index.html"
   echo ""
   if [ "$warn" != "" ]; then
     echo "Some possible problems:"
     echo ""
     echo "$warn"
-  else
-    echo "If you're stuck, please submit a ticket so we can help:"
-    echo "https://help.heroku.com/"
   fi
-  echo ""
-  echo "Love,"
-  echo "Heroku"
   echo ""
 }
 
@@ -37,7 +31,7 @@ warning() {
 
 warn() {
   local tip=${1:-}
-  local url=${2:-https://devcenter.heroku.com/articles/nodejs-support}
+  local url=${2:-http://docs.cloudfoundry.org/buildpacks/node}
   echo " !     $tip" || true
   echo "       $url" || true
   echo ""
@@ -68,24 +62,16 @@ warn_missing_package_json() {
   fi
 }
 
-warn_old_npm() {
-  local npm_version="$(npm --version)"
-  if [ "${npm_version:0:1}" -lt "2" ]; then
-    local latest_npm="$(curl --silent --get --retry 5 --retry-max-time 15 https://semver.herokuapp.com/npm/stable)"
-    warning "This version of npm ($npm_version) has several known issues - consider upgrading to the latest release ($latest_npm)" "https://devcenter.heroku.com/articles/nodejs-support#specifying-an-npm-version"
-  fi
-}
-
 warn_untracked_dependencies() {
   local log_file="$1"
   if grep -qi 'gulp: not found' "$log_file" || grep -qi 'gulp: command not found' "$log_file"; then
-    warning "Gulp may not be tracked in package.json" "https://devcenter.heroku.com/articles/troubleshooting-node-deploys#ensure-you-aren-t-relying-on-untracked-dependencies"
+    warning "Gulp may not be tracked in package.json"
   fi
   if grep -qi 'grunt: not found' "$log_file" || grep -qi 'grunt: command not found' "$log_file"; then
-    warning "Grunt may not be tracked in package.json" "https://devcenter.heroku.com/articles/troubleshooting-node-deploys#ensure-you-aren-t-relying-on-untracked-dependencies"
+    warning "Grunt may not be tracked in package.json"
   fi
   if grep -qi 'bower: not found' "$log_file" || grep -qi 'bower: command not found' "$log_file"; then
-    warning "Bower may not be tracked in package.json" "https://devcenter.heroku.com/articles/troubleshooting-node-deploys#ensure-you-aren-t-relying-on-untracked-dependencies"
+    warning "Bower may not be tracked in package.json"
   fi
 }
 
@@ -99,7 +85,7 @@ warn_angular_resolution() {
 warn_missing_devdeps() {
   local log_file="$1"
   if grep -qi 'cannot find module' "$log_file"; then
-    warning "A module may be missing from 'dependencies' in package.json" "https://devcenter.heroku.com/articles/troubleshooting-node-deploys#ensure-you-aren-t-relying-on-untracked-dependencies"
+    warning "A module may be missing from 'dependencies' in package.json"
     if [ "$NPM_CONFIG_PRODUCTION" == "true" ]; then
       local devDeps=$(read_json "$BUILD_DIR/package.json" ".devDependencies")
       if [ "$devDeps" != "" ]; then

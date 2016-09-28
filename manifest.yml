@@ -31,9 +31,9 @@ dependencies:
   cf_stacks:
   - cflinuxfs2
 - name: node
-  version: 0.12.14
-  uri: https://buildpacks.cloudfoundry.org/concourse-binaries/node/node-0.12.14-linux-x64.tgz
-  md5: 510555de82cc985898731dc7c18a6dfb
+  version: 0.12.16
+  uri: https://buildpacks.cloudfoundry.org/concourse-binaries/node/node-0.12.16-linux-x64.tgz
+  md5: 6ecfcbcf63abc5b3008373818bd28a93
   cf_stacks:
   - cflinuxfs2
 - name: node

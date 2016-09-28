@@ -2,7 +2,7 @@
 language: nodejs
 default_versions:
 - name: node
-  version: 4.5.0
+  version: 4.6.0
 exclude_files:
 - ".git/"
 - ".gitignore"
@@ -55,9 +55,9 @@ dependencies:
   cf_stacks:
   - cflinuxfs2
 - name: node
-  version: 4.4.7
-  uri: https://buildpacks.cloudfoundry.org/concourse-binaries/node/node-4.4.7-linux-x64.tgz
-  md5: 81fb9f3b687bdb931e9f06fa3b7c68fe
+  version: 4.6.0
+  uri: https://buildpacks.cloudfoundry.org/concourse-binaries/node/node-4.6.0-linux-x64.tgz
+  md5: 3c5c0d3ecb789aff7f815f3f1b9aa083
   cf_stacks:
   - cflinuxfs2
 - name: node

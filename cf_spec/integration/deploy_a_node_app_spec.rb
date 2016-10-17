@@ -2,8 +2,11 @@ $: << 'cf_spec'
 require 'spec_helper'
 
 describe 'CF NodeJS Buildpack' do
-  subject(:app) { Machete.deploy_app(app_name) }
-  let(:browser) { Machete::Browser.new(app) }
+  subject(:app)           { Machete.deploy_app(app_name) }
+  let(:browser)           { Machete::Browser.new(app) }
+  let(:buildpack_dir)     { File.join(File.dirname(__FILE__), '..', '..') }
+  let(:version_file)      { File.join(buildpack_dir, 'VERSION') }
+  let(:buildpack_version) { File.read(version_file).strip }
 
   after do
     Machete::CF::DeleteApp.new.execute(app)
@@ -54,6 +57,10 @@ describe 'CF NodeJS Buildpack' do
 
       browser.visit_path('/')
       expect(browser).to have_body('Hello, World!')
+    end
+
+    it 'correctly displays the buildpack version' do
+      expect(app).to have_logged "node.js #{buildpack_version}"
     end
   end
 

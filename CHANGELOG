@@ -1,3 +1,27 @@
+v1.5.22 Oct 19, 2016
+=====================
+
+* Add node 6.9.0 and 6.8.1, remove node 6.6.0 and 6.7.0
+  (https://www.pivotaltracker.com/story/show/132362527)
+  (https://www.pivotaltracker.com/story/show/132362087)
+  (https://www.pivotaltracker.com/story/show/132198199)
+  (https://www.pivotaltracker.com/story/show/132691907)
+
+* Add node 0.10.48, remove node 0.10.46
+  (https://www.pivotaltracker.com/story/show/132686391)
+
+* Add node 0.12.17, remove node 0.12.15
+  (https://www.pivotaltracker.com/story/show/132686391)
+
+* Add node 4.6.1, remove node 4.5.0
+  (https://www.pivotaltracker.com/story/show/132686391)
+
+* Address USN-3087-1: OpenSSL vulnerabilities with node 6.8.1 and 6.9.0
+  (https://www.pivotaltracker.com/story/show/130992485)
+
+* NOTICE: Node.js 0.10 will be removed after October 31, 2016 due to end of LTS
+  (https://www.pivotaltracker.com/story/show/132026695)
+
 v1.5.21 Sep 28, 2016
 =====================
 

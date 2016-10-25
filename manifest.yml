@@ -78,3 +78,9 @@ dependencies:
   md5: 3a0fbba5d2b27fbc6d7f1a89b4a6a108
   cf_stacks:
   - cflinuxfs2
+- name: node
+  version: 7.0.0
+  uri: https://buildpacks.cloudfoundry.org/concourse-binaries/node/node-7.0.0-linux-x64.tgz
+  md5: cff1c6d374fd9dd3e8fb0ad2fbddc6da
+  cf_stacks:
+  - cflinuxfs2

@@ -9,7 +9,7 @@ GIT
       terminal-table (~> 1.4.5)
 
 GIT
-  remote: https://github.com/cloudfoundry/machete.git
+  remote: https://github.com/cloudfoundry/machete
   revision: 784453ae541a150d0e90465cb0559c738fa9290d
   tag: v0.0.50
   specs:
@@ -78,4 +78,4 @@ RUBY VERSION
    ruby 2.3.1p112
 
 BUNDLED WITH
-   1.13.5
+   1.13.6

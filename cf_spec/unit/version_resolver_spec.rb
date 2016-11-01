@@ -9,15 +9,9 @@ describe "Node version resolver" do
   # https://github.com/isaacs/node-semver
 
   def resolve_version(version = "")
-    if `uname`.include?("Darwin")
-      node_executable = "/usr/local/bin/node"
-    else
-      node_executable = "./bin/node"
-    end
-
     default_version = '4.1.1'
     versions_arr_as_json = ["0.0.1", "0.9.1", "0.10.12", "0.10.13", "0.10.14", "0.11.0"].to_json
-    `#{node_executable} lib/version_resolver.js "#{version}" "#{versions_arr_as_json.inspect}" #{default_version}`.strip
+    `ruby lib/version_resolver.rb "#{version}" "#{versions_arr_as_json.inspect}" #{default_version}`.strip
   end
 
   describe 'supporting ranges' do

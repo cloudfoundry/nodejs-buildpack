@@ -1,3 +1,29 @@
+v1.5.23 Nov 09, 2016
+=====================
+
+* Add node 7.1.0
+  (https://www.pivotaltracker.com/story/show/133966203)
+
+* Add node 7.0.0
+  (https://www.pivotaltracker.com/story/show/133105865)
+
+* Add node 6.9.1, remove node 6.8.1
+  (https://www.pivotaltracker.com/story/show/132796533)
+
+* Add node 4.6.2, remove node 4.6.0
+  (https://www.pivotaltracker.com/story/show/133955125)
+
+* Remove node 0.10.47 and 0.10.48
+  - Node.js 0.10.x support ends on October 31st, 2016
+  - Node.js 0.10.x will no longer be in the nodejs-buildpack
+  (https://www.pivotaltracker.com/story/show/132026695)
+
+* Ensure all downloaded binaries have checksums verified
+  (https://www.pivotaltracker.com/story/show/128099189)
+
+* Remove vendored node binary executable
+  (https://www.pivotaltracker.com/story/show/128498051)
+
 v1.5.22 Oct 19, 2016
 =====================
 

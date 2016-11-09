@@ -1,8 +1,25 @@
-install_node_modules() {
+yarn_node_modules() {
   local build_dir=${1:-}
 
   echo "Installing node modules (yarn)"
   yarn 2>&1
+}
+
+install_node_modules() {
+  local build_dir=${1:-}
+
+  if [ -e $build_dir/package.json ]; then
+    cd $build_dir
+
+    if [ -e $build_dir/npm-shrinkwrap.json ]; then
+      echo "Installing node modules (package.json + shrinkwrap)"
+    else
+      echo "Installing node modules (package.json)"
+    fi
+    npm install --unsafe-perm --userconfig $build_dir/.npmrc 2>&1
+  else
+    echo "Skipping (no package.json)"
+  fi
 }
 
 rebuild_node_modules() {

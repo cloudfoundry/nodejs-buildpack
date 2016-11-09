@@ -95,6 +95,8 @@ install_bins() {
     warn_node_engine "$node_engine"
     install_nodejs "$node_engine" "$BUILD_DIR/.heroku/node"
     install_npm "$npm_engine" "$BUILD_DIR/.heroku/node"
+  fi
+  if [ -f "$BUILD_DIR/yarn.lock" ]; then
     install_yarn "$BUILD_DIR/.heroku/yarn"
   fi
 }
@@ -126,6 +128,8 @@ build_dependencies() {
   if $PREBUILD; then
     echo "Prebuild detected (node_modules already exists)"
     rebuild_node_modules "$BUILD_DIR"
+  elif [ -f "$BUILD_DIR/yarn.lock" ]; then
+    yarn_node_modules "$BUILD_DIR"
   else
     install_node_modules "$BUILD_DIR"
   fi
@@ -156,7 +160,11 @@ cache_build | output "$LOG_FILE"
 
 summarize_build() {
   cd $BUILD_DIR
-  (yarn ls || true) 2>/dev/null
+  if [ -f "$BUILD_DIR/yarn.lock" ]; then
+    (yarn ls || true) 2>/dev/null
+  else
+    (npm ls --depth=0 | tail -n +2 || true) 2>/dev/null
+  fi
 }
 
 header "Build succeeded!"

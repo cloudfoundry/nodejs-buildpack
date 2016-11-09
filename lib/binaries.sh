@@ -89,3 +89,24 @@ install_npm() {
     fi
   fi
 }
+
+install_yarn() {
+  local dir="$1"
+
+  echo "Downloading and installing yarn..."
+  local download_url="https://yarnpkg.com/latest.tar.gz"
+  local code=$(curl "$download_url" -L --silent --fail --retry 5 --retry-max-time 15 -o /tmp/yarn.tar.gz --write-out "%{http_code}")
+  if [ "$code" != "200" ]; then
+    echo "Unable to download yarn: $code" && false
+  fi
+  rm -rf $dir
+  mkdir -p "$dir"
+  # https://github.com/yarnpkg/yarn/issues/770
+  if tar --version | grep -q 'gnu'; then
+    tar xzf /tmp/yarn.tar.gz -C "$dir" --strip 1 --warning=no-unknown-keyword
+  else
+    tar xzf /tmp/yarn.tar.gz -C "$dir" --strip 1
+  fi
+  chmod +x $dir/bin/*
+  echo "Installed yarn $(yarn --version)"
+}

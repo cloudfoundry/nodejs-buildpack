@@ -56,6 +56,16 @@ trap 'handle_failure' ERR
 
 [ -e "$BUILD_DIR/node_modules" ] && PREBUILD=true || PREBUILD=false
 
+node_modules_subdirs=0
+if [ -d "$BUILD_DIR/node_modules" ]; then
+  node_modules_subdirs=$(find "$BUILD_DIR"/node_modules -mindepth 1 -maxdepth 1 -type d | wc -l)
+fi
+
+if [ "$node_modules_subdirs" -eq 0 ]; then
+	info "PRO TIP: It is recommended to vendor the application's Node.js dependencies"
+	info "         See http://docs.cloudfoundry.org/buildpacks/node/index.html#vendoring for more information"
+fi
+
 ### Failures that should be caught immediately
 
 fail_invalid_package_json "$BUILD_DIR"

@@ -89,6 +89,10 @@ describe 'CF NodeJS Buildpack' do
   context 'with an app that has vendored dependencies' do
     let(:app_name) { 'node_web_app_with_vendored_dependencies' }
 
+    it 'does not output protip that recommends user vendors dependencies' do
+      expect(app).not_to have_logged("PRO TIP: It is recommended to vendor the application's Node.js dependencies")
+    end
+
     context 'with an uncached buildpack', :uncached do
       it 'successfully deploys and includes the dependencies' do
         expect(app).to be_running
@@ -126,6 +130,10 @@ describe 'CF NodeJS Buildpack' do
 
     it "uses a proxy during staging if present", :uncached do
       expect(app).to use_proxy_during_staging
+    end
+
+    it 'outputs protip that recommends user vendors dependencies' do
+      expect(app).to have_logged("PRO TIP: It is recommended to vendor the application's Node.js dependencies")
     end
   end
 

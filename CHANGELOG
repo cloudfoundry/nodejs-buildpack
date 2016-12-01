@@ -1,3 +1,18 @@
+v1.5.24 Dec 01, 2016
+=====================
+
+* Add node 7.2.0, remove node 7.0.0
+  (https://www.pivotaltracker.com/story/show/134823269)
+
+* Provide a "protip" when Node.js modules are not vendored
+  (https://www.pivotaltracker.com/story/show/116369631)
+
+* Rebuild and change path for node binaries
+  - We identified a potential, but unlikely, attack vector in our continuous
+    integration system. Our own auditing strongly suggests that this attack
+    vector was not taken advantage of. However, out of an abundance of caution,
+    we are rebuilding all buildpack dependencies that we maintain.
+
 v1.5.23 Nov 09, 2016
 =====================
 

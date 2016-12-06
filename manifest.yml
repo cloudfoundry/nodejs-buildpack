@@ -55,12 +55,6 @@ dependencies:
   cf_stacks:
   - cflinuxfs2
 - name: node
-  version: 7.1.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.1.0-linux-x64.tgz
-  md5: b81c51c5b50634bfc9c1f6078ac2a93e
-  cf_stacks:
-  - cflinuxfs2
-- name: node
   version: 7.2.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.2.0-linux-x64.tgz
   md5: 28a032eee95792e8cb69d76e133172cb
@@ -76,5 +70,11 @@ dependencies:
   version: 4.7.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.7.0-linux-x64.tgz
   md5: 7e5576cea513ad902f5a405a40f4ccc2
+  cf_stacks:
+  - cflinuxfs2
+- name: node
+  version: 7.2.1
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.2.1-linux-x64.tgz
+  md5: 0acf5b37b5a8bf5f423a655dcaec5791
   cf_stacks:
   - cflinuxfs2

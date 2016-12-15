@@ -1,3 +1,15 @@
+v1.5.25 Dec 15, 2016
+=====================
+
+* Add node 7.2.1, remove node 7.1.0
+  (https://www.pivotaltracker.com/story/show/135658433)
+
+* Add node 6.9.2, remove node 6.9.0
+  (https://www.pivotaltracker.com/story/show/135643989)
+
+* Add node 4.7.0, remove node 4.6.1
+  (https://www.pivotaltracker.com/story/show/135648535)
+
 v1.5.24 Dec 01, 2016
 =====================
 

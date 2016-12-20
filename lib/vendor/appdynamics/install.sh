@@ -19,7 +19,7 @@ then
     key="user-provided"
   fi
   APPDYNAMICS_CONTROLLER_HOST_NAME=$(echo "${VCAP_SERVICES-}" | $JQ --raw-output '.['\""$key"\"'][0] | .credentials | .["host-name"] ')
-  APPDYNAMICS_CONTROLLER_PORT=$(echo "${VCAP_SERVICES-}" | $JQ --raw-output '.['\""$key"\"'][0] | .credentials | .port ')
+  APPDYNAMICS_CONTROLLER_PORT=$(echo "${VCAP_SERVICES-}" | $JQ --raw-output '.['\""$key"\"'][0] | .credentials | .["port"] ')
   APPDYNAMICS_AGENT_ACCOUNT_NAME=$(echo "${VCAP_SERVICES-}" | $JQ --raw-output '.['\""$key"\"'][0] | .credentials | .["account-name"] ')
   APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY=$(echo "${VCAP_SERVICES-}" | $JQ --raw-output '.['\""$key"\"'][0] | .credentials | .["account-access-key"] ')
 

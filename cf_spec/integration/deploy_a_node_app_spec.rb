@@ -116,6 +116,24 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
+  context 'with an app with a yarn.lock file' do
+    let(:app_name) { 'node_web_app_with_yarn' }
+
+    it 'successfully deploys and vendors the dependencies via yarn', :uncached do
+      expect(app).to have_logged("Downloading and installing yarn")
+      expect(app).to be_running
+      expect(Dir).to_not exist("cf_spec/fixtures/#{app_name}/node_modules")
+      expect(app).to have_file '/app/node_modules'
+
+      browser.visit_path('/')
+      expect(browser).to have_body('Hello, World!')
+    end
+
+    it "uses a proxy during staging if present", :uncached do
+      expect(app).to use_proxy_during_staging
+    end
+  end
+
   context 'with an app with no vendored dependencies' do
     let(:app_name) { 'node_web_app_no_vendored_dependencies' }
 

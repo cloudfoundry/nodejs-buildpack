@@ -20,7 +20,7 @@ then
   fi
   APPDYNAMICS_CONTROLLER_HOST_NAME=$(echo "${VCAP_SERVICES-}" | $JQ --raw-output '.['\""$key"\"'][0] | .credentials | .["host-name"] ')
   APPDYNAMICS_CONTROLLER_PORT=$(echo "${VCAP_SERVICES-}" | $JQ --raw-output '.['\""$key"\"'][0] | .credentials | .port ')
-  APPDYNAMICS_AGENT_SSL_ENABLED=$(echo "${VCAP_SERVICES-}" | $JQ --raw-output '.['\""$key"\"'][0] | .credentials | .["ssl-enabled"] ')
+  APPDYNAMICS_CONTROLLER_SSL_ENABLED=$(echo "${VCAP_SERVICES-}" | $JQ --raw-output '.['\""$key"\"'][0] | .credentials | .["ssl-enabled"] ')
   APPDYNAMICS_AGENT_ACCOUNT_NAME=$(echo "${VCAP_SERVICES-}" | $JQ --raw-output '.['\""$key"\"'][0] | .credentials | .["account-name"] ')
   APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY=$(echo "${VCAP_SERVICES-}" | $JQ --raw-output '.['\""$key"\"'][0] | .credentials | .["account-access-key"] ')
 
@@ -39,8 +39,8 @@ then
     if [ ! -z "${APPDYNAMICS_CONTROLLER_PORT-}" ]; then
       echo "export APPDYNAMICS_CONTROLLER_PORT=$APPDYNAMICS_CONTROLLER_PORT" >> $SETUP_APPDYNAMICS
     fi
-    if [ ! -z "${APPDYNAMICS_AGENT_SSL_ENABLED-}" ]; then
-      echo "export APPDYNAMICS_AGENT_SSL_ENABLED=$APPDYNAMICS_AGENT_SSL_ENABLED" >> $SETUP_APPDYNAMICS
+    if [ ! -z "${APPDYNAMICS_CONTROLLER_SSL_ENABLED-}" ]; then
+      echo "export APPDYNAMICS_CONTROLLER_SSL_ENABLED=$APPDYNAMICS_CONTROLLER_SSL_ENABLED" >> $SETUP_APPDYNAMICS
     fi
     if [ ! -z "${APPDYNAMICS_AGENT_ACCOUNT_NAME-}" ]; then
       echo "export APPDYNAMICS_AGENT_ACCOUNT_NAME=$APPDYNAMICS_AGENT_ACCOUNT_NAME" >> $SETUP_APPDYNAMICS

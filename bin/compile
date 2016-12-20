@@ -20,7 +20,7 @@ $BP_DIR/compile-extensions/bin/check_stack_support
 
 mkdir -p "$BUILD_DIR/.heroku/node/"
 cd $BUILD_DIR
-export PATH="$BUILD_DIR/.heroku/node/bin":$PATH
+export PATH="$BUILD_DIR/.heroku/node/bin:$BUILD_DIR/.heroku/yarn/bin":$PATH
 
 # CF Common
 export BUILDPACK_PATH=$BP_DIR
@@ -106,6 +106,9 @@ install_bins() {
     install_nodejs "$node_engine" "$BUILD_DIR/.heroku/node"
     install_npm "$npm_engine" "$BUILD_DIR/.heroku/node"
   fi
+  if [ -f "$BUILD_DIR/yarn.lock" ]; then
+    install_yarn "$BUILD_DIR/.heroku/yarn"
+  fi
 }
 
 header "Installing binaries"
@@ -134,7 +137,13 @@ restore_cache | output "$LOG_FILE"
 build_dependencies() {
   if $PREBUILD; then
     echo "Prebuild detected (node_modules already exists)"
-    rebuild_node_modules "$BUILD_DIR"
+    if [ -f "$BUILD_DIR/yarn.lock" ]; then
+      rebuild_yarn_modules "$BUILD_DIR"
+    else
+      rebuild_node_modules "$BUILD_DIR"
+    fi
+  elif [ -f "$BUILD_DIR/yarn.lock" ]; then
+    yarn_node_modules "$BUILD_DIR"
   else
     install_node_modules "$BUILD_DIR"
   fi
@@ -165,7 +174,11 @@ cache_build | output "$LOG_FILE"
 
 summarize_build() {
   cd $BUILD_DIR
-  (npm ls --depth=0 | tail -n +2 || true) 2>/dev/null
+  if [ -f "$BUILD_DIR/yarn.lock" ]; then
+    (yarn ls || true) 2>/dev/null
+  else
+    (npm ls --depth=0 | tail -n +2 || true) 2>/dev/null
+  fi
 }
 
 header "Build succeeded!"

@@ -1,3 +1,10 @@
+yarn_node_modules() {
+  local build_dir=${1:-}
+
+  echo "Installing node modules (yarn)"
+  yarn 2>&1
+}
+
 install_node_modules() {
   local build_dir=${1:-}
 
@@ -13,6 +20,13 @@ install_node_modules() {
   else
     echo "Skipping (no package.json)"
   fi
+}
+
+rebuild_yarn_modules() {
+  local build_dir=${1:-}
+
+  echo "Installing node modules (yarn)"
+  yarn install --force 2>&1
 }
 
 rebuild_node_modules() {

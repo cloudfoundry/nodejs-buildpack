@@ -26,7 +26,8 @@ then
 
   APPDYNAMICS_AGENT_APPLICATION_NAME=$(echo "${VCAP_APPLICATION-}" | $JQ --raw-output .application_name)
   APPDYNAMICS_AGENT_TIER_NAME=$(echo "${VCAP_APPLICATION-}" | $JQ --raw-output .application_name)
-  APPDYNAMICS_AGENT_NODE_NAME=$(echo "${VCAP_APPLICATION-}" | $JQ --raw-output .application_name)
+  #APPDYNAMICS_AGENT_NODE_NAME=$(echo "${VCAP_APPLICATION-}" | $JQ --raw-output .application_name)
+  APPDYNAMICS_AGENT_NODE_NAME=$(echo "${CF_INSTANCE_GUID}")
 
   if [ ! -z "${APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY-}" ];
   then

@@ -17,6 +17,7 @@ CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 $BP_DIR/compile-extensions/bin/check_stack_support
+$BP_DIR/compile-extensions/bin/check_buildpack_version $BP_DIR $CACHE_DIR
 
 mkdir -p "$BUILD_DIR/.heroku/node/"
 cd $BUILD_DIR
@@ -178,6 +179,7 @@ summarize_build() {
 }
 
 header "Build succeeded!"
+$BP_DIR/compile-extensions/bin/store_buildpack_metadata $BP_DIR $CACHE_DIR
 summarize_build | output "$LOG_FILE"
 
 warn_no_start "$LOG_FILE"

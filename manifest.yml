@@ -19,12 +19,6 @@ url_to_dependency_map:
   version: "$1"
 dependencies:
 - name: node
-  version: 0.12.16
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-0.12.16-linux-x64.tgz
-  md5: 1dd6db6db0581ba19cb0b453a2e93b7e
-  cf_stacks:
-  - cflinuxfs2
-- name: node
   version: 0.12.17
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-0.12.17-linux-x64.tgz
   md5: 298bb5e878a4e3f7f05a03746d3cf745
@@ -76,5 +70,11 @@ dependencies:
   version: 7.3.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.3.0-linux-x64.tgz
   md5: 0ae2372346f1f122ce772fbe1b4835fc
+  cf_stacks:
+  - cflinuxfs2
+- name: node
+  version: 0.12.18
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-0.12.18-linux-x64.tgz
+  md5: 4ef6e15fac182b15b5392ec63ebfe878
   cf_stacks:
   - cflinuxfs2

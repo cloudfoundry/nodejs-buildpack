@@ -61,6 +61,7 @@ install_nodejs() {
     echo -e "`$BP_DIR/compile-extensions/bin/recommend_dependency $heroku_url`" 1>&2
     exit 22
   fi
+  $BP_DIR/compile-extensions/bin/warn_if_newer_patch $heroku_url "$BP_DIR/manifest.yml"
 
   local downloaded_file=$(ls /tmp/node-v*.tar.gz)
   mv $downloaded_file /tmp/node.tar.gz

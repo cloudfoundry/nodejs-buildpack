@@ -1,3 +1,37 @@
+v1.5.26 Jan 09, 2017
+=====================
+
+* Add warning if downloaded dependency is not the latest patch version for a
+given major and minor version
+  (https://www.pivotaltracker.com/story/show/134863437)
+
+* Add new version warning to nodejs buildpack
+  (https://www.pivotaltracker.com/story/show/135234395)
+
+* Yarn support added, activated if yarn.lock file present
+  (https://www.pivotaltracker.com/story/show/136345251)
+
+* Add node 7.4.0, remove node 7.2.1
+  (https://www.pivotaltracker.com/story/show/137044385)
+
+* Add node 7.3.0, remove node 7.2.0
+  (https://www.pivotaltracker.com/story/show/136461121)
+
+* Add node 6.9.4, remove node 6.9.2
+  (https://www.pivotaltracker.com/story/show/137135283)
+
+* Add node 6.9.3, remove node 6.9.1
+  (https://www.pivotaltracker.com/story/show/136991485)
+
+* Add node 4.7.2, remove node 4.7.0
+  (https://www.pivotaltracker.com/story/show/137135283)
+
+* Add node 4.7.1, remove node 4.6.2
+  (https://www.pivotaltracker.com/story/show/136994135)
+
+* Add node 0.12.18, remove node 0.12.16
+  (https://www.pivotaltracker.com/story/show/136501265)
+
 v1.5.25 Dec 15, 2016
 =====================
 

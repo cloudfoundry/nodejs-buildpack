@@ -12,23 +12,33 @@ install_yarn() {
   local version="$2"
 
   if needs_resolution "$version"; then
-    local yarn_default_version=0.18.1
+    local yarn_default_version=$($BP_DIR/compile-extensions/bin/default_version_for $BP_DIR/manifest.yml yarn)
     local version=$yarn_default_version
   fi
 
-  echo "Downloading and installing yarn ($version)..."
   local download_url="https://yarnpkg.com/downloads/$version/yarn-v$version.tar.gz"
-  local code=$(curl "$download_url" -L --silent --fail --retry 5 --retry-max-time 15 -o /tmp/yarn.tar.gz --write-out "%{http_code}")
-  if [ "$code" != "200" ]; then
-    echo "Unable to download yarn: $code" && false
+  local exit_code=0
+  local filtered_url=""
+
+  echo "Downloading and installing yarn ($version)..."
+
+  filtered_url=$($BP_DIR/compile-extensions/bin/download_dependency $download_url /tmp) || exit_code=$?
+  if [ $exit_code -ne 0 ]; then
+    echo -e "`$BP_DIR/compile-extensions/bin/recommend_dependency $download_url`" 1>&2
+    exit 22
   fi
+  $BP_DIR/compile-extensions/bin/warn_if_newer_patch $download_url "$BP_DIR/manifest.yml"
+
+  local yarn_tar_gz="/tmp/yarn-v$version.tar.gz"
+  echo "Downloaded [$filtered_url]"
+
   rm -rf $dir
   mkdir -p "$dir"
   # https://github.com/yarnpkg/yarn/issues/770
   if tar --version | grep -q 'gnu'; then
-    tar xzf /tmp/yarn.tar.gz -C "$dir" --strip 1 --warning=no-unknown-keyword
+    tar xzf $yarn_tar_gz -C "$dir" --strip 1 --warning=no-unknown-keyword
   else
-    tar xzf /tmp/yarn.tar.gz -C "$dir" --strip 1
+    tar xzf $yarn_tar_gz -C "$dir" --strip 1
   fi
   chmod +x $dir/bin/*
   echo "Installed yarn $(yarn --version)"

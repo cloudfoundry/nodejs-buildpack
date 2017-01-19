@@ -4,7 +4,7 @@ list_dependencies() {
   cd "$build_dir"
   if $YARN; then
     echo ""
-    (yarn ls || true) 2>/dev/null
+    (yarn list || true) 2>/dev/null
     echo ""
   else
     (npm ls --depth=0 | tail -n +2 || true) 2>/dev/null
@@ -40,7 +40,19 @@ yarn_node_modules() {
     echo "  https://yarnpkg.com/en/docs/cli/install#toc-yarn-install-production"
     echo ""
   fi
-  yarn install --pure-lockfile --ignore-engines 2>&1
+
+  local mirror_dir="$build_dir/npm-packages-offline-cache"
+
+  if [ -d "$mirror_dir" ]; then
+    echo "Found yarn mirror directory $mirror_dir"
+    echo "Running yarn in offline mode"
+    yarn config set yarn-offline-mirror "$mirror_dir"
+    yarn install --offline --pure-lockfile --ignore-engines 2>&1
+  else
+    echo "Running yarn in online mode"
+    echo "To run yarn in offline mode, see: https://yarnpkg.com/blog/2016/11/24/offline-mirror"
+    yarn install --pure-lockfile --ignore-engines 2>&1
+  fi
 }
 
 npm_node_modules() {

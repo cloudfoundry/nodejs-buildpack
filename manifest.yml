@@ -3,6 +3,8 @@ language: nodejs
 default_versions:
 - name: node
   version: 4.7.2
+- name: yarn
+  version: 0.19.0
 exclude_files:
 - ".git/"
 - ".gitignore"
@@ -17,7 +19,16 @@ url_to_dependency_map:
 - match: node\/v(\d+\.\d+\.\d+)
   name: node
   version: "$1"
+- match: yarn-v(\d+\.\d+\.\d+)\.tar\.gz
+  name: yarn
+  version: "$1"
 dependencies:
+- name: yarn
+  version: 0.19.0
+  uri: https://yarnpkg.com/downloads/0.19.0/yarn-v0.19.0.tar.gz
+  md5: 7749fa4e8be58114ca8a03932bad273f
+  cf_stacks:
+  - cflinuxfs2
 - name: node
   version: 0.12.17
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-0.12.17-linux-x64.tgz

@@ -134,6 +134,19 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
+  context 'with an app with a yarn.lock and vendored dependencies' do
+    let(:app_name) { 'node_web_app_with_yarn_vendored' }
+
+    it 'deploys without hitting the internet', :cached do
+      expect(app).to have_logged("Downloading and installing yarn")
+      expect(app).to be_running
+      expect(app).not_to have_internet_traffic
+
+      browser.visit_path('/')
+      expect(browser).to have_body('Hello, World!')
+    end
+  end
+
   context 'with an app with no vendored dependencies' do
     let(:app_name) { 'node_web_app_no_vendored_dependencies' }
 

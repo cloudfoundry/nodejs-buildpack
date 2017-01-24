@@ -1,3 +1,18 @@
+v1.5.28 Jan 24, 2017
+=====================
+
+* Remove node 0.12.x version line
+  (https://www.pivotaltracker.com/story/show/136591333)
+
+* Remove node 5.x version line
+  (https://www.pivotaltracker.com/story/show/136591333)
+
+* Add yarn 0.19.1, remove yarn 0.19.0
+  (https://www.pivotaltracker.com/story/show/138003527)
+
+* Add yarn to cached buildpack
+  (https://www.pivotaltracker.com/story/show/136510177)
+
 v1.5.27 Jan 10, 2017
 =====================
 

@@ -62,6 +62,12 @@ warn_missing_package_json() {
   fi
 }
 
+warn_young_yarn() {
+  if $YARN; then
+    warning "This project was built with yarn, which is new and under development. Some projects can still be built more reliably with npm"
+  fi
+}
+
 warn_untracked_dependencies() {
   local log_file="$1"
   if grep -qi 'gulp: not found' "$log_file" || grep -qi 'gulp: command not found' "$log_file"; then

@@ -135,6 +135,15 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
+  context 'with an app with an out of date yarn.lock' do
+    let(:app_name) { 'out_of_date_yarn_lock' }
+
+    it 'warns that yarn.lock is out of date' do
+      expect(app).to have_logged("yarn.lock is outdated")
+      expect(app).to be_running
+    end
+  end
+
   context 'with an app with no vendored dependencies' do
     let(:app_name) { 'node_web_app_no_vendored_dependencies' }
 

@@ -25,37 +25,37 @@ url_to_dependency_map:
 dependencies:
 - name: node
   version: 6.9.4
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.9.4-linux-x64.tgz
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.9.4-linux-x64-374ad900.tgz
   md5: 374ad90048055f1d11bc2ffb70ce08a7
   cf_stacks:
   - cflinuxfs2
 - name: node
   version: 7.3.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.3.0-linux-x64.tgz
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.3.0-linux-x64-0ae23723.tgz
   md5: 0ae2372346f1f122ce772fbe1b4835fc
   cf_stacks:
   - cflinuxfs2
 - name: node
   version: 6.9.3
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.9.3-linux-x64.tgz
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.9.3-linux-x64-1687dab3.tgz
   md5: 1687dab3977a5f20c069802a6b71b790
   cf_stacks:
   - cflinuxfs2
 - name: node
   version: 4.7.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.7.1-linux-x64.tgz
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.7.1-linux-x64-c8769039.tgz
   md5: c87690398b26a0c2180971b48ddef6e7
   cf_stacks:
   - cflinuxfs2
 - name: node
   version: 7.4.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.4.0-linux-x64.tgz
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.4.0-linux-x64-2a9218c5.tgz
   md5: 2a9218c53096363443805ec067df15a9
   cf_stacks:
   - cflinuxfs2
 - name: node
   version: 4.7.2
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.7.2-linux-x64.tgz
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.7.2-linux-x64-f3d30a15.tgz
   md5: f3d30a154f2c7b9826710291650a8734
   cf_stacks:
   - cflinuxfs2

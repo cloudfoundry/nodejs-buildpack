@@ -22,6 +22,19 @@ url_to_dependency_map:
 - match: yarn-v(\d+\.\d+\.\d+)\.tar\.gz
   name: yarn
   version: "$1"
+dependency_deprecation_dates:
+- match: 4\.\d+\.\d+
+  version_line: "4"
+  name: node
+  date: 2018-04-01
+- match: 6\.\d+\.\d+
+  version_line: "6"
+  name: node
+  date: 2019-04-18
+- match: 7\.\d+\.\d+
+  version_line: "7"
+  name: node
+  date: 2017-06-30
 dependencies:
 - name: node
   version: 6.9.4

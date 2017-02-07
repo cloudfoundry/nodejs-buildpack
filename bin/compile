@@ -19,9 +19,9 @@ BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 $BP_DIR/compile-extensions/bin/check_stack_support
 $BP_DIR/compile-extensions/bin/check_buildpack_version $BP_DIR $CACHE_DIR
 
-mkdir -p "$BUILD_DIR/.heroku/node/"
+mkdir -p "$BUILD_DIR/.cloudfoundry/node/"
 cd $BUILD_DIR
-export PATH="$BUILD_DIR/.heroku/node/bin:$BUILD_DIR/.heroku/yarn/bin":$PATH
+export PATH="$BUILD_DIR/.cloudfoundry/node/bin:$BUILD_DIR/.cloudfoundry/yarn/bin":$PATH
 
 # CF Common
 export BUILDPACK_PATH=$BP_DIR
@@ -103,15 +103,15 @@ install_bins() {
 
   if [ -n "$iojs_engine" ]; then
     warn_node_engine "$iojs_engine"
-    install_iojs "$iojs_engine" "$BUILD_DIR/.heroku/node"
+    install_iojs "$iojs_engine" "$BUILD_DIR/.cloudfoundry/node"
     echo "Using bundled npm version for iojs compatibility: `npm --version`"
   else
     warn_node_engine "$node_engine"
-    install_nodejs "$node_engine" "$BUILD_DIR/.heroku/node"
-    install_npm "$npm_engine" "$BUILD_DIR/.heroku/node"
+    install_nodejs "$node_engine" "$BUILD_DIR/.cloudfoundry/node"
+    install_npm "$npm_engine" "$BUILD_DIR/.cloudfoundry/node"
   fi
   if $YARN; then
-    install_yarn "$BUILD_DIR/.heroku/yarn" "$yarn_engine"
+    install_yarn "$BUILD_DIR/.cloudfoundry/yarn" "$yarn_engine"
   fi
 }
 

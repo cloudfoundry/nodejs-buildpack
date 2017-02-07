@@ -26,8 +26,8 @@ detect_memory() {
   esac
 }
 
-export PATH="$HOME/.heroku/node/bin:$HOME/.heroku/yarn/bin:$PATH:$HOME/bin:$HOME/node_modules/.bin"
-export NODE_HOME="$HOME/.heroku/node"
+export PATH="$HOME/.cloudfoundry/node/bin:$HOME/.cloudfoundry/yarn/bin:$PATH:$HOME/bin:$HOME/node_modules/.bin"
+export NODE_HOME="$HOME/.cloudfoundry/node"
 export NODE_ENV=${NODE_ENV:-production}
 
 calculate_concurrency

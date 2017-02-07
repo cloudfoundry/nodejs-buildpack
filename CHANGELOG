@@ -1,3 +1,21 @@
+v1.5.29 Feb 07, 2017
+=====================
+
+* Add EOL dates for node
+  (https://www.pivotaltracker.com/story/show/137288317)
+
+* Add node 7.5.0, remove node 7.3.0
+  (https://www.pivotaltracker.com/story/show/138780181)
+
+* Add node 6.9.5, remove node 6.9.3
+  (https://www.pivotaltracker.com/story/show/138771375)
+
+* Add node 4.7.3, remove node 4.7.1
+  (https://www.pivotaltracker.com/story/show/138773607)
+
+* Add yarn 0.20.0, remove yarn 0.19.1
+  (https://www.pivotaltracker.com/story/show/138614091)
+
 v1.5.28 Jan 24, 2017
 =====================
 

@@ -10,7 +10,7 @@ describe 'CF NodeJS Buildpack' do
   end
 
   context 'deploying a NodeJS app with NewRelic' do
-    let(:app_name) { 'node_web_app_with_newrelic' }
+    let(:app_name) { 'with_newrelic' }
 
     context 'when New Relic environment variables are set' do
       subject(:app) do

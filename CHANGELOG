@@ -1,3 +1,18 @@
+v1.5.30 Feb 27, 2017
+=====================
+
+* Add node 7.6.0 remove node 7.4.0
+  (https://www.pivotaltracker.com/story/show/140375739)
+
+* Add node 6.10.0 remove node 6.9.4
+  (https://www.pivotaltracker.com/story/show/140375739)
+
+* Add node 4.8.0 remove node 4.7.2
+  (https://www.pivotaltracker.com/story/show/140373175)
+
+* Add yarn 0.21.2, remove yarn 0.20.0
+  (https://www.pivotaltracker.com/story/show/139882371)
+
 v1.5.29 Feb 07, 2017
 =====================
 

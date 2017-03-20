@@ -15,9 +15,18 @@ DEFAULT_CACHE=".npm .cache/yarn bower_components"
 BUILD_DIR=${1:-}
 CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
+DEPS_DIR=${4:-}
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 $BP_DIR/compile-extensions/bin/check_stack_support
 $BP_DIR/compile-extensions/bin/check_buildpack_version $BP_DIR $CACHE_DIR
+
+if [ -n "$DEPS_DIR" ]; then
+  env_vars=$($BP_DIR/compile-extensions/bin/build_path_from_supply $DEPS_DIR)
+  for env_var in $env_vars; do
+    export $env_var
+  done
+  $BP_DIR/compile-extensions/bin/write_profiled_from_supply $DEPS_DIR $BUILD_DIR
+fi
 
 mkdir -p "$BUILD_DIR/.cloudfoundry/node/"
 cd $BUILD_DIR

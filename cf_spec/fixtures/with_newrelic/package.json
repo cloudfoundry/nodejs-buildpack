@@ -9,9 +9,11 @@
   "author": "",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "logfmt": "~1.1.2",
-    "express": "~4.0.0",
+    "express": "~4.15.2",
+    "logfmt": "~1.2.0",
     "newrelic": "latest"
   },
-  "engines" : { "node" : "~>4" }
+  "engines": {
+    "node": "~>6"
+  }
 }

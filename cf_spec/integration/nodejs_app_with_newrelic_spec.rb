@@ -20,14 +20,14 @@ describe 'CF NodeJS Buildpack' do
       it 'tries to talk to NewRelic with the license key from the env vars' do
         expect(app).to be_running
         expect(app).to have_logged('&license_key=fake_new_relic_key')
-        expect(app).to_not have_logged('&license_key=insert_new_relic_file_key')
+        expect(app).to_not have_logged('&license_key=new_relic__licence')
       end
     end
 
     context 'when newrelic.js sets license_key' do
       it 'tries to talk to NewRelic with the license key from newrelic.js' do
         expect(app).to be_running
-        expect(app).to have_logged('&license_key=insert_new_relic_file_key')
+        expect(app).to have_logged('&license_key=new_relic__licence')
       end
     end
   end

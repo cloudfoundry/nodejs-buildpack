@@ -1,3 +1,30 @@
+v1.5.31 Mar 27, 2017
+=====================
+
+* Add node 4.8.1, Remove node 4.7.3
+  - Set Node 4.8.1 as the default
+  (https://www.pivotaltracker.com/story/show/142185261)
+
+* Add node 6.10.1, remove node 6.9.5
+  (https://www.pivotaltracker.com/story/show/142185261)
+
+* Add node 7.7.3, remove node 7.5.0
+  (https://www.pivotaltracker.com/story/show/141738953)
+
+* Add node 7.7.4, Remove node 7.6.0
+  (https://www.pivotaltracker.com/story/show/142188245)
+  (https://www.pivotaltracker.com/story/show/141360971)
+
+* Add yarn 0.22.0, remove yarn 0.21.2
+  (https://www.pivotaltracker.com/story/show/141155101)
+  (https://www.pivotaltracker.com/story/show/140681333)
+
+* Add support for supply buildpacks
+  (https://www.pivotaltracker.com/story/show/141616657)
+
+* Use pessimistic locking on ruby version in Gemfile
+  (https://www.pivotaltracker.com/story/show/140770891)
+
 v1.5.30 Feb 27, 2017
 =====================
 

@@ -37,12 +37,6 @@ dependency_deprecation_dates:
   date: 2017-06-30
 dependencies:
 - name: node
-  version: 6.10.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.10.0-linux-x64-a53e48a2.tgz
-  md5: a53e48a27d9394949b6cd30e7ee6bdd4
-  cf_stacks:
-  - cflinuxfs2
-- name: node
   version: 4.8.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.0-linux-x64-4678bae6.tgz
   md5: 4678bae6cec2321a5e4228c026d5d654
@@ -76,5 +70,11 @@ dependencies:
   version: 7.8.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.8.0-linux-x64-a72100f9.tgz
   md5: a72100f960da57a42e9be0ee51b915fa
+  cf_stacks:
+  - cflinuxfs2
+- name: node
+  version: 6.10.2
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.10.2-linux-x64-9f48b587.tgz
+  md5: 9f48b58738d33e263789c30f9d1a044b
   cf_stacks:
   - cflinuxfs2

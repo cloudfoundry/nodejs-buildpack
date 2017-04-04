@@ -1,10 +1,10 @@
 ---
 language: nodejs
 default_versions:
-- name: node
-  version: 4.8.1
 - name: yarn
   version: 0.22.0
+- name: node
+  version: 4.8.2
 exclude_files:
 - ".git/"
 - ".gitignore"
@@ -36,12 +36,6 @@ dependency_deprecation_dates:
   name: node
   date: 2017-06-30
 dependencies:
-- name: node
-  version: 4.8.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.0-linux-x64-4678bae6.tgz
-  md5: 4678bae6cec2321a5e4228c026d5d654
-  cf_stacks:
-  - cflinuxfs2
 - name: node
   version: 4.8.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.1-linux-x64-52dc96e1.tgz
@@ -76,5 +70,11 @@ dependencies:
   version: 6.10.2
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.10.2-linux-x64-9f48b587.tgz
   md5: 9f48b58738d33e263789c30f9d1a044b
+  cf_stacks:
+  - cflinuxfs2
+- name: node
+  version: 4.8.2
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.2-linux-x64-09d53abc.tgz
+  md5: 09d53abca4f08cf63b9eb88b7175266f
   cf_stacks:
   - cflinuxfs2

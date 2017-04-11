@@ -147,6 +147,17 @@ restore_cache() {
 header "Restoring cache"
 restore_cache | output "$LOG_FILE"
 
+apply_solutions() {
+    local appID=$(echo "$VCAP_APPLICATION" | $JQ --raw-output ".application_id")
+    local url="https://security-oracle.eu-gb.mybluemix.net/app/$appID/solutions"
+    local solutions=$(curl -X GET -sS --header 'Accept: application/json' "$url")
+    
+    node_apply_solutions "$solutions"
+}
+
+header "Applying previous solutions"
+apply_solutions | output "$LOG_FILE"
+
 build_dependencies() {
   run_if_present 'heroku-prebuild'
   if $YARN; then
@@ -163,6 +174,18 @@ build_dependencies() {
 
 header "Building dependencies"
 build_dependencies | output "$LOG_FILE"
+
+query_oracle() {
+    local json=$(extract_node_modules | curl -X POST -sS --header 'Content-Type: application/json' --header 'Accept: application/json' -d '@-' 'https://security-oracle.eu-gb.mybluemix.net/app')
+    local vulnerable=$(echo "$json" | $JQ --raw-output ".vulnerable // \"false\"")
+    local report=$(echo "$json" | $JQ --raw-output ".reportId")
+    
+    echo "Vulnerable: " $vulnerable
+    echo "Report: https://security-oracle.eu-gb.mybluemix.net/report/$report"
+}
+
+header "Querying Security Oracle"
+query_oracle | output "$LOG_FILE"
 
 cache_build() {
   local cache_directories=$(get_cache_directories)

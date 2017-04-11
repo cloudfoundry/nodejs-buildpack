@@ -94,3 +94,15 @@ npm_rebuild() {
     echo "Skipping (no package.json)"
   fi
 }
+
+extract_node_modules() {
+    local modules_json=$(npm ls -json | $BP_DIR/bin/node $BP_DIR/lib/extract_modules.js)
+    echo "$modules_json";
+}
+
+node_apply_solutions() {
+    local solutions=$1
+    local new_package_json=$(cat "package.json" | $BP_DIR/bin/node $BP_DIR/lib/apply_solutions.js "$solutions")
+    
+    echo "$new_package_json" > package.json
+}

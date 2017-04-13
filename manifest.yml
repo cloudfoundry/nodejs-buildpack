@@ -1,10 +1,10 @@
 ---
 language: nodejs
 default_versions:
-- name: yarn
-  version: 0.22.0
 - name: node
   version: 4.8.2
+- name: yarn
+  version: 0.23.2
 exclude_files:
 - ".git/"
 - ".gitignore"
@@ -42,12 +42,6 @@ dependencies:
   md5: 52dc96e1af7a3ab332d78321f7d9c231
   cf_stacks:
   - cflinuxfs2
-- name: yarn
-  version: 0.22.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn-v0.22.0-bd0fa300.tar.gz
-  md5: bd0fa3000a488d89f75b03efcbd32cec
-  cf_stacks:
-  - cflinuxfs2
 - name: node
   version: 6.10.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.10.1-linux-x64-dec63bc4.tgz
@@ -76,5 +70,11 @@ dependencies:
   version: 7.9.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.9.0-linux-x64-5d69c9a3.tgz
   md5: 5d69c9a326c4eb6f83bbc1d8993b4fc1
+  cf_stacks:
+  - cflinuxfs2
+- name: yarn
+  version: 0.23.2
+  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn-v0.23.2-8c40f982.tar.gz
+  md5: 8c40f98256c9f14234e6afb04af910b0
   cf_stacks:
   - cflinuxfs2

@@ -49,7 +49,6 @@ source $BP_DIR/lib/binaries.sh
 source $BP_DIR/lib/cache.sh
 source $BP_DIR/lib/dependencies.sh
 source $BP_DIR/lib/vendor/new_relic/install.sh $BUILD_DIR
-source $BP_DIR/lib/vendor/appdynamics/install.sh $BUILD_DIR
 
 ### Handle errors
 

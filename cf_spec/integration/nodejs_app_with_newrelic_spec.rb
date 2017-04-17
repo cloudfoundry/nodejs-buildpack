@@ -14,7 +14,7 @@ describe 'CF NodeJS Buildpack' do
 
     context 'when New Relic environment variables are set' do
       subject(:app) do
-        Machete.deploy_app(app_name, env: {'NEW_RELIC_LICENSE_KEY' => 'fake_new_relic_key2'})
+        Machete.deploy_app(app_name)
       end
 
       it 'tries to talk to NewRelic with the license key from the env vars' do
@@ -25,6 +25,8 @@ describe 'CF NodeJS Buildpack' do
     end
 
     context 'when newrelic.js sets license_key' do
+      let(:app_name) { 'with_newrelic_js' }
+
       it 'tries to talk to NewRelic with the license key from newrelic.js' do
         expect(app).to be_running
         expect(app).to have_logged('&license_key=fake_new_relic_key1')

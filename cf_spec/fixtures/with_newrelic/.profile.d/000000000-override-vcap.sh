@@ -1,0 +1,2 @@
+vcap_services="{\"elephantsql\":[{\"name\":\"elephantsql-c6c60\",\"label\":\"elephantsql\",\"tags\":[\"postgres\",\"postgresql\",\"relational\"],\"plan\":\"turtle\",\"credentials\":{\"uri\":\"postgres://exampleuser:examplepass@babar.elephantsql.com:5432/exampleuser\"}}],\"newrelic\":[{\"name\":\"doesntmatter\",\"label\":\"test\",\"tags\":[\"test\"],\"plan\":\"free\",\"credentials\":{\"licenseKey\":\"fake_new_relic_key2\"}}]}"
+export VCAP_SERVICES=$vcap_services

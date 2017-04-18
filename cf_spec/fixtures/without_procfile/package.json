@@ -1,0 +1,22 @@
+{
+  "name": "node_web_app",
+  "version": "0.0.0",
+  "description": "hello, world",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "logfmt": "~1.1.2",
+    "express": "~4.0.0"
+  },
+  "engines" : {
+  },
+  "repository" :
+  {
+    "type" : "git",
+    "url" : "http://github.com/cloudfoundry/nodejs-buildpack.git"
+  }
+}

@@ -4,5 +4,5 @@
 cat << EOF
 addons: []
 default_process_types:
-  web: npm start
+  web: npm start --max-old-space-size=$(( $(jq -r '.limits.mem' <<<"$VCAP_APPLICATION") * 75 / 100 )) $NPM_CLI_OPTIONS
 EOF

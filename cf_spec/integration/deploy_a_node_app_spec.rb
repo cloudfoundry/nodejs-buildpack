@@ -74,6 +74,28 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
+  context 'with no Procfile and no NPM_CLI_OPTIONS env var' do
+    let (:app_name) { 'without_procfile' }
+
+    it 'is running with autosized max_old_space_size' do
+      expect(app).to be_running
+      expect(app).to have_logged("--max_old_space_size=768")
+    end
+  end
+
+  context 'with no Procfile and with NPM_CLI_OPTIONS env var' do
+    let (:app_name) { 'without_procfile' }
+
+    subject(:app) do
+      Machete.deploy_app(app_name, env: {'NPM_CLI_OPTIONS' => '--trace-sync-io'})
+    end
+
+    it 'is running with autosized max_old_space_size and appended NPM_CLI_OPTIONS' do
+      expect(app).to be_running
+      expect(app).to have_logged("--max_old_space_size=768 --trace-sync-io")
+    end
+  end
+
   context 'with an app that has vendored dependencies' do
     let(:app_name) { 'vendored_dependencies' }
 

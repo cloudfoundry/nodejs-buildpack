@@ -130,8 +130,8 @@ describe 'CF NodeJS Buildpack' do
       expect(app).to be_running
       expect(app).not_to have_internet_traffic
 
-      browser.visit_path('/')
-      expect(browser).to have_body('Hello, World!')
+      browser.visit_path('/microtime')
+      expect(browser).to have_body(/native time: \d+\.\d+/)
     end
   end
 

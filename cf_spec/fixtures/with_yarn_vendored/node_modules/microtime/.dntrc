@@ -1,0 +1,11 @@
+## DNT config file
+## see https://github.com/rvagg/dnt
+
+NODE_VERSIONS="v0.12.14 v0.10.45 v4.4.5 v5.11.1 v6.2.1"
+OUTPUT_PREFIX="node-microtime-"
+TEST_CMD="\
+  cd /dnt/ &&                                                    \
+  npm install &&                                                 \
+  npm test && \
+  echo "ok"
+"

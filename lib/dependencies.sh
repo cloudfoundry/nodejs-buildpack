@@ -48,7 +48,13 @@ run_yarn() {
     local build_dir=${1:-}
     local offline_flag=${2:-}
 
+    # if there are native modules, yarn will use node-gyp to rebuild them
+    # setting npm_config_nodedir tells npm-gyp to use the node header files from
+    # that directory. Otherwise, node-gyp will try to download the headers.
+
+    export npm_config_nodedir="$BUILD_DIR/.cloudfoundry/node"
     yarn install $offline_flag --pure-lockfile --ignore-engines --cache-folder $build_dir/.cache/yarn 2>&1
+    unset npm_config_nodedir
 
     # according to docs: "Verifies that versions of the package dependencies in the current project’s package.json matches that of yarn’s lock file."
     # however, appears to also check for the presence of deps in node_modules, so must be run after install

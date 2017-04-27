@@ -13,7 +13,7 @@ list_dependencies() {
 
 run_if_present() {
   local script_name=${1:-}
-  local has_script=$(read_json "$BUILD_DIR/package.json" ".scripts[\"$script_name\"]")
+  local has_script=$(jq -r ".scripts[\"$script_name\"] // \"\"" < "$BUILD_DIR/package.json")
   if [ -n "$has_script" ]; then
     if $YARN; then
       echo "Running $script_name (yarn)"
@@ -52,7 +52,7 @@ run_yarn() {
     # setting npm_config_nodedir tells npm-gyp to use the node header files from
     # that directory. Otherwise, node-gyp will try to download the headers.
 
-    export npm_config_nodedir="$BUILD_DIR/.cloudfoundry/node"
+    export npm_config_nodedir=$NODE_HOME
     yarn install $offline_flag --pure-lockfile --ignore-engines --cache-folder $build_dir/.cache/yarn 2>&1
     unset npm_config_nodedir
 
@@ -89,7 +89,7 @@ npm_rebuild() {
   if [ -e $build_dir/package.json ]; then
     cd $build_dir
     echo "Rebuilding any native modules"
-    npm rebuild --nodedir=$build_dir/.cloudfoundry/node 2>&1
+    npm rebuild --nodedir=$NODE_HOME 2>&1
     if [ -e $build_dir/npm-shrinkwrap.json ]; then
       echo "Installing any new modules (package.json + shrinkwrap)"
     else

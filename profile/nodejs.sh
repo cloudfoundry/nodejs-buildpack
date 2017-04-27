@@ -26,9 +26,7 @@ detect_memory() {
   esac
 }
 
-export PATH="$HOME/.cloudfoundry/node/bin:$HOME/.cloudfoundry/yarn/bin:$PATH:$HOME/bin:$HOME/node_modules/.bin"
-export NODE_HOME="$HOME/.cloudfoundry/node"
-export NODE_ENV=${NODE_ENV:-production}
+export PATH="$PATH:$HOME/bin:$HOME/node_modules/.bin"
 
 calculate_concurrency
 

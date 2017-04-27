@@ -41,6 +41,12 @@ install_yarn() {
     tar xzf $yarn_tar_gz -C "$dir" --strip 1
   fi
   chmod +x $dir/bin/*
+
+  ## Create bin symlinks
+  pushd "$DEPS_DIR/$DEPS_IDX/bin"
+    ln -s ../yarn/bin/* .
+  popd
+
   echo "Installed yarn $(yarn --version)"
 }
 
@@ -62,7 +68,7 @@ install_nodejs() {
     echo "Downloading and installing node $resolved_version..."
   fi
 
-  local heroku_url="https://s3pository.heroku.com/node/v$resolved_version/node-v$resolved_version-$os-$cpu.tar.gz"
+  local heroku_url="https://s3pository.heroku.com/node/v$resolved_version/node-v$resolved_version.tar.gz"
   local exit_code=0
   local filtered_url=""
 
@@ -74,13 +80,16 @@ install_nodejs() {
   $BP_DIR/compile-extensions/bin/warn_if_newer_patch $heroku_url "$BP_DIR/manifest.yml"
 
   local downloaded_file=$(ls /tmp/node-v*.tar.gz)
-  mv $downloaded_file /tmp/node.tar.gz
 
   echo "Downloaded [$filtered_url]"
-  tar xzf /tmp/node.tar.gz -C /tmp
   rm -rf $dir/*
-  mv /tmp/node-v$resolved_version-$os-$cpu/* $dir
+  tar xzf $downloaded_file -C $dir --strip 1
   chmod +x $dir/bin/*
+
+  ## Create bin symlinks
+  pushd "$DEPS_DIR/$DEPS_IDX/bin"
+    ln -s ../node/bin/* .
+  popd
 }
 
 install_iojs() {
@@ -93,11 +102,16 @@ install_iojs() {
   fi
 
   echo "Downloading and installing iojs $version..."
-  local download_url="https://iojs.org/dist/v$version/iojs-v$version-$os-$cpu.tar.gz"
+  local download_url="https://iojs.org/dist/v$version/iojs-v$version-linux-x64.tar.gz"
   curl "$download_url" --silent --fail --retry 5 --retry-max-time 15 -o /tmp/node.tar.gz || (echo "Unable to download iojs $version; does it exist?" && false)
   tar xzf /tmp/node.tar.gz -C /tmp
-  mv /tmp/iojs-v$version-$os-$cpu/* $dir
+  mv /tmp/iojs-v$version-linux-x64/* $dir
   chmod +x $dir/bin/*
+
+  ## Create bin symlinks
+  pushd "$DEPS_DIR/$DEPS_IDX/bin"
+    ln -s ../node/bin/* .
+  popd
 }
 
 download_failed() {

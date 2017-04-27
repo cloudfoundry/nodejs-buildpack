@@ -19,31 +19,3 @@ list_node_config() {
   fi
 }
 
-export_env_dir() {
-  local env_dir=$1
-  if [ -d "$env_dir" ]; then
-    local whitelist_regex=${2:-''}
-    local blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH|LANG)$'}
-    if [ -d "$env_dir" ]; then
-      for e in $(ls $env_dir); do
-        echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
-        export "$e=$(cat $env_dir/$e)"
-        :
-      done
-    fi
-  fi
-}
-
-write_profile() {
-  local bp_dir="$1"
-  local build_dir="$2"
-  mkdir -p $build_dir/.profile.d
-  cp $bp_dir/profile/* $build_dir/.profile.d/
-}
-
-write_export() {
-  local bp_dir="$1"
-  local build_dir="$2"
-  echo "export PATH=\"$build_dir/.cloudfoundry/node/bin:$build_dir/.cloudfoundry/yarn/bin:\$PATH:$build_dir/node_modules/.bin\"" > $bp_dir/export
-  echo "export NODE_HOME=\"$build_dir/.cloudfoundry/node\"" >> $bp_dir/export
-}

@@ -91,3 +91,5 @@ mkdir -p "$DEPS_DIR/$DEPS_IDX/profile.d"
 cat << EOF > "$DEPS_DIR/$DEPS_IDX/profile.d/node.sh"
 export NODE_HOME="\$DEP_DIR/$DEPS_IDX/node"
 EOF
+
+$BP_DIR/compile-extensions/bin/write_config_yml "$BP_DIR" "$DEPS_DIR/$DEPS_IDX"

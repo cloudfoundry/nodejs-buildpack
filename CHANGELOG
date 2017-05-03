@@ -1,3 +1,34 @@
+v1.5.33 May 03, 2017
+=====================
+
+* Add node 7.10.0, remove node 7.8.0
+  (https://www.pivotaltracker.com/story/show/144784587)
+
+* Add node 7.9.0, remove node 7.7.4
+  (https://www.pivotaltracker.com/story/show/143534007)
+
+* Add node 6.10.3, remove node 6.10.1
+  (https://www.pivotaltracker.com/story/show/144725819)
+
+* Add node 4.8.3, remove node 4.8.1
+  (https://www.pivotaltracker.com/story/show/144719795)
+
+* Add yarn 0.23.4, remove yarn 0.22.0
+  (https://www.pivotaltracker.com/story/show/144725823)
+  (https://www.pivotaltracker.com/story/show/143255621)
+
+* Add Multi Buildpack support
+  (https://www.pivotaltracker.com/story/show/141616657)
+
+* Ensure yarn install does not reach out to internet
+  (https://www.pivotaltracker.com/story/show/142334089)
+
+* Use correct package manager in unmet deps warning
+  (https://www.pivotaltracker.com/story/show/143837939)
+
+* Add Appdynamics support
+  (https://www.pivotaltracker.com/story/show/143585835)
+
 v1.5.32 Apr 04, 2017
 =====================
 

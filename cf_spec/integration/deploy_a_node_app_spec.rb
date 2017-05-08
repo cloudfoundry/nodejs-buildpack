@@ -1,5 +1,6 @@
 $: << 'cf_spec'
 require 'spec_helper'
+require 'open3'
 
 describe 'CF NodeJS Buildpack' do
   subject(:app)           { Machete.deploy_app(app_name) }
@@ -33,6 +34,17 @@ describe 'CF NodeJS Buildpack' do
 
       browser.visit_path('/')
       expect(browser).to have_body('Hello, World!')
+    end
+
+    context 'running a task' do
+      before { skip_if_no_run_task_support_on_targeted_cf }
+
+      it 'can find node in the container' do
+        expect(app).to be_running
+
+        Open3.capture2e('cf','run-task', app_name, 'echo "RUNNING A TASK: $(node --version)"')[1].success? or raise 'Could not create run task'
+        expect(app).to have_logged(/RUNNING A TASK: v6\.\d+\.\d+/)
+      end
     end
   end
 

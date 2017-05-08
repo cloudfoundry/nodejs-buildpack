@@ -27,8 +27,8 @@ get_cache_status() {
 }
 
 get_cache_directories() {
-  local dirs1=$(jq -r ".cacheDirectories | .[]?" < "$BUILD_DIR/package.json")
-  local dirs2=$(jq -r ".cache_directories | .[]?" < "$BUILD_DIR/package.json")
+  local dirs1=$(jq -r ".cacheDirectories // [] | .[]" < "$BUILD_DIR/package.json")
+  local dirs2=$(jq -r ".cache_directories // [] | .[]" < "$BUILD_DIR/package.json")
 
   if [ -n "$dirs1" ]; then
     echo "$dirs1"

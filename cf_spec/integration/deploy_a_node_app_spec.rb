@@ -36,6 +36,10 @@ describe 'CF NodeJS Buildpack' do
       expect(browser).to have_body('Hello, World!')
     end
 
+    it 'does not log a jq error' do
+      expect(app).not_to have_logged /error: Invalid character/
+    end
+
     context 'running a task' do
       before { skip_if_no_run_task_support_on_targeted_cf }
 

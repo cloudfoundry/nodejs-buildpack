@@ -16,20 +16,19 @@ install_yarn() {
     local version=$yarn_default_version
   fi
 
-  local download_url="https://yarnpkg.com/downloads/$version/yarn-v$version.tar.gz"
   local exit_code=0
   local filtered_url=""
 
   echo "Downloading and installing yarn ($version)..."
+  local yarn_tar_gz="/tmp/yarn-v$version.tar.gz"
 
-  filtered_url=$($BP_DIR/compile-extensions/bin/download_dependency $download_url /tmp) || exit_code=$?
+  filtered_url=$($BP_DIR/compile-extensions/bin/download_dependency_by_name yarn $version $yarn_tar_gz) || exit_code=$?
   if [ $exit_code -ne 0 ]; then
-    echo -e "`$BP_DIR/compile-extensions/bin/recommend_dependency $download_url`" 1>&2
+    echo -e "`$BP_DIR/compile-extensions/bin/recommend_dependency_by_name yarn $version`" 1>&2
     exit 22
   fi
-  $BP_DIR/compile-extensions/bin/warn_if_newer_patch $download_url "$BP_DIR/manifest.yml"
+  $BP_DIR/compile-extensions/bin/warn_if_newer_patch_by_name yarn $version
 
-  local yarn_tar_gz="/tmp/yarn-v$version.tar.gz"
   echo "Downloaded [$filtered_url]"
 
   rm -rf $dir
@@ -68,18 +67,17 @@ install_nodejs() {
     echo "Downloading and installing node $resolved_version..."
   fi
 
-  local heroku_url="https://s3pository.heroku.com/node/v$resolved_version/node-v$resolved_version.tar.gz"
+  local downloaded_file="/tmp/node-v$resolved_version.tar.gz"
   local exit_code=0
   local filtered_url=""
 
-  filtered_url=$($BP_DIR/compile-extensions/bin/download_dependency $heroku_url /tmp) || exit_code=$?
+  filtered_url=$($BP_DIR/compile-extensions/bin/download_dependency_by_name node $resolved_version $downloaded_file) || exit_code=$?
   if [ $exit_code -ne 0 ]; then
-    echo -e "`$BP_DIR/compile-extensions/bin/recommend_dependency $heroku_url`" 1>&2
+    echo -e "`$BP_DIR/compile-extensions/bin/recommend_dependency_by_name node $resolved_version`" 1>&2
     exit 22
   fi
-  $BP_DIR/compile-extensions/bin/warn_if_newer_patch $heroku_url "$BP_DIR/manifest.yml"
+  $BP_DIR/compile-extensions/bin/warn_if_newer_patch_by_name node $resolved_version
 
-  local downloaded_file=$(ls /tmp/node-v*.tar.gz)
 
   echo "Downloaded [$filtered_url]"
   rm -rf $dir/*

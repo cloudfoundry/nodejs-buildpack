@@ -27,14 +27,17 @@ dependency_deprecation_dates:
   version_line: '4'
   name: node
   date: 2018-04-01
+  link: https://github.com/nodejs/LTS
 - match: 6\.\d+\.\d+
   version_line: '6'
   name: node
   date: 2019-04-18
+  link: https://github.com/nodejs/LTS
 - match: 7\.\d+\.\d+
   version_line: '7'
   name: node
   date: 2017-06-30
+  link: https://github.com/nodejs/LTS
 dependencies:
 - name: node
   version: 6.10.2

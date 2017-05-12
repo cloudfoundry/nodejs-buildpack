@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-# bin/compile <build-dir> <cache-dir> <env-dir>
+#!/bin/bash
 set -euo pipefail
 
 BUILD_DIR=$1

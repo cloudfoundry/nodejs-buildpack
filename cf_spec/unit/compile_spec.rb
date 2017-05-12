@@ -17,7 +17,7 @@ describe 'Compile step of the buildpack' do
       cache_dir = Dir.mktmpdir
 
       output = run("./bin/compile #{app_dir} #{cache_dir} 2>&1", env:{CF_STACK: 'unsupported'})
-      expect(output).to include 'not supported by this buildpack'
+      expect(output).to include 'Stack not supported by buildpack'
     end
   end
 end

@@ -19,7 +19,7 @@ describe 'CF NodeJS Buildpack' do
 
     it 'resolves to a nodeJS version successfully' do
       expect(app).to be_running
-      expect(app).to have_logged /Downloading and installing node 4\.\d+\.\d+/
+      expect(app).to have_logged /Installing node 4\.\d+\.\d+/
 
       browser.visit_path('/')
       expect(browser).to have_body('Hello, World!')
@@ -31,14 +31,10 @@ describe 'CF NodeJS Buildpack' do
 
     it 'resolves to a nodeJS version successfully' do
       expect(app).to be_running
-      expect(app).to have_logged /Downloading and installing node 6\.\d+\.\d+/
+      expect(app).to have_logged /Installing node 6\.\d+\.\d+/
 
       browser.visit_path('/')
       expect(browser).to have_body('Hello, World!')
-    end
-
-    it 'does not log a jq error' do
-      expect(app).not_to have_logged /error: Invalid character/
     end
 
     context 'running a task' do
@@ -58,7 +54,7 @@ describe 'CF NodeJS Buildpack' do
 
     it 'resolves to the stable nodeJS version successfully' do
       expect(app).to be_running
-      expect(app).to have_logged /Downloading and installing node 4\.\d+\.\d+/
+      expect(app).to have_logged /Installing node 4\.\d+\.\d+/
 
       browser.visit_path('/')
       expect(browser).to have_body('Hello, World!')
@@ -74,9 +70,7 @@ describe 'CF NodeJS Buildpack' do
 
     it 'displays a nice error messages and gracefully fails' do
       expect(app).to_not be_running
-      expect(app).to have_logged 'Downloading and installing node 9000.0.0'
-      expect(app).to_not have_logged 'Downloaded ['
-      expect(app).to have_logged /DEPENDENCY MISSING IN MANIFEST: node 9000\.0\.0.*-----> Build failed/m
+      expect(app).to have_logged /Unable to install node: no match found for 9000.0.0/
     end
   end
 
@@ -85,9 +79,7 @@ describe 'CF NodeJS Buildpack' do
 
     it 'displays a nice error messages and gracefully fails' do
       expect(app).to_not be_running
-      expect(app).to have_logged 'Downloading and installing node 4.1.1'
-      expect(app).to_not have_logged 'Downloaded ['
-      expect(app).to have_logged /DEPENDENCY MISSING IN MANIFEST: node 4\.1\.1.*-----> Build failed/m
+      expect(app).to have_logged /Unable to install node: no match found for 4.1.1/
     end
   end
 
@@ -116,7 +108,7 @@ describe 'CF NodeJS Buildpack' do
     let(:app_name) { 'vendored_dependencies' }
 
     it 'does not output protip that recommends user vendors dependencies' do
-      expect(app).not_to have_logged("PRO TIP: It is recommended to vendor the application's Node.js dependencies")
+      expect(app).not_to have_logged(/PRO TIP:(.*) It is recommended to vendor the application's Node.js dependencies/)
     end
 
     context 'with an uncached buildpack', :uncached do
@@ -137,7 +129,7 @@ describe 'CF NodeJS Buildpack' do
         expect(browser).to have_body('Hello, World!')
 
         expect(app).not_to have_internet_traffic
-        expect(app).to have_logged(/Downloaded \[file:\/\/.*\]/)
+        expect(app).to have_logged(/Copy \[.*\]/)
       end
     end
   end
@@ -146,7 +138,7 @@ describe 'CF NodeJS Buildpack' do
     let(:app_name) { 'with_yarn' }
 
     it 'successfully deploys and vendors the dependencies via yarn', :uncached do
-      expect(app).to have_logged("Downloading and installing yarn")
+      expect(app).to have_logged("Running yarn in online mode")
       expect(app).to be_running
       expect(Dir).to_not exist("cf_spec/fixtures/#{app_name}/node_modules")
       expect(app).to have_file '/app/node_modules'
@@ -164,7 +156,7 @@ describe 'CF NodeJS Buildpack' do
     let(:app_name) { 'with_yarn_vendored' }
 
     it 'deploys without hitting the internet', :cached do
-      expect(app).to have_logged("Downloading and installing yarn")
+      expect(app).to have_logged("Running yarn in offline mode")
       expect(app).to be_running
       expect(app).not_to have_internet_traffic
 
@@ -199,7 +191,7 @@ describe 'CF NodeJS Buildpack' do
     end
 
     it 'outputs protip that recommends user vendors dependencies' do
-      expect(app).to have_logged("PRO TIP: It is recommended to vendor the application's Node.js dependencies")
+      expect(app).to have_logged(/PRO TIP:(.*) It is recommended to vendor the application's Node.js dependencies/)
     end
   end
 
@@ -246,14 +238,16 @@ describe 'CF NodeJS Buildpack' do
       let (:app_name) { 'airgapped_no_npm_version' }
 
       subject(:app) do
-        Machete.deploy_app(app_name, env: {'BP_DEBUG' => '1'})
+        Machete.deploy_app(app_name)
       end
 
       it 'is running with the default version of npm' do
         expect(app).to be_running
         expect(app).not_to have_internet_traffic
+
+        default_version = YAML.load_file(File.join(File.dirname(__FILE__), '..', '..', 'manifest.yml'))['default_versions'].find { |a| a['name'] == 'node' }['version']
+        expect(app).to have_logged /Installing node #{default_version}/
         expect(app).to have_logged("Using default npm version")
-        expect(app).to have_logged('DEBUG: default_version_for node is')
       end
     end
 

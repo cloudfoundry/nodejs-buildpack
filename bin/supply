@@ -1,99 +1,16 @@
-#!/usr/bin/env bash
-# bin/compile <build-dir> <cache-dir> <env-dir>
-
-set -e
-set -o pipefail   # dont ignore exit codes when piping output
-set -o nounset    # fail on unset variables
-unset GIT_DIR     # Avoid GIT_DIR leak from previous build steps
-
-### Configure directories
+#!/bin/bash
+set -euo pipefail
 
 BUILD_DIR=$1
 CACHE_DIR=$2
 DEPS_DIR=$3
 DEPS_IDX=$4
-BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
-$BP_DIR/compile-extensions/bin/check_stack_support
-$BP_DIR/compile-extensions/bin/check_buildpack_version $BP_DIR $CACHE_DIR
 
-env_vars=$($BP_DIR/compile-extensions/bin/build_path_from_supply $DEPS_DIR)
-for env_var in $env_vars; do
-  export $env_var
-done
+export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
+source "$BUILDPACK_DIR/scripts/install_go.sh"
+output_dir=$(mktemp -d -t supplyXXX)
 
-cd $BUILD_DIR
+echo "-----> Running go build supply"
+GOROOT=$GoInstallDir/go GOPATH=$BUILDPACK_DIR $GoInstallDir/go/bin/go build -o $output_dir/supply nodejs/supply/cli
 
-# CF Common
-export BUILDPACK_PATH=$BP_DIR
-source $BP_DIR/compile-extensions/lib/common
-# END CF Common
-
-LOG_FILE='/tmp/node-build-log.txt'
-echo "******* START SUPPLY *******" > "$LOG_FILE"
-
-### Load dependencies
-
-source $BP_DIR/lib/output.sh
-source $BP_DIR/lib/failure.sh
-source $BP_DIR/lib/binaries.sh
-
-### Handle errors
-
-handle_failure() {
-  header "Build failed"
-  failure_message | output "$LOG_FILE"
-}
-trap 'handle_failure' ERR
-
-### Supply
-
-install_bins() {
-  local node_engine=$(jq -r '.engines.node // ""' < "$BUILD_DIR/package.json")
-  local iojs_engine=$(jq -r '.engines.iojs // ""' < "$BUILD_DIR/package.json")
-  local npm_engine=$(jq -r '.engines.npm // ""' < "$BUILD_DIR/package.json")
-  local yarn_engine=$(jq -r '.engines.yarn // ""' < "$BUILD_DIR/package.json")
-
-  if [ -n "$iojs_engine" ]; then
-    echo "engines.iojs (package.json):  $iojs_engine (iojs)"
-  else
-    echo "engines.node (package.json):  ${node_engine:-unspecified}"
-  fi
-  echo "engines.npm (package.json):   ${npm_engine:-unspecified (use default)}"
-  echo ""
-
-  mkdir -p "$DEPS_DIR/$DEPS_IDX/node"
-  mkdir -p "$DEPS_DIR/$DEPS_IDX/yarn"
-  mkdir -p "$DEPS_DIR/$DEPS_IDX/bin"
-  export PATH="$DEPS_DIR/$DEPS_IDX/bin:$PATH"
-
-  if [ -n "$iojs_engine" ]; then
-    warn_node_engine "$iojs_engine"
-    install_iojs "$iojs_engine" "$DEPS_DIR/$DEPS_IDX/node"
-    echo "Using bundled npm version for iojs compatibility: `npm --version`"
-  else
-    warn_node_engine "$node_engine"
-    install_nodejs "$node_engine" "$DEPS_DIR/$DEPS_IDX/node"
-    install_npm "$npm_engine" "$DEPS_DIR/$DEPS_IDX/node"
-  fi
-
-  ## Install Yarn
-  install_yarn "$DEPS_DIR/$DEPS_IDX/yarn" "$yarn_engine"
-}
-
-header "Installing binaries"
-install_bins | output "$LOG_FILE"
-
-header "Writing config"
-mkdir -p "$DEPS_DIR/$DEPS_IDX/env"
-echo "$DEPS_DIR/$DEPS_IDX/node" > "$DEPS_DIR/$DEPS_IDX/env/NODE_HOME"
-
-mkdir -p "$DEPS_DIR/$DEPS_IDX/profile.d"
-cat << EOF > "$DEPS_DIR/$DEPS_IDX/profile.d/node.sh"
-export NODE_HOME="\$DEPS_DIR/$DEPS_IDX/node"
-export NODE_ENV=\${NODE_ENV:-production}
-export MEMORY_AVAILABLE=\$(echo \$VCAP_APPLICATION | jq '.limits.mem')
-export WEB_MEMORY=512
-export WEB_CONCURRENCY=1
-EOF
-
-$BP_DIR/compile-extensions/bin/write_config_yml "$BP_DIR" "$DEPS_DIR/$DEPS_IDX"
+$output_dir/supply "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" "$DEPS_IDX"

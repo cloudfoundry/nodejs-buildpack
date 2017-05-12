@@ -7,19 +7,18 @@ exclude_files:
 - ".git/"
 - ".gitignore"
 - ".gitmodules"
+- ".envrc"
+- cf.Gemfile
+- cf.Gemfile.lock
+- pkg/
+- src/
+- scripts/
 - cf_spec/
 - log/
 - test/
 - bin/package
 - buildpack-packager/
 - nodejs_buildpack-*v*.zip
-url_to_dependency_map:
-- match: node\/v(\d+\.\d+\.\d+)
-  name: node
-  version: "$1"
-- match: yarn-v(\d+\.\d+\.\d+)\.tar\.gz
-  name: yarn
-  version: "$1"
 dependency_deprecation_dates:
 - match: 4\.\d+\.\d+
   version_line: '4'
@@ -91,3 +90,4 @@ dependencies:
   md5: 10dbf25c0a14d0e4d1b70520ce2bf045
   cf_stacks:
   - cflinuxfs2
+pre_package: scripts/build.sh

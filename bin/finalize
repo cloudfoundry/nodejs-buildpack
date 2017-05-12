@@ -1,161 +1,17 @@
-#!/usr/bin/env bash
-# bin/compile <build-dir> <cache-dir> <env-dir>
-
-set -e
-set -o pipefail   # dont ignore exit codes when piping output
-set -o nounset    # fail on unset variables
-unset GIT_DIR     # Avoid GIT_DIR leak from previous build steps
-
-### Constants
-
-DEFAULT_CACHE=".npm .cache/yarn bower_components"
-
-### Configure directories
+#!/bin/bash
+set -euo pipefail
 
 BUILD_DIR=$1
 CACHE_DIR=$2
 DEPS_DIR=$3
 DEPS_IDX=$4
-BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 
-env_vars=$($BP_DIR/compile-extensions/bin/build_path_from_supply $DEPS_DIR)
-for env_var in $env_vars; do
-  export $env_var
-done
+export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
+source "$BUILDPACK_DIR/scripts/install_go.sh"
+output_dir=$(mktemp -d -t finalizeXXX)
 
-cd $BUILD_DIR
+echo "-----> Running go build finalize"
+GOROOT=$GoInstallDir/go GOPATH=$BUILDPACK_DIR $GoInstallDir/go/bin/go build -o $output_dir/finalize nodejs/finalize/cli
 
-# CF Common
-export BUILDPACK_PATH=$BP_DIR
-source $BP_DIR/compile-extensions/lib/common > /dev/null
-# END CF Common
-LOG_FILE='/tmp/node-build-log.txt'
-echo "******* START FINALIZE *******" >> "$LOG_FILE"
+$output_dir/finalize "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" "$DEPS_IDX"
 
-### Load dependencies
-
-source $BP_DIR/lib/output.sh
-source $BP_DIR/lib/failure.sh
-source $BP_DIR/lib/environment.sh
-source $BP_DIR/lib/cache.sh
-source $BP_DIR/lib/dependencies.sh
-
-### Handle errors
-
-handle_failure() {
-  header "Build failed"
-  warn_untracked_dependencies "$LOG_FILE"
-  warn_angular_resolution "$LOG_FILE"
-  warn_missing_devdeps "$LOG_FILE"
-  warn_econnreset "$LOG_FILE"
-  warn_young_yarn "$LOG_FILE"
-  failure_message | output "$LOG_FILE"
-}
-trap 'handle_failure' ERR
-
-### Check initial state
-
-[ -e "$BUILD_DIR/node_modules" ] && PREBUILD=true || PREBUILD=false
-[ -f "$BUILD_DIR/yarn.lock" ] && YARN=true || YARN=false
-
-node_modules_subdirs=0
-if [ -d "$BUILD_DIR/node_modules" ]; then
-  node_modules_subdirs=$(find "$BUILD_DIR"/node_modules -mindepth 1 -maxdepth 1 -type d | wc -l)
-fi
-
-if [ "$node_modules_subdirs" -eq 0 ]; then
-	info "PRO TIP: It is recommended to vendor the application's Node.js dependencies"
-	info "         See http://docs.cloudfoundry.org/buildpacks/node/index.html#vendoring for more information"
-fi
-
-### Failures that should be caught immediately
-
-fail_invalid_package_json "$BUILD_DIR"
-warn_prebuilt_modules "$BUILD_DIR"
-warn_missing_package_json "$BUILD_DIR"
-
-### Compile
-
-create_env() {
-  # write_profile "$BP_DIR" "$BUILD_DIR"
-  mkdir -p $DEPS_DIR/$DEPS_IDX/profile.d
-  cp $BP_DIR/profile/* $DEPS_DIR/$DEPS_IDX/profile.d/
-
-  create_default_env
-}
-
-header "Creating runtime environment"
-create_env # can't pipe the whole thing because piping causes subshells, preventing exports
-list_node_config | output "$LOG_FILE"
-
-restore_cache() {
-  local cache_status="$(get_cache_status)"
-
-  if [ "$cache_status" == "valid" ]; then
-    local cache_directories=$(get_cache_directories)
-    if [ "$cache_directories" == "" ]; then
-      echo "Loading 3 from cacheDirectories (default):"
-      restore_cache_directories "$BUILD_DIR" "$CACHE_DIR" "$DEFAULT_CACHE"
-    else
-      echo "Loading $(echo $cache_directories | wc -w | xargs) from cacheDirectories (package.json):"
-      restore_cache_directories "$BUILD_DIR" "$CACHE_DIR" $cache_directories
-    fi
-  else
-    echo "Skipping cache restore ($cache_status)"
-  fi
-}
-
-header "Restoring cache"
-restore_cache | output "$LOG_FILE"
-
-build_dependencies() {
-  run_if_present 'heroku-prebuild'
-  if $YARN; then
-    yarn_node_modules "$BUILD_DIR"
-  elif $PREBUILD; then
-    echo "Prebuild detected (node_modules already exists)"
-    npm_rebuild "$BUILD_DIR"
-  else
-    npm_node_modules "$BUILD_DIR"
-  fi
-  run_if_present 'heroku-postbuild'
-  # TODO: run_if_present 'build'
-}
-
-header "Building dependencies"
-build_dependencies | output "$LOG_FILE"
-
-cache_build() {
-  local cache_directories=$(get_cache_directories)
-
-  echo "Clearing previous node cache"
-  clear_cache
-  if ! ${NODE_MODULES_CACHE:-true}; then
-    echo "Skipping cache save (disabled by config)"
-  elif [ "$cache_directories" == "" ]; then
-    echo "Saving 3 cacheDirectories (default):"
-    save_cache_directories "$BUILD_DIR" "$CACHE_DIR" "$DEFAULT_CACHE"
-  else
-    echo "Saving $(echo $cache_directories | wc -w | xargs) cacheDirectories (package.json):"
-    save_cache_directories "$BUILD_DIR" "$CACHE_DIR" $cache_directories
-  fi
-  save_signature
-  remove_caches_from_slug "$BUILD_DIR"
-}
-
-header "Caching build"
-cache_build | output "$LOG_FILE"
-
-summarize_build() {
-  if $NODE_VERBOSE; then
-    list_dependencies "$BUILD_DIR"
-  fi
-}
-
-$BP_DIR/compile-extensions/bin/write_profiled_from_supply $DEPS_DIR $BUILD_DIR
-header "Build succeeded!"
-$BP_DIR/compile-extensions/bin/store_buildpack_metadata $BP_DIR $CACHE_DIR
-summarize_build | output "$LOG_FILE"
-
-warn_no_start "$LOG_FILE"
-warn_unmet_dep "$LOG_FILE"

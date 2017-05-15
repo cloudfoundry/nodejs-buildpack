@@ -1,3 +1,22 @@
+v1.5.34 May 15, 2017
+=====================
+
+* Add yarn 0.24.4, remove yarn 0.23.4
+  (https://www.pivotaltracker.com/story/show/145364383)
+  (https://www.pivotaltracker.com/story/show/145350573)
+
+* Add EOL links for node
+  (https://www.pivotaltracker.com/story/show/144943203)
+
+* Fix NODE_HOME env var
+  (https://www.pivotaltracker.com/story/show/142852389)
+
+* Fix misleading jq error messges
+  (https://www.pivotaltracker.com/story/show/145044169)
+
+* Fix multi-buildpack support in tasks
+  (https://www.pivotaltracker.com/story/show/144964891)
+
 v1.5.33 May 03, 2017
 =====================
 

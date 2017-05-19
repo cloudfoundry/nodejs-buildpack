@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # bin/release <build-dir>
 
-cat << EOF
-addons: []
-default_process_types:
-  web: npm start --max-old-space-size=$(( $(jq -r '.limits.mem' <<<"$VCAP_APPLICATION") * 75 / 100 )) $NPM_CLI_OPTIONS
-EOF
+
+echo 'addons: []'
+echo 'default_process_types:'
+
+if [[ "${OPTIMIZE_MEMORY:-}" = "true" ]]; then
+  echo '  web: npm start --optimize_for_size --always_compact --max_old_space_size=$(( $(jq -r '.limits.mem' <<<"$VCAP_APPLICATION") * 75 / 100 ))'
+else
+  echo '  web: npm start'
+fi

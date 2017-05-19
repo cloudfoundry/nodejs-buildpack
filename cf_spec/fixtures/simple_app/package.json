@@ -1,5 +1,5 @@
 {
-  "name": "node_web_app",
+  "name": "simple_app",
   "version": "0.0.0",
   "description": "hello, world",
   "main": "server.js",
@@ -8,12 +8,6 @@
   },
   "author": "",
   "license": "BSD-2-Clause",
-  "dependencies": {
-    "logfmt": "~1.1.2",
-    "express": "~4.0.0"
-  },
-  "engines" : {
-  },
   "repository" :
   {
     "type" : "git",

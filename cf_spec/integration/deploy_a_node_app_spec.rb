@@ -3,7 +3,8 @@ require 'spec_helper'
 require 'open3'
 
 describe 'CF NodeJS Buildpack' do
-  subject(:app)           { Machete.deploy_app(app_name) }
+  subject(:app)           { Machete.deploy_app(app_name, env: app_env) }
+  let(:app_env)               { {} }
   let(:browser)           { Machete::Browser.new(app) }
   let(:buildpack_dir)     { File.join(File.dirname(__FILE__), '..', '..') }
   let(:version_file)      { File.join(buildpack_dir, 'VERSION') }
@@ -82,7 +83,7 @@ describe 'CF NodeJS Buildpack' do
   context 'with an unsupported, but released, nodejs version' do
     let(:app_name) { 'unsupported_node_version' }
 
-    it 'displays a nice error messages and gracefully fails' do
+    it 'displhttps://github.com/cloudfoundry-samples/pong_matcher_rails/pull/3ays a nice error messages and gracefully fails' do
       expect(app).to_not be_running
       expect(app).to have_logged 'Downloading and installing node 4.1.1'
       expect(app).to_not have_logged 'Downloaded ['
@@ -90,25 +91,24 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
-  context 'with no Procfile and no NPM_CLI_OPTIONS env var' do
-    let (:app_name) { 'without_procfile' }
+  context 'with no Procfile and OPTIMIZE_MEMORY=true' do
+    let (:app_name) { 'simple_app' }
+    let (:app_env) { { OPTIMIZE_MEMORY: true } }
 
     it 'is running with autosized max_old_space_size' do
       expect(app).to be_running
-      expect(app).to have_logged("--max_old_space_size=768")
+      browser.visit_path('/')
+      expect(browser).to have_body('MaxOldSpace: 262') # 350 * 75%
     end
   end
 
-  context 'with no Procfile and with NPM_CLI_OPTIONS env var' do
-    let (:app_name) { 'without_procfile' }
+  context 'with no Procfile and OPTIMIZE_MEMORY is unset' do
+    let (:app_name) { 'simple_app' }
 
-    subject(:app) do
-      Machete.deploy_app(app_name, env: {'NPM_CLI_OPTIONS' => '--trace-sync-io'})
-    end
-
-    it 'is running with autosized max_old_space_size and appended NPM_CLI_OPTIONS' do
+    it 'does not run with autosized max_old_space_size' do
       expect(app).to be_running
-      expect(app).to have_logged("--max_old_space_size=768 --trace-sync-io")
+      browser.visit_path('/')
+      expect(browser).to have_body('MaxOldSpace: undefined')
     end
   end
 

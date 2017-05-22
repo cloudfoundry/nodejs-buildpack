@@ -83,7 +83,7 @@ describe 'CF NodeJS Buildpack' do
   context 'with an unsupported, but released, nodejs version' do
     let(:app_name) { 'unsupported_node_version' }
 
-    it 'displhttps://github.com/cloudfoundry-samples/pong_matcher_rails/pull/3ays a nice error messages and gracefully fails' do
+    it 'displays a nice error messages and gracefully fails' do
       expect(app).to_not be_running
       expect(app).to have_logged 'Downloading and installing node 4.1.1'
       expect(app).to_not have_logged 'Downloaded ['

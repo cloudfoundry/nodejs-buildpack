@@ -3,8 +3,6 @@ language: nodejs
 default_versions:
 - name: node
   version: 4.8.3
-- name: yarn
-  version: 0.24.6
 exclude_files:
 - ".git/"
 - ".gitignore"

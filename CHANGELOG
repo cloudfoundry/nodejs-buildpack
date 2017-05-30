@@ -1,3 +1,19 @@
+v1.5.35 May 30, 2017
+=====================
+
+* Set MEMORY_AVAILABLE, WEB_MEMORY, WEB_CONCURRENCY
+  (https://www.pivotaltracker.com/story/show/146183269)
+
+* Set NODE_ENV for production
+  (https://www.pivotaltracker.com/story/show/146183269)
+
+* Add yarn 0.24.6, remove yarn 0.24.4
+  (https://www.pivotaltracker.com/story/show/145961345)
+  (https://www.pivotaltracker.com/story/show/145469419)
+
+* Add flag "OPTIMIZE_MEMORY=true" to turn max_old_space_size on
+  (https://www.pivotaltracker.com/story/show/143873083)
+
 v1.5.34 May 15, 2017
 =====================
 

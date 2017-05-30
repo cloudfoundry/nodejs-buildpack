@@ -267,7 +267,7 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
-  describe 'NODE_HOME', :cached do
+  describe 'NODE_HOME and NODE_ENV', :cached do
     let(:app_name) { 'logenv' }
 
     it 'sets the NODE_HOME to correct value' do
@@ -276,6 +276,7 @@ describe 'CF NodeJS Buildpack' do
 
       browser.visit_path('/')
       expect(browser).to have_body('"NODE_HOME":"/home/vcap/app/.cloudfoundry/0/node"')
+      expect(browser).to have_body('"NODE_ENV":"production"')
     end
   end
 end

@@ -90,6 +90,7 @@ echo "$DEPS_DIR/$DEPS_IDX/node" > "$DEPS_DIR/$DEPS_IDX/env/NODE_HOME"
 mkdir -p "$DEPS_DIR/$DEPS_IDX/profile.d"
 cat << EOF > "$DEPS_DIR/$DEPS_IDX/profile.d/node.sh"
 export NODE_HOME="\$DEPS_DIR/$DEPS_IDX/node"
+export NODE_ENV=\${NODE_ENV:-production}
 EOF
 
 $BP_DIR/compile-extensions/bin/write_config_yml "$BP_DIR" "$DEPS_DIR/$DEPS_IDX"

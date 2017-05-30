@@ -91,6 +91,9 @@ mkdir -p "$DEPS_DIR/$DEPS_IDX/profile.d"
 cat << EOF > "$DEPS_DIR/$DEPS_IDX/profile.d/node.sh"
 export NODE_HOME="\$DEPS_DIR/$DEPS_IDX/node"
 export NODE_ENV=\${NODE_ENV:-production}
+export MEMORY_AVAILABLE=\$(echo \$VCAP_APPLICATION | jq '.limits.mem')
+export WEB_MEMORY=512
+export WEB_CONCURRENCY=1
 EOF
 
 $BP_DIR/compile-extensions/bin/write_config_yml "$BP_DIR" "$DEPS_DIR/$DEPS_IDX"

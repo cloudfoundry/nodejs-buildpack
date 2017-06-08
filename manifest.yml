@@ -85,3 +85,9 @@ dependencies:
   md5: 2c8100a9f7af53a7b6da9729090cd5e8
   cf_stacks:
   - cflinuxfs2
+- name: node
+  version: 8.1.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.1.0-linux-x64-10dbf25c.tgz
+  md5: 10dbf25c0a14d0e4d1b70520ce2bf045
+  cf_stacks:
+  - cflinuxfs2

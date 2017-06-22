@@ -1,3 +1,24 @@
+v1.6.0 Jun 22, 2017
+=====================
+
+* Add node 8.1.2
+  (https://www.pivotaltracker.com/story/show/147264673)
+
+* Add node 8.1.1, remove node 8.0.0
+  (https://www.pivotaltracker.com/story/show/147158713)
+
+* Add node 6.11.0, remove node 6.10.2
+  (https://www.pivotaltracker.com/story/show/146731549)
+
+* Use MEMORY_AVAILABLE environment value for mem limit
+
+* Convert to libbuildpack for greater consistency across core buildpacks
+  (https://www.pivotaltracker.com/story/show/145065635)
+
+* Amend license, and fix readme links
+  (https://www.pivotaltracker.com/story/show/147439591)
+  (https://www.pivotaltracker.com/story/show/147615323)
+
 v1.5.36 Jun 05, 2017
 =====================
 

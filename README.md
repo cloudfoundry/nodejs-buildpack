@@ -4,13 +4,13 @@
 
 A Cloud Foundry [buildpack](http://docs.cloudfoundry.org/buildpacks/) for Node based apps.
 
-This is based on the [Heroku buildpack] (https://github.com/heroku/heroku-buildpack-nodejs).
+This is based on the [Heroku buildpack](https://github.com/heroku/heroku-buildpack-nodejs).
 
 Additional documentation can be found at the [CloudFoundry.org](http://docs.cloudfoundry.org/buildpacks/node/index.html).
 
 ### Buildpack User Documentation
 
-Official buildpack documentation can be found at http://docs.cloudfoundry.org/buildpacks/node/index.html).
+Official buildpack documentation can be found at [node buildpack docs](http://docs.cloudfoundry.org/buildpacks/node/index.html).
 
 ### Building the Buildpack
 
@@ -50,7 +50,7 @@ To test a buildpack, run the following command from the buildpack's directory:
 BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-build
 ```
 
-More options can be found on Machete's [GitHub page.](https://github.com/cloudfoundry/machete)
+More options can be found on Machete's [GitHub page](https://github.com/cloudfoundry/machete).
 
 ### Contributing
 
@@ -58,7 +58,7 @@ Find our guidelines [here](./CONTRIBUTING.md).
 
 ### Help and Support
 
-Join the #buildpacks channel in our [Slack community] (http://slack.cloudfoundry.org/)
+Join the #buildpacks channel in our [Slack community](http://slack.cloudfoundry.org/)
 
 ### Reporting Issues
 

@@ -475,6 +475,8 @@ var _ = Describe("Supply", func() {
 			Entry("NPM_CONFIG_LOGLEVEL", "NPM_CONFIG_LOGLEVEL", "everything"),
 			Entry("NODE_MODULES_CACHE", "NODE_MODULES_CACHE", "false"),
 			Entry("NODE_VERBOSE", "NODE_VERBOSE", "many words"),
+			Entry("WEB_MEMORY", "WEB_MEMORY", "a value"),
+			Entry("WEB_CONCURRENCY", "WEB_CONCURRENCY", "another value")
 		)
 
 		DescribeTable("environment with default was not set",
@@ -494,6 +496,8 @@ var _ = Describe("Supply", func() {
 			Entry("NPM_CONFIG_LOGLEVEL", "NPM_CONFIG_LOGLEVEL", "error"),
 			Entry("NODE_MODULES_CACHE", "NODE_MODULES_CACHE", "true"),
 			Entry("NODE_VERBOSE", "NODE_VERBOSE", "false"),
+			Entry("WEB_MEMORY", "WEB_MEMORY", "512"),
+			Entry("WEB_CONCURRENCY", "WEB_CONCURRENCY", "1")
 		)
 
 		It("writes profile.d script for runtime", func() {

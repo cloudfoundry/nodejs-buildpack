@@ -2,7 +2,7 @@
 language: nodejs
 default_versions:
 - name: node
-  version: 4.8.3
+  version: 4.8.4
 exclude_files:
 - ".git/"
 - ".gitignore"
@@ -36,12 +36,6 @@ dependency_deprecation_dates:
   date: 2017-06-30
   link: https://github.com/nodejs/LTS
 dependencies:
-- name: node
-  version: 4.8.2
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.2-linux-x64-09d53abc.tgz
-  md5: 09d53abca4f08cf63b9eb88b7175266f
-  cf_stacks:
-  - cflinuxfs2
 - name: node
   version: 4.8.3
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.3-linux-x64-0622641b.tgz
@@ -88,6 +82,12 @@ dependencies:
   version: 6.11.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.11.1-linux-x64-19c09bc7.tgz
   md5: 19c09bc722d9af37801e474e3776daa1
+  cf_stacks:
+  - cflinuxfs2
+- name: node
+  version: 4.8.4
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.4-linux-x64-230101ff.tgz
+  md5: 230101ff1ca8309ee8ab37b1c9ad28d8
   cf_stacks:
   - cflinuxfs2
 pre_package: scripts/build.sh

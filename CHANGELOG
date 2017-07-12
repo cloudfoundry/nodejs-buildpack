@@ -1,3 +1,15 @@
+v1.6.2 Jul 12, 2017
+====================
+
+* Merge pull request #94 from paulbeattie/master
+  Fix `WEB_CONCURRENCY` and `WEB_MEMORY` from being overwritten at runtime
+
+* Add node 4.8.4, 6.11.1, 7.10.1, and 8.1.4; remove node 4.8.2, 6.10.3, 7.9.0, and 8.1.2
+  (https://www.pivotaltracker.Vcom/story/show/148684925)
+  (https://www.pivotaltracker.com/story/show/148684925)
+  (https://www.pivotaltracker.com/story/show/148684925)
+  (https://www.pivotaltracker.com/story/show/148684925)
+
 v1.6.1 Jul 10, 2017
 ====================
 

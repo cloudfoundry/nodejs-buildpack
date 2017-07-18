@@ -289,7 +289,7 @@ var _ = Describe("Supply", func() {
 
 		Context("node version use semver", func() {
 			BeforeEach(func() {
-				versions := []string{"6.10.2", "6.11.1", "4.8.2", "4.8.3"}
+				versions := []string{"6.10.2", "6.11.1", "4.8.2", "4.8.3", "7.0.0"}
 				mockManifest.EXPECT().AllDependencyVersions("node").Return(versions)
 			})
 
@@ -298,6 +298,24 @@ var _ = Describe("Supply", func() {
 				mockManifest.EXPECT().InstallDependency(dep, nodeTmpDir).Do(installNode).Return(nil)
 
 				supplier.Node = "~>4"
+				err = supplier.InstallNode(nodeTmpDir)
+				Expect(err).To(BeNil())
+			})
+
+			It("handles '>=6.11.1 <7.0'", func() {
+				dep := libbuildpack.Dependency{Name: "node", Version: "6.11.1"}
+				mockManifest.EXPECT().InstallDependency(dep, nodeTmpDir).Do(installNode).Return(nil)
+
+				supplier.Node = ">=6.11.1 <7.0.0"
+				err = supplier.InstallNode(nodeTmpDir)
+				Expect(err).To(BeNil())
+			})
+
+			It("handles '>=6.11.1, <7.0'", func() {
+				dep := libbuildpack.Dependency{Name: "node", Version: "6.11.1"}
+				mockManifest.EXPECT().InstallDependency(dep, nodeTmpDir).Do(installNode).Return(nil)
+
+				supplier.Node = ">=6.11.1, <7.0"
 				err = supplier.InstallNode(nodeTmpDir)
 				Expect(err).To(BeNil())
 			})

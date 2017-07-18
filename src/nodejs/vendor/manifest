@@ -10,10 +10,18 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/blang/semver",
+			"repository": "https://github.com/blang/semver",
+			"vcs": "git",
+			"revision": "4a1e882c79dcf4ec00d2e29fac74b9c8938d5052",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/cloudfoundry/libbuildpack",
 			"repository": "https://github.com/cloudfoundry/libbuildpack",
 			"vcs": "git",
-			"revision": "f12ddb3600aadbe5159205e081ef873983ab73ea",
+			"revision": "a1fccb36e9b98065c11eca26795ec505b0aa9646",
 			"branch": "master",
 			"notests": true
 		},

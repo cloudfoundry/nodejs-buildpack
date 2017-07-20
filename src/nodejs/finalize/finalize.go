@@ -3,7 +3,6 @@ package finalize
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -392,7 +391,6 @@ func fileHasString(file string, patterns ...string) (bool, error) {
 		line, err = reader.ReadString('\n')
 	}
 	if err != io.EOF {
-		fmt.Println(err)
 		return false, err
 	}
 

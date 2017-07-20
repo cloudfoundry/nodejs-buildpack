@@ -3,6 +3,7 @@ package finalize
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -379,18 +380,21 @@ func fileHasString(file string, patterns ...string) (bool, error) {
 		return false, err
 	}
 	defer f.Close()
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
+	reader := bufio.NewReader(f)
+	line, err := reader.ReadString('\n')
+	for err == nil {
+		src := strings.ToLower(line)
 		for _, pat := range patterns {
-			src := strings.ToLower(scanner.Text())
-
 			if strings.Contains(src, pat) {
 				return true, nil
 			}
 		}
+		line, err = reader.ReadString('\n')
 	}
-	if err := scanner.Err(); err != nil {
+	if err != io.EOF {
+		fmt.Println(err)
 		return false, err
 	}
+
 	return false, nil
 }

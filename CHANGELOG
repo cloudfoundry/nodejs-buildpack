@@ -1,3 +1,13 @@
+v1.6.4 Jul 24, 2017
+====================
+
+* Fix error with bufio.Scanner when contents of files overruns buffer
+  - Merge pull request #96 from mainephd/master
+
+* Add node 8.2.1, remove node 8.1.3
+  (https://www.pivotaltracker.com/story/show/149272693)
+  (https://www.pivotaltracker.com/story/show/149199689)
+
 v1.6.3 Jul 18, 2017
 ====================
 

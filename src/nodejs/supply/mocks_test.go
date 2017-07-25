@@ -9,6 +9,65 @@ import (
 	io "io"
 )
 
+// MockCache is a mock of Cache interface
+type MockCache struct {
+	ctrl     *gomock.Controller
+	recorder *MockCacheMockRecorder
+}
+
+// MockCacheMockRecorder is the mock recorder for MockCache
+type MockCacheMockRecorder struct {
+	mock *MockCache
+}
+
+// NewMockCache creates a new mock instance
+func NewMockCache(ctrl *gomock.Controller) *MockCache {
+	mock := &MockCache{ctrl: ctrl}
+	mock.recorder = &MockCacheMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (_m *MockCache) EXPECT() *MockCacheMockRecorder {
+	return _m.recorder
+}
+
+// Initialize mocks base method
+func (_m *MockCache) Initialize() error {
+	ret := _m.ctrl.Call(_m, "Initialize")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Initialize indicates an expected call of Initialize
+func (_mr *MockCacheMockRecorder) Initialize() *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "Initialize")
+}
+
+// Restore mocks base method
+func (_m *MockCache) Restore() error {
+	ret := _m.ctrl.Call(_m, "Restore")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Restore indicates an expected call of Restore
+func (_mr *MockCacheMockRecorder) Restore() *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "Restore")
+}
+
+// Save mocks base method
+func (_m *MockCache) Save() error {
+	ret := _m.ctrl.Call(_m, "Save")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Save indicates an expected call of Save
+func (_mr *MockCacheMockRecorder) Save() *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "Save")
+}
+
 // MockCommand is a mock of Command interface
 type MockCommand struct {
 	ctrl     *gomock.Controller
@@ -119,6 +178,88 @@ func (_m *MockManifest) InstallOnlyVersion(_param0 string, _param1 string) error
 // InstallOnlyVersion indicates an expected call of InstallOnlyVersion
 func (_mr *MockManifestMockRecorder) InstallOnlyVersion(arg0, arg1 interface{}) *gomock.Call {
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "InstallOnlyVersion", arg0, arg1)
+}
+
+// MockNPM is a mock of NPM interface
+type MockNPM struct {
+	ctrl     *gomock.Controller
+	recorder *MockNPMMockRecorder
+}
+
+// MockNPMMockRecorder is the mock recorder for MockNPM
+type MockNPMMockRecorder struct {
+	mock *MockNPM
+}
+
+// NewMockNPM creates a new mock instance
+func NewMockNPM(ctrl *gomock.Controller) *MockNPM {
+	mock := &MockNPM{ctrl: ctrl}
+	mock.recorder = &MockNPMMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (_m *MockNPM) EXPECT() *MockNPMMockRecorder {
+	return _m.recorder
+}
+
+// Build mocks base method
+func (_m *MockNPM) Build() error {
+	ret := _m.ctrl.Call(_m, "Build")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Build indicates an expected call of Build
+func (_mr *MockNPMMockRecorder) Build() *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "Build")
+}
+
+// Rebuild mocks base method
+func (_m *MockNPM) Rebuild() error {
+	ret := _m.ctrl.Call(_m, "Rebuild")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Rebuild indicates an expected call of Rebuild
+func (_mr *MockNPMMockRecorder) Rebuild() *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "Rebuild")
+}
+
+// MockYarn is a mock of Yarn interface
+type MockYarn struct {
+	ctrl     *gomock.Controller
+	recorder *MockYarnMockRecorder
+}
+
+// MockYarnMockRecorder is the mock recorder for MockYarn
+type MockYarnMockRecorder struct {
+	mock *MockYarn
+}
+
+// NewMockYarn creates a new mock instance
+func NewMockYarn(ctrl *gomock.Controller) *MockYarn {
+	mock := &MockYarn{ctrl: ctrl}
+	mock.recorder = &MockYarnMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (_m *MockYarn) EXPECT() *MockYarnMockRecorder {
+	return _m.recorder
+}
+
+// Build mocks base method
+func (_m *MockYarn) Build() error {
+	ret := _m.ctrl.Call(_m, "Build")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Build indicates an expected call of Build
+func (_mr *MockYarnMockRecorder) Build() *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "Build")
 }
 
 // MockStager is a mock of Stager interface

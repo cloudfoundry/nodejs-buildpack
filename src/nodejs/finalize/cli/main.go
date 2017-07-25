@@ -3,11 +3,8 @@ package main
 import (
 	"io"
 	"io/ioutil"
-	"nodejs/cache"
 	"nodejs/finalize"
 	_ "nodejs/hooks"
-	"nodejs/npm"
-	"nodejs/yarn"
 	"os"
 	"time"
 
@@ -45,26 +42,10 @@ func main() {
 	}
 
 	f := finalize.Finalizer{
-		Stager: stager,
-		Yarn: &yarn.Yarn{
-			BuildDir: stager.BuildDir(),
-			Command:  &libbuildpack.Command{},
-			Log:      logger,
-		},
-		NPM: &npm.NPM{
-			BuildDir: stager.BuildDir(),
-			Command:  &libbuildpack.Command{},
-			Log:      logger,
-		},
-		Command:  &libbuildpack.Command{},
+		Stager:   stager,
 		Manifest: manifest,
 		Log:      logger,
 		Logfile:  logfile,
-		Cache: &cache.Cache{
-			Stager:  stager,
-			Command: &libbuildpack.Command{},
-			Log:     logger,
-		},
 	}
 
 	if err := finalize.Run(&f); err != nil {

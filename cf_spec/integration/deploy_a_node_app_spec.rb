@@ -284,7 +284,7 @@ describe 'CF NodeJS Buildpack' do
       expect(app).to have_logged(%r{NODE_HOME=\S*/0/node})
 
       browser.visit_path('/')
-      expect(browser).to have_body('"NODE_HOME":"/home/vcap/app/.cloudfoundry/0/node"')
+      expect(browser).to have_body(%r{"NODE_HOME":"[^"]*/0/node"})
       expect(browser).to have_body('"NODE_ENV":"production"')
       expect(browser).to have_body('"MEMORY_AVAILABLE":"359"')
     end

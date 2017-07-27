@@ -323,7 +323,7 @@ func (f *Finalizer) runPrebuild(tool string) error {
 		return nil
 	}
 
-	return f.runScript(f.PreBuild, tool)
+	return f.runScript("heroku-prebuild", tool)
 }
 
 func (f *Finalizer) runPostbuild(tool string) error {
@@ -331,7 +331,7 @@ func (f *Finalizer) runPostbuild(tool string) error {
 		return nil
 	}
 
-	return f.runScript(f.PostBuild, tool)
+	return f.runScript("heroku-postbuild", tool)
 }
 
 func (f *Finalizer) runScript(script, tool string) error {

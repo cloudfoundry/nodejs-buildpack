@@ -174,6 +174,21 @@ describe 'CF NodeJS Buildpack' do
     end
   end
 
+  context 'with an app with pre and post scripts' do
+    let(:app_name) { 'pre_post_commands' }
+
+    it 'runs the scripts through npm run' do
+      expect(app).to have_logged('Running heroku-prebuild (npm)')
+      expect(app).to have_logged('Running heroku-postbuild (npm)')
+
+      expect(app).to be_running
+
+      browser.visit_path('/')
+      expect(browser).to have_body('Text: Hello Buildpacks Team')
+      expect(browser).to have_body('Text: Goodbye Buildpacks Team')
+    end
+  end
+
   context 'with an app with no vendored dependencies' do
     let(:app_name) { 'no_vendored_dependencies' }
 

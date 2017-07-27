@@ -276,9 +276,9 @@ var _ = Describe("Finalize", func() {
 				})
 
 				It("runs the prebuild script", func() {
-					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "run", "prescriptive")
+					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "run", "heroku-prebuild")
 					Expect(finalizer.BuildDependencies()).To(Succeed())
-					Expect(buffer.String()).To(ContainSubstring("Running prescriptive (yarn)"))
+					Expect(buffer.String()).To(ContainSubstring("Running heroku-prebuild (yarn)"))
 				})
 			})
 
@@ -288,9 +288,9 @@ var _ = Describe("Finalize", func() {
 				})
 
 				It("runs the postbuild script", func() {
-					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "run", "descriptive")
+					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "run", "heroku-postbuild")
 					Expect(finalizer.BuildDependencies()).To(Succeed())
-					Expect(buffer.String()).To(ContainSubstring("Running descriptive (yarn)"))
+					Expect(buffer.String()).To(ContainSubstring("Running heroku-postbuild (yarn)"))
 				})
 			})
 		})
@@ -308,9 +308,9 @@ var _ = Describe("Finalize", func() {
 				})
 
 				It("runs the prebuild script", func() {
-					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "npm", "run", "prescriptive", "--if-present")
+					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "npm", "run", "heroku-prebuild", "--if-present")
 					Expect(finalizer.BuildDependencies()).To(Succeed())
-					Expect(buffer.String()).To(ContainSubstring("Running prescriptive (npm)"))
+					Expect(buffer.String()).To(ContainSubstring("Running heroku-prebuild (npm)"))
 				})
 			})
 
@@ -333,9 +333,9 @@ var _ = Describe("Finalize", func() {
 				})
 
 				It("runs the postbuild script", func() {
-					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "npm", "run", "descriptive", "--if-present")
+					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "npm", "run", "heroku-postbuild", "--if-present")
 					Expect(finalizer.BuildDependencies()).To(Succeed())
-					Expect(buffer.String()).To(ContainSubstring("Running descriptive (npm)"))
+					Expect(buffer.String()).To(ContainSubstring("Running heroku-postbuild (npm)"))
 				})
 			})
 		})

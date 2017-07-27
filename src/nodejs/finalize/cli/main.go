@@ -56,6 +56,7 @@ func main() {
 			Command:  &libbuildpack.Command{},
 			Log:      logger,
 		},
+		Command:  &libbuildpack.Command{},
 		Manifest: manifest,
 		Log:      logger,
 		Logfile:  logfile,

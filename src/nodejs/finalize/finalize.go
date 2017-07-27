@@ -342,7 +342,7 @@ func (f *Finalizer) runScript(script, tool string) error {
 
 	f.Log.Info("Running %s (%s)", script, tool)
 
-	return f.Command.Execute(f.Stager.BuildDir(), os.Stdout, os.Stderr, tool, args...)
+	return f.Command.Execute(f.Stager.BuildDir(), f.Log.Output(), os.Stderr, tool, args...)
 
 }
 

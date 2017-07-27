@@ -281,7 +281,7 @@ describe 'CF NodeJS Buildpack' do
 
     it 'sets the NODE_HOME to correct value' do
       expect(app).to be_running
-      expect(app).to have_logged("NODE_HOME=/tmp/app/.cloudfoundry/0/node")
+      expect(app).to have_logged(%r{NODE_HOME=\S*/0/node})
 
       browser.visit_path('/')
       expect(browser).to have_body('"NODE_HOME":"/home/vcap/app/.cloudfoundry/0/node"')

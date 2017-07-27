@@ -4,6 +4,8 @@ default_versions:
 - name: node
   version: 4.8.4
 exclude_files:
+- ".bin"
+- ".bundle"
 - ".git/"
 - ".gitignore"
 - ".gitmodules"

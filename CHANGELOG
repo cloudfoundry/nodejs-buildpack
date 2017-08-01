@@ -1,3 +1,14 @@
+v1.6.5 Aug 01, 2017
+====================
+
+* Add node 6.11.2, remove node 6.11.0
+  (https://www.pivotaltracker.com/story/show/149837609)
+
+* Move installation of modules from finalize to supply
+  (https://www.pivotaltracker.com/story/show/149435525)
+
+* Make bundler binstubs easy to use
+
 v1.6.4 Jul 24, 2017
 ====================
 

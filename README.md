@@ -14,16 +14,22 @@ Official buildpack documentation can be found at [node buildpack docs](http://do
 
 ### Building the Buildpack
 
-1. Install buildpack-packager
+1. Make sure you have fetched submodules
+
+  ```bash
+  git submodule update --init
+  ```
+
+1. Get latest buildpack dependencies
 
   ```shell
-  (cd src/staticfile/vendor/github.com/cloudfoundry/libbuildpack/packager/buildpack-packager && go install)
+  BUNDLE_GEMFILE=cf.Gemfile bundle
   ```
 
 1. Build the buildpack
 
   ```shell
-  buildpack-packager [ --cached | --uncached ]
+  BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-packager [ --cached | --uncached ]
   ```
 
 1. Use in Cloud Foundry
@@ -31,34 +37,20 @@ Official buildpack documentation can be found at [node buildpack docs](http://do
   Upload the buildpack to your Cloud Foundry and optionally specify it by name
 
   ```bash
-  cf create-buildpack [BUILDPACK_NAME] [BUILDPACK_ZIP_FILE_PATH] 1
-  cf push my_app -b [BUILDPACK_NAME]
+  cf create-buildpack custom_node_buildpack node_buildpack-offline-custom.zip 1
+  cf push my_app -b custom_node_buildpack
   ```
 
 ### Testing
-Buildpacks use the [Cutlass](https://github.com/cloudfoundry/libbuildpack/cutlass) framework for running integration tests.
+Buildpacks use the [Machete](https://github.com/cloudfoundry/machete) framework for running integration tests.
 
-To test this buildpack, run the following command from the buildpack's directory:
+To test a buildpack, run the following command from the buildpack's directory:
 
-1. Install ginkgo
+```
+BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-build
+```
 
-  ```bash
-  (cd src/nodejs/vendor/github.com/onsi/ginkgo/ginkgo && go install)
-  ```
-
-1. Run unit tests
-
-  ```bash
-  ./scripts/unit.sh
-  ```
-
-1. Run integration tests
-
-  ```bash
-  ./scripts/integration.sh
-  ```
-
-More information can be found on github [cutlass](https://github.com/cloudfoundry/libbuildpack/cutlass).
+More options can be found on Machete's [GitHub page](https://github.com/cloudfoundry/machete).
 
 ### Contributing
 

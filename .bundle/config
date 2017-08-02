@@ -1,0 +1,3 @@
+---
+BUNDLE_GEMFILE: "cf.Gemfile"
+BUNDLE_BIN: ".bin"

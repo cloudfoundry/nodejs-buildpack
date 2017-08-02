@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	"path/filepath"
+	"time"
 
 	"github.com/cloudfoundry/libbuildpack/cutlass"
 
@@ -26,9 +27,9 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		It("tries to talk to AppDynamics with host-name from the env vars", func() {
 			PushAppAndConfirm(app)
 			Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
-			Expect(app.Stdout.String()).To(ContainSubstring("appdynamics v"))
-			Expect(app.Stdout.String()).To(ContainSubstring("starting control socket"))
-			Expect(app.Stdout.String()).To(ContainSubstring("controllerHost: 'test-host'"))
+			Eventually(func() string { return app.Stdout.String() }, 5*time.Second).Should(ContainSubstring("appdynamics v"))
+			Eventually(func() string { return app.Stdout.String() }, 5*time.Second).Should(ContainSubstring("starting control socket"))
+			Eventually(func() string { return app.Stdout.String() }, 5*time.Second).Should(ContainSubstring("controllerHost: 'test-host'"))
 		})
 	})
 })

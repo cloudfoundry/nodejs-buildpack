@@ -129,13 +129,13 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		PushAppAndConfirm(app)
 
 		By("does not output protip that recommends user vendors dependencies", func() {
-			Expect(app.Stdout.String()).To(MatchRegexp("PRO TIP:(.*) It is recommended to vendor the application's Node.js dependencies"))
+			Expect(app.Stdout.String()).ToNot(MatchRegexp("PRO TIP:(.*) It is recommended to vendor the application's Node.js dependencies"))
 		})
 
 		if !cutlass.Cached {
 			By("with an uncached buildpack", func() {
 				By("successfully deploys and includes the dependencies", func() {
-					Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
+					Expect(app.GetBody("/")).To(ContainSubstring("0000000005"))
 					Expect(app.Stdout.String()).To(ContainSubstring("Download [https://"))
 				})
 			})
@@ -144,28 +144,34 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		if cutlass.Cached {
 			By("with a cached buildpack", func() {
 				By("deploys without hitting the internet", func() {
-					Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
-
+					Expect(app.GetBody("/")).To(ContainSubstring("0000000005"))
 					Expect(app.Stdout.String()).To(ContainSubstring("Copy [/tmp/buildpacks/"))
-
-					By("does not call out over the internet", func() {
-						bpFile, err := packager.Package(bpDir, packager.CacheDir, fmt.Sprintf("%s.%s", buildpackVersion, "notraffic1"), cutlass.Cached)
-						Expect(err).To(BeNil())
-						defer os.Remove(bpFile)
-
-						traffic, err := cutlass.InternetTraffic(
-							bpDir,
-							"fixtures/vendored_dependencies",
-							bpFile,
-							[]string{},
-						)
-						Expect(err).To(BeNil())
-						Expect(traffic).To(HaveLen(0))
-					})
-
 				})
 			})
 		}
+	})
+
+	Context("with an app that has vendored dependencies", func() {
+		BeforeEach(func() {
+			if !cutlass.Cached {
+				Skip("cached tests")
+			}
+		})
+
+		It("does not call out over the internet", func() {
+			bpFile, err := packager.Package(bpDir, packager.CacheDir, fmt.Sprintf("%s.%s", buildpackVersion, "notraffic1"), cutlass.Cached)
+			Expect(err).To(BeNil())
+			defer os.Remove(bpFile)
+
+			traffic, err := cutlass.InternetTraffic(
+				bpDir,
+				"fixtures/vendored_dependencies",
+				bpFile,
+				[]string{},
+			)
+			Expect(err).To(BeNil())
+			Expect(traffic).To(HaveLen(0))
+		})
 	})
 
 	Context("with an app with a yarn.lock file", func() {
@@ -198,6 +204,9 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		})
 
 		It("does not call out over the internet", func() {
+			if !cutlass.Cached {
+				Skip("cached tests")
+			}
 			bpFile, err := packager.Package(bpDir, packager.CacheDir, fmt.Sprintf("%s.%s", buildpackVersion, "notraffic2"), cutlass.Cached)
 			Expect(err).To(BeNil())
 			defer os.Remove(bpFile)

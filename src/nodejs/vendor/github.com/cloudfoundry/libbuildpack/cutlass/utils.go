@@ -1,7 +1,7 @@
 package cutlass
 
 import (
-	"github.com/cloudfoundry/libbuildpack"
+	"errors"
 	"io"
 	"io/ioutil"
 	"os"
@@ -13,10 +13,49 @@ func CopyFixture(srcDir string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if err := libbuildpack.CopyDirectory(srcDir, destDir); err != nil {
+	if err := copyDirectory(srcDir, destDir); err != nil {
 		return "", err
 	}
 	return destDir, nil
+}
+
+func copyDirectory(srcDir, destDir string) error {
+	destExists, _ := fileExists(destDir)
+	if !destExists {
+		return errors.New("destination dir must exist")
+	}
+
+	files, err := ioutil.ReadDir(srcDir)
+	if err != nil {
+		return err
+	}
+
+	for _, f := range files {
+		src := filepath.Join(srcDir, f.Name())
+		dest := filepath.Join(destDir, f.Name())
+
+		if f.IsDir() {
+			err = os.MkdirAll(dest, f.Mode())
+			if err != nil {
+				return err
+			}
+			err = copyDirectory(src, dest)
+		} else {
+			rc, err := os.Open(src)
+			if err != nil {
+				return err
+			}
+
+			err = writeToFile(rc, dest, f.Mode())
+			if err != nil {
+				rc.Close()
+				return err
+			}
+			rc.Close()
+		}
+	}
+
+	return nil
 }
 
 func fileExists(file string) (bool, error) {

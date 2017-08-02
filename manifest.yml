@@ -3,24 +3,24 @@ language: nodejs
 default_versions:
 - name: node
   version: 4.8.4
-exclude_files:
-- ".bin"
-- ".bundle"
-- ".git/"
-- ".gitignore"
-- ".gitmodules"
-- ".envrc"
-- cf.Gemfile
-- cf.Gemfile.lock
-- pkg/
-- src/
-- scripts/
-- cf_spec/
-- log/
-- test/
-- bin/package
-- buildpack-packager/
-- nodejs_buildpack-*v*.zip
+include_files:
+- CHANGELOG
+- CONTRIBUTING.md
+- ISSUE_TEMPLATE
+- LICENSE
+- NOTICE
+- PULL_REQUEST_TEMPLATE
+- README.md
+- VERSION
+- bin/compile
+- bin/detect
+- bin/finalize
+- bin/release
+- bin/supply
+- manifest.yml
+- profile/appdynamics-setup.sh
+- profile/newrelic-setup.sh
+- profile/nodejs.sh
 dependency_deprecation_dates:
 - match: 4\.\d+\.\d+
   version_line: '4'

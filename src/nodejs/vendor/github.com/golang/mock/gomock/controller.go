@@ -55,11 +55,7 @@
 //	- Handle different argument/return types (e.g. ..., chan, map, interface).
 package gomock
 
-import (
-	"fmt"
-	"reflect"
-	"sync"
-)
+import "sync"
 
 // A TestReporter is something that can be used to report test failures.
 // It is satisfied by the standard library's *testing.T.
@@ -85,18 +81,6 @@ func NewController(t TestReporter) *Controller {
 }
 
 func (ctrl *Controller) RecordCall(receiver interface{}, method string, args ...interface{}) *Call {
-	recv := reflect.ValueOf(receiver)
-	for i := 0; i < recv.Type().NumMethod(); i++ {
-		if recv.Type().Method(i).Name == method {
-			return ctrl.RecordCallWithMethodType(receiver, method, recv.Method(i).Type(), args...)
-		}
-	}
-	ctrl.t.Fatalf("gomock: failed finding method %s on %T", method, receiver)
-	// In case t.Fatalf does not panic.
-	panic(fmt.Sprintf("gomock: failed finding method %s on %T", method, receiver))
-}
-
-func (ctrl *Controller) RecordCallWithMethodType(receiver interface{}, method string, methodType reflect.Type, args ...interface{}) *Call {
 	// TODO: check arity, types.
 	margs := make([]Matcher, len(args))
 	for i, arg := range args {
@@ -114,7 +98,7 @@ func (ctrl *Controller) RecordCallWithMethodType(receiver interface{}, method st
 	ctrl.mu.Lock()
 	defer ctrl.mu.Unlock()
 
-	call := &Call{t: ctrl.t, receiver: receiver, method: method, methodType: methodType, args: margs, minCalls: 1, maxCalls: 1}
+	call := &Call{t: ctrl.t, receiver: receiver, method: method, args: margs, minCalls: 1, maxCalls: 1}
 
 	ctrl.expectedCalls.Add(call)
 	return call

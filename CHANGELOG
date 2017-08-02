@@ -4,6 +4,9 @@ v1.6.5 Aug 01, 2017
 * Add node 6.11.2, remove node 6.11.0
   (https://www.pivotaltracker.com/story/show/149837609)
 
+* Fix bug: error pushing Node 6.11.1 app to cloud foundry using buildpack 1.6.2
+  (https://www.pivotaltracker.com/story/show/149549527)
+
 * Move installation of modules from finalize to supply
   (https://www.pivotaltracker.com/story/show/149435525)
 

@@ -282,14 +282,9 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	})
 
 	Context("with an incomplete package.json", func() {
-		var tmpDir string
 		BeforeEach(func() {
-			var err error
-			tmpDir, err = cutlass.CopyFixture(filepath.Join(bpDir, "fixtures", "incomplete_package_json"))
-			Expect(err).To(BeNil())
-			app = cutlass.New(tmpDir)
+			app = cutlass.New(filepath.Join(bpDir, "fixtures", "incomplete_package_json"))
 		})
-		AfterEach(func() { os.RemoveAll(tmpDir) })
 
 		It("does not overwrite the vendored modules not listed in package.json", func() {
 			PushAppAndConfirm(app)

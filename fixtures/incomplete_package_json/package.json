@@ -9,14 +9,13 @@
   "author": "",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "logfmt": "~1.1.2",
-    "express": "~4.0.0"
+    "leftpad": "~0.0.1"
   },
-  "engines" : { "node" : "~>4" },
-
-  "repository" :
-  {
-    "type" : "git",
-    "url" : "http://github.com/cloudfoundry/nodejs-buildpack.git"
+  "engines": {
+    "node": "~>4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/cloudfoundry/nodejs-buildpack.git"
   }
 }

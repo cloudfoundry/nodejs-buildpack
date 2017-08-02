@@ -292,22 +292,8 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		AfterEach(func() { os.RemoveAll(tmpDir) })
 
 		It("does not overwrite the vendored modules not listed in package.json", func() {
-			cmd := exec.Command("./package.sh")
-			cmd.Dir = tmpDir
-			cmd.Stdout = GinkgoWriter
-			cmd.Stderr = GinkgoWriter
-			Expect(cmd.Run()).To(Succeed())
-
 			PushAppAndConfirm(app)
-
-			// TODO Why???
-			// replacement_app = Machete::App.new(app_name)
-			// app_push_command = Machete::CF::PushApp.new
-			// app_push_command.execute(replacement_app)
-			// expect(replacement_app).to be_running
-
-			Expect(app.Files("app/node_modules")).To(ContainElement("app/node_modules/logfmt"))
-			Expect(app.Files("app/node_modules")).To(ContainElement("app/node_modules/express"))
+			Expect(app.Files("app/node_modules")).To(ContainElement("app/node_modules/leftpad"))
 			Expect(app.Files("app/node_modules")).To(ContainElement("app/node_modules/hashish"))
 		})
 	})

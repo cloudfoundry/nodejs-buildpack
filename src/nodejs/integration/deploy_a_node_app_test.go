@@ -1,13 +1,10 @@
 package integration_test
 
 import (
-	"fmt"
-	"os"
 	"os/exec"
 	"path/filepath"
 
 	"github.com/cloudfoundry/libbuildpack/cutlass"
-	"github.com/cloudfoundry/libbuildpack/packager"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -158,20 +155,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			}
 		})
 
-		It("does not call out over the internet", func() {
-			bpFile, err := packager.Package(bpDir, packager.CacheDir, fmt.Sprintf("%s.%s", buildpackVersion, "notraffic1"), cutlass.Cached)
-			Expect(err).To(BeNil())
-			defer os.Remove(bpFile)
-
-			traffic, err := cutlass.InternetTraffic(
-				bpDir,
-				"fixtures/vendored_dependencies",
-				bpFile,
-				[]string{},
-			)
-			Expect(err).To(BeNil())
-			Expect(traffic).To(HaveLen(0))
-		})
+		AssertNoInternetTraffic("vendored_dependencies")
 	})
 
 	Context("with an app with a yarn.lock file", func() {
@@ -203,23 +187,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(app.GetBody("/microtime")).To(MatchRegexp("native time: \\d+\\.\\d+"))
 		})
 
-		It("does not call out over the internet", func() {
-			if !cutlass.Cached {
-				Skip("cached tests")
-			}
-			bpFile, err := packager.Package(bpDir, packager.CacheDir, fmt.Sprintf("%s.%s", buildpackVersion, "notraffic2"), cutlass.Cached)
-			Expect(err).To(BeNil())
-			defer os.Remove(bpFile)
-
-			traffic, err := cutlass.InternetTraffic(
-				bpDir,
-				"fixtures/with_yarn_vendored",
-				bpFile,
-				[]string{},
-			)
-			Expect(err).To(BeNil())
-			Expect(traffic).To(HaveLen(0))
-		})
+		AssertNoInternetTraffic("with_yarn_vendored")
 	})
 
 	Context("with an app with an out of date yarn.lock", func() {

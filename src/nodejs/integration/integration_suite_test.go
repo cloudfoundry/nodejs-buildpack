@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"net/http/httptest"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -21,7 +20,7 @@ import (
 	"testing"
 )
 
-var bpDir string
+var bpDir, bpFile string
 var buildpackVersion string
 
 func init() {
@@ -86,12 +85,16 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 		Expect(libbuildpack.NewYAML().Load(filepath.Join(bpDir, "manifest.yml"), &manifest)).To(Succeed())
 		Expect(cutlass.UpdateBuildpack(manifest.Language, file)).To(Succeed())
 
-		os.Remove(file)
+		return []byte(file)
 	}
 
-	return nil
-}, func(_ []byte) {
+	return []byte{}
+}, func(localBpFile []byte) {
 	// Run on all nodes
+	bpFile = ""
+	if len(localBpFile) > 0 {
+		bpFile = string(localBpFile)
+	}
 	bpDir = findRoot()
 	cutlass.DefaultStdoutStderr = GinkgoWriter
 })
@@ -100,48 +103,56 @@ var _ = SynchronizedAfterSuite(func() {
 	// Run on all nodes
 }, func() {
 	// Run once
+	if bpFile != "" {
+		os.Remove(bpFile)
+	}
 	cutlass.DeleteOrphanedRoutes()
 })
 
-func AssertUsesProxyDuringStagingIfPresent(fixtureName string) func() {
-	return func() {
-		Context("with an uncached buildpack", func() {
-			var bpFile string
-			var proxy *httptest.Server
-			BeforeEach(func() {
-				var err error
-				if cutlass.Cached {
-					Skip("Running cached tests")
-				}
-
-				localVersion := fmt.Sprintf("%s.%s", buildpackVersion, time.Now().Format("20060102150405"))
-				bpFile, err = packager.Package(bpDir, packager.CacheDir, localVersion, cutlass.Cached)
-				Expect(err).To(BeNil())
-
-				proxy, err = cutlass.NewProxy()
-				Expect(err).To(BeNil())
-			})
-			AfterEach(func() {
-				os.Remove(bpFile)
-				proxy.Close()
-			})
-
-			It("uses a proxy during staging if present", func() {
-				traffic, err := cutlass.InternetTraffic(
-					bpDir,
-					filepath.Join("fixtures", fixtureName),
-					bpFile,
-					[]string{"HTTP_PROXY=" + proxy.URL, "HTTPS_PROXY=" + proxy.URL},
-				)
-				Expect(err).To(BeNil())
-
-				destUrl, err := url.Parse(proxy.URL)
-				Expect(err).To(BeNil())
-
-				Expect(cutlass.UniqueDestination(
-					traffic, fmt.Sprintf("%s.%s", destUrl.Hostname(), destUrl.Port()),
-				)).To(BeNil())
-			})
+func AssertUsesProxyDuringStagingIfPresent(fixtureName string) {
+	Context("with an uncached buildpack", func() {
+		BeforeEach(func() {
+			if cutlass.Cached {
+				Skip("Running cached tests")
+			}
 		})
-	}
+
+		It("uses a proxy during staging if present", func() {
+			proxy, err := cutlass.NewProxy()
+			Expect(err).To(BeNil())
+			defer proxy.Close()
+
+			traffic, err := cutlass.InternetTraffic(
+				bpDir,
+				filepath.Join("fixtures", fixtureName),
+				bpFile,
+				[]string{"HTTP_PROXY=" + proxy.URL, "HTTPS_PROXY=" + proxy.URL},
+			)
+			Expect(err).To(BeNil())
+
+			destUrl, err := url.Parse(proxy.URL)
+			Expect(err).To(BeNil())
+
+			Expect(cutlass.UniqueDestination(
+				traffic, fmt.Sprintf("%s.%s", destUrl.Hostname(), destUrl.Port()),
+			)).To(BeNil())
+		})
+	})
+}
+
+func AssertNoInternetTraffic(fixtureName string) {
+	It("does not call out over the internet", func() {
+		if !cutlass.Cached {
+			Skip("Running uncached tests")
+		}
+
+		traffic, err := cutlass.InternetTraffic(
+			bpDir,
+			filepath.Join("fixtures", fixtureName),
+			bpFile,
+			[]string{},
+		)
+		Expect(err).To(BeNil())
+		Expect(traffic).To(BeEmpty())
+	})
 }

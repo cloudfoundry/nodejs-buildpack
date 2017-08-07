@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'excon'
 require 'open3'
 require 'timeout'
 
@@ -29,11 +28,9 @@ describe 'deploy a nodejs app with dynatrace agent' do
 			expect(app).to have_logged('Dynatrace PaaS agent injection is set up.')
 			expect(app).to be_running
 
-			## Test dynatrcae profile script has loaded
-			expect(app).to have_logged('ProfileD: DT_HOST_ID=logenv_0')
-
 			browser.visit_path('/')
-			expect(browser).to have_body('Hello from dynatrace app')
+			## Test dynatrace profile script has loaded
+			expect(browser).to have_body('"DT_HOST_ID":"logenv_0"')
 		end
 	end
 end

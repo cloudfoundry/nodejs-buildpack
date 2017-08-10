@@ -2,8 +2,8 @@
 # for detailed Gopkg.toml documentation.
 
 [[constraint]]
-  branch = "master"
   name = "github.com/cloudfoundry/libbuildpack"
+  branch = "master"
 
 [[constraint]]
   name = "github.com/golang/mock"

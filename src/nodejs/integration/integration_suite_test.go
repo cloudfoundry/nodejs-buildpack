@@ -1,27 +1,26 @@
 package integration_test
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"testing"
 	"time"
 
 	"github.com/blang/semver"
-	"github.com/cloudfoundry/libbuildpack"
 	"github.com/cloudfoundry/libbuildpack/cutlass"
-	"github.com/cloudfoundry/libbuildpack/packager"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"testing"
 )
 
-var bpDir, bpFile string
+var bpDir string
 var buildpackVersion string
+var packagedBuildpack cutlass.VersionedBuildpackPackage
 
 func init() {
 	flag.StringVar(&buildpackVersion, "version", "", "version to use (builds if empty)")
@@ -30,6 +29,42 @@ func init() {
 	flag.StringVar(&cutlass.DefaultDisk, "disk", "256M", "default disk for pushed apps")
 	flag.Parse()
 }
+
+var _ = SynchronizedBeforeSuite(func() []byte {
+	// Run once
+	if buildpackVersion == "" {
+		packagedBuildpack, err := cutlass.PackageUniquelyVersionedBuildpack()
+		Expect(err).NotTo(HaveOccurred())
+
+		data, err := json.Marshal(packagedBuildpack)
+		Expect(err).NotTo(HaveOccurred())
+		return data
+	}
+
+	return []byte{}
+}, func(data []byte) {
+	// Run on all nodes
+	var err error
+	if len(data) > 0 {
+		err = json.Unmarshal(data, &packagedBuildpack)
+		Expect(err).NotTo(HaveOccurred())
+		buildpackVersion = packagedBuildpack.Version
+	}
+
+	bpDir, err = cutlass.FindRoot()
+	Expect(err).NotTo(HaveOccurred())
+
+	cutlass.SeedRandom()
+	cutlass.DefaultStdoutStderr = GinkgoWriter
+})
+
+var _ = SynchronizedAfterSuite(func() {
+	// Run on all nodes
+}, func() {
+	// Run once
+	Expect(cutlass.RemovePackagedBuildpack(packagedBuildpack)).To(Succeed())
+	Expect(cutlass.DeleteOrphanedRoutes()).To(Succeed())
+})
 
 func TestIntegration(t *testing.T) {
 	RegisterFailHandler(Fail)
@@ -52,63 +87,6 @@ func ApiHasTask() bool {
 	return apiHasTask(apiVersion)
 }
 
-func findRoot() string {
-	file := "VERSION"
-	for {
-		files, err := filepath.Glob(file)
-		Expect(err).To(BeNil())
-		if len(files) == 1 {
-			file, err = filepath.Abs(filepath.Dir(file))
-			Expect(err).To(BeNil())
-			return file
-		}
-		file = filepath.Join("..", file)
-	}
-}
-
-var _ = SynchronizedBeforeSuite(func() []byte {
-	// Run once
-	bpDir = findRoot()
-
-	if buildpackVersion == "" {
-		data, err := ioutil.ReadFile(filepath.Join(bpDir, "VERSION"))
-		Expect(err).NotTo(HaveOccurred())
-		buildpackVersion = string(data)
-		buildpackVersion = fmt.Sprintf("%s.%s", buildpackVersion, time.Now().Format("20060102150405"))
-
-		file, err := packager.Package(bpDir, packager.CacheDir, buildpackVersion, cutlass.Cached)
-		Expect(err).To(BeNil())
-
-		var manifest struct {
-			Language string `yaml:"language"`
-		}
-		Expect(libbuildpack.NewYAML().Load(filepath.Join(bpDir, "manifest.yml"), &manifest)).To(Succeed())
-		Expect(cutlass.UpdateBuildpack(manifest.Language, file)).To(Succeed())
-
-		return []byte(file)
-	}
-
-	return []byte{}
-}, func(localBpFile []byte) {
-	// Run on all nodes
-	bpFile = ""
-	if len(localBpFile) > 0 {
-		bpFile = string(localBpFile)
-	}
-	bpDir = findRoot()
-	cutlass.DefaultStdoutStderr = GinkgoWriter
-})
-
-var _ = SynchronizedAfterSuite(func() {
-	// Run on all nodes
-}, func() {
-	// Run once
-	if bpFile != "" {
-		os.Remove(bpFile)
-	}
-	cutlass.DeleteOrphanedRoutes()
-})
-
 func AssertUsesProxyDuringStagingIfPresent(fixtureName string) {
 	Context("with an uncached buildpack", func() {
 		BeforeEach(func() {
@@ -121,6 +99,12 @@ func AssertUsesProxyDuringStagingIfPresent(fixtureName string) {
 			proxy, err := cutlass.NewProxy()
 			Expect(err).To(BeNil())
 			defer proxy.Close()
+
+			bpFile := filepath.Join(bpDir, buildpackVersion+"tmp")
+			cmd := exec.Command("cp", packagedBuildpack.File, bpFile)
+			err = cmd.Run()
+			Expect(err).To(BeNil())
+			defer os.Remove(bpFile)
 
 			traffic, err := cutlass.InternetTraffic(
 				bpDir,
@@ -141,10 +125,16 @@ func AssertUsesProxyDuringStagingIfPresent(fixtureName string) {
 }
 
 func AssertNoInternetTraffic(fixtureName string) {
-	It("does not call out over the internet", func() {
+	It("has no traffic", func() {
 		if !cutlass.Cached {
 			Skip("Running uncached tests")
 		}
+
+		bpFile := filepath.Join(bpDir, buildpackVersion+"tmp")
+		cmd := exec.Command("cp", packagedBuildpack.File, bpFile)
+		err := cmd.Run()
+		Expect(err).To(BeNil())
+		defer os.Remove(bpFile)
 
 		traffic, err := cutlass.InternetTraffic(
 			bpDir,

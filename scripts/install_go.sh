@@ -1,13 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
-GO_VERSION="1.8.3"
+GO_VERSION="1.9"
 
 export GoInstallDir="/tmp/go$GO_VERSION"
 mkdir -p $GoInstallDir
 
 if [ ! -f $GoInstallDir/go/bin/go ]; then
-  GO_MD5="32ec5ac6020a0dbae5fadd1ff6dfdaf7"
+  GO_MD5="4577d9ba083ac86de78012c04a2981be"
   URL=https://buildpacks.cloudfoundry.org/dependencies/go/go${GO_VERSION}.linux-amd64-${GO_MD5:0:8}.tar.gz
 
   echo "-----> Download go ${GO_VERSION}"
@@ -21,6 +21,7 @@ if [ ! -f $GoInstallDir/go/bin/go ]; then
   fi
 
   tar xzf /tmp/go.tar.gz -C $GoInstallDir
+  rm /tmp/go.tar.gz
 fi
 if [ ! -f $GoInstallDir/go/bin/go ]; then
   echo "       **ERROR** Could not download go"

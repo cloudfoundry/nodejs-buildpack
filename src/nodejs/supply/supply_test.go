@@ -74,13 +74,13 @@ var _ = Describe("Supply", func() {
 		}
 
 		installOnlyYarn = func(_ string, yarnDir string) {
-			err := os.MkdirAll(filepath.Join(yarnDir, "dist", "bin"), 0755)
+			err := os.MkdirAll(filepath.Join(yarnDir, "yarn-v1.2.3", "bin"), 0755)
 			Expect(err).To(BeNil())
 
-			err = ioutil.WriteFile(filepath.Join(yarnDir, "dist", "bin", "yarn"), []byte("yarn exe"), 0644)
+			err = ioutil.WriteFile(filepath.Join(yarnDir, "yarn-v1.2.3", "bin", "yarn"), []byte("yarn exe"), 0644)
 			Expect(err).To(BeNil())
 
-			err = ioutil.WriteFile(filepath.Join(yarnDir, "dist", "bin", "yarnpkg"), []byte("yarnpkg exe"), 0644)
+			err = ioutil.WriteFile(filepath.Join(yarnDir, "yarn-v1.2.3", "bin", "yarnpkg"), []byte("yarnpkg exe"), 0644)
 			Expect(err).To(BeNil())
 		}
 
@@ -391,11 +391,11 @@ var _ = Describe("Supply", func() {
 
 				link, err := os.Readlink(filepath.Join(depsDir, depsIdx, "bin", "yarn"))
 				Expect(err).To(BeNil())
-				Expect(link).To(Equal("../yarn/dist/bin/yarn"))
+				Expect(link).To(Equal("../yarn/yarn-v1.2.3/bin/yarn"))
 
 				link, err = os.Readlink(filepath.Join(depsDir, depsIdx, "bin", "yarnpkg"))
 				Expect(err).To(BeNil())
-				Expect(link).To(Equal("../yarn/dist/bin/yarnpkg"))
+				Expect(link).To(Equal("../yarn/yarn-v1.2.3/bin/yarnpkg"))
 			})
 		})
 

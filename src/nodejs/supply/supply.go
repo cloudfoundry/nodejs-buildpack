@@ -533,7 +533,15 @@ func (s *Supplier) InstallYarn() error {
 		return err
 	}
 
-	if err := s.Stager.LinkDirectoryInDepDir(filepath.Join(yarnInstallDir, "dist", "bin"), "bin"); err != nil {
+	if paths, err := filepath.Glob(filepath.Join(yarnInstallDir, "yarn-v*")); err != nil {
+		return fmt.Errorf("Unable to find yarn distribution dir: %v", err)
+	} else if len(paths) != 1 {
+		return fmt.Errorf("Unable to find yarn distribution dir")
+	} else {
+		yarnInstallDir = paths[0]
+	}
+
+	if err := s.Stager.LinkDirectoryInDepDir(filepath.Join(yarnInstallDir, "bin"), "bin"); err != nil {
 		return err
 	}
 

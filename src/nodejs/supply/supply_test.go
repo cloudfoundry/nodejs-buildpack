@@ -461,6 +461,16 @@ var _ = Describe("Supply", func() {
 					Expect(buffer.String()).To(ContainSubstring("npm 1.2.3 already installed with node"))
 				})
 			})
+			Context("requested version has minor .x and is already installed", func() {
+				It("Uses the version of npm packaged with node", func() {
+					supplier.NPMVersion = "1.2.x"
+
+					err = supplier.InstallNPM()
+					Expect(err).To(BeNil())
+
+					Expect(buffer.String()).To(ContainSubstring("npm 1.2.3 already installed with node"))
+				})
+			})
 
 			It("installs the requested npm version using packaged npm", func() {
 				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "npm", "install", "--unsafe-perm", "--quiet", "-g", "npm@4.5.6").Return(nil)

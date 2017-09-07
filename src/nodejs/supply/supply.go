@@ -504,7 +504,9 @@ func (s *Supplier) InstallNPM() error {
 		s.Log.Info("Using default npm version: %s", npmVersion)
 		return nil
 	}
-	if s.NPMVersion == npmVersion {
+
+	_, err := libbuildpack.FindMatchingVersion(s.NPMVersion, []string{npmVersion})
+	if err == nil {
 		s.Log.Info("npm %s already installed with node", npmVersion)
 		return nil
 	}

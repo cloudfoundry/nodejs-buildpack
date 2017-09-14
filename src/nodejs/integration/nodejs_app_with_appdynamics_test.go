@@ -19,7 +19,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		app = nil
 	})
 
-	Context("deploying a NodeJS app with AppDynamics", func() {
+	PContext("deploying a NodeJS app with AppDynamics", func() {
 		BeforeEach(func() {
 			app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_appdynamics"))
 		})

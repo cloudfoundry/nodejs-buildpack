@@ -210,7 +210,7 @@ func (h DynatraceHook) agentPath(installDir string) (string, error) {
 		return nil, err
 	}
 
-	err = json.Unmarshal(dings, &m) 
+	err = json.Unmarshal(raw, &m) 
 	if err != nil {
 		return nil, err
 	}

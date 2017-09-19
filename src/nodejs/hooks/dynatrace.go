@@ -83,13 +83,15 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 	h.Log.Info("Dynatrace PaaS agent installed.")
 
 	dynatraceEnvName := "dynatrace-env.sh"
-	installDir := filepath.Join(stager.BuildDir(), "dynatrace", "oneagent")
+	installDir := "dynatrace/oneagent"
 	dynatraceEnvPath := filepath.Join(stager.DepDir(), "profile.d", dynatraceEnvName)
-	agentLibPath, err := h.agentPath(installDir)
+	agentLibPath, err := h.agentPath(filepath.Join(stager.BuildDir(), installDir))
 	if err != nil {
 		h.Log.Error("manifest.json not found in %s!", installDir)
 		return err
 	}
+	
+	agentLibPath = filepath.Join(installDir, agentLibPath)
 
 	_, err = os.Stat(filepath.Join(stager.BuildDir(), agentLibPath))
 	if os.IsNotExist(err) {

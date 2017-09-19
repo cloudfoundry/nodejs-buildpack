@@ -85,7 +85,7 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 	dynatraceEnvName := "dynatrace-env.sh"
 	installDir := filepath.Join(stager.BuildDir(), "dynatrace", "oneagent")
 	dynatraceEnvPath := filepath.Join(stager.DepDir(), "profile.d", dynatraceEnvName)
-	agentLibPath := agentPath(installDir)
+	agentLibPath := h.agentPath(installDir)
 
 	_, err = os.Stat(filepath.Join(stager.BuildDir(), agentLibPath))
 	if os.IsNotExist(err) {
@@ -205,7 +205,7 @@ func (h DynatraceHook) agentPath(installDir string) (string, error) {
 
 	var m Manifest
 
-	raw, err := ioutil.Readfile(manifestPath)
+	raw, err := ioutil.ReadFile(manifestPath)
 	if err != nil {
 		return nil, err
 	}

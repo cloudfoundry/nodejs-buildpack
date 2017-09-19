@@ -101,7 +101,7 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 
 	h.Log.BeginStep("Setting up Dynatrace PaaS agent injection...")
 	h.Log.Debug("Copy %s to %s", dynatraceEnvName, dynatraceEnvPath)
-	err = libbuildpack.CopyFile(filepath.Join(installDir, dynatraceEnvName), dynatraceEnvPath)
+	err = libbuildpack.CopyFile(filepath.Join(stager.BuildDir(), installDir, dynatraceEnvName), dynatraceEnvPath)
 	if err != nil {
 		return err
 	}

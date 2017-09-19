@@ -85,7 +85,7 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 	dynatraceEnvName := "dynatrace-env.sh"
 	installDir := filepath.Join(stager.BuildDir(), "dynatrace", "oneagent")
 	dynatraceEnvPath := filepath.Join(stager.DepDir(), "profile.d", dynatraceEnvName)
-	agentLibPath := "dynatrace/oneagent/agent/lib64/liboneagentproc.so"
+	agentLibPath := agentPath(installDir)
 
 	_, err = os.Stat(filepath.Join(stager.BuildDir(), agentLibPath))
 	if os.IsNotExist(err) {
@@ -183,4 +183,43 @@ func (h DynatraceHook) downloadFile(url, path string) error {
 	}
 
 	return nil
+}
+
+func (h DynatraceHook) agentPath(installDir string) (string, error) {
+	manifestPath := filepath.Join(installDir, "/manifest.json")
+
+	type Binary struct {
+		Path string `json:"path"`
+		Md5 string `json:"md5"`
+		Version string `json:"version"`
+		Binarytype string `json:"binarytype,omitemtpy"`
+	}
+
+	type Architecture map[string][]Binary
+	type Technologies map[string]Architecture
+
+	type Manifest struct {
+		Tech Technologies`json:"technologies"`
+		Ver string `json:"version"`
+	}
+
+	var m Manifest
+
+	raw, err := ioutil.Readfile(manifestPath)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(dings, &m) 
+	if err != nil {
+		return nil, err
+	}
+
+	for _, binary := range m.Tech["process"]["linux-x86-64"] {
+		if binary.Binarytype ==	"primary" {
+			return filepath.Join(installDir, binary.Path)
+		}
+	}
+
+	return nil, errors.New("No primary binary for process agent found!")
 }

@@ -85,7 +85,11 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 	dynatraceEnvName := "dynatrace-env.sh"
 	installDir := filepath.Join(stager.BuildDir(), "dynatrace", "oneagent")
 	dynatraceEnvPath := filepath.Join(stager.DepDir(), "profile.d", dynatraceEnvName)
-	agentLibPath := h.agentPath(installDir)
+	agentLibPath, err := h.agentPath(installDir)
+	if err != nil {
+		h.Log.Error("manifest.json not found in %s!", installDir)
+		return err
+	}
 
 	_, err = os.Stat(filepath.Join(stager.BuildDir(), agentLibPath))
 	if os.IsNotExist(err) {
@@ -207,19 +211,19 @@ func (h DynatraceHook) agentPath(installDir string) (string, error) {
 
 	raw, err := ioutil.ReadFile(manifestPath)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	err = json.Unmarshal(raw, &m) 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	for _, binary := range m.Tech["process"]["linux-x86-64"] {
 		if binary.Binarytype ==	"primary" {
-			return filepath.Join(installDir, binary.Path)
+			return filepath.Join(installDir, binary.Path), nil
 		}
 	}
 
-	return nil, errors.New("No primary binary for process agent found!")
+	return "", errors.New("No primary binary for process agent found!")
 }

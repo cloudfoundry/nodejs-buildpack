@@ -93,7 +93,7 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 
 	_, err = os.Stat(filepath.Join(stager.BuildDir(), agentLibPath))
 	if os.IsNotExist(err) {
-		h.Log.Error("Agent library (%s) not found!", agentLibPath)
+		h.Log.Error("Agent library (%s) not found!", filepath.Join(installDir, agentLibPath))
 		return err
 	}
 
@@ -221,7 +221,7 @@ func (h DynatraceHook) agentPath(installDir string) (string, error) {
 
 	for _, binary := range m.Tech["process"]["linux-x86-64"] {
 		if binary.Binarytype ==	"primary" {
-			return filepath.Join(installDir, binary.Path), nil
+			return binary.Path, nil
 		}
 	}
 

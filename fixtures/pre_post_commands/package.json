@@ -1,0 +1,20 @@
+{
+  "name": "simple_app",
+  "version": "0.0.0",
+  "description": "hello, world",
+  "main": "server.js",
+  "engines": {
+    "node": "8.x"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "heroku-prebuild": "echo Hello Buildpacks Team > text_1.txt",
+    "heroku-postbuild": "echo Goodbye Buildpacks Team > text_2.txt"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "repository": {
+    "type" : "git",
+    "url" : "http://github.com/cloudfoundry/nodejs-buildpack.git"
+  }
+}

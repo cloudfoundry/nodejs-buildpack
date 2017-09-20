@@ -1,6 +1,7 @@
 package supply
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
@@ -13,6 +14,12 @@ import (
 	"github.com/cloudfoundry/libbuildpack"
 )
 
+type Cache interface {
+	Initialize() error
+	Restore() error
+	Save() error
+}
+
 type Command interface {
 	Execute(string, io.Writer, io.Writer, string, ...string) error
 }
@@ -24,6 +31,15 @@ type Manifest interface {
 	InstallOnlyVersion(string, string) error
 }
 
+type NPM interface {
+	Build() error
+	Rebuild() error
+}
+
+type Yarn interface {
+	Build() error
+}
+
 type Stager interface {
 	BuildDir() string
 	DepDir() string
@@ -31,16 +47,27 @@ type Stager interface {
 	LinkDirectoryInDepDir(string, string) error
 	WriteEnvFile(string, string) error
 	WriteProfileD(string, string) error
+	SetStagingEnvironment() error
 }
 
 type Supplier struct {
-	Stager   Stager
-	Manifest Manifest
-	Log      *libbuildpack.Logger
-	Command  Command
-	Node     string
-	Yarn     string
-	NPM      string
+	Stager             Stager
+	Manifest           Manifest
+	Log                *libbuildpack.Logger
+	Logfile            *os.File
+	Command            Command
+	NodeVersion        string
+	YarnVersion        string
+	NPMVersion         string
+	PreBuild           string
+	StartScript        string
+	HasDevDependencies bool
+	PostBuild          string
+	UseYarn            bool
+	NPMRebuild         bool
+	Cache              Cache
+	Yarn               Yarn
+	NPM                NPM
 }
 
 type packageJSON struct {
@@ -83,7 +110,303 @@ func Run(s *Supplier) error {
 		return err
 	}
 
+	if err := s.Stager.SetStagingEnvironment(); err != nil {
+		s.Log.Error("Unable to setup environment variables: %s", err.Error())
+		os.Exit(11)
+	}
+
+	if err := s.ReadPackageJSON(); err != nil {
+		s.Log.Error("Failed parsing package.json: %s", err.Error())
+		return err
+	}
+
+	if err := s.TipVendorDependencies(); err != nil {
+		s.Log.Error(err.Error())
+		return err
+	}
+
+	s.ListNodeConfig(os.Environ())
+
+	if err := s.Cache.Initialize(); err != nil {
+		s.Log.Error("Unable to initialize cache: %s", err.Error())
+		return err
+	}
+
+	if err := s.Cache.Restore(); err != nil {
+		s.Log.Error("Unable to restore cache: %s", err.Error())
+		return err
+	}
+
+	defer func() {
+		s.Logfile.Sync()
+		s.WarnUntrackedDependencies()
+		s.WarnMissingDevDeps()
+	}()
+
+	if err := s.BuildDependencies(); err != nil {
+		s.Log.Error("Unable to build dependencies: %s", err.Error())
+		return err
+	}
+
+	if err := s.Cache.Save(); err != nil {
+		s.Log.Error("Unable to save cache: %s", err.Error())
+		return err
+	}
+
+	s.ListDependencies()
+
+	if err := s.Logfile.Sync(); err != nil {
+		s.Log.Error(err.Error())
+		return err
+	}
+
+	if err := s.WarnUnmetDependencies(); err != nil {
+		s.Log.Error(err.Error())
+		return err
+	}
+
 	return nil
+}
+
+func (s *Supplier) WarnUnmetDependencies() error {
+	if unmet, err := fileHasString(s.Logfile.Name(), "unmet dependency", "unmet peer dependency"); err != nil {
+		return err
+	} else if !unmet {
+		return nil
+	}
+
+	pkgMan := "npm"
+	if s.UseYarn {
+		pkgMan = "yarn"
+	}
+
+	warning := "Unmet dependencies don't fail " + pkgMan + " install but may cause runtime issues\n"
+	warning += "See: https://github.com/npm/npm/issues/7494"
+	s.Log.Warning(warning)
+	return nil
+}
+
+func (s *Supplier) ListDependencies() {
+	if os.Getenv("NODE_VERBOSE") != "true" {
+		return
+	}
+
+	if s.UseYarn {
+		_ = s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), ioutil.Discard, "yarn", "list", "--depth=0")
+	} else {
+		_ = s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), ioutil.Discard, "npm", "ls", "--depth=0")
+	}
+}
+
+func (s *Supplier) runPostbuild(tool string) error {
+	if s.PostBuild == "" {
+		return nil
+	}
+
+	return s.runScript("heroku-postbuild", tool)
+}
+
+func (s *Supplier) runScript(script, tool string) error {
+	args := []string{"run", script}
+	if tool == "npm" {
+		args = append(args, "--if-present")
+	}
+
+	s.Log.Info("Running %s (%s)", script, tool)
+
+	return s.Command.Execute(s.Stager.BuildDir(), os.Stdout, os.Stderr, tool, args...)
+
+}
+
+func (s *Supplier) runPrebuild(tool string) error {
+	if s.PreBuild == "" {
+		return nil
+	}
+
+	return s.runScript("heroku-prebuild", tool)
+}
+
+func (s *Supplier) BuildDependencies() error {
+	var tool string
+	if s.UseYarn {
+		tool = "yarn"
+	} else {
+		tool = "npm"
+	}
+
+	s.Log.BeginStep("Building dependencies")
+
+	if err := s.runPrebuild(tool); err != nil {
+		return err
+	}
+
+	if s.UseYarn {
+		if err := s.Yarn.Build(); err != nil {
+			return err
+		}
+	} else {
+		if s.NPMRebuild {
+			s.Log.Info("Prebuild detected (node_modules already exists)")
+			if err := s.NPM.Rebuild(); err != nil {
+				return err
+			}
+		} else {
+			if err := s.NPM.Build(); err != nil {
+				return err
+			}
+		}
+	}
+
+	if err := s.runPostbuild(tool); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Supplier) ReadPackageJSON() error {
+	var err error
+	var p struct {
+		Scripts struct {
+			PreBuild    string `json:"heroku-prebuild"`
+			PostBuild   string `json:"heroku-postbuild"`
+			StartScript string `json:"start"`
+		} `json:"scripts"`
+		DevDependencies map[string]string `json:"devDependencies"`
+	}
+
+	if s.UseYarn, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "yarn.lock")); err != nil {
+		return err
+	}
+
+	if s.NPMRebuild, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "node_modules")); err != nil {
+		return err
+	}
+
+	if err := libbuildpack.NewJSON().Load(filepath.Join(s.Stager.BuildDir(), "package.json"), &p); err != nil {
+		if os.IsNotExist(err) {
+			s.Log.Warning("No package.json found")
+			return nil
+		} else {
+			return err
+		}
+	}
+
+	s.HasDevDependencies = (len(p.DevDependencies) > 0)
+	s.PreBuild = p.Scripts.PreBuild
+	s.PostBuild = p.Scripts.PostBuild
+	s.StartScript = p.Scripts.StartScript
+
+	return nil
+}
+
+func (s *Supplier) TipVendorDependencies() error {
+	subdirs, err := hasSubdirs(filepath.Join(s.Stager.BuildDir(), "node_modules"))
+	if err != nil {
+		return err
+	}
+	if !subdirs {
+		s.Log.Protip("It is recommended to vendor the application's Node.js dependencies",
+			"http://docs.cloudfoundry.org/buildpacks/node/index.html#vendoring")
+	}
+
+	return nil
+}
+
+func hasSubdirs(path string) (bool, error) {
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+
+		return false, err
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
+func (s *Supplier) ListNodeConfig(environment []string) {
+	npmConfigProductionTrue := false
+	nodeEnv := "production"
+
+	for _, env := range environment {
+		if strings.HasPrefix(env, "NPM_CONFIG_") || strings.HasPrefix(env, "YARN_") || strings.HasPrefix(env, "NODE_") {
+			s.Log.Info(env)
+		}
+
+		if env == "NPM_CONFIG_PRODUCTION=true" {
+			npmConfigProductionTrue = true
+		}
+
+		if strings.HasPrefix(env, "NODE_ENV=") {
+			nodeEnv = env[9:]
+		}
+	}
+
+	if npmConfigProductionTrue && nodeEnv != "production" {
+		s.Log.Info("npm scripts will see NODE_ENV=production (not '%s')\nhttps://docs.npmjs.com/misc/config#production", nodeEnv)
+	}
+}
+
+func (s *Supplier) WarnUntrackedDependencies() error {
+	for _, command := range []string{"grunt", "bower", "gulp"} {
+		if notFound, err := fileHasString(s.Logfile.Name(), command+": not found", command+": command not found"); err != nil {
+			return err
+		} else if notFound {
+			s.Log.Warning(strings.Title(command) + " may not be tracked in package.json")
+		}
+	}
+
+	return nil
+}
+
+func (s *Supplier) WarnMissingDevDeps() error {
+	if noModule, err := fileHasString(s.Logfile.Name(), "cannot find module"); err != nil {
+		return err
+	} else if !noModule {
+		return nil
+	}
+
+	warning := "A module may be missing from 'dependencies' in package.json"
+
+	if os.Getenv("NPM_CONFIG_PRODUCTION") == "true" && s.HasDevDependencies {
+		warning += "\nThis module may be specified in 'devDependencies' instead of 'dependencies'\n"
+		warning += "See: https://devcenter.heroku.com/articles/nodejs-support#devdependencies"
+	}
+
+	s.Log.Warning(warning)
+	return nil
+}
+
+func fileHasString(file string, patterns ...string) (bool, error) {
+	f, err := os.Open(file)
+	if err != nil {
+		return false, err
+	}
+	defer f.Close()
+	reader := bufio.NewReader(f)
+	line, err := reader.ReadString('\n')
+	for err == nil {
+		src := strings.ToLower(line)
+		for _, pat := range patterns {
+			if strings.Contains(src, pat) {
+				return true, nil
+			}
+		}
+		line, err = reader.ReadString('\n')
+	}
+	if err != io.EOF {
+		return false, err
+	}
+
+	return false, nil
 }
 
 func (s *Supplier) LoadPackageJSON() error {
@@ -110,9 +433,9 @@ func (s *Supplier) LoadPackageJSON() error {
 		s.Log.Info("engines.npm (package.json): unspecified (use default)")
 	}
 
-	s.Node = p.Engines.Node
-	s.NPM = p.Engines.NPM
-	s.Yarn = p.Engines.Yarn
+	s.NodeVersion = p.Engines.Node
+	s.NPMVersion = p.Engines.NPM
+	s.YarnVersion = p.Engines.Yarn
 
 	return nil
 }
@@ -120,13 +443,13 @@ func (s *Supplier) LoadPackageJSON() error {
 func (s *Supplier) WarnNodeEngine() {
 	docsLink := "http://docs.cloudfoundry.org/buildpacks/node/node-tips.html"
 
-	if s.Node == "" {
+	if s.NodeVersion == "" {
 		s.Log.Warning("Node version not specified in package.json. See: %s", docsLink)
 	}
-	if s.Node == "*" {
+	if s.NodeVersion == "*" {
 		s.Log.Warning("Dangerous semver range (*) in engines.node. See: %s", docsLink)
 	}
-	if strings.HasPrefix(s.Node, ">") {
+	if strings.HasPrefix(s.NodeVersion, ">") {
 		s.Log.Warning("Dangerous semver range (>) in engines.node. See: %s", docsLink)
 	}
 	return
@@ -137,9 +460,9 @@ func (s *Supplier) InstallNode(tempDir string) error {
 
 	nodeInstallDir := filepath.Join(s.Stager.DepDir(), "node")
 
-	if s.Node != "" {
+	if s.NodeVersion != "" {
 		versions := s.Manifest.AllDependencyVersions("node")
-		ver, err := libbuildpack.FindMatchingVersion(s.Node, versions)
+		ver, err := libbuildpack.FindMatchingVersion(s.NodeVersion, versions)
 		if err != nil {
 			return err
 		}
@@ -177,30 +500,32 @@ func (s *Supplier) InstallNPM() error {
 
 	npmVersion := strings.TrimSpace(buffer.String())
 
-	if s.NPM == "" {
+	if s.NPMVersion == "" {
 		s.Log.Info("Using default npm version: %s", npmVersion)
 		return nil
 	}
-	if s.NPM == npmVersion {
+
+	_, err := libbuildpack.FindMatchingVersion(s.NPMVersion, []string{npmVersion})
+	if err == nil {
 		s.Log.Info("npm %s already installed with node", npmVersion)
 		return nil
 	}
 
-	s.Log.Info("Downloading and installing npm %s (replacing version %s)...", s.NPM, npmVersion)
+	s.Log.Info("Downloading and installing npm %s (replacing version %s)...", s.NPMVersion, npmVersion)
 
-	if err := s.Command.Execute(s.Stager.BuildDir(), ioutil.Discard, ioutil.Discard, "npm", "install", "--unsafe-perm", "--quiet", "-g", "npm@"+s.NPM); err != nil {
-		s.Log.Error("We're unable to download the version of npm you've provided (%s).\nPlease remove the npm version specification in package.json", s.NPM)
+	if err := s.Command.Execute(s.Stager.BuildDir(), ioutil.Discard, ioutil.Discard, "npm", "install", "--unsafe-perm", "--quiet", "-g", "npm@"+s.NPMVersion); err != nil {
+		s.Log.Error("We're unable to download the version of npm you've provided (%s).\nPlease remove the npm version specification in package.json", s.NPMVersion)
 		return err
 	}
 	return nil
 }
 
 func (s *Supplier) InstallYarn() error {
-	if s.Yarn != "" {
+	if s.YarnVersion != "" {
 		versions := s.Manifest.AllDependencyVersions("yarn")
-		_, err := libbuildpack.FindMatchingVersion(s.Yarn, versions)
+		_, err := libbuildpack.FindMatchingVersion(s.YarnVersion, versions)
 		if err != nil {
-			return fmt.Errorf("package.json requested %s, buildpack only includes yarn version %s", s.Yarn, strings.Join(versions, ", "))
+			return fmt.Errorf("package.json requested %s, buildpack only includes yarn version %s", s.YarnVersion, strings.Join(versions, ", "))
 		}
 	}
 
@@ -210,7 +535,15 @@ func (s *Supplier) InstallYarn() error {
 		return err
 	}
 
-	if err := s.Stager.LinkDirectoryInDepDir(filepath.Join(yarnInstallDir, "dist", "bin"), "bin"); err != nil {
+	if paths, err := filepath.Glob(filepath.Join(yarnInstallDir, "yarn-v*")); err != nil {
+		return fmt.Errorf("Unable to find yarn distribution dir: %v", err)
+	} else if len(paths) != 1 {
+		return fmt.Errorf("Unable to find yarn distribution dir")
+	} else {
+		yarnInstallDir = paths[0]
+	}
+
+	if err := s.Stager.LinkDirectoryInDepDir(filepath.Join(yarnInstallDir, "bin"), "bin"); err != nil {
 		return err
 	}
 

@@ -4,53 +4,68 @@
 
 A Cloud Foundry [buildpack](http://docs.cloudfoundry.org/buildpacks/) for Node based apps.
 
-This is based on the [Heroku buildpack](https://github.com/heroku/heroku-buildpack-nodejs).
-
-Additional documentation can be found at the [CloudFoundry.org](http://docs.cloudfoundry.org/buildpacks/node/index.html).
-
 ### Buildpack User Documentation
 
 Official buildpack documentation can be found at [node buildpack docs](http://docs.cloudfoundry.org/buildpacks/node/index.html).
 
 ### Building the Buildpack
 
-1. Make sure you have fetched submodules
+To build this buildpack, run the following command from the buildpack's directory:
 
-  ```bash
-  git submodule update --init
-  ```
+1. Source the .envrc file in the buildpack directory.
 
-1. Get latest buildpack dependencies
+   ```bash
+   source .envrc
+   ```
+   To simplify the process in the future, install [direnv](https://direnv.net/) which will automatically source .envrc when you change directories.
 
-  ```shell
-  BUNDLE_GEMFILE=cf.Gemfile bundle
-  ```
+1. Install buildpack-packager
+
+    ```bash
+    (cd src/nodejs/vendor/github.com/cloudfoundry/libbuildpack/packager/buildpack-packager && go install)
+    ```
 
 1. Build the buildpack
 
-  ```shell
-  BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-packager [ --cached | --uncached ]
-  ```
+    ```bash
+    buildpack-packager [ --cached | --uncached ]
+    ```
 
 1. Use in Cloud Foundry
 
-  Upload the buildpack to your Cloud Foundry and optionally specify it by name
+   Upload the buildpack to your Cloud Foundry and optionally specify it by name
 
-  ```bash
-  cf create-buildpack custom_node_buildpack node_buildpack-offline-custom.zip 1
-  cf push my_app -b custom_node_buildpack
-  ```
+    ```bash
+    cf create-buildpack [BUILDPACK_NAME] [BUILDPACK_ZIP_FILE_PATH] 1
+    cf push my_app [-b BUILDPACK_NAME]
+    ```
 
 ### Testing
-Buildpacks use the [Machete](https://github.com/cloudfoundry/machete) framework for running integration tests.
 
-To test a buildpack, run the following command from the buildpack's directory:
+Buildpacks use the [Cutlass](https://github.com/cloudfoundry/libbuildpack/cutlass) framework for running integration tests.
 
-```
-BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-build
-```
+To test this buildpack, run the following command from the buildpack's directory:
 
-More options can be found on Machete's [GitHub page](https://github.com/cloudfoundry/machete).
+1. Source the .envrc file in the buildpack directory.
+
+   ```bash
+   source .envrc
+   ```
+   To simplify the process in the future, install [direnv](https://direnv.net/) which will automatically source .envrc when you change directories.
+
+1. Run unit tests
+
+    ```bash
+    ./scripts/unit.sh
+    ```
+
+1. Run integration tests
+
+    ```bash
+    ./scripts/integration.sh
+    ```
+
+More information can be found on Github [cutlass](https://github.com/cloudfoundry/libbuildpack/cutlass).
 
 ### Contributing
 
@@ -67,3 +82,8 @@ Open an issue on this project
 ### Active Development
 
 The project backlog is on [Pivotal Tracker](https://www.pivotaltracker.com/projects/1042066)
+
+### Acknowledgements
+
+Inspired by the [Heroku buildpack](https://github.com/heroku/heroku-buildpack-nodejs).
+

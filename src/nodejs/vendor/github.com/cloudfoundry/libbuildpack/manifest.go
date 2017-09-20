@@ -1,9 +1,11 @@
 package libbuildpack
 
 import (
+	"crypto/md5"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -220,7 +222,7 @@ func (m *Manifest) warnNewerPatch(dep Dependency) error {
 
 	v, err := semver.NewVersion(dep.Version)
 	if err != nil {
-		return err
+		return nil
 	}
 
 	constraint := fmt.Sprintf("%d.%d.x", v.Major(), v.Minor())
@@ -237,26 +239,36 @@ func (m *Manifest) warnNewerPatch(dep Dependency) error {
 }
 
 func (m *Manifest) warnEndOfLife(dep Dependency) error {
+	matchVersion := func(versionLine, depVersion string) bool {
+		return versionLine == depVersion
+	}
+
 	v, err := semver.NewVersion(dep.Version)
-	if err != nil {
-		return err
+	if err == nil {
+		matchVersion = func(versionLine, depVersion string) bool {
+			constraint, err := semver.NewConstraint(versionLine)
+			if err != nil {
+				return false
+			}
+
+			return constraint.Check(v)
+		}
 	}
 
 	for _, deprecation := range m.Deprecations {
 		if deprecation.Name != dep.Name {
 			continue
 		}
-
-		versionLine, err := semver.NewConstraint(deprecation.VersionLine)
-		if err != nil {
-			return err
+		if !matchVersion(deprecation.VersionLine, dep.Version) {
+			continue
 		}
 
 		eolTime, err := time.Parse(dateFormat, deprecation.Date)
 		if err != nil {
 			return err
 		}
-		if versionLine.Check(v) && eolTime.Sub(m.currentTime) < thirtyDays {
+
+		if eolTime.Sub(m.currentTime) < thirtyDays {
 			m.log.Warning(endOfLifeWarning(dep.Name, deprecation.VersionLine, deprecation.Date, deprecation.Link))
 		}
 	}
@@ -275,8 +287,15 @@ func (m *Manifest) FetchDependency(dep Dependency, outputFile string) error {
 	}
 
 	if m.isCached() {
-		r := strings.NewReplacer("/", "_", ":", "_", "?", "_", "&", "_")
-		source := filepath.Join(m.manifestRootDir, "dependencies", r.Replace(filteredURI))
+		source := filepath.Join(m.manifestRootDir, "dependencies", fmt.Sprintf("%x", md5.Sum([]byte(entry.URI))), path.Base(entry.URI))
+		exists, err := FileExists(source)
+		if err != nil {
+			m.log.Warning("Error determining if cached file exists: %s", err.Error())
+		}
+		if !exists {
+			r := strings.NewReplacer("/", "_", ":", "_", "?", "_", "&", "_")
+			source = filepath.Join(m.manifestRootDir, "dependencies", r.Replace(filteredURI))
+		}
 		m.log.Info("Copy [%s]", source)
 		err = CopyFile(source, outputFile)
 	} else {

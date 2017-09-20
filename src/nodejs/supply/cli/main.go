@@ -1,8 +1,13 @@
 package main
 
 import (
+	"io"
+	"io/ioutil"
+	"nodejs/cache"
 	_ "nodejs/hooks"
+	"nodejs/npm"
 	"nodejs/supply"
+	"nodejs/yarn"
 	"os"
 	"time"
 
@@ -10,7 +15,16 @@ import (
 )
 
 func main() {
-	logger := libbuildpack.NewLogger(os.Stdout)
+	logfile, err := ioutil.TempFile("", "cloudfoundry.nodejs-buildpack.finalize")
+	defer logfile.Close()
+	if err != nil {
+		logger := libbuildpack.NewLogger(os.Stdout)
+		logger.Error("Unable to create log file: %s", err.Error())
+		os.Exit(8)
+	}
+
+	stdout := io.MultiWriter(os.Stdout, logfile)
+	logger := libbuildpack.NewLogger(stdout)
 
 	buildpackDir, err := libbuildpack.GetBuildpackDir()
 	if err != nil {
@@ -42,10 +56,26 @@ func main() {
 	}
 
 	s := supply.Supplier{
-		Stager:   stager,
+		Logfile: logfile,
+		Stager:  stager,
+		Yarn: &yarn.Yarn{
+			BuildDir: stager.BuildDir(),
+			Command:  &libbuildpack.Command{},
+			Log:      logger,
+		},
+		NPM: &npm.NPM{
+			BuildDir: stager.BuildDir(),
+			Command:  &libbuildpack.Command{},
+			Log:      logger,
+		},
 		Manifest: manifest,
 		Log:      logger,
 		Command:  &libbuildpack.Command{},
+		Cache: &cache.Cache{
+			Stager:  stager,
+			Command: &libbuildpack.Command{},
+			Log:     logger,
+		},
 	}
 
 	err = supply.Run(&s)

@@ -4,6 +4,7 @@
 .project
 tmp
 log/
+/tmp
 /nodejs_buildpack-*.zip
-.bundle
-pkg/
+/.bin
+/pkg/

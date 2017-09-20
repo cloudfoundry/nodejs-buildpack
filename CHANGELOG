@@ -1,3 +1,43 @@
+v1.6.7 Sep 15, 2017
+====================
+
+* Match NPM version in package.json using semver constraints
+  (https://www.pivotaltracker.com/story/show/146165559)
+
+* Add node 8.5.0, remove node 8.3.0
+  (https://www.pivotaltracker.com/story/show/151013555)
+
+* Add node 8.4.0, remove node 8.2.1
+  (https://www.pivotaltracker.com/story/show/150276935)
+
+* Add node 6.11.3, remove node 6.11.1
+  (https://www.pivotaltracker.com/story/show/150824934)
+
+* Add yarn 1.0.2, remove yarn 0.27.5
+  (https://www.pivotaltracker.com/story/show/151059801)
+  (https://www.pivotaltracker.com/story/show/150886385)
+  (https://www.pivotaltracker.com/story/show/150856905)
+
+v1.6.6 Aug 14, 2017
+====================
+
+* Add node 8.3.0, remove node 8.2.0
+  (https://www.pivotaltracker.com/story/show/150120007)
+
+v1.6.5 Aug 01, 2017
+====================
+
+* Add node 6.11.2, remove node 6.11.0
+  (https://www.pivotaltracker.com/story/show/149837609)
+
+* Fix bug: error pushing Node 6.11.1 app to cloud foundry using buildpack 1.6.2
+  (https://www.pivotaltracker.com/story/show/149549527)
+
+* Move installation of modules from finalize to supply
+  (https://www.pivotaltracker.com/story/show/149435525)
+
+* Make bundler binstubs easy to use
+
 v1.6.4 Jul 24, 2017
 ====================
 

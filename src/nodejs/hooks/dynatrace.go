@@ -132,21 +132,31 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 }
 
 func (h DynatraceHook) dtCredentials() map[string]string {
-	var vcapServices map[string][]struct {
+	type Service struct {
 		Name        string            `json:"name"`
 		Credentials map[string]string `json:"credentials"`
 	}
+	var vcapServices map[string][]Service
+
 	err := json.Unmarshal([]byte(os.Getenv("VCAP_SERVICES")), &vcapServices)
 	if err != nil {
 		return nil
 	}
 
+	var detectedServices []Service
+
 	for _, services := range vcapServices {
 		for _, service := range services {
-			if strings.Contains(service.Name, "dynatrace") {
-				return service.Credentials
+			if strings.Contains(service.Name, "dynatrace") &&
+					service.Credentials["environmentid"] != "" &&
+					service.Credentials["apitoken"] != "" {
+				detectedServices = append(detectedServices, service)
 			}
 		}
+	}
+
+	if len(detectedServices) == 1 {
+		return detectedServices[0].Credentials
 	}
 
 	return nil

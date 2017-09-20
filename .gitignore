@@ -1,6 +1,7 @@
 .anvil
 .DS_Store
 .idea
+.project
 tmp
 log/
 /nodejs_buildpack-*.zip

@@ -38,11 +38,11 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 
 	credentials := h.dtCredentials()
 	if credentials == nil {
-		h.Log.Debug("Dynatrace service not found!")
+		h.Log.Debug("Dynatrace service credentials not found!")
 		return nil
 	}
 
-	h.Log.Info("Dynatrace service found. Setting up Dynatrace PaaS agent.")
+	h.Log.Info("Dynatrace service credentials found. Setting up Dynatrace PaaS agent.")
 
 	apiurl, present := credentials["apiurl"]
 	if !present && credentials["environmentid"] != "" {

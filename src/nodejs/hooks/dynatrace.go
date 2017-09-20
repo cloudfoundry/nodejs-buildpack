@@ -156,7 +156,10 @@ func (h DynatraceHook) dtCredentials() map[string]string {
 	}
 
 	if len(detectedServices) == 1 {
+		h.Log.Debug("Found one matching service: %s", detectedServices[0].Name)
 		return detectedServices[0].Credentials
+	} else if len(detectedServices) > 1 {
+		h.Log.Warning("More than one matching service found!")
 	}
 
 	return nil

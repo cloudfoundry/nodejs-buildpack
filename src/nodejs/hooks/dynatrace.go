@@ -57,7 +57,7 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 		return errors.New("'apitoken' has to be specified in the service credentials!")
 	}
 
-	url := apiurl + "/v1/deployment/installer/agent/unix/paas-sh/latest?include=nodejs&bitness=64&Api-Token=" + credentials["apitoken"]
+	url := apiurl + "/v1/deployment/installer/agent/unix/paas-sh/latest?include=nodejs&include=process&bitness=64&Api-Token=" + credentials["apitoken"]
 	installerPath := filepath.Join(os.TempDir(), "paasInstaller.sh")
 
 	h.Log.Debug("Downloading '%s' to '%s'", url, installerPath)

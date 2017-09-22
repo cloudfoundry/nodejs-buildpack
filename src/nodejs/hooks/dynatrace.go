@@ -45,16 +45,8 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 	h.Log.Info("Dynatrace service credentials found. Setting up Dynatrace PaaS agent.")
 
 	apiurl, present := credentials["apiurl"]
-	if !present && credentials["environmentid"] != "" {
+	if !present {
 		apiurl = "https://" + credentials["environmentid"] + ".live.dynatrace.com/api"
-	}
-
-	if apiurl == "" {
-		return errors.New("'environmentid' or 'apiurl' has to be specified in the service credentials!")
-	}
-
-	if credentials["apitoken"] == "" {
-		return errors.New("'apitoken' has to be specified in the service credentials!")
 	}
 
 	url := apiurl + "/v1/deployment/installer/agent/unix/paas-sh/latest?include=nodejs&include=process&bitness=64&Api-Token=" + credentials["apitoken"]

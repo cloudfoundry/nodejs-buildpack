@@ -72,6 +72,26 @@ var _ = Describe("dynatraceHook", func() {
 
 			err = ioutil.WriteFile(filepath.Join(buildDir, "dynatrace/oneagent/dynatrace-env.sh"), []byte("echo running dynatrace-env.sh"), 0644)
 			Expect(err).To(BeNil())
+
+			manifestJson := `
+			{
+				"version" : "1.130.0.20170914-153344",
+				"technologies" : {
+					"process" : {
+						"linux-x86-64" : [ {
+							"path" : "agent/conf/runtime/default/process/binary_linux-x86-64",
+							"md5" : "e086f9c70b53cd456988ff5c4d414f36",
+							"version" : "1.130.0.20170914-125024"
+						  }, {
+							"path" : "agent/lib64/liboneagentproc.so",
+							"md5" : "2bf4ba9e90e2589428f6f6f3a964cba2",
+							"version" : "1.130.0.20170914-125024",
+							"binarytype" : "primary"}]
+					}
+				}
+			}`
+			err = ioutil.WriteFile(filepath.Join(buildDir, "dynatrace/oneagent/manifest.json"), []byte(manifestJson), 0664)
+			Expect(err).To(BeNil())
 		}
 	})
 
@@ -141,15 +161,16 @@ var _ = Describe("dynatraceHook", func() {
 
 		Context("VCAP_SERVICES contains dynatrace service using apiurl", func() {
 			BeforeEach(func() {
+				environmentid := "123456"
 				apiToken := "ExcitingToken28"
 				os.Setenv("VCAP_APPLICATION", `{"name":"JimBob"}`)
 				os.Setenv("VCAP_SERVICES", `{
 					"0": [{"name":"mysql"}],
-					"1": [{"name":"dynatrace","credentials":{"apiurl":"https://example.com","apitoken":"`+apiToken+`"}}],
+					"1": [{"name":"dynatrace","credentials":{"apiurl":"https://example.com","apitoken":"`+apiToken+`","environmentid":"`+environmentid+`"}}],
 					"2": [{"name":"redis"}]
 				}`)
 
-				httpmock.RegisterResponder("GET", "https://example.com/v1/deployment/installer/agent/unix/paas-sh/latest?include=nginx&bitness=64&Api-Token="+apiToken,
+				httpmock.RegisterResponder("GET", "https://example.com/v1/deployment/installer/agent/unix/paas-sh/latest?include=nodejs&include=process&bitness=64&Api-Token="+apiToken,
 					httpmock.NewStringResponder(200, "echo Install Dynatrace"))
 			})
 
@@ -180,7 +201,7 @@ var _ = Describe("dynatraceHook", func() {
 					"2": [{"name":"redis"}]
 				}`)
 
-				httpmock.RegisterResponder("GET", "https://123456.live.dynatrace.com/api/v1/deployment/installer/agent/unix/paas-sh/latest?include=nginx&bitness=64&Api-Token="+apiToken,
+				httpmock.RegisterResponder("GET", "https://123456.live.dynatrace.com/api/v1/deployment/installer/agent/unix/paas-sh/latest?include=nodejs&include=process&bitness=64&Api-Token="+apiToken,
 					httpmock.NewStringResponder(200, "echo Install Dynatrace"))
 			})
 
@@ -200,36 +221,22 @@ var _ = Describe("dynatraceHook", func() {
 			})
 		})
 
-		Context("VCAP_SERVICES contains dynatrace service without environmentid or apiurl", func() {
+		Context("VCAP_SERVICES contains second dynatrace service with credentials", func() {
 			BeforeEach(func() {
+				environmentid := "123456"
 				apiToken := "ExcitingToken28"
 				os.Setenv("VCAP_APPLICATION", `{"name":"JimBob"}`)
 				os.Setenv("VCAP_SERVICES", `{
-					"dyna": [{"name":"dynatrace","credentials":{"apitoken":"`+apiToken+`"}}]
+					"0": [{"name":"dynatrace","credentials":{"environmentid":"`+environmentid+`","apitoken":"`+apiToken+`"}}],
+					"1": [{"name":"dynatrace-dupe","credentials":{"environmentid":"`+environmentid+`","apitoken":"`+apiToken+`"}}]
 				}`)
 			})
-
-			It("returns an error", func() {
+			
+			It("does nothing and succeeds", func() {
 				err = dynatrace.AfterCompile(stager)
-				Expect(err).NotTo(BeNil())
+				Expect(err).To(BeNil())
 
-				Expect(err.Error()).To(Equal("'environmentid' or 'apiurl' has to be specified in the service credentials!"))
-			})
-		})
-
-		Context("VCAP_SERVICES contains dynatrace service without apitoken", func() {
-			BeforeEach(func() {
-				os.Setenv("VCAP_APPLICATION", `{"name":"JimBob"}`)
-				os.Setenv("VCAP_SERVICES", `{
-					"0": [{"name":"dynatrace","credentials":{"environmentid":"something", "apitoken":""}}]
-				}`)
-			})
-
-			It("returns an error", func() {
-				err = dynatrace.AfterCompile(stager)
-				Expect(err).NotTo(BeNil())
-
-				Expect(err.Error()).To(Equal("'apitoken' has to be specified in the service credentials!"))
+				Expect(buffer.String()).To(ContainSubstring("More than one matching service found!"))
 			})
 		})
 	})

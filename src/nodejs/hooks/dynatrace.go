@@ -79,7 +79,7 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 	dynatraceEnvPath := filepath.Join(stager.DepDir(), "profile.d", dynatraceEnvName)
 	agentLibPath, err := h.agentPath(filepath.Join(stager.BuildDir(), installDir))
 	if err != nil {
-		h.Log.Error("manifest.json not found in %s!", installDir)
+		h.Log.Error("Manifest handling failed!")
 		return err
 	}
 	
@@ -197,7 +197,7 @@ func (h DynatraceHook) downloadFile(url, path string) error {
 }
 
 func (h DynatraceHook) agentPath(installDir string) (string, error) {
-	manifestPath := filepath.Join(installDir, "/manifest.json")
+	manifestPath := filepath.Join(installDir, "manifest.json")
 
 	type Binary struct {
 		Path string `json:"path"`
@@ -214,19 +214,19 @@ func (h DynatraceHook) agentPath(installDir string) (string, error) {
 		Ver string `json:"version"`
 	}
 
-	var m Manifest
+	var manifest Manifest
 
 	raw, err := ioutil.ReadFile(manifestPath)
 	if err != nil {
 		return "", err
 	}
 
-	err = json.Unmarshal(raw, &m) 
+	err = json.Unmarshal(raw, &manifest) 
 	if err != nil {
 		return "", err
 	}
 
-	for _, binary := range m.Tech["process"]["linux-x86-64"] {
+	for _, binary := range manifest.Tech["process"]["linux-x86-64"] {
 		if binary.Binarytype ==	"primary" {
 			return binary.Path, nil
 		}

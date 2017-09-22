@@ -159,6 +159,23 @@ var _ = Describe("dynatraceHook", func() {
 			})
 		})
 
+		Context("VCAP_SERVICES has incomplete dynatrace service", func() {
+			BeforeEach(func() {
+				environmentid := "123456"
+				os.Setenv("VCAP_APPLICATION", `{"name":"JimBob"}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"0": [{"name":"dynatrace","credentials":{"apiurl":"https://example.com","environmentid":"`+environmentid+`"}}],
+				}`)
+			})
+
+			It("does nothing and succeeds", func() {
+				err = dynatrace.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				Expect(buffer.String()).To(Equal(""))
+			})
+		})
+
 		Context("VCAP_SERVICES contains dynatrace service using apiurl", func() {
 			BeforeEach(func() {
 				environmentid := "123456"

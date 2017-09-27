@@ -3,12 +3,12 @@ FILTER="appdynamics\|app-dynamics"
 if [ `echo $VCAP_SERVICES | grep -c $FILTER ` -gt 0 ];
 then
   key="appdynamics"
-  APPDYNAMICS_CONTROLLER_HOST_NAME=$(echo "${VCAP_SERVICES-}" | jq -r '.['\""$key"\"'][0] | .credentials | .["host-name"] ')
-  APPDYNAMICS_CONTROLLER_PORT=$(echo "${VCAP_SERVICES-}" | jq -r '.['\""$key"\"'][0] | .credentials | .port ')
-  APPDYNAMICS_AGENT_ACCOUNT_NAME=$(echo "${VCAP_SERVICES-}" | jq -r '.['\""$key"\"'][0] | .credentials | .["account-name"] ')
+  APPDYNAMICS_CONTROLLER_HOST_NAME=$(echo "${VCAP_SERVICES-}" | jq -r --arg key $key '[.[][] | select(.name | contains($key))][0] | .credentials | .["host-name"]')
+  APPDYNAMICS_CONTROLLER_PORT=$(echo "${VCAP_SERVICES-}" | jq -r --arg key $key '[.[][] | select(.name | contains($key))][0] | .credentials | .port')
+  APPDYNAMICS_AGENT_ACCOUNT_NAME=$(echo "${VCAP_SERVICES-}" | jq -r --arg key $key '[.[][] | select(.name | contains($key))][0] | .credentials | .["account-name"]')
 
-  APPDYNAMICS_CONTROLLER_SSL_ENABLED=$(echo "${VCAP_SERVICES-}" | jq -r '.['\""$key"\"'][0] | .credentials | .["ssl-enabled"] ')
-  APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY=$(echo "${VCAP_SERVICES-}" | jq -r '.['\""$key"\"'][0] | .credentials | .["account-access-key"] ')
+  APPDYNAMICS_CONTROLLER_SSL_ENABLED=$(echo "${VCAP_SERVICES-}" | jq -r --arg key $key '[.[][] | select(.name | contains($key))][0] | .credentials | .["ssl-enabled"]')
+  APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY=$(echo "${VCAP_SERVICES-}" | jq -r --arg key $key '[.[][] | select(.name | contains($key))][0] | .credentials | .["account-access-key"]')
   APPDYNAMICS_AGENT_APPLICATION_NAME=$(echo "${VCAP_APPLICATION-}" | jq -r .application_name)
   APPDYNAMICS_AGENT_TIER_NAME=$(echo "${VCAP_APPLICATION-}" | jq -r .application_name)
   APPDYNAMICS_AGENT_NODE_NAME_PREFIX=$(echo "${APPDYNAMICS_AGENT_TIER_NAME}")

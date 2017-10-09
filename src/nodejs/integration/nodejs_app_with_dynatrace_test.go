@@ -91,6 +91,26 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		})
 	})
 
+	Context("deploying a NodeJS app with Dynatrace agent with failing agent download and ignoring errors", func() {
+		It("checks if skipping download errors works", func() {
+
+			CredentialsServiceName := "dynatrace-" + cutlass.RandStringRunes(20) + "-service"
+			command := exec.Command("cf", "cups", CredentialsServiceName, "-p", "'{\"apitoken\":\"secretpaastoken\",\"apiurl\":\"https://s3.amazonaws.com/dt-paasFAILING/manifest\",\"environmentid\":\"envid\",\"skiperrors\":\"true\"}'")
+			_, err := command.CombinedOutput()
+			Expect(err).To(BeNil())
+			createdServices = append(createdServices, CredentialsServiceName)
+
+			command = exec.Command("cf", "bind-service", app.Name, CredentialsServiceName)
+			_, err = command.CombinedOutput()
+			Expect(err).To(BeNil())
+
+			command = exec.Command("cf", "restage", app.Name)
+			_, err = command.Output()
+			Expect(err).To(BeNil())
+
+			Expect(app.Stdout.String()).To(ContainSubstring("Error during installer download, skipping installation"))
+		})
+	})
 	Context("deploying a NodeJS app with Dynatrace agent with two dynatrace services", func() {
 		It("check if service detection isn't disturbed by a service with tags", func() {
 

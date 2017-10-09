@@ -44,6 +44,8 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 
 	h.Log.Info("Dynatrace service credentials found. Setting up Dynatrace PaaS agent.")
 
+	skipErrors := credentials["skiperrors"]
+
 	apiurl, present := credentials["apiurl"]
 	if !present {
 		apiurl = "https://" + credentials["environmentid"] + ".live.dynatrace.com/api"
@@ -54,7 +56,10 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 
 	h.Log.Debug("Downloading '%s' to '%s'", url, installerPath)
 	err := h.downloadFile(url, installerPath)
-	if err != nil {
+	if err != nil && skipErrors == "true" {
+		h.Log.Info("Error during installer download, skipping installation")
+		return nil
+	} else if err != nil && skipErrors != "true" {
 		return err
 	}
 

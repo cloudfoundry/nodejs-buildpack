@@ -256,5 +256,27 @@ var _ = Describe("dynatraceHook", func() {
 				Expect(buffer.String()).To(ContainSubstring("More than one matching service found!"))
 			})
 		})
+
+		Context("VCAP_SERVICES contains skiperrors flag", func() {
+			BeforeEach(func() {
+				environmentid := "123456"
+				apiToken := "ExcitingToken28"
+				os.Setenv("BP_DEBUG", "true")
+				os.Setenv("VCAP_APPLICATION", `{"name":"JimBob"}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"0": [{"name":"dynatrace","credentials":{"environmentid":"`+environmentid+`","apitoken":"`+apiToken+`","skiperrors":"true"}}]
+				}`)
+
+				httpmock.RegisterResponder("GET", "https://123456.live.dynatrace.com/api/v1/deployment/installer/agent/unix/paas-sh/latest?include=nodejs&include=process&bitness=64&Api-Token="+apiToken,
+					httpmock.NewStringResponder(404, "echo agent not found"))
+			})
+
+			It("does nothing and succeeds", func() {
+				err = dynatrace.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				Expect(buffer.String()).To(ContainSubstring("Error during installer download, skipping installation"))
+			})
+		})
 	})
 })

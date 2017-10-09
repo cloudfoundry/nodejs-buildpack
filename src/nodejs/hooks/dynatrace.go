@@ -56,10 +56,11 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 
 	h.Log.Debug("Downloading '%s' to '%s'", url, installerPath)
 	err := h.downloadFile(url, installerPath)
-	if err != nil && skipErrors == "true" {
-		h.Log.Info("Error during installer download, skipping installation")
-		return nil
-	} else if err != nil && skipErrors != "true" {
+	if err != nil {
+		if skipErrors == "true" {
+			h.Log.Warning("Error during installer download, skipping installation")
+			return nil
+		}
 		return err
 	}
 

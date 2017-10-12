@@ -3,6 +3,7 @@ package integration_test
 import (
 	"os/exec"
 	"path/filepath"
+	"time"
 
 	"github.com/cloudfoundry/libbuildpack/cutlass"
 
@@ -81,7 +82,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(app.Push()).ToNot(BeNil())
 			Expect(app.ConfirmBuildpack(buildpackVersion)).To(Succeed())
 
-			Expect(app.Stdout.String()).To(ContainSubstring("Unable to install node: no match found for 9000.0.0"))
+			Eventually(app.Stdout.String, 2*time.Second).Should(ContainSubstring("Unable to install node: no match found for 9000.0.0"))
 		})
 	})
 

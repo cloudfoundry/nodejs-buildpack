@@ -209,7 +209,7 @@ func (h DynatraceHook) agentPath(installDir string) (string, error) {
 		Path string `json:"path"`
 		Md5 string `json:"md5"`
 		Version string `json:"version"`
-		Binarytype string `json:"binarytype,omitemtpy"`
+		Binarytype string `json:"binarytype,omitempty"`
 	}
 
 	type Architecture map[string][]Binary

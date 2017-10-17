@@ -1,3 +1,18 @@
+v1.6.9 Oct 17, 2017
+====================
+
+* Add yarn 1.2.1, remove yarn 1.2.0
+  (https://www.pivotaltracker.com/story/show/151912328)
+
+* Add node 8.7.0, remove node 8.5.0
+  (https://www.pivotaltracker.com/story/show/151897906)
+
+* Add yarn 1.2.0, remove yarn 1.1.0
+  (https://www.pivotaltracker.com/story/show/151833736)
+
+* Add node 6.11.4, remove node 6.11.2
+  (https://www.pivotaltracker.com/story/show/151659499)
+
 v1.6.8 Oct 03, 2017
 ====================
 

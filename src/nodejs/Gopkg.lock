@@ -73,6 +73,12 @@
   revision = "1cbadb444a806fd9430d14ad08967ed91da4fa0a"
 
 [[projects]]
+  branch = "v1"
+  name = "gopkg.in/jarcoal/httpmock.v1"
+  packages = ["."]
+  revision = "cf52904a3cf0f78f199ecade6a6df8e245d5b25a"
+
+[[projects]]
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -81,6 +87,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0be546f9437b300ff66c7ddbc06e72563799843152485c9103da5ea016b4270e"
+  inputs-digest = "caa22acdeb1007f4b257f0ea546f676c5c279eb19ba5e4560d64d700d07e7fe4"
   solver-name = "gps-cdcl"
   solver-version = 1

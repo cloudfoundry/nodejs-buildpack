@@ -1,3 +1,19 @@
+v1.6.10 Oct 25, 2017
+=====================
+
+* Add node 4.8.5, remove node 4.8.3
+  (https://www.pivotaltracker.com/story/show/152260475)
+
+* Add node 6.11.5, remove node 6.11.3
+  (https://www.pivotaltracker.com/story/show/152260475)
+
+* Add node 8.8.0, remove node 8.6.0
+  (https://www.pivotaltracker.com/story/show/152260475)
+
+* Added hooks for dynatrace
+  - Merge pull request #109 from arthfl/develop
+
+
 v1.6.9 Oct 17, 2017
 ====================
 

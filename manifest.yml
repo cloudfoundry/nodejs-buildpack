@@ -88,8 +88,8 @@ dependencies:
   - cflinuxfs2
 - name: node
   version: 4.8.4
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.4-linux-x64-b442a23e.tgz
-  md5: b442a23ec104f10e6ba61f04089b3147
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.4-linux-x64-22e75feb.tgz
+  md5: 22e75feb373fc5a954ddae1b94ab0721
   cf_stacks:
   - cflinuxfs2
 pre_package: scripts/build.sh

@@ -39,12 +39,6 @@ dependency_deprecation_dates:
   link: https://github.com/nodejs/LTS
 dependencies:
 - name: node
-  version: 7.10.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.10.0-linux-x64-a608be81.tgz
-  cf_stacks:
-  - cflinuxfs2
-  sha256: 09d27847b29fa0e4d77af63136d3c3e96b1b614e40560787b425577266628562
-- name: node
   version: 7.10.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.10.1-linux-x64-ab419747.tgz
   cf_stacks:
@@ -90,6 +84,12 @@ dependencies:
   version: 6.11.5
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.11.5-linux-x64-b640deb6.tgz
   md5: b640deb6c5128371ef1215df4e1e9c29
+  cf_stacks:
+  - cflinuxfs2
+- name: node
+  version: 7.10.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.10.0-linux-x64-eca40199.tgz
+  md5: eca401993630cf796c9da7936688f0cf
   cf_stacks:
   - cflinuxfs2
 pre_package: scripts/build.sh

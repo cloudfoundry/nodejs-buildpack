@@ -2,7 +2,7 @@
 language: nodejs
 default_versions:
 - name: node
-  version: 4.8.4
+  version: 4.8.5
 include_files:
 - CHANGELOG
 - CONTRIBUTING.md
@@ -87,9 +87,9 @@ dependencies:
   - cflinuxfs2
   sha256: 59d548b6f318411e27e5c90fdaaff11a20c79292410f8c9accd94d6c6edbc290
 - name: node
-  version: 4.8.4
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.4-linux-x64-ebf09973.tgz
-  md5: ebf09973d8c1ffd5cdb45056f06b501c
+  version: 4.8.5
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.5-linux-x64-1a9b97a5.tgz
+  md5: 1a9b97a5f541589c44746b322a354663
   cf_stacks:
   - cflinuxfs2
 pre_package: scripts/build.sh

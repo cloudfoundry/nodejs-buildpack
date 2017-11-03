@@ -325,4 +325,15 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(body).To(ContainSubstring(`"MEMORY_AVAILABLE":"128"`))
 		})
 	})
+
+	FDescribe("System CA Store", func() {
+		BeforeEach(func() {
+			app = cutlass.New(filepath.Join(bpDir, "fixtures", "use-openssl-ca"))
+			app.SetEnv("SSL_CERT_FILE", "cert.pem")
+		})
+		It("uses the system CA store (or env)", func() {
+			PushAppAndConfirm(app)
+			Expect(app.GetBody("/")).To(ContainSubstring("Response over self signed https"))
+		})
+	})
 })

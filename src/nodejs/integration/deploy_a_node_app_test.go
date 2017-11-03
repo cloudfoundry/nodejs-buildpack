@@ -80,9 +80,9 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		It("displays a nice error messages and gracefully fails", func() {
 			Expect(app.Push()).ToNot(BeNil())
-			Expect(app.ConfirmBuildpack(buildpackVersion)).To(Succeed())
 
 			Eventually(app.Stdout.String, 2*time.Second).Should(ContainSubstring("Unable to install node: no match found for 9000.0.0"))
+			Expect(app.ConfirmBuildpack(buildpackVersion)).To(Succeed())
 		})
 	})
 
@@ -93,9 +93,9 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		It("displays a nice error messages and gracefully fails", func() {
 			Expect(app.Push()).ToNot(BeNil())
-			Expect(app.ConfirmBuildpack(buildpackVersion)).To(Succeed())
 
 			Eventually(app.Stdout.String, 2*time.Second).Should(ContainSubstring("Unable to install node: no match found for 4.1.1"))
+			Expect(app.ConfirmBuildpack(buildpackVersion)).To(Succeed())
 		})
 	})
 

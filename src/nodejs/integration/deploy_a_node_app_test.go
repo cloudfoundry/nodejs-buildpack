@@ -326,7 +326,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		})
 	})
 
-	FDescribe("System CA Store", func() {
+	Describe("System CA Store", func() {
 		BeforeEach(func() {
 			app = cutlass.New(filepath.Join(bpDir, "fixtures", "use-openssl-ca"))
 			app.SetEnv("SSL_CERT_FILE", "cert.pem")

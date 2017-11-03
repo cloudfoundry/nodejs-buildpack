@@ -86,12 +86,6 @@ dependencies:
   sha256: 3bef1177b01cf8cb51886148871457cbeb9978d64e0d1bda6803c58c8aa6aaed
   cf_stacks:
   - cflinuxfs2
-- name: node
-  version: 9.0.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-9.0.0-linux-x64-127be858.tgz
-  sha256: 127be858764bc59cae7a9c3c237fe73c3e5724c8dde4237022917a973d924674
-  cf_stacks:
-  - cflinuxfs2
 - name: yarn
   version: 1.3.2
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn-v1.3.2-6cfe82e5.tar.gz

@@ -1,3 +1,19 @@
+v1.6.11 Nov 06, 2017
+=====================
+
+* Build node with "--use-openssl-ca" to enable system store
+  (https://www.pivotaltracker.com/story/show/152254480)
+
+* Add node 9.0.0
+  (https://www.pivotaltracker.com/story/show/152452241)
+
+* Add node 8.9.0, remove node 8.7.0
+  (https://www.pivotaltracker.com/story/show/152449876)
+  (https://www.pivotaltracker.com/story/show/152301847)
+
+* Verify dependency downloads using sha256 instead of md5
+  (https://www.pivotaltracker.com/story/show/151913767)
+
 v1.6.10 Oct 25, 2017
 =====================
 

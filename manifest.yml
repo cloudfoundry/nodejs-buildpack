@@ -98,4 +98,10 @@ dependencies:
   sha256: c8323162d0c2bc3d6ef1e9232e74791f45d7b426964b9a60dd7b7176ef6d664f
   cf_stacks:
   - cflinuxfs2
+- name: node
+  version: 9.1.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-9.1.0-linux-x64-df3d4eb4.tgz
+  sha256: df3d4eb4d2c649b7d724d77d0d2342fd21f51944a029ad9c5a26b8f5518b3e11
+  cf_stacks:
+  - cflinuxfs2
 pre_package: scripts/build.sh

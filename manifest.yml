@@ -22,20 +22,25 @@ include_files:
 - profile/newrelic-setup.sh
 - profile/nodejs.sh
 dependency_deprecation_dates:
-- match: 4\.\d+\.\d+
-  version_line: '4'
+- version_line: 4.x
   name: node
   date: 2018-04-01
   link: https://github.com/nodejs/LTS
-- match: 6\.\d+\.\d+
-  version_line: '6'
+- version_line: 6.x
   name: node
-  date: 2019-04-18
+  date: 2019-04-30
   link: https://github.com/nodejs/LTS
-- match: 7\.\d+\.\d+
-  version_line: '7'
+- version_line: 7.x
   name: node
   date: 2017-06-30
+  link: https://github.com/nodejs/LTS
+- version_line: 8.x
+  name: node
+  date: 2019-12-31
+  link: https://github.com/nodejs/LTS
+- version_line: 9.x
+  name: node
+  date: 2018-06-30
   link: https://github.com/nodejs/LTS
 dependencies:
 - name: node

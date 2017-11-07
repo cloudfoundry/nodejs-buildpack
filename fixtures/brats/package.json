@@ -1,0 +1,13 @@
+{
+	"name": "node_web_app",
+	"version": "0.0.0",
+	"description": "hello, world",
+	"main": "server.js",
+	"engines": {
+		"node": "8.x"
+	},
+	"dependencies": {
+		"bcrypt": "*",
+		"bson-ext": "*"
+	}
+}

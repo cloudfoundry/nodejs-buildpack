@@ -7,4 +7,4 @@ if [ ! -f $ROOT/.bin/ginkgo ]; then
 fi
 
 cd $ROOT/src/nodejs/
-ginkgo -r -skipPackage=integration
+ginkgo -r -skipPackage=brats,integration

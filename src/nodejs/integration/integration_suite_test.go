@@ -100,10 +100,6 @@ func AssertUsesProxyDuringStagingIfPresent(fixtureName string) {
 			Expect(err).To(BeNil())
 			defer proxy.Close()
 
-			tlsproxy, err := cutlass.NewTLSProxy()
-			Expect(err).To(BeNil())
-			defer tlsproxy.Close()
-
 			bpFile := filepath.Join(bpDir, buildpackVersion+"tmp")
 			cmd := exec.Command("cp", packagedBuildpack.File, bpFile)
 			err = cmd.Run()
@@ -114,7 +110,7 @@ func AssertUsesProxyDuringStagingIfPresent(fixtureName string) {
 				bpDir,
 				filepath.Join("fixtures", fixtureName),
 				bpFile,
-				[]string{"HTTP_PROXY=" + proxy.URL, "HTTPS_PROXY=" + tlsproxy.URL},
+				[]string{"HTTP_PROXY=" + proxy.URL, "HTTPS_PROXY=" + proxy.URL},
 			)
 			Expect(err).To(BeNil())
 

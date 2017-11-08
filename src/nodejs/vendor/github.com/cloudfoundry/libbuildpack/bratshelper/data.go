@@ -26,6 +26,8 @@ type BpData struct {
 var Data BpData
 
 func InitBpData() *BpData {
+	cutlass.SeedRandom()
+
 	Data.BpVersion = cutlass.RandStringRunes(6)
 	Data.Cached = "brats_nodejs_cached_" + Data.BpVersion
 	Data.Uncached = "brats_nodejs_uncached_" + Data.BpVersion

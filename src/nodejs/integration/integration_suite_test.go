@@ -77,6 +77,13 @@ func PushAppAndConfirm(app *cutlass.App) {
 	Expect(app.ConfirmBuildpack(buildpackVersion)).To(Succeed())
 }
 
+func DestroyApp(app *cutlass.App) *cutlass.App {
+	if app != nil {
+		app.Destroy()
+	}
+	return nil
+}
+
 func ApiHasTask() bool {
 	apiVersionString, err := cutlass.ApiVersion()
 	Expect(err).To(BeNil())

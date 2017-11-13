@@ -8,5 +8,5 @@ source .envrc
 GINKGO_NODES=${GINKGO_NODES:-3}
 GINKGO_ATTEMPTS=${GINKGO_ATTEMPTS:-2}
 
-cd $ROOT/src/*/brats
+cd src/*/brats
 ginkgo -r --flakeAttempts=$GINKGO_ATTEMPTS -nodes $GINKGO_NODES

@@ -68,5 +68,18 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 				Expect(app.Stdout.String()).ToNot(ContainSubstring("&license_key=fake_new_relic_key2"))
 			})
 		})
+		
+		Context("when New Relic environment variables are set from user provided service", func() {
+			BeforeEach(func() {
+				app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_newrelic_user_provided"))
+			})
+
+			It("tries to talk to NewRelic with the license key from newrelic.js", func() {
+				PushAppAndConfirm(app)
+				Expect(app.Stdout.String()).ToNot(ContainSubstring("&license_key=fake_new_relic_key1"))
+				Expect(app.Stdout.String()).ToNot(ContainSubstring("&license_key=fake_new_relic_key2"))
+				Expect(app.Stdout.String()).To(ContainSubstring("&license_key=fake_new_relic_key3"))
+			})
+		})
 	})
 })

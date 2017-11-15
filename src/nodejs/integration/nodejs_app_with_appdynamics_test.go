@@ -1,6 +1,7 @@
 package integration_test
 
 import (
+	"os/exec"
 	"path/filepath"
 	"time"
 
@@ -11,25 +12,68 @@ import (
 )
 
 var _ = Describe("CF NodeJS Buildpack", func() {
-	var app *cutlass.App
+	var app, sbApp *cutlass.App
+	var sbUrl string
+	RunCf := func(args ...string) error {
+		command := exec.Command("cf", args...)
+		command.Stdout = GinkgoWriter
+		command.Stderr = GinkgoWriter
+		return command.Run()
+	}
+
 	AfterEach(func() {
-		if app != nil {
-			app.Destroy()
-		}
-		app = nil
+		app = DestroyApp(app)
+
+		_ = RunCf("purge-service-offering", "-f", "appdynamics")
+		_ = RunCf("delete-service-broker", "-f", "appdynamics")
+		_ = RunCf("delete-service", "-f", "appdynamics")
+
+		sbApp = DestroyApp(sbApp)
 	})
 
-	PContext("deploying a NodeJS app with AppDynamics", func() {
-		BeforeEach(func() {
-			app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_appdynamics"))
+	appConfig := func() (string, error) {
+		return app.GetBody("/config")
+	}
+
+	It("deploying a NodeJS app with appdynamics", func() {
+		By("set up a service broker", func() {
+			sbApp = cutlass.New(filepath.Join(bpDir, "fixtures", "fake_appdynamics_service_broker"))
+			Expect(sbApp.Push()).To(Succeed())
+			Eventually(func() ([]string, error) { return sbApp.InstanceStates() }, 20*time.Second).Should(Equal([]string{"RUNNING"}))
+
+			var err error
+			sbUrl, err = sbApp.GetUrl("")
+			Expect(err).ToNot(HaveOccurred())
 		})
 
-		It("tries to talk to AppDynamics with host-name from the env vars", func() {
+		app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_appdynamics"))
+		app.Memory = "256M"
+		app.Disk = "512M"
+
+		By("Pushing an app with a user provided service", func() {
+			Expect(RunCf("create-user-provided-service", "appdynamics", "-p", `{"host-name":"test-ups-host","port":"1234","account-name":"test-account","ssl-enabled":"true","account-access-key":"test-key"}`)).To(Succeed())
 			PushAppAndConfirm(app)
 			Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
-			Eventually(func() string { return app.Stdout.String() }, 5*time.Second).Should(ContainSubstring("appdynamics v"))
-			Eventually(func() string { return app.Stdout.String() }, 5*time.Second).Should(ContainSubstring("starting control socket"))
-			Eventually(func() string { return app.Stdout.String() }, 5*time.Second).Should(ContainSubstring("controllerHost: 'test-host'"))
+
+			Expect(app.Stdout.String()).To(ContainSubstring("Appdynamics agent logs"))
+			Eventually(appConfig, 10*time.Second).Should(ContainSubstring(`"controllerHost": "test-ups-host"`))
+		})
+
+		By("Unbinding and deleting the CUPS appdynamics service", func() {
+			Expect(RunCf("unbind-service", app.Name, "appdynamics")).To(Succeed())
+			Expect(RunCf("delete-service", "-f", "appdynamics")).To(Succeed())
+		})
+
+		By("Pushing an app with a marketplace provided service", func() {
+			Expect(RunCf("create-service-broker", "appdynamics", "username", "password", sbUrl, "--space-scoped")).To(Succeed())
+			Expect(RunCf("create-service", "appdynamics", "public", "appdynamics")).To(Succeed())
+
+			app.Stdout.Reset()
+			PushAppAndConfirm(app)
+			Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
+
+			Expect(app.Stdout.String()).To(ContainSubstring("Appdynamics agent logs"))
+			Eventually(appConfig, 10*time.Second).Should(ContainSubstring(`"controllerHost": "test-sb-host"`))
 		})
 	})
 })

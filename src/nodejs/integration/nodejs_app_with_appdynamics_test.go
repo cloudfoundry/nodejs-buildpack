@@ -27,6 +27,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		_ = RunCf("purge-service-offering", "-f", "appdynamics")
 		_ = RunCf("delete-service-broker", "-f", "appdynamics")
 		_ = RunCf("delete-service", "-f", "appdynamics")
+		_ = RunCf("delete-service", "-f", "app-dynamics")
 
 		sbApp = DestroyApp(sbApp)
 	})
@@ -50,7 +51,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		app.Memory = "256M"
 		app.Disk = "512M"
 
-		By("Pushing an app with a user provided service", func() {
+		By("Pushing an app with a user provided service named appdynamics", func() {
 			Expect(RunCf("create-user-provided-service", "appdynamics", "-p", `{"host-name":"test-ups-host","port":"1234","account-name":"test-account","ssl-enabled":"true","account-access-key":"test-key"}`)).To(Succeed())
 			PushAppAndConfirm(app)
 			Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
@@ -62,6 +63,22 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		By("Unbinding and deleting the CUPS appdynamics service", func() {
 			Expect(RunCf("unbind-service", app.Name, "appdynamics")).To(Succeed())
 			Expect(RunCf("delete-service", "-f", "appdynamics")).To(Succeed())
+		})
+
+		By("Pushing an app with a user provided service named app-dynamics", func() {
+			Expect(RunCf("create-user-provided-service", "app-dynamics", "-p", `{"host-name":"test-ups-2-host","port":"1234","account-name":"test-account","ssl-enabled":"true","account-access-key":"test-key"}`)).To(Succeed())
+			Expect(RunCf("bind-service", app.Name, "app-dynamics")).To(Succeed())
+
+			Expect(RunCf("restart", app.Name)).To(Succeed())
+			Eventually(func() ([]string, error) { return app.InstanceStates() }, 20*time.Second).Should(Equal([]string{"RUNNING"}))
+
+			Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
+			Eventually(appConfig, 10*time.Second).Should(ContainSubstring(`"controllerHost": "test-ups-2-host"`))
+		})
+
+		By("Unbinding and deleting the CUPS appdynamics service", func() {
+			Expect(RunCf("unbind-service", app.Name, "app-dynamics")).To(Succeed())
+			Expect(RunCf("delete-service", "-f", "app-dynamics")).To(Succeed())
 		})
 
 		By("Pushing an app with a marketplace provided service", func() {

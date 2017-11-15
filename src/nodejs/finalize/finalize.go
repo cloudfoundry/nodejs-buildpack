@@ -1,8 +1,10 @@
 package finalize
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/cloudfoundry/libbuildpack"
 )
@@ -14,6 +16,7 @@ type Manifest interface {
 type Stager interface {
 	BuildDir() string
 	DepDir() string
+	DepsIdx() string
 }
 
 type Finalizer struct {
@@ -74,7 +77,33 @@ func (f *Finalizer) CopyProfileScripts() error {
 	if err := os.MkdirAll(profiledDir, 0755); err != nil {
 		return err
 	}
-	return libbuildpack.CopyDirectory(filepath.Join(f.Manifest.RootDir(), "profile"), profiledDir)
+
+	scriptsDir := filepath.Join(f.Stager.DepDir(), "scripts")
+	if err := os.MkdirAll(scriptsDir, 0755); err != nil {
+		return err
+	}
+
+	path := filepath.Join(f.Manifest.RootDir(), "profile")
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return err
+	}
+
+	for _, fi := range files {
+		if strings.HasSuffix(fi.Name(), ".rb") {
+			if err := libbuildpack.CopyFile(filepath.Join(path, fi.Name()), filepath.Join(scriptsDir, fi.Name())); err != nil {
+				return err
+			}
+			if err := ioutil.WriteFile(filepath.Join(profiledDir, fi.Name()+".sh"), []byte("eval $(ruby $DEPS_DIR/"+f.Stager.DepsIdx()+"/scripts/"+fi.Name()+")\n"), 0755); err != nil {
+				return err
+			}
+		} else {
+			if err := libbuildpack.CopyFile(filepath.Join(path, fi.Name()), filepath.Join(profiledDir, fi.Name())); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func (f *Finalizer) WarnNoStart() error {

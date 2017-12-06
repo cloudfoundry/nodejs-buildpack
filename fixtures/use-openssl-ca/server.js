@@ -10,6 +10,9 @@ const listenErrHandler = (port) => (err) => {
   console.log(`server is listening on ${port}`)
 }
 
+// Generate certificates:
+// openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/CN=localhost' -keyout key.pem -out cert.pem
+
 const key = fs.readFileSync('key.pem')
 const cert = fs.readFileSync('cert.pem')
 const httpsServer = https.createServer({key, cert, ca: cert}, (request, response) => {

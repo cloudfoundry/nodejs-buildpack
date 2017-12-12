@@ -1,3 +1,20 @@
+v1.6.13 Dec 12, 2017
+=====================
+
+* Add node 8.9.3, remove node 8.9.0
+  (https://www.pivotaltracker.com/story/show/153516409)
+  (https://www.pivotaltracker.com/story/show/153425484)
+
+* Add node 9.2.1, remove node 9.1.0
+  (https://www.pivotaltracker.com/story/show/153516409)
+
+* Add node 4.8.7, remove node 4.8.5
+  (https://www.pivotaltracker.com/story/show/153514063)
+
+* Add node 6.12.2, remove node 6.11.5
+  (https://www.pivotaltracker.com/story/show/153514063)
+  (https://www.pivotaltracker.com/story/show/153407348)
+
 v1.6.12 Nov 21, 2017
 =====================
 

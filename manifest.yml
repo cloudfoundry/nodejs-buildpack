@@ -2,7 +2,7 @@
 language: nodejs
 default_versions:
 - name: node
-  version: 4.8.7
+  version: 6.x
 include_files:
 - CHANGELOG
 - CONTRIBUTING.md
@@ -30,10 +30,6 @@ dependency_deprecation_dates:
   name: node
   date: 2019-04-30
   link: https://github.com/nodejs/LTS
-- version_line: 7.x
-  name: node
-  date: 2017-06-30
-  link: https://github.com/nodejs/LTS
 - version_line: 8.x
   name: node
   date: 2019-12-31
@@ -43,18 +39,6 @@ dependency_deprecation_dates:
   date: 2018-06-30
   link: https://github.com/nodejs/LTS
 dependencies:
-- name: node
-  version: 7.10.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.10.0-linux-x64-eca40199.tgz
-  cf_stacks:
-  - cflinuxfs2
-  sha256: 0f808bacad0f0729b5c37c7fbfe2a3a92c935cff21c0e1a99df93a4e467ff7b0
-- name: node
-  version: 7.10.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-7.10.1-linux-x64-ba9c3289.tgz
-  cf_stacks:
-  - cflinuxfs2
-  sha256: 35db13d968963bd4d824633c6f2e5e91d97a84e9cfe6e5433bb3a53659744fa6
 - name: yarn
   version: 1.2.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn-v1.2.1-a16106e2.tar.gz

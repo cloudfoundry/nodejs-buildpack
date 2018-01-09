@@ -23,7 +23,7 @@
     "cutlass",
     "packager"
   ]
-  revision = "736f9443c3adc8f46126a348b402de0eef99527c"
+  revision = "a4c9782e2cc42c03c3bc8f61fd73c75b1d1a7e3a"
 
 [[projects]]
   name = "github.com/elazarl/goproxy"
@@ -108,7 +108,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "d38bf781f16e180a1b2ad82697d2f81d7b7ecfac"
+  revision = "b9cf5f96b68d9eaa53d5db5fef235718767f416a"
 
 [[projects]]
   branch = "master"

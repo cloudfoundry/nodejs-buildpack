@@ -134,7 +134,7 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 	return nil
 }
 
-func (h DynatraceHook) GetCredentialString(credentials map[string]interface{},key string) string {
+func (h DynatraceHook) getCredentialString(credentials map[string]interface{},key string) string {
 	value, isString := credentials[key].(string)
 
 	if isString {
@@ -145,9 +145,9 @@ func (h DynatraceHook) GetCredentialString(credentials map[string]interface{},ke
 
 func (h DynatraceHook) dtCredentials() (DynatraceCredentials, bool) {
 	type Service struct {
-        Name        string            `json:"name"`
-        Credentials map[string]interface{} `json:"credentials"`
-    }
+		Name        string                 `json:"name"`
+		Credentials map[string]interface{} `json:"credentials"`
+	}
 
 	var vcapServices map[string][]Service
 
@@ -162,12 +162,13 @@ func (h DynatraceHook) dtCredentials() (DynatraceCredentials, bool) {
 	for _, services := range vcapServices {
 		for _, service := range services {
 			if strings.Contains(service.Name, "dynatrace") {
-				var credentials DynatraceCredentials
-				credentials.ServiceName = service.Name
-				credentials.EnvironmentId = h.GetCredentialString(service.Credentials, "environmentid")
-				credentials.ApiToken = h.GetCredentialString(service.Credentials, "apitoken")
-				credentials.ApiURL = h.GetCredentialString(service.Credentials, "apiurl")
-				credentials.SkipErrors = h.GetCredentialString(service.Credentials, "skiperrors") == "true"
+				credentials := DynatraceCredentials{
+					ServiceName :   service.Name,
+					EnvironmentId : h.getCredentialString(service.Credentials, "environmentid"),
+					ApiToken :      h.getCredentialString(service.Credentials, "apitoken"),
+					ApiURL :        h.getCredentialString(service.Credentials, "apiurl"),
+					SkipErrors :    h.getCredentialString(service.Credentials, "skiperrors") == "true",
+				}
 
 				if credentials.EnvironmentId != "" && credentials.ApiToken != "" {
 					detectedCredentials = append(detectedCredentials, credentials)

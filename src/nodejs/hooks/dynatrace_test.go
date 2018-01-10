@@ -164,7 +164,7 @@ var _ = Describe("dynatraceHook", func() {
 				environmentid := "123456"
 				os.Setenv("VCAP_APPLICATION", `{"name":"JimBob"}`)
 				os.Setenv("VCAP_SERVICES", `{
-					"0": [{"name":"dynatrace","credentials":{"apiurl":"https://example.com","environmentid":"`+environmentid+`"}}],
+					"0": [{"name":"dynatrace","credentials":{"apiurl":"https://example.com","environmentid":"`+environmentid+`"}}]
 				}`)
 			})
 
@@ -207,7 +207,45 @@ var _ = Describe("dynatraceHook", func() {
 			})
 		})
 
-		Context("VCAP_SERVICES contains dynatrace service using environmentid", func() {
+		Context("VCAP_SERVICES contains malformed dynatrace service", func() {
+			BeforeEach(func() {
+				environmentid := "123456"
+				apiToken := "ExcitingToken28"
+				os.Setenv("VCAP_APPLICATION", `{"name":"JimBob"}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"0": [{"name":"mysql"}],
+					"1": [{"name":"dynatrace","credentials":{"apiurl":"https://example.com","apitoken":"`+apiToken+`","environmentid":{ "id":"`+environmentid+`"}}}],
+					"2": [{"name":"redis"}]
+				}`)
+			})
+			
+			It("does nothing and succeeds", func() {
+				err = dynatrace.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				Expect(buffer.String()).To(Equal(""))
+			})
+		})
+
+		Context("VCAP_SERVICES contains dynatrace service without credentials", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_APPLICATION", `{"name":"JimBob"}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"0": [{"name":"mysql"}],
+					"1": [{"name":"dynatrace"}],
+					"2": [{"name":"redis"}]
+				}`)
+			})
+			
+			It("does nothing and succeeds", func() {
+				err = dynatrace.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				Expect(buffer.String()).To(Equal(""))
+			})
+		})
+
+		Context("VCAP_SERVICES contains dynatrace service using environmentid and redis service", func() {
 			BeforeEach(func() {
 				environmentid := "123456"
 				apiToken := "ExcitingToken28"
@@ -215,14 +253,14 @@ var _ = Describe("dynatraceHook", func() {
 				os.Setenv("VCAP_SERVICES", `{
 					"0": [{"name":"mysql"}],
 					"1": [{"name":"dynatrace","credentials":{"environmentid":"`+environmentid+`","apitoken":"`+apiToken+`"}}],
-					"2": [{"name":"redis"}]
+					"2": [{"name":"redis", "credentials":{"db_type":"redis", "instance_administration_api":{"deployment_id":"12345asdf", "instance_id":"12345asdf", "root":"https://doesnotexi.st"}}}]
 				}`)
 
 				httpmock.RegisterResponder("GET", "https://123456.live.dynatrace.com/api/v1/deployment/installer/agent/unix/paas-sh/latest?include=nodejs&include=process&bitness=64&Api-Token="+apiToken,
 					httpmock.NewStringResponder(200, "echo Install Dynatrace"))
 			})
 
-			It("installs dyntatrace", func() {
+			It("installs dynatrace", func() {
 				mockCommand.EXPECT().Execute("", gomock.Any(), gomock.Any(), gomock.Any(), buildDir).Do(runInstaller)
 
 				err = dynatrace.AfterCompile(stager)

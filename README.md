@@ -42,7 +42,9 @@ To build this buildpack, run the following commands from the buildpack's directo
 
 ### Testing
 
-To test this buildpack, run the following commands from the buildpack's directory:
+Buildpacks use the [Cutlass](https://github.com/cloudfoundry/libbuildpack/tree/master/cutlass) framework for running integration tests.
+
+To test this buildpack, run the following command from the buildpack's directory:
 
 1. Source the .envrc file in the buildpack directory.
 
@@ -70,8 +72,6 @@ To test this buildpack, run the following commands from the buildpack's director
     ```bash
     ./scripts/integration.sh
     ```
-    
-   **Tip:** If you don't have access to a Cloud Foundry or if you're missing required permissions, take a look at [PCF Dev](https://pivotal.io/pcf-dev) which provides you with a Pivotal Cloud Foundry for local development.
 
 ### Contributing
 
@@ -92,4 +92,3 @@ The project backlog is on [Pivotal Tracker](https://www.pivotaltracker.com/proje
 ### Acknowledgements
 
 Inspired by the [Heroku buildpack](https://github.com/heroku/heroku-buildpack-nodejs).
-

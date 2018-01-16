@@ -9,4 +9,6 @@ GINKGO_NODES=${GINKGO_NODES:-3}
 GINKGO_ATTEMPTS=${GINKGO_ATTEMPTS:-2}
 
 cd src/*/brats
+
+echo "Run Buildpack Runtime Acceptance Tests"
 ginkgo -r --flakeAttempts=$GINKGO_ATTEMPTS -nodes $GINKGO_NODES

@@ -52,18 +52,6 @@ dependencies:
   cf_stacks:
   - cflinuxfs2
 - name: node
-  version: 6.12.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.12.0-linux-x64-87c5152f.tgz
-  sha256: 87c5152febdd9f4ffa0691e4630a45874c21b63d1b1a7a85cfb765f1da41c8a0
-  cf_stacks:
-  - cflinuxfs2
-- name: node
-  version: 8.9.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.9.1-linux-x64-4dad1632.tgz
-  sha256: 4dad1632e2102ad6ee5652c6102ff14ae2637ff2dbb17ea2af60f486284ddcb3
-  cf_stacks:
-  - cflinuxfs2
-- name: node
   version: 6.12.2
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.12.2-linux-x64-e54a0511.tgz
   sha256: e54a0511a370c0d723105c287ccd13b2460ff37c2bb0a9270241b3d6b00b2262
@@ -76,12 +64,6 @@ dependencies:
   cf_stacks:
   - cflinuxfs2
 - name: node
-  version: 9.2.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-9.2.1-linux-x64-feeacd4c.tgz
-  sha256: feeacd4c75bd48ec5dd9ade1051a6e8ebf3c44f5b17917fbf32d29174a7b6075
-  cf_stacks:
-  - cflinuxfs2
-- name: node
   version: 8.9.3
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.9.3-linux-x64-3a0877a4.tgz
   sha256: 3a0877a41d2cd83a669aaa58ffe9352e52639defe4bd038a662ee8fea1778ffa
@@ -91,6 +73,24 @@ dependencies:
   version: 9.3.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-9.3.0-linux-x64-5937f9f7.tgz
   sha256: 5937f9f7c241ab5df1762f189743c8fc53835e66b09c2368b8941f6d1a8194da
+  cf_stacks:
+  - cflinuxfs2
+- name: node
+  version: 6.12.3
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.12.3-linux-x64-4df19874.tgz
+  sha256: 4df1987455ca8853a1c05be0c83eaa31718d469b3e3898adfd6a0b622c1052ef
+  cf_stacks:
+  - cflinuxfs2
+- name: node
+  version: 8.9.4
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.9.4-linux-x64-40e8e080.tgz
+  sha256: 40e8e08097a407ae4391b57eb6fa57e02ec4a40c2fb7e81cf609563549cdab44
+  cf_stacks:
+  - cflinuxfs2
+- name: node
+  version: 9.4.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-9.4.0-linux-x64-062d906c.tgz
+  sha256: 062d906c87839d03b243e2821e10653c89b4c92878bfe2bf995dec231e117bfc
   cf_stacks:
   - cflinuxfs2
 pre_package: scripts/build.sh

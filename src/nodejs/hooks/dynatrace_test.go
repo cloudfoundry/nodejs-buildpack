@@ -164,7 +164,7 @@ var _ = Describe("dynatraceHook", func() {
 				environmentid := "123456"
 				os.Setenv("VCAP_APPLICATION", `{"name":"JimBob"}`)
 				os.Setenv("VCAP_SERVICES", `{
-					"0": [{"name":"dynatrace","credentials":{"apiurl":"https://example.com","environmentid":"`+environmentid+`"}}],
+					"0": [{"name":"dynatrace","credentials":{"apiurl":"https://example.com","environmentid":"`+environmentid+`"}}]
 				}`)
 			})
 
@@ -172,7 +172,7 @@ var _ = Describe("dynatraceHook", func() {
 				err = dynatrace.AfterCompile(stager)
 				Expect(err).To(BeNil())
 
-				Expect(buffer.String()).To(Equal(""))
+				Expect(buffer.String()).To(ContainSubstring("Service 'dynatrace' is missing mandatory property 'apitoken'"))
 			})
 		})
 
@@ -248,12 +248,61 @@ var _ = Describe("dynatraceHook", func() {
 					"1": [{"name":"dynatrace-dupe","credentials":{"environmentid":"`+environmentid+`","apitoken":"`+apiToken+`"}}]
 				}`)
 			})
-			
+
 			It("does nothing and succeeds", func() {
 				err = dynatrace.AfterCompile(stager)
 				Expect(err).To(BeNil())
 
 				Expect(buffer.String()).To(ContainSubstring("More than one matching service found!"))
+			})
+		})
+
+		Context("VCAP_SERVICES contains service with credentials map and dynatrace service", func() {
+			BeforeEach(func() {
+				environmentid := "123456"
+				apiToken := "ExcitingToken28"
+				os.Setenv("VCAP_APPLICATION", `{"name":"JimBob"}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"0": [{"name":"dynatrace","credentials":{"environmentid":"`+environmentid+`","apitoken":"`+apiToken+`"}}],
+					"1": [{"name":"service","credentials":{"map":{"key":"value"},"otherkey":"othervalue"}}]
+				}`)
+				httpmock.RegisterResponder("GET", "https://123456.live.dynatrace.com/api/v1/deployment/installer/agent/unix/paas-sh/latest?include=nodejs&include=process&bitness=64&Api-Token="+apiToken,
+					httpmock.NewStringResponder(200, "echo Install Dynatrace"))
+			})
+
+			It("installs dyntatrace", func() {
+				mockCommand.EXPECT().Execute("", gomock.Any(), gomock.Any(), gomock.Any(), buildDir).Do(runInstaller)
+
+				err = dynatrace.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				// Sets up profile.d
+				contents, err := ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "dynatrace-env.sh"))
+				Expect(err).To(BeNil())
+
+				Expect(string(contents)).To(Equal("echo running dynatrace-env.sh\n" +
+					"export LD_PRELOAD=${HOME}/dynatrace/oneagent/agent/lib64/liboneagentproc.so\n" +
+					"export DT_HOST_ID=JimBob_${CF_INSTANCE_INDEX}"))
+			})
+		})
+
+		Context("VCAP_SERVICES cannot be unmarshalled", func() {
+			BeforeEach(func() {
+				environmentid := "123456"
+				apiToken := "ExcitingToken28"
+				os.Setenv("BP_DEBUG", "true")
+				os.Setenv("VCAP_APPLICATION", `{"name":"JimBob"}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"0": [{"name":"dynatrace","credentials":{"environmentid":"`+environmentid+`","apitoken":"`+apiToken+`","skiperrors":"true"}}],
+					"1": [{"name":"service","otherkey":"othervalue"}}]
+				}`)
+			})
+
+			It("logs a warning and continues", func() {
+				err = dynatrace.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				Expect(buffer.String()).To(ContainSubstring("Cannot unmarshal VCAP_SERVICES"))
 			})
 		})
 

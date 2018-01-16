@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/cloudfoundry/libbuildpack"
@@ -23,6 +24,19 @@ type DynatraceHook struct {
 	Command Command
 }
 
+type Service struct {
+	Name        string                 `json:"name"`
+	Credentials map[string]interface{} `json:"credentials"`
+}
+
+type DynatraceService struct {
+	Name          string
+	ApiUrl        string
+	ApiToken      string
+	EnvironmentId string
+	SkipErrors    bool
+}
+
 func init() {
 	logger := libbuildpack.NewLogger(os.Stdout)
 	command := &libbuildpack.Command{}
@@ -36,28 +50,21 @@ func init() {
 func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 	h.Log.Debug("Checking for enabled dynatrace service...")
 
-	credentials := h.dtCredentials()
-	if credentials == nil {
-		h.Log.Debug("Dynatrace service credentials not found!")
+	credentials, err := h.dtCredentials()
+	if err != nil {
+		h.Log.Debug(err.Error())
 		return nil
 	}
 
 	h.Log.Info("Dynatrace service credentials found. Setting up Dynatrace PaaS agent.")
 
-	skipErrors := credentials["skiperrors"]
-
-	apiurl, present := credentials["apiurl"]
-	if !present {
-		apiurl = "https://" + credentials["environmentid"] + ".live.dynatrace.com/api"
-	}
-
-	url := apiurl + "/v1/deployment/installer/agent/unix/paas-sh/latest?include=nodejs&include=process&bitness=64&Api-Token=" + credentials["apitoken"]
+	url := credentials.ApiUrl + "/v1/deployment/installer/agent/unix/paas-sh/latest?include=nodejs&include=process&bitness=64&Api-Token=" + credentials.ApiToken
 	installerPath := filepath.Join(os.TempDir(), "paasInstaller.sh")
 
 	h.Log.Debug("Downloading '%s' to '%s'", url, installerPath)
-	err := h.downloadFile(url, installerPath)
+	err = h.downloadFile(url, installerPath)
 	if err != nil {
-		if skipErrors == "true" {
+		if credentials.SkipErrors {
 			h.Log.Warning("Error during installer download, skipping installation")
 			return nil
 		}
@@ -88,7 +95,7 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 		h.Log.Error("Manifest handling failed!")
 		return err
 	}
-	
+
 	agentLibPath = filepath.Join(installDir, agentLibPath)
 
 	_, err = os.Stat(filepath.Join(stager.BuildDir(), agentLibPath))
@@ -129,38 +136,76 @@ func (h DynatraceHook) AfterCompile(stager *libbuildpack.Stager) error {
 	return nil
 }
 
-func (h DynatraceHook) dtCredentials() map[string]string {
-	type Service struct {
-		Name        string            `json:"name"`
-		Credentials map[string]string `json:"credentials"`
-	}
+func (h DynatraceHook) dtCredentials() (DynatraceService, error) {
+	var dynatraceService DynatraceService
 	var vcapServices map[string][]Service
 
 	err := json.Unmarshal([]byte(os.Getenv("VCAP_SERVICES")), &vcapServices)
 	if err != nil {
-		return nil
+		// we don't know whether skiperror has been set so we log and continue
+		h.Log.Warning("Cannot unmarshal VCAP_SERVICES")
+		return dynatraceService, errors.New("Cannot unmarshal VCAP_SERVICES")
 	}
 
-	var detectedServices []Service
+	var detectedServices []DynatraceService
 
 	for _, services := range vcapServices {
 		for _, service := range services {
-			if strings.Contains(service.Name, "dynatrace") &&
-					service.Credentials["environmentid"] != "" &&
-					service.Credentials["apitoken"] != "" {
-				detectedServices = append(detectedServices, service)
+			dynatraceService, err = h.parseDynatraceService(service)
+			if err == nil {
+				detectedServices = append(detectedServices, dynatraceService)
 			}
 		}
 	}
 
-	if len(detectedServices) == 1 {
-		h.Log.Debug("Found one matching service: %s", detectedServices[0].Name)
-		return detectedServices[0].Credentials
+	if len(detectedServices) == 0 {
+		return dynatraceService, errors.New("Dynatrace service credentials not found")
 	} else if len(detectedServices) > 1 {
 		h.Log.Warning("More than one matching service found!")
+		return dynatraceService, errors.New("More than one matching service found")
+	}
+	return detectedServices[0], nil
+}
+
+func (h DynatraceHook) parseDynatraceService(service Service) (DynatraceService, error) {
+	var dynatraceService DynatraceService
+	if !strings.Contains(service.Name, "dynatrace") {
+		return dynatraceService, errors.New("")
 	}
 
-	return nil
+	dynatraceService.Name = service.Name
+
+	if environmentid, ok := service.Credentials["environmentid"]; ok {
+		dynatraceService.EnvironmentId = environmentid.(string)
+	} else {
+		h.Log.Warning("Service '%s' is missing mandatory property 'environmentid'", dynatraceService.Name)
+		return dynatraceService, errors.New("")
+	}
+
+	if apitoken, ok := service.Credentials["apitoken"]; ok {
+		dynatraceService.ApiToken = apitoken.(string)
+	} else {
+		h.Log.Warning("Service '%s' is missing mandatory property 'apitoken'", dynatraceService.Name)
+		return dynatraceService, errors.New("")
+	}
+
+	if apiurl, ok := service.Credentials["apiurl"]; ok {
+		dynatraceService.ApiUrl = apiurl.(string)
+	} else {
+		dynatraceService.ApiUrl = "https://" + dynatraceService.EnvironmentId + ".live.dynatrace.com/api"
+	}
+
+	if skipErrors, ok := service.Credentials["skiperrors"]; ok {
+		skipErrorsBool, err := strconv.ParseBool(skipErrors.(string))
+
+		if err == nil {
+			dynatraceService.SkipErrors = skipErrorsBool
+		} else {
+			h.Log.Warning("Invalid value for property 'skiperrors'")
+		}
+	}
+
+	return dynatraceService, nil
 }
 
 func (h DynatraceHook) appName() string {
@@ -206,9 +251,9 @@ func (h DynatraceHook) agentPath(installDir string) (string, error) {
 	manifestPath := filepath.Join(installDir, "manifest.json")
 
 	type Binary struct {
-		Path string `json:"path"`
-		Md5 string `json:"md5"`
-		Version string `json:"version"`
+		Path       string `json:"path"`
+		Md5        string `json:"md5"`
+		Version    string `json:"version"`
 		Binarytype string `json:"binarytype,omitempty"`
 	}
 
@@ -216,8 +261,8 @@ func (h DynatraceHook) agentPath(installDir string) (string, error) {
 	type Technologies map[string]Architecture
 
 	type Manifest struct {
-		Tech Technologies`json:"technologies"`
-		Ver string `json:"version"`
+		Tech Technologies `json:"technologies"`
+		Ver  string       `json:"version"`
 	}
 
 	var manifest Manifest
@@ -227,16 +272,16 @@ func (h DynatraceHook) agentPath(installDir string) (string, error) {
 		return "", err
 	}
 
-	err = json.Unmarshal(raw, &manifest) 
+	err = json.Unmarshal(raw, &manifest)
 	if err != nil {
 		return "", err
 	}
 
 	for _, binary := range manifest.Tech["process"]["linux-x86-64"] {
-		if binary.Binarytype ==	"primary" {
+		if binary.Binarytype == "primary" {
 			return binary.Path, nil
 		}
 	}
 
-	return "", errors.New("No primary binary for process agent found!")
+	return "", errors.New("No primary binary for process agent found")
 }

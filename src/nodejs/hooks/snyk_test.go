@@ -87,6 +87,7 @@ var _ = Describe("snykHook", func() {
 			os.Setenv("VCAP_APPLICATION", oldVcapApplication)
 			os.Setenv("VCAP_SERVICES", oldVcapServices)
 			os.Setenv("BP_DEBUG", oldBpDebug)
+			os.Setenv("SNYK_TOKEN", oldSnykToken)
 		})
 
 		Context("Snyk Token is empty", func() {
@@ -125,9 +126,8 @@ var _ = Describe("snykHook", func() {
 			})
 
 			It("Snyk token was found", func() {
-				gomock.InOrder(
-					mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d"),
-				)
+				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d")
+
 				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
 				err = snyk.AfterCompile(stager)
@@ -136,28 +136,26 @@ var _ = Describe("snykHook", func() {
 			})
 
 			It("Snyk agent exists", func() {
-				gomock.InOrder(
-					mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d"),
-				)
+				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d")
+
 				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
 
 				err = snyk.AfterCompile(stager)
 				Expect(err).To(BeNil())
-				Expect(buffer.String()).To(ContainSubstring("Checking if Snyk agent exists..."));
-				Expect(buffer.String()).To(ContainSubstring("Snyk agent exists"));
-				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"));
+				Expect(buffer.String()).To(ContainSubstring("Checking if Snyk agent exists..."))
+				Expect(buffer.String()).To(ContainSubstring("Snyk agent exists"))
+				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"))
 			})
 
 			It("Snyk agent doesn't exist failed installation", func() {
-				gomock.InOrder(
-					mockSnykCommand.EXPECT().Output(buildDir, "npm", "install", "-g", "snyk").Return("", errors.New("failed to install")),
-				)
+				mockSnykCommand.EXPECT().Output(buildDir, "npm", "install", "-g", "snyk").Return("", errors.New("failed to install"))
+
 				err = snyk.AfterCompile(stager)
 				Expect(err).To(MatchError("failed to install"))
-				Expect(buffer.String()).To(ContainSubstring("Checking if Snyk agent exists..."));
-				Expect(buffer.String()).To(ContainSubstring("Snyk agent doesn't exist"));
-				Expect(buffer.String()).To(ContainSubstring("Failed to install Snyk agent"));
+				Expect(buffer.String()).To(ContainSubstring("Checking if Snyk agent exists..."))
+				Expect(buffer.String()).To(ContainSubstring("Snyk agent doesn't exist"))
+				Expect(buffer.String()).To(ContainSubstring("Failed to install Snyk agent"))
 			})
 
 			It("Snyk agent doesn't exist successful installation", func() {
@@ -167,45 +165,41 @@ var _ = Describe("snykHook", func() {
 				)
 				err = snyk.AfterCompile(stager)
 				Expect(err).To(BeNil())
-				Expect(buffer.String()).To(ContainSubstring("Checking if Snyk agent exists..."));
-				Expect(buffer.String()).To(ContainSubstring("Snyk agent doesn't exist"));
-				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"));
+				Expect(buffer.String()).To(ContainSubstring("Checking if Snyk agent exists..."))
+				Expect(buffer.String()).To(ContainSubstring("Snyk agent doesn't exist"))
+				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"))
 			})
 
 			It("Snyk test no vulnerabilties found", func() {
-				gomock.InOrder(
-					mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d"),
-				)
+				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d")
 
 				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
 
 				err = snyk.AfterCompile(stager)
 				Expect(err).To(BeNil())
-				Expect(buffer.String()).To(ContainSubstring("Checking if Snyk agent exists..."));
-				Expect(buffer.String()).To(ContainSubstring("Run Snyk test"));
-				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"));
+				Expect(buffer.String()).To(ContainSubstring("Checking if Snyk agent exists..."))
+				Expect(buffer.String()).To(ContainSubstring("Run Snyk test"))
+				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"))
 			})
 
 			It("Snyk test find vulnerabilties and failed", func() {
-				gomock.InOrder(
-					mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d").Return("dependencies for known issues", errors.New("vulns found")),
-				)
+				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d").Return("dependencies for known issues", errors.New("vulns found"))
+
 				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
 
 				err = snyk.AfterCompile(stager)
 				Expect(err).To(MatchError("vulns found"))
-				Expect(buffer.String()).To(ContainSubstring("Checking if Snyk agent exists..."));
-				Expect(buffer.String()).To(ContainSubstring("Run Snyk test"));
-				Expect(buffer.String()).To(ContainSubstring("Snyk found vulnerabilties"));
+				Expect(buffer.String()).To(ContainSubstring("Checking if Snyk agent exists..."))
+				Expect(buffer.String()).To(ContainSubstring("Run Snyk test"))
+				Expect(buffer.String()).To(ContainSubstring("Snyk found vulnerabilties"))
 			})
 
 			It("Snyk test find vulnerabilties and continue", func() {
 				os.Setenv("SNYK_IGNORE_VULNS", "true")
-				gomock.InOrder(
-					mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d").Return("dependencies for known issues", errors.New("vulns found")),
-				)
+				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d").Return("dependencies for known issues", errors.New("vulns found"))
+
 				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
 
@@ -214,7 +208,7 @@ var _ = Describe("snykHook", func() {
 				Expect(buffer.String()).To(ContainSubstring("Checking if Snyk agent exists..."))
 				Expect(buffer.String()).To(ContainSubstring("Run Snyk test"))
 				Expect(buffer.String()).To(ContainSubstring("SNYK_IGNORE_VULNS was defined"))
-				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"));
+				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"))
 			})
 		})
 
@@ -249,9 +243,8 @@ var _ = Describe("snykHook", func() {
 			})
 
 			It("Snyk token was found", func() {
-				gomock.InOrder(
-					mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d"),
-				)
+				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d")
+
 				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
 
@@ -259,7 +252,7 @@ var _ = Describe("snykHook", func() {
 				Expect(os.Getenv("SNYK_TOKEN")).To(Equal("SECRET_TOKEN"))
 				Expect(err).To(BeNil())
 				Expect(buffer.String()).To(ContainSubstring("Snyk token was found."))
-				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"));
+				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"))
 			})
 		})
 
@@ -287,7 +280,7 @@ var _ = Describe("snykHook", func() {
 				Expect(err).To(BeNil())
 				Expect(buffer.String()).To(ContainSubstring("Snyk token was found."))
 				Expect(buffer.String()).To(ContainSubstring("Run Snyk monitor..."))
-				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"));
+				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"))
 			})
 		})
 	})

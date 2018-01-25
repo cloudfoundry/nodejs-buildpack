@@ -40,21 +40,20 @@ func init() {
 
 //Snyk hook
 func (h SnykHook) AfterCompile(stager *libbuildpack.Stager) error {
-	var err error
-	ignoreVulns := strings.ToLower(os.Getenv("SNYK_IGNORE_VULNS"))
-	monitorBuild := strings.ToLower(os.Getenv("SNYK_MONITOR_BUILD"))
-	protectBuild := strings.ToLower(os.Getenv("SNYK_PROTECT_BUILD"))
-
-	h.Log.Debug("SNYK_IGNORE_VULNS is enabled: %t", ignoreVulns == "true")
-	h.Log.Debug("SNYK_MONITOR_BUILD is enabled: %t",  monitorBuild == "true")
-	h.Log.Debug("SNYK_PROTECT_BUILD is enabled: %t", protectBuild == "true")
-
-	h.Log.BeginStep("Checking if Snyk service is enabled...")
 	if h.isTokenExists() == false {
 		h.Log.Debug("Snyk token wasn't found...")
 		return nil
 	}
 	h.Log.Debug("Snyk token was found.")
+	h.Log.BeginStep("Checking if Snyk service is enabled...")
+
+	ignoreVulns := strings.ToLower(os.Getenv("SNYK_IGNORE_VULNS")) == "true"
+	monitorBuild := strings.ToLower(os.Getenv("SNYK_MONITOR_BUILD")) == "true"
+	protectBuild := strings.ToLower(os.Getenv("SNYK_PROTECT_BUILD")) == "true"
+
+	h.Log.Debug("SNYK_IGNORE_VULNS is enabled: %t", ignoreVulns)
+	h.Log.Debug("SNYK_MONITOR_BUILD is enabled: %t", monitorBuild)
+	h.Log.Debug("SNYK_PROTECT_BUILD is enabled: %t", protectBuild)
 
 	h.buildDir = stager.BuildDir()
 	h.depsDir = stager.DepDir()
@@ -63,33 +62,31 @@ func (h SnykHook) AfterCompile(stager *libbuildpack.Stager) error {
 	snykExists := h.isAgentExists()
 	if snykExists == false {
 		h.localAgent = false
-		err = h.installAgent()
-		if err != nil {
+		if err := h.installAgent(); err != nil {
 			return err
 		}
 	}
 
-	if protectBuild == "true" {
-		err = h.runProtect()
-		if err != nil {
+	if protectBuild {
+		if err := h.runProtect(); err != nil {
 			return err
 		}
 	}
 
 	successfulRun, err := h.runTest()
 	if err != nil {
-		if (!successfulRun) {
-			return err;
+		if !successfulRun {
+			return err
 		}
 
-		if ignoreVulns != "true" {
+		if !ignoreVulns {
 			h.Log.Error("Snyk found vulnerabilties. Failing build...")
 			return err
 		}
 		h.Log.Warning("SNYK_IGNORE_VULNS was defined, continue build despite vulnerabilities found")
 	}
 
-	if monitorBuild == "true" {
+	if monitorBuild {
 		err = h.runMonitor()
 		if err != nil {
 			return err
@@ -117,12 +114,12 @@ func (h SnykHook) isAgentExists() bool {
 	h.Log.Debug("Checking if Snyk agent exists...")
 	snykCliPath := filepath.Join(h.buildDir, snykLocalAgentPath)
 	if _, err := os.Stat(snykCliPath); os.IsNotExist(err) {
-		h.Log.Debug("Snyk agent doesn't exist");
+		h.Log.Debug("Snyk agent doesn't exist")
 		return false
 	}
 
 	h.Log.Debug("Snyk agent exists")
-	return true;
+	return true
 }
 
 func (h SnykHook) installAgent() error {
@@ -145,19 +142,19 @@ func (h SnykHook) runSnykCommand(args ...string) (string, error) {
 	}
 
 	// Snyk is installed globally.
-	snykGlobalAgentPath := filepath.Join(h.depsDir, "node",  "bin", "snyk")
+	snykGlobalAgentPath := filepath.Join(h.depsDir, "node", "bin", "snyk")
 	return h.SnykCommand.Output(h.buildDir, snykGlobalAgentPath, args...)
 }
 
 func (h SnykHook) runTest() (bool, error) {
 	h.Log.Debug("Run Snyk test...")
 	output, err := h.runSnykCommand("test", "-d")
-	if (err == nil) {
+	if err == nil {
 		return true, nil
 	}
 	//In case we got an unexpected output.
 	if !strings.Contains(output, "dependencies for known issues") {
-		h.Log.Warning("Failed to run Snyk agent - %s", output);
+		h.Log.Warning("Failed to run Snyk agent - %s", output)
 		h.Log.Warning("Please validate your auth token and that your npm version is equal or greater than v3.x.x")
 		return false, err
 	}

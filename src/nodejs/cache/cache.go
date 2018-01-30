@@ -30,6 +30,7 @@ type Cache struct {
 	NodeVersion          string
 	NPMVersion           string
 	YarnVersion          string
+	Prebuild             string
 	PackageJSONCacheDirs []string
 }
 
@@ -53,6 +54,8 @@ func (c *Cache) Initialize() error {
 	if c.YarnVersion, err = c.findVersion("yarn"); err != nil {
 		return err
 	}
+
+	c.Prebuild = os.Getenv("PREBUILD")
 
 	if err := libbuildpack.NewJSON().Load(filepath.Join(c.Stager.BuildDir(), "package.json"), &p); err != nil {
 		if os.IsNotExist(err) {
@@ -218,5 +221,5 @@ func (c *Cache) findVersion(binary string) (string, error) {
 }
 
 func (c *Cache) signature() string {
-	return fmt.Sprintf("%s; %s; %s", c.NodeVersion, c.NPMVersion, c.YarnVersion)
+	return fmt.Sprintf("%s; %s; %s; %s", c.NodeVersion, c.NPMVersion, c.YarnVersion, c.Prebuild)
 }

@@ -54,8 +54,11 @@ var _ = Describe("Cache", func() {
 			NodeVersion:          "1.1.1",
 			NPMVersion:           "2.2.2",
 			YarnVersion:          "3.3.3",
+			Prebuild:             "prebuild",
 			PackageJSONCacheDirs: []string{},
 		}
+
+		os.Setenv("PREBUILD", "prebuild")
 	})
 
 	AfterEach(func() {
@@ -164,9 +167,27 @@ var _ = Describe("Cache", func() {
 				Expect(ioutil.WriteFile(filepath.Join(cacheDir, "node", "other_dir", "cached"), []byte("aaa"), 0644)).To(Succeed())
 			})
 
-			Context("signature changed", func() {
+			Context("signature changed (versions different)", func() {
 				BeforeEach(func() {
-					Expect(ioutil.WriteFile(filepath.Join(cacheDir, "node", "signature"), []byte("1; 2; 3\n"), 0644)).To(BeNil())
+					Expect(ioutil.WriteFile(filepath.Join(cacheDir, "node", "signature"), []byte("1; 2; 3; prebuild\n"), 0644)).To(BeNil())
+				})
+
+				It("alerts user", func() {
+					Expect(c.Restore()).To(Succeed())
+
+					Expect(buffer.String()).To(ContainSubstring("Skipping cache restore (new runtime signature)"))
+				})
+
+				It("does not restore the cache", func() {
+					Expect(c.Restore()).To(Succeed())
+					files, err := ioutil.ReadDir(filepath.Join(buildDir))
+					Expect(err).To(BeNil())
+					Expect(len(files)).To(Equal(0))
+				})
+			})
+			Context("signature changed ($PREBUILD different)", func() {
+				BeforeEach(func() {
+					Expect(ioutil.WriteFile(filepath.Join(cacheDir, "node", "signature"), []byte("1.1.1; 2.2.2; 3.3.3; different_prebuild\n"), 0644)).To(BeNil())
 				})
 
 				It("alerts user", func() {
@@ -185,7 +206,7 @@ var _ = Describe("Cache", func() {
 
 			Context("signatures match", func() {
 				BeforeEach(func() {
-					Expect(ioutil.WriteFile(filepath.Join(cacheDir, "node", "signature"), []byte("1.1.1; 2.2.2; 3.3.3\n"), 0644)).To(BeNil())
+					Expect(ioutil.WriteFile(filepath.Join(cacheDir, "node", "signature"), []byte("1.1.1; 2.2.2; 3.3.3; prebuild\n"), 0644)).To(BeNil())
 				})
 
 				Context("cached directories are not in build dir", func() {
@@ -352,7 +373,7 @@ var _ = Describe("Cache", func() {
 
 		It("saves the signature to the cache", func() {
 			Expect(c.Save()).To(Succeed())
-			Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", "signature"))).To(Equal([]byte("1.1.1; 2.2.2; 3.3.3\n")))
+			Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", "signature"))).To(Equal([]byte("1.1.1; 2.2.2; 3.3.3; prebuild\n")))
 		})
 
 		It("removes .npm and .cache/yarn from the build dir", func() {
@@ -413,7 +434,7 @@ var _ = Describe("Cache", func() {
 				Expect(err).To(BeNil())
 
 				Expect(len(files)).To(Equal(3))
-				Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", "signature"))).To(Equal([]byte("1.1.1; 2.2.2; 3.3.3\n")))
+				Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", "signature"))).To(Equal([]byte("1.1.1; 2.2.2; 3.3.3; prebuild\n")))
 				Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", "first", "cached"))).To(Equal([]byte("thing 1")))
 				Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", "second", "cached"))).To(Equal([]byte("thing 2")))
 			})
@@ -435,7 +456,7 @@ var _ = Describe("Cache", func() {
 				Expect(err).To(BeNil())
 
 				Expect(len(files)).To(Equal(4))
-				Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", "signature"))).To(Equal([]byte("1.1.1; 2.2.2; 3.3.3\n")))
+				Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", "signature"))).To(Equal([]byte("1.1.1; 2.2.2; 3.3.3; prebuild\n")))
 				Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", ".npm", "build1"))).To(Equal([]byte("build1")))
 				Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", ".cache", "yarn", "build2"))).To(Equal([]byte("build2")))
 				Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", "bower_components", "build4"))).To(Equal([]byte("build4")))
@@ -462,7 +483,7 @@ var _ = Describe("Cache", func() {
 				Expect(err).To(BeNil())
 
 				Expect(len(files)).To(Equal(3))
-				Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", "signature"))).To(Equal([]byte("1.1.1; 2.2.2; 3.3.3\n")))
+				Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", "signature"))).To(Equal([]byte("1.1.1; 2.2.2; 3.3.3; prebuild\n")))
 				Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", ".cache", "yarn", "build2"))).To(Equal([]byte("build2")))
 				Expect(ioutil.ReadFile(filepath.Join(cacheDir, "node", "bower_components", "build4"))).To(Equal([]byte("build4")))
 			})

@@ -40,11 +40,11 @@ dependency_deprecation_dates:
   link: https://github.com/nodejs/LTS
 dependencies:
 - name: yarn
-  version: 1.2.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn-v1.2.1-a16106e2.tar.gz
+  version: 1.4.0
+  uri: https://registry.npmjs.org/yarn/-/yarn-1.4.0.tgz
   cf_stacks:
   - cflinuxfs2
-  sha256: f8ed07675c3a0b866e11a02af5c15d2f34c3aa261ab1501943ecee328786c959
+  sha256: 5ebff618b0213e1ded88ea759faa355c0dbeacfa2a9e6736ebe1a1671c28bd8d
 - name: node
   version: 4.8.6
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.6-linux-x64-c8323162.tgz

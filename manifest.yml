@@ -70,12 +70,6 @@ dependencies:
   cf_stacks:
   - cflinuxfs2
 - name: node
-  version: 9.3.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-9.3.0-linux-x64-5937f9f7.tgz
-  sha256: 5937f9f7c241ab5df1762f189743c8fc53835e66b09c2368b8941f6d1a8194da
-  cf_stacks:
-  - cflinuxfs2
-- name: node
   version: 6.12.3
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.12.3-linux-x64-4df19874.tgz
   sha256: 4df1987455ca8853a1c05be0c83eaa31718d469b3e3898adfd6a0b622c1052ef
@@ -91,6 +85,12 @@ dependencies:
   version: 9.4.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-9.4.0-linux-x64-062d906c.tgz
   sha256: 062d906c87839d03b243e2821e10653c89b4c92878bfe2bf995dec231e117bfc
+  cf_stacks:
+  - cflinuxfs2
+- name: node
+  version: 9.5.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-9.5.0-linux-x64-96282013.tgz
+  sha256: 962820130bb56b4bac15e4a5f625011473edb60a5c2936006add83fdd886cb48
   cf_stacks:
   - cflinuxfs2
 pre_package: scripts/build.sh

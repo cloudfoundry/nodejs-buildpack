@@ -6,7 +6,6 @@ package hooks_test
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	io "io"
 	reflect "reflect"
 )
 
@@ -31,23 +30,6 @@ func NewMockSnykCommand(ctrl *gomock.Controller) *MockSnykCommand {
 // EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockSnykCommand) EXPECT() *MockSnykCommandMockRecorder {
 	return m.recorder
-}
-
-// Execute mocks base method
-func (m *MockSnykCommand) Execute(arg0 string, arg1, arg2 io.Writer, arg3 string, arg4 ...string) error {
-	varargs := []interface{}{arg0, arg1, arg2, arg3}
-	for _, a := range arg4 {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "Execute", varargs...)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Execute indicates an expected call of Execute
-func (mr *MockSnykCommandMockRecorder) Execute(arg0, arg1, arg2, arg3 interface{}, arg4 ...interface{}) *gomock.Call {
-	varargs := append([]interface{}{arg0, arg1, arg2, arg3}, arg4...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockSnykCommand)(nil).Execute), varargs...)
 }
 
 // Output mocks base method

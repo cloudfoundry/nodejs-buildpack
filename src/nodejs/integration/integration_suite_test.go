@@ -85,14 +85,21 @@ func DestroyApp(app *cutlass.App) *cutlass.App {
 	return nil
 }
 
-func ApiHasTask() bool {
+func ApiGreaterThan(version string) bool {
 	apiVersionString, err := cutlass.ApiVersion()
 	Expect(err).To(BeNil())
 	apiVersion, err := semver.Make(apiVersionString)
 	Expect(err).To(BeNil())
-	apiHasTask, err := semver.ParseRange("> 2.75.0")
+	reqVersion, err := semver.ParseRange(">= " + version)
 	Expect(err).To(BeNil())
-	return apiHasTask(apiVersion)
+	return reqVersion(apiVersion)
+}
+
+func ApiHasTask() bool {
+	return ApiGreaterThan("2.75.0")
+}
+func ApiHasMultiBuildpack() bool {
+	return ApiGreaterThan("2.90.0")
 }
 
 func AssertUsesProxyDuringStagingIfPresent(fixtureName string) {

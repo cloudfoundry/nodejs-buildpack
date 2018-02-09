@@ -1,3 +1,15 @@
+v1.6.17 Feb 09, 2018
+=====================
+
+* Enable manifest override yml
+  (https://www.pivotaltracker.com/story/show/153614649)
+
+* Add node 9.5.0, remove node 9.3.0
+  (https://www.pivotaltracker.com/story/show/154826768)
+
+* changing $PREBUILD invalidates the cache
+  (https://www.pivotaltracker.com/story/show/146161295)
+
 v1.6.16 Jan 29, 2018
 =====================
 

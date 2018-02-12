@@ -1,0 +1,4 @@
+---
+applications:
+- name: fake_snyk_service_broker
+  buildpack: ruby_buildpack

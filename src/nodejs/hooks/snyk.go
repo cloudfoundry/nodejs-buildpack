@@ -21,6 +21,13 @@ type SnykHook struct {
 	buildDir    string
 	depsDir     string
 	localAgent  bool
+	orgName     string
+}
+
+type SnykCredentials struct {
+	ApiToken string
+	ApiUrl   string
+	OrgName  string
 }
 
 const snykLocalAgentPath = "node_modules/snyk/cli/index.js"
@@ -35,6 +42,7 @@ func init() {
 		buildDir:    "",
 		depsDir:     "",
 		localAgent:  true,
+		orgName:     "",
 	})
 }
 
@@ -47,17 +55,19 @@ func (h SnykHook) AfterCompile(stager *libbuildpack.Stager) error {
 	h.Log.Debug("Snyk token was found.")
 	h.Log.BeginStep("Checking if Snyk service is enabled...")
 
-	ignoreVulns := strings.ToLower(os.Getenv("SNYK_IGNORE_VULNS")) == "true"
+	dontBreakBuild := strings.ToLower(os.Getenv("SNYK_DONT_BREAK_BUILD")) == "true"
 	monitorBuild := strings.ToLower(os.Getenv("SNYK_MONITOR_BUILD")) == "true"
 	protectBuild := strings.ToLower(os.Getenv("SNYK_PROTECT_BUILD")) == "true"
+	orgName := strings.ToLower(os.Getenv("SNYK_ORG_NAME"))
 
-	h.Log.Debug("SNYK_IGNORE_VULNS is enabled: %t", ignoreVulns)
+	h.Log.Debug("SNYK_DONT_BREAK_BUILD is enabled: %t", dontBreakBuild)
 	h.Log.Debug("SNYK_MONITOR_BUILD is enabled: %t", monitorBuild)
 	h.Log.Debug("SNYK_PROTECT_BUILD is enabled: %t", protectBuild)
 
 	h.buildDir = stager.BuildDir()
 	h.depsDir = stager.DepDir()
 	h.localAgent = true
+	h.orgName = orgName
 
 	snykExists := h.isAgentExists()
 	if snykExists == false {
@@ -79,11 +89,11 @@ func (h SnykHook) AfterCompile(stager *libbuildpack.Stager) error {
 			return err
 		}
 
-		if !ignoreVulns {
+		if !dontBreakBuild {
 			h.Log.Error("Snyk found vulnerabilties. Failing build...")
 			return err
 		}
-		h.Log.Warning("SNYK_IGNORE_VULNS was defined, continue build despite vulnerabilities found")
+		h.Log.Warning("SNYK_DONT_BREAK_BUILD was defined, continue build despite vulnerabilities found")
 	}
 
 	if monitorBuild {
@@ -102,9 +112,15 @@ func (h SnykHook) isTokenExists() bool {
 		return true
 	}
 
-	token = h.getTokenFromCredentials()
-	if token != "" {
-		os.Setenv("SNYK_TOKEN", token)
+	status, snykCredentials := h.getCredentialsFromService()
+	if status {
+		os.Setenv("SNYK_TOKEN", snykCredentials.ApiToken)
+		if snykCredentials.ApiUrl != "" {
+			os.Setenv("SNYK_API", snykCredentials.ApiUrl)
+		}
+		if snykCredentials.OrgName != "" {
+			os.Setenv("SNYK_ORG_NAME", snykCredentials.OrgName)
+		}
 		return true
 	}
 	return false
@@ -134,6 +150,14 @@ func (h SnykHook) installAgent() error {
 }
 
 func (h SnykHook) runSnykCommand(args ...string) (string, error) {
+	if h.orgName != "" {
+		args = append(args, "--org="+h.orgName)
+	}
+
+	if os.Getenv("BP_DEBUG") != "" {
+		args = append(args, "-d")
+	}
+
 	// Snyk is part of the app modules.
 	if h.localAgent == true {
 		snykCliPath := filepath.Join(h.buildDir, snykLocalAgentPath)
@@ -148,23 +172,25 @@ func (h SnykHook) runSnykCommand(args ...string) (string, error) {
 
 func (h SnykHook) runTest() (bool, error) {
 	h.Log.Debug("Run Snyk test...")
-	output, err := h.runSnykCommand("test", "-d")
+	output, err := h.runSnykCommand("test")
 	if err == nil {
+		h.Log.Info("Snyk test finished successfully - %s", output)
 		return true, nil
 	}
 	//In case we got an unexpected output.
-	if !strings.Contains(output, "dependencies for known issues") {
+	if !strings.Contains(output, "dependencies for known") {
 		h.Log.Warning("Failed to run Snyk agent - %s", output)
 		h.Log.Warning("Please validate your auth token and that your npm version is equal or greater than v3.x.x")
 		return false, err
 	}
+	h.Log.Warning("Snyk found vulnerabilties - %s", output)
 	return true, err
 }
 
 func (h SnykHook) runMonitor() error {
 	h.Log.Debug("Run Snyk monitor...")
 	output, err := h.runSnykCommand("monitor", "--project-name="+h.appName())
-	h.Log.Debug("Snyk monitor %s", output)
+	h.Log.Info("Snyk monitor %s", output)
 	return err
 }
 
@@ -186,7 +212,16 @@ func (h SnykHook) runProtect() error {
 	return err
 }
 
-func (h SnykHook) getTokenFromCredentials() string {
+func getCredentialString(credentials map[string]interface{}, key string) string {
+	value, isString := credentials[key].(string)
+
+	if isString {
+		return value
+	}
+	return ""
+}
+
+func (h SnykHook) getCredentialsFromService() (bool, SnykCredentials) {
 	type Service struct {
 		Name        string                 `json:"name"`
 		Credentials map[string]interface{} `json:"credentials"`
@@ -195,20 +230,28 @@ func (h SnykHook) getTokenFromCredentials() string {
 	err := json.Unmarshal([]byte(os.Getenv("VCAP_SERVICES")), &vcapServices)
 	if err != nil {
 		h.Log.Warning("Failed to parse VCAP_SERVICES")
-		return ""
+		return false, SnykCredentials{}
 	}
 
-	for _, services := range vcapServices {
-		for _, service := range services {
-			if strings.Contains(service.Name, "snyk") {
-				if serviceToken, ok := service.Credentials["SNYK_TOKEN"]; ok {
-					return serviceToken.(string)
+	for key, services := range vcapServices {
+		if strings.Contains(key, "snyk") {
+			for _, service := range services {
+				apiToken := getCredentialString(service.Credentials, "apiToken")
+				if apiToken != "" {
+					apiUrl := getCredentialString(service.Credentials, "apiUrl")
+					orgName := getCredentialString(service.Credentials, "orgName")
+					snykCredantials := SnykCredentials{
+						ApiToken: apiToken,
+						ApiUrl:   apiUrl,
+						OrgName:  orgName,
+					}
+					return true, snykCredantials
 				}
 			}
 		}
 	}
 
-	return ""
+	return false, SnykCredentials{}
 }
 
 func (h SnykHook) appName() string {

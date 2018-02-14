@@ -184,7 +184,7 @@ var _ = Describe("snykHook", func() {
 			})
 
 			It("Snyk test find vulnerabilties and failed", func() {
-				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d").Return("dependencies for known issues", errors.New("vulns found"))
+				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d").Return("dependencies for known", errors.New("vulns found"))
 
 				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
@@ -197,8 +197,8 @@ var _ = Describe("snykHook", func() {
 			})
 
 			It("Snyk test find vulnerabilties and continue", func() {
-				os.Setenv("SNYK_IGNORE_VULNS", "true")
-				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d").Return("dependencies for known issues", errors.New("vulns found"))
+				os.Setenv("SNYK_DONT_BREAK_BUILD", "true")
+				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d").Return("dependencies for known", errors.New("vulns found"))
 
 				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
@@ -207,7 +207,7 @@ var _ = Describe("snykHook", func() {
 				Expect(err).To(BeNil())
 				Expect(buffer.String()).To(ContainSubstring("Checking if Snyk agent exists..."))
 				Expect(buffer.String()).To(ContainSubstring("Run Snyk test"))
-				Expect(buffer.String()).To(ContainSubstring("SNYK_IGNORE_VULNS was defined"))
+				Expect(buffer.String()).To(ContainSubstring("SNYK_DONT_BREAK_BUILD was defined"))
 				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"))
 			})
 		})
@@ -235,7 +235,7 @@ var _ = Describe("snykHook", func() {
 			BeforeEach(func() {
 				os.Setenv("VCAP_SERVICES", `{
 						"0": [{"name":"mysql"}],
-						"1": [{"name":"snyk","credentials":{"SNYK_TOKEN":"SECRET_TOKEN"}}],
+						"snyk-broker": [{"name":"snyk","credentials":{"apiToken":"SECRET_TOKEN"}}],
 						"2": [{"name":"redis"}]
 					}`)
 				os.Setenv("SNYK_TOKEN", "")
@@ -250,9 +250,29 @@ var _ = Describe("snykHook", func() {
 
 				err = snyk.AfterCompile(stager)
 				Expect(os.Getenv("SNYK_TOKEN")).To(Equal("SECRET_TOKEN"))
+				Expect(os.Getenv("SNYK_API")).To(Equal(""))
+				Expect(os.Getenv("SNYK_ORG_NAME")).To(Equal(""))
 				Expect(err).To(BeNil())
 				Expect(buffer.String()).To(ContainSubstring("Snyk token was found."))
 				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"))
+			})
+		})
+
+		Context("VCAP_SERVICES ignore if snyk service is not the key", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_SERVICES", `{
+						"0": [{"name":"mysql"}],
+						"1": [{"name":"snyk","credentials":{"apiToken":"SECRET_TOKEN"}}],
+						"2": [{"name":"redis"}]
+					}`)
+				os.Setenv("SNYK_TOKEN", "")
+				os.Setenv("BP_DEBUG", "TRUE")
+			})
+
+			It("does nothing and succeeds", func() {
+				err = snyk.AfterCompile(stager)
+				Expect(err).To(BeNil())
+				Expect(buffer.String()).To(ContainSubstring("Snyk token wasn't found"))
 			})
 		})
 
@@ -260,7 +280,7 @@ var _ = Describe("snykHook", func() {
 			BeforeEach(func() {
 				os.Setenv("VCAP_SERVICES", `{
 						"0": [{"name":"mysql"}],
-						"1": [{"name":"snyk-service-broker-external","credentials":{"SNYK_TOKEN":"SECRET_TOKEN"}}],
+						"snyk-broker-external": [{"name":"snyk-service-broker-external","credentials":{"apiToken":"SECRET_TOKEN"}}],
 						"2": [{"name":"redis"}]
 					}`)
 				os.Setenv("VCAP_APPLICATION", `{"name":"monitored_app"}`)
@@ -272,7 +292,7 @@ var _ = Describe("snykHook", func() {
 				gomock.InOrder(
 					mockSnykCommand.EXPECT().Output(buildDir, "npm", "install", "-g", "snyk"),
 					mockSnykCommand.EXPECT().Output(buildDir, filepath.Join(depsDir, "node", "bin", "snyk"), "test", "-d"),
-					mockSnykCommand.EXPECT().Output(buildDir, filepath.Join(depsDir, "node", "bin", "snyk"), "monitor", "--project-name=monitored_app"),
+					mockSnykCommand.EXPECT().Output(buildDir, filepath.Join(depsDir, "node", "bin", "snyk"), "monitor", "--project-name=monitored_app", "-d"),
 				)
 
 				err = snyk.AfterCompile(stager)
@@ -280,6 +300,33 @@ var _ = Describe("snykHook", func() {
 				Expect(err).To(BeNil())
 				Expect(buffer.String()).To(ContainSubstring("Snyk token was found."))
 				Expect(buffer.String()).To(ContainSubstring("Run Snyk monitor..."))
+				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"))
+			})
+		})
+
+		Context("VCAP_SERVICES has snyk service and monitor enabled", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_SERVICES", `{
+						"0": [{"name":"mysql"}],
+						"snyk-broker-external": [{"name":"snyk-service-broker-external","credentials":{"apiToken":"SECRET_TOKEN", "orgName": "my-org-name", "apiUrl": "https://staging.snyk.io/api"}}],
+						"2": [{"name":"redis"}]
+					}`)
+				os.Setenv("VCAP_APPLICATION", `{"name":"monitored_app"}`)
+				os.Setenv("SNYK_MONITOR_BUILD", "True")
+			})
+
+			It("Snyk agent not exists install and test Snyk", func() {
+				gomock.InOrder(
+					mockSnykCommand.EXPECT().Output(buildDir, "npm", "install", "-g", "snyk"),
+					mockSnykCommand.EXPECT().Output(buildDir, filepath.Join(depsDir, "node", "bin", "snyk"), "test", "--org=my-org-name"),
+					mockSnykCommand.EXPECT().Output(buildDir, filepath.Join(depsDir, "node", "bin", "snyk"), "monitor", "--project-name=monitored_app", "--org=my-org-name"),
+				)
+
+				err = snyk.AfterCompile(stager)
+				Expect(os.Getenv("SNYK_TOKEN")).To(Equal("SECRET_TOKEN"))
+				Expect(os.Getenv("SNYK_API")).To(Equal("https://staging.snyk.io/api"))
+				Expect(os.Getenv("SNYK_ORG_NAME")).To(Equal("my-org-name"))
+				Expect(err).To(BeNil())
 				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"))
 			})
 		})

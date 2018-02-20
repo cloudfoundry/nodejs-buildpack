@@ -1,3 +1,12 @@
+v1.6.18 Feb 20, 2018
+=====================
+
+* Add node 6.13.0, remove node 6.12.2
+  (https://www.pivotaltracker.com/story/show/155196463)
+
+* Add support for custom api url and snyk org
+  (https://www.pivotaltracker.com/story/show/155181393)
+
 v1.6.17 Feb 09, 2018
 =====================
 

@@ -23,7 +23,7 @@
     "cutlass",
     "packager"
   ]
-  revision = "9657f36c49be24f0702aaf9f91106f1f441499f3"
+  revision = "2385bb12ca1caf03e802391b01d5f7372e484951"
 
 [[projects]]
   name = "github.com/elazarl/goproxy"
@@ -85,13 +85,13 @@
     "matchers/support/goraph/util",
     "types"
   ]
-  revision = "fcebc62b30a95351cb5e56d8a97b6e67cbb85353"
+  revision = "49e4233a3b46c26dddd43cf84547cf31c92d0f2b"
 
 [[projects]]
   name = "github.com/tidwall/gjson"
   packages = ["."]
-  revision = "87033efcaec6215741137e8ca61952c53ef2685d"
-  version = "v1.0.6"
+  revision = "01f00f129617a6fe98941fb920d6c760241b54d2"
+  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
@@ -114,7 +114,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "37707fdb30a5b38865cfb95e5aab41707daec7fd"
+  revision = "f6cff0780e542efa0c8e864dc8fa522808f6a598"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -147,10 +147,10 @@
   revision = "cf52904a3cf0f78f199ecade6a6df8e245d5b25a"
 
 [[projects]]
-  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "d670f9405373e636a5a2765eea47fac0c9bc91a4"
+  revision = "7f97868eec74b32b0982dd158a51a446d1da7eb5"
+  version = "v2.1.1"
 
 [solve-meta]
   analyzer-name = "dep"

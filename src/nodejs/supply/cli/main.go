@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	logfile, err := ioutil.TempFile("", "cloudfoundry.nodejs-buildpack.finalize")
+	logfile, err := ioutil.TempFile("", "cloudfoundry.nodejs-buildpack.supply")
 	defer logfile.Close()
 	if err != nil {
 		logger := libbuildpack.NewLogger(os.Stdout)

@@ -20,7 +20,6 @@ type Command interface {
 type Stager interface {
 	BuildDir() string
 	CacheDir() string
-	ClearCache() error
 }
 
 type Cache struct {
@@ -35,6 +34,7 @@ type Cache struct {
 }
 
 var defaultCacheDirs = []string{".npm", ".cache/yarn", "bower_components"}
+var cacheDirsToDelete = []string{".npm", ".cache/yarn", "bower_components", "node"}
 
 func (c *Cache) Initialize() error {
 	var err error
@@ -107,8 +107,8 @@ func (c *Cache) Save() error {
 	c.Log.BeginStep("Caching build")
 	c.Log.Info("Clearing previous node cache")
 
-	if err := c.Stager.ClearCache(); err != nil {
-		return err
+	for _, name := range cacheDirsToDelete {
+		os.RemoveAll(filepath.Join(c.Stager.CacheDir(), name))
 	}
 
 	if err := os.MkdirAll(filepath.Join(c.Stager.CacheDir(), "node"), 0755); err != nil {

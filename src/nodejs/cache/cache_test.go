@@ -383,6 +383,12 @@ var _ = Describe("Cache", func() {
 			Expect(ioutil.ReadFile(filepath.Join(buildDir, ".cache", "build3"))).To(Equal([]byte("build3")))
 		})
 
+		It("it only deletes directories from cache managed by itself", func() {
+			Expect(os.Mkdir(filepath.Join(cacheDir, "other"), 0755)).To(Succeed())
+			Expect(c.Save()).To(Succeed())
+			Expect(filepath.Join(cacheDir, "other")).To(BeADirectory())
+		})
+
 		Context("NODE_MODULES_CACHE is false", func() {
 			var oldNodeModulesCache string
 

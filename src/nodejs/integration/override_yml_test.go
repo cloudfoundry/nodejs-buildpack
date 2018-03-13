@@ -37,8 +37,8 @@ var _ = Describe("override yml", func() {
 
 	It("Forces node from override buildpack", func() {
 		Expect(app.Push()).ToNot(Succeed())
-		Expect(app.Stdout.String()).To(ContainSubstring("-----> OverrideYML Buildpack"))
-		Expect(app.ConfirmBuildpack(buildpackVersion)).To(Succeed())
+		Eventually(app.Stdout.String).Should(ContainSubstring("-----> OverrideYML Buildpack"))
+		Eventually(func() error { return app.ConfirmBuildpack(buildpackVersion) }).Should(Succeed())
 
 		Eventually(app.Stdout.String).Should(ContainSubstring("-----> Installing node"))
 		Eventually(app.Stdout.String).Should(MatchRegexp("Copy .*/node.tgz"))

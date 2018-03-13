@@ -28,7 +28,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		It("resolves to a nodeJS version successfully", func() {
 			PushAppAndConfirm(app)
 
-			Expect(app.Stdout.String()).To(MatchRegexp("Installing node 4\\.\\d+\\.\\d+"))
+			Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 4\\.\\d+\\.\\d+"))
 			Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 		})
 	})
@@ -41,7 +41,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		It("resolves to a nodeJS version successfully", func() {
 			PushAppAndConfirm(app)
 
-			Expect(app.Stdout.String()).To(MatchRegexp("Installing node 6\\.\\d+\\.\\d+"))
+			Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 6\\.\\d+\\.\\d+"))
 			Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 
 			if ApiHasTask() {
@@ -68,7 +68,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		It("resolves to the stable nodeJS version successfully", func() {
 			PushAppAndConfirm(app)
 
-			Expect(app.Stdout.String()).To(MatchRegexp("Installing node 6\\.\\d+\\.\\d+"))
+			Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 6\\.\\d+\\.\\d+"))
 			Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 		})
 	})
@@ -122,37 +122,36 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		})
 	})
 
-	It("with an app that has vendored dependencies", func() {
-		app = cutlass.New(filepath.Join(bpDir, "fixtures", "vendored_dependencies"))
-		PushAppAndConfirm(app)
-
-		By("does not output protip that recommends user vendors dependencies", func() {
-			Expect(app.Stdout.String()).ToNot(MatchRegexp("PRO TIP:(.*) It is recommended to vendor the application's Node.js dependencies"))
-		})
-
-		if !cutlass.Cached {
-			By("with an uncached buildpack", func() {
-				By("successfully deploys and includes the dependencies", func() {
-					Expect(app.GetBody("/")).To(ContainSubstring("0000000005"))
-					Expect(app.Stdout.String()).To(ContainSubstring("Download [https://"))
-				})
-			})
-		}
-
-		if cutlass.Cached {
-			By("with a cached buildpack", func() {
-				By("deploys without hitting the internet", func() {
-					Expect(app.GetBody("/")).To(ContainSubstring("0000000005"))
-					Expect(app.Stdout.String()).To(ContainSubstring("Copy [/tmp/buildpacks/"))
-				})
-			})
-		}
-	})
-
 	Context("with an app that has vendored dependencies", func() {
-		BeforeEach(func() {
+		It("deploys", func() {
+			app = cutlass.New(filepath.Join(bpDir, "fixtures", "vendored_dependencies"))
+			app.SetEnv("BP_DEBUG", "true")
+			PushAppAndConfirm(app)
+
+			By("does not output protip that recommends user vendors dependencies", func() {
+				Expect(app.Stdout.String()).ToNot(MatchRegexp("PRO TIP:(.*) It is recommended to vendor the application's Node.js dependencies"))
+			})
+
+			By("not changing the app directory during staging", func() {
+				Expect(app).To(HaveUnchangedAppDir())
+			})
+
 			if !cutlass.Cached {
-				Skip("cached tests")
+				By("with an uncached buildpack", func() {
+					By("successfully deploys and includes the dependencies", func() {
+						Expect(app.GetBody("/")).To(ContainSubstring("0000000005"))
+						Eventually(app.Stdout.String).Should(ContainSubstring("Download [https://"))
+					})
+				})
+			}
+
+			if cutlass.Cached {
+				By("with a cached buildpack", func() {
+					By("deploys without hitting the internet", func() {
+						Expect(app.GetBody("/")).To(ContainSubstring("0000000005"))
+						Eventually(app.Stdout.String).Should(ContainSubstring("Copy [/tmp/buildpacks/"))
+					})
+				})
 			}
 		})
 
@@ -162,11 +161,17 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	Context("with an app with a yarn.lock file", func() {
 		BeforeEach(func() {
 			app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_yarn"))
+			app.SetEnv("BP_DEBUG", "true")
 		})
 
 		It("successfully deploys and vendors the dependencies via yarn", func() {
 			PushAppAndConfirm(app)
-			Expect(app.Stdout.String()).To(ContainSubstring("Running yarn in online mode"))
+
+			By("not changing the app directory during staging", func() {
+				Expect(app).To(HaveUnchangedAppDir())
+			})
+
+			Eventually(app.Stdout.String).Should(ContainSubstring("Running yarn in online mode"))
 
 			Expect(filepath.Join(app.Path, "node_modules")).ToNot(BeADirectory())
 			Expect(app.Files("app")).To(ContainElement("app/node_modules"))
@@ -180,11 +185,17 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	Context("with an app with a yarn.lock and vendored dependencies", func() {
 		BeforeEach(func() {
 			app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_yarn_vendored"))
+			app.SetEnv("BP_DEBUG", "true")
 		})
 
 		It("deploys without hitting the internet", func() {
 			PushAppAndConfirm(app)
-			Expect(app.Stdout.String()).To(ContainSubstring("Running yarn in offline mode"))
+
+			By("not changing the app directory during staging", func() {
+				Expect(app).To(HaveUnchangedAppDir())
+			})
+
+			Eventually(app.Stdout.String).Should(ContainSubstring("Running yarn in offline mode"))
 			Expect(app.GetBody("/microtime")).To(MatchRegexp("native time: \\d+\\.\\d+"))
 		})
 
@@ -198,7 +209,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		It("warns that yarn.lock is out of date", func() {
 			PushAppAndConfirm(app)
-			Expect(app.Stdout.String()).To(ContainSubstring("yarn.lock is outdated"))
+			Eventually(app.Stdout.String).Should(ContainSubstring("yarn.lock is outdated"))
 		})
 	})
 
@@ -209,8 +220,8 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		It("runs the scripts through npm run", func() {
 			PushAppAndConfirm(app)
-			Expect(app.Stdout.String()).To(ContainSubstring("Running heroku-prebuild (npm)"))
-			Expect(app.Stdout.String()).To(ContainSubstring("Running heroku-postbuild (npm)"))
+			Eventually(app.Stdout.String).Should(ContainSubstring("Running heroku-prebuild (npm)"))
+			Eventually(app.Stdout.String).Should(ContainSubstring("Running heroku-postbuild (npm)"))
 			Expect(app.GetBody("/")).To(ContainSubstring("Text: Hello Buildpacks Team"))
 			Expect(app.GetBody("/")).To(ContainSubstring("Text: Goodbye Buildpacks Team"))
 		})
@@ -219,6 +230,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	Context("with an app with no vendored dependencies", func() {
 		BeforeEach(func() {
 			app = cutlass.New(filepath.Join(bpDir, "fixtures", "no_vendored_dependencies"))
+			app.SetEnv("BP_DEBUG", "true")
 		})
 
 		It("successfully deploys and vendors the dependencies", func() {
@@ -230,8 +242,10 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 
 			By("outputs protip that recommends user vendors dependencies", func() {
-				Expect(app.Stdout.String()).To(MatchRegexp("PRO TIP:(.*) It is recommended to vendor the application's Node.js dependencies"))
+				Eventually(app.Stdout.String).Should(MatchRegexp("PRO TIP:(.*) It is recommended to vendor the application's Node.js dependencies"))
 			})
+
+			Expect(app).To(HaveUnchangedAppDir())
 		})
 
 		AssertUsesProxyDuringStagingIfPresent("no_vendored_dependencies")
@@ -265,7 +279,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	PContext("with a cached buildpack in an air gapped environment", func() {
 		BeforeEach(func() {
 			if !cutlass.Cached {
-				Skip("cached tests")
+				Skip("running uncached tests")
 			}
 		})
 		// TODO :cached tag only
@@ -309,14 +323,14 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	Describe("NODE_HOME and NODE_ENV", func() {
 		BeforeEach(func() {
 			if !cutlass.Cached {
-				Skip("cached tests")
+				Skip("running uncached tests")
 			}
 			app = cutlass.New(filepath.Join(bpDir, "fixtures", "logenv"))
 		})
 
 		It("sets the NODE_HOME to correct value", func() {
 			PushAppAndConfirm(app)
-			Expect(app.Stdout.String()).To(MatchRegexp("NODE_HOME=\\S*/0/node"))
+			Eventually(app.Stdout.String).Should(MatchRegexp("NODE_HOME=\\S*/0/node"))
 
 			body, err := app.GetBody("/")
 			Expect(err).To(BeNil())

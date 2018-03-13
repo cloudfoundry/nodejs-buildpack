@@ -3,7 +3,6 @@ package main
 import (
 	"io"
 	"io/ioutil"
-	"nodejs/cache"
 	_ "nodejs/hooks"
 	"nodejs/npm"
 	"nodejs/supply"
@@ -68,23 +67,16 @@ func main() {
 		Logfile: logfile,
 		Stager:  stager,
 		Yarn: &yarn.Yarn{
-			BuildDir: stager.BuildDir(),
-			Command:  &libbuildpack.Command{},
-			Log:      logger,
+			Command: &libbuildpack.Command{},
+			Log:     logger,
 		},
 		NPM: &npm.NPM{
-			BuildDir: stager.BuildDir(),
-			Command:  &libbuildpack.Command{},
-			Log:      logger,
+			Command: &libbuildpack.Command{},
+			Log:     logger,
 		},
 		Manifest: manifest,
 		Log:      logger,
 		Command:  &libbuildpack.Command{},
-		Cache: &cache.Cache{
-			Stager:  stager,
-			Command: &libbuildpack.Command{},
-			Log:     logger,
-		},
 	}
 
 	err = supply.Run(&s)

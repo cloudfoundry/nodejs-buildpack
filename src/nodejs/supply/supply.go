@@ -12,13 +12,8 @@ import (
 	"strings"
 
 	"github.com/cloudfoundry/libbuildpack"
+	"github.com/cloudfoundry/libbuildpack/checksum"
 )
-
-type Cache interface {
-	Initialize() error
-	Restore() error
-	Save() error
-}
 
 type Command interface {
 	Execute(string, io.Writer, io.Writer, string, ...string) error
@@ -32,16 +27,17 @@ type Manifest interface {
 }
 
 type NPM interface {
-	Build() error
-	Rebuild() error
+	Build(string, string) error
+	Rebuild(string) error
 }
 
 type Yarn interface {
-	Build() error
+	Build(string, string, string) error
 }
 
 type Stager interface {
 	BuildDir() string
+	CacheDir() string
 	DepDir() string
 	DepsIdx() string
 	LinkDirectoryInDepDir(string, string) error
@@ -65,7 +61,6 @@ type Supplier struct {
 	PostBuild          string
 	UseYarn            bool
 	NPMRebuild         bool
-	Cache              Cache
 	Yarn               Yarn
 	NPM                NPM
 }
@@ -82,90 +77,84 @@ type engines struct {
 }
 
 func Run(s *Supplier) error {
-	s.Log.BeginStep("Installing binaries")
-	if err := s.LoadPackageJSON(); err != nil {
-		s.Log.Error("Unable to load package.json: %s", err.Error())
-		return err
-	}
+	return checksum.Do(s.Stager.BuildDir(), s.Log.Debug, func() error {
+		s.Log.BeginStep("Installing binaries")
+		if err := s.LoadPackageJSON(); err != nil {
+			s.Log.Error("Unable to load package.json: %s", err.Error())
+			return err
+		}
 
-	s.WarnNodeEngine()
+		s.WarnNodeEngine()
 
-	if err := s.InstallNode("/tmp/node"); err != nil {
-		s.Log.Error("Unable to install node: %s", err.Error())
-		return err
-	}
+		if err := s.InstallNode("/tmp/node"); err != nil {
+			s.Log.Error("Unable to install node: %s", err.Error())
+			return err
+		}
 
-	if err := s.InstallNPM(); err != nil {
-		s.Log.Error("Unable to install npm: %s", err.Error())
-		return err
-	}
+		if err := s.InstallNPM(); err != nil {
+			s.Log.Error("Unable to install npm: %s", err.Error())
+			return err
+		}
 
-	if err := s.InstallYarn(); err != nil {
-		s.Log.Error("Unable to install yarn: %s", err.Error())
-		return err
-	}
+		if err := s.InstallYarn(); err != nil {
+			s.Log.Error("Unable to install yarn: %s", err.Error())
+			return err
+		}
 
-	if err := s.CreateDefaultEnv(); err != nil {
-		s.Log.Error("Unable to setup default environment: %s", err.Error())
-		return err
-	}
+		if err := s.CreateDefaultEnv(); err != nil {
+			s.Log.Error("Unable to setup default environment: %s", err.Error())
+			return err
+		}
 
-	if err := s.Stager.SetStagingEnvironment(); err != nil {
-		s.Log.Error("Unable to setup environment variables: %s", err.Error())
-		os.Exit(11)
-	}
+		if err := s.Stager.SetStagingEnvironment(); err != nil {
+			s.Log.Error("Unable to setup environment variables: %s", err.Error())
+			os.Exit(11)
+		}
 
-	if err := s.ReadPackageJSON(); err != nil {
-		s.Log.Error("Failed parsing package.json: %s", err.Error())
-		return err
-	}
+		if err := s.ReadPackageJSON(); err != nil {
+			s.Log.Error("Failed parsing package.json: %s", err.Error())
+			return err
+		}
 
-	if err := s.TipVendorDependencies(); err != nil {
-		s.Log.Error(err.Error())
-		return err
-	}
+		if err := s.TipVendorDependencies(); err != nil {
+			s.Log.Error(err.Error())
+			return err
+		}
 
-	s.ListNodeConfig(os.Environ())
+		s.ListNodeConfig(os.Environ())
 
-	if err := s.Cache.Initialize(); err != nil {
-		s.Log.Error("Unable to initialize cache: %s", err.Error())
-		return err
-	}
+		if err := s.OverrideCacheFromApp(); err != nil {
+			s.Log.Error("Unable to copy cache directories: %s", err.Error())
+			return err
+		}
 
-	if err := s.Cache.Restore(); err != nil {
-		s.Log.Error("Unable to restore cache: %s", err.Error())
-		return err
-	}
+		defer func() {
+			s.Logfile.Sync()
+			s.WarnUntrackedDependencies()
+			s.WarnMissingDevDeps()
+		}()
 
-	defer func() {
-		s.Logfile.Sync()
-		s.WarnUntrackedDependencies()
-		s.WarnMissingDevDeps()
-	}()
+		if err := s.BuildDependencies(); err != nil {
+			s.Log.Error("Unable to build dependencies: %s", err.Error())
+			return err
+		}
 
-	if err := s.BuildDependencies(); err != nil {
-		s.Log.Error("Unable to build dependencies: %s", err.Error())
-		return err
-	}
+		s.ListDependencies()
 
-	if err := s.Cache.Save(); err != nil {
-		s.Log.Error("Unable to save cache: %s", err.Error())
-		return err
-	}
+		if err := s.Logfile.Sync(); err != nil {
+			s.Log.Error(err.Error())
+			return err
+		}
 
-	s.ListDependencies()
+		if err := s.WarnUnmetDependencies(); err != nil {
+			s.Log.Error(err.Error())
+			return err
+		}
 
-	if err := s.Logfile.Sync(); err != nil {
-		s.Log.Error(err.Error())
-		return err
-	}
+		return nil
+	})
+	// dirChecksum.After()
 
-	if err := s.WarnUnmetDependencies(); err != nil {
-		s.Log.Error(err.Error())
-		return err
-	}
-
-	return nil
 }
 
 func (s *Supplier) WarnUnmetDependencies() error {
@@ -240,20 +229,32 @@ func (s *Supplier) BuildDependencies() error {
 		return err
 	}
 
+	pkgDir := filepath.Join(s.Stager.DepDir(), "packages")
+	nodePath := filepath.Join(pkgDir, "node_modules")
+	if err := copyAll(s.Stager.BuildDir(), pkgDir, []string{"package.json", "package-lock.json", "npm-shrinkwrap.json", "yarn.lock", ".npmrc", ".yarnrc", "node_modules"}); err != nil {
+		return err
+	}
+
+	if err := s.Stager.WriteEnvFile("NODE_PATH", nodePath); err != nil {
+		return err
+	}
+
+	if err := os.Setenv("NODE_PATH", nodePath); err != nil {
+		return err
+	}
+
 	if s.UseYarn {
-		if err := s.Yarn.Build(); err != nil {
+		if err := s.Yarn.Build(s.Stager.BuildDir(), pkgDir, s.Stager.CacheDir()); err != nil {
+			return err
+		}
+	} else if s.NPMRebuild {
+		s.Log.Info("Prebuild detected (node_modules already exists)")
+		if err := s.NPM.Rebuild(pkgDir); err != nil {
 			return err
 		}
 	} else {
-		if s.NPMRebuild {
-			s.Log.Info("Prebuild detected (node_modules already exists)")
-			if err := s.NPM.Rebuild(); err != nil {
-				return err
-			}
-		} else {
-			if err := s.NPM.Build(); err != nil {
-				return err
-			}
+		if err := s.NPM.Build(pkgDir, s.Stager.CacheDir()); err != nil {
+			return err
 		}
 	}
 
@@ -591,4 +592,46 @@ export WEB_CONCURRENCY=${WEB_CONCURRENCY:-1}
 `
 
 	return s.Stager.WriteProfileD("node.sh", fmt.Sprintf(scriptContents, filepath.Join("$DEPS_DIR", s.Stager.DepsIdx(), "node")))
+}
+
+func copyAll(srcDir, destDir string, files []string) error {
+	for _, filename := range files {
+		fi, err := os.Stat(filepath.Join(srcDir, filename))
+		if err != nil {
+			if os.IsNotExist(err) {
+				continue
+			}
+			return err
+		}
+		if fi.IsDir() {
+			if err := os.RemoveAll(filepath.Join(destDir, filename)); err != nil {
+				return err
+			}
+			if err := os.MkdirAll(filepath.Join(destDir, filename), 0755); err != nil {
+				return err
+			}
+			if err := libbuildpack.CopyDirectory(filepath.Join(srcDir, filename), filepath.Join(destDir, filename)); err != nil && !os.IsNotExist(err) {
+				return err
+			}
+		} else {
+			if err := libbuildpack.CopyFile(filepath.Join(srcDir, filename), filepath.Join(destDir, filename)); err != nil && !os.IsNotExist(err) {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (s *Supplier) OverrideCacheFromApp() error {
+	deprecatedCacheDirs := []string{"bower_components"}
+	for _, name := range deprecatedCacheDirs {
+		os.RemoveAll(filepath.Join(s.Stager.CacheDir(), name))
+	}
+
+	pkgMgrCacheDirs := []string{".cache/yarn", ".npm"}
+	if err := copyAll(s.Stager.BuildDir(), s.Stager.CacheDir(), pkgMgrCacheDirs); err != nil {
+		return err
+	}
+
+	return nil
 }

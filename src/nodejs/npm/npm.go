@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/cloudfoundry/libbuildpack"
 )
@@ -13,13 +14,12 @@ type Command interface {
 }
 
 type NPM struct {
-	BuildDir string
-	Command  Command
-	Log      *libbuildpack.Logger
+	Command Command
+	Log     *libbuildpack.Logger
 }
 
-func (n *NPM) Build() error {
-	doBuild, source, err := n.doBuild()
+func (n *NPM) Build(pkgDir, cacheDir string) error {
+	doBuild, source, err := n.doBuild(pkgDir)
 	if err != nil {
 		return err
 	}
@@ -28,12 +28,12 @@ func (n *NPM) Build() error {
 	}
 
 	n.Log.Info("Installing node modules (%s)", source)
-	npmArgs := []string{"install", "--unsafe-perm", "--userconfig", filepath.Join(n.BuildDir, ".npmrc"), "--cache", filepath.Join(n.BuildDir, ".npm")}
-	return n.Command.Execute(n.BuildDir, n.Log.Output(), n.Log.Output(), "npm", npmArgs...)
+	npmArgs := []string{"install", "--unsafe-perm", "--userconfig", filepath.Join(pkgDir, ".npmrc"), "--cache", filepath.Join(cacheDir, ".npm")}
+	return n.Command.Execute(pkgDir, n.Log.Output(), n.Log.Output(), "npm", npmArgs...)
 }
 
-func (n *NPM) Rebuild() error {
-	doBuild, source, err := n.doBuild()
+func (n *NPM) Rebuild(pkgDir string) error {
+	doBuild, source, err := n.doBuild(pkgDir)
 	if err != nil {
 		return err
 	}
@@ -42,17 +42,17 @@ func (n *NPM) Rebuild() error {
 	}
 
 	n.Log.Info("Rebuilding any native modules")
-	if err := n.Command.Execute(n.BuildDir, n.Log.Output(), n.Log.Output(), "npm", "rebuild", "--nodedir="+os.Getenv("NODE_HOME")); err != nil {
+	if err := n.Command.Execute(pkgDir, n.Log.Output(), n.Log.Output(), "npm", "rebuild", "--nodedir="+os.Getenv("NODE_HOME")); err != nil {
 		return err
 	}
 
 	n.Log.Info("Installing any new modules (%s)", source)
-	npmArgs := []string{"install", "--unsafe-perm", "--userconfig", filepath.Join(n.BuildDir, ".npmrc")}
-	return n.Command.Execute(n.BuildDir, n.Log.Output(), n.Log.Output(), "npm", npmArgs...)
+	npmArgs := []string{"install", "--unsafe-perm", "--userconfig", filepath.Join(pkgDir, ".npmrc")}
+	return n.Command.Execute(pkgDir, n.Log.Output(), n.Log.Output(), "npm", npmArgs...)
 }
 
-func (n *NPM) doBuild() (bool, string, error) {
-	pkgExists, err := libbuildpack.FileExists(filepath.Join(n.BuildDir, "package.json"))
+func (n *NPM) doBuild(pkgDir string) (bool, string, error) {
+	pkgExists, err := libbuildpack.FileExists(filepath.Join(pkgDir, "package.json"))
 	if err != nil {
 		return false, "", err
 	}
@@ -62,13 +62,14 @@ func (n *NPM) doBuild() (bool, string, error) {
 		return false, "", nil
 	}
 
-	shrinkwrapExists, err := libbuildpack.FileExists(filepath.Join(n.BuildDir, "npm-shrinkwrap.json"))
-	if err != nil {
-		return false, "", err
+	files := []string{"package.json"}
+	for _, filename := range []string{"package-lock.json", "npm-shrinkwrap.json"} {
+		if found, err := libbuildpack.FileExists(filepath.Join(pkgDir, filename)); err != nil {
+			return false, "", err
+		} else if found {
+			files = append(files, filename)
+		}
 	}
 
-	if shrinkwrapExists {
-		return true, "package.json + shrinkwrap", nil
-	}
-	return true, "package.json", nil
+	return true, strings.Join(files, " + "), nil
 }

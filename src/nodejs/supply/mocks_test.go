@@ -11,65 +11,6 @@ import (
 	reflect "reflect"
 )
 
-// MockCache is a mock of Cache interface
-type MockCache struct {
-	ctrl     *gomock.Controller
-	recorder *MockCacheMockRecorder
-}
-
-// MockCacheMockRecorder is the mock recorder for MockCache
-type MockCacheMockRecorder struct {
-	mock *MockCache
-}
-
-// NewMockCache creates a new mock instance
-func NewMockCache(ctrl *gomock.Controller) *MockCache {
-	mock := &MockCache{ctrl: ctrl}
-	mock.recorder = &MockCacheMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use
-func (m *MockCache) EXPECT() *MockCacheMockRecorder {
-	return m.recorder
-}
-
-// Initialize mocks base method
-func (m *MockCache) Initialize() error {
-	ret := m.ctrl.Call(m, "Initialize")
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Initialize indicates an expected call of Initialize
-func (mr *MockCacheMockRecorder) Initialize() *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Initialize", reflect.TypeOf((*MockCache)(nil).Initialize))
-}
-
-// Restore mocks base method
-func (m *MockCache) Restore() error {
-	ret := m.ctrl.Call(m, "Restore")
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Restore indicates an expected call of Restore
-func (mr *MockCacheMockRecorder) Restore() *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Restore", reflect.TypeOf((*MockCache)(nil).Restore))
-}
-
-// Save mocks base method
-func (m *MockCache) Save() error {
-	ret := m.ctrl.Call(m, "Save")
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Save indicates an expected call of Save
-func (mr *MockCacheMockRecorder) Save() *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockCache)(nil).Save))
-}
-
 // MockCommand is a mock of Command interface
 type MockCommand struct {
 	ctrl     *gomock.Controller
@@ -206,27 +147,27 @@ func (m *MockNPM) EXPECT() *MockNPMMockRecorder {
 }
 
 // Build mocks base method
-func (m *MockNPM) Build() error {
-	ret := m.ctrl.Call(m, "Build")
+func (m *MockNPM) Build(arg0, arg1 string) error {
+	ret := m.ctrl.Call(m, "Build", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Build indicates an expected call of Build
-func (mr *MockNPMMockRecorder) Build() *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockNPM)(nil).Build))
+func (mr *MockNPMMockRecorder) Build(arg0, arg1 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockNPM)(nil).Build), arg0, arg1)
 }
 
 // Rebuild mocks base method
-func (m *MockNPM) Rebuild() error {
-	ret := m.ctrl.Call(m, "Rebuild")
+func (m *MockNPM) Rebuild(arg0 string) error {
+	ret := m.ctrl.Call(m, "Rebuild", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Rebuild indicates an expected call of Rebuild
-func (mr *MockNPMMockRecorder) Rebuild() *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rebuild", reflect.TypeOf((*MockNPM)(nil).Rebuild))
+func (mr *MockNPMMockRecorder) Rebuild(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rebuild", reflect.TypeOf((*MockNPM)(nil).Rebuild), arg0)
 }
 
 // MockYarn is a mock of Yarn interface
@@ -253,15 +194,15 @@ func (m *MockYarn) EXPECT() *MockYarnMockRecorder {
 }
 
 // Build mocks base method
-func (m *MockYarn) Build() error {
-	ret := m.ctrl.Call(m, "Build")
+func (m *MockYarn) Build(arg0, arg1, arg2 string) error {
+	ret := m.ctrl.Call(m, "Build", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Build indicates an expected call of Build
-func (mr *MockYarnMockRecorder) Build() *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockYarn)(nil).Build))
+func (mr *MockYarnMockRecorder) Build(arg0, arg1, arg2 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockYarn)(nil).Build), arg0, arg1, arg2)
 }
 
 // MockStager is a mock of Stager interface
@@ -297,6 +238,18 @@ func (m *MockStager) BuildDir() string {
 // BuildDir indicates an expected call of BuildDir
 func (mr *MockStagerMockRecorder) BuildDir() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuildDir", reflect.TypeOf((*MockStager)(nil).BuildDir))
+}
+
+// CacheDir mocks base method
+func (m *MockStager) CacheDir() string {
+	ret := m.ctrl.Call(m, "CacheDir")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// CacheDir indicates an expected call of CacheDir
+func (mr *MockStagerMockRecorder) CacheDir() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CacheDir", reflect.TypeOf((*MockStager)(nil).CacheDir))
 }
 
 // DepDir mocks base method

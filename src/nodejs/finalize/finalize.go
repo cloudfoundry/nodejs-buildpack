@@ -28,6 +28,11 @@ type Finalizer struct {
 }
 
 func Run(f *Finalizer) error {
+	if err := f.MoveNodeModulesToHome(); err != nil {
+		f.Log.Error("Failed to move node_modules directory back to app dir: %s", err.Error())
+		return err
+	}
+
 	if err := f.ReadPackageJSON(); err != nil {
 		f.Log.Error("Failed parsing package.json: %s", err.Error())
 		return err
@@ -49,6 +54,22 @@ func Run(f *Finalizer) error {
 	}
 
 	return nil
+}
+
+func (f *Finalizer) MoveNodeModulesToHome() error {
+	if err := os.Unsetenv("NODE_PATH"); err != nil {
+		return err
+	}
+	pkgDir := filepath.Join(f.Stager.DepDir(), "packages")
+	if exist, err := libbuildpack.FileExists(filepath.Join(pkgDir, "node_modules")); err != nil {
+		return err
+	} else if exist {
+		os.RemoveAll(filepath.Join(f.Stager.BuildDir(), "node_modules"))
+		if err := os.Rename(filepath.Join(pkgDir, "node_modules"), filepath.Join(f.Stager.BuildDir(), "node_modules")); err != nil {
+			return err
+		}
+	}
+	return os.RemoveAll(pkgDir)
 }
 
 func (f *Finalizer) ReadPackageJSON() error {

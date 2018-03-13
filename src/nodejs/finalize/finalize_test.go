@@ -66,6 +66,52 @@ var _ = Describe("Finalize", func() {
 		Expect(err).To(BeNil())
 	})
 
+	Describe("MoveNodeModulesToHome", func() {
+		BeforeEach(func() {
+			Expect(os.MkdirAll(filepath.Join(depsDir, depsIdx, "packages", "node_modules", "a", "b"), 0755)).To(Succeed())
+		})
+
+		It("moves node_modules back to app directory", func() {
+			Expect(finalizer.MoveNodeModulesToHome()).To(Succeed())
+
+			Expect(filepath.Join(buildDir, "node_modules", "a", "b")).To(BeADirectory())
+			Expect(filepath.Join(depsDir, depsIdx, "packages")).ToNot(BeADirectory())
+		})
+
+		It("unsets NODE_PATH environment variable", func() {
+			os.Setenv("NODE_PATH", "some value")
+
+			Expect(finalizer.MoveNodeModulesToHome()).To(Succeed())
+
+			_, set := os.LookupEnv("NODE_PATH")
+			Expect(set).To(BeFalse())
+		})
+
+		Context("app/node_modules exists", func() {
+			BeforeEach(func() {
+				Expect(os.MkdirAll(filepath.Join(buildDir, "node_modules", "c", "d"), 0755)).To(Succeed())
+			})
+
+			It("overwrites the existing node_modules directory", func() {
+				Expect(finalizer.MoveNodeModulesToHome()).To(Succeed())
+
+				Expect(filepath.Join(buildDir, "node_modules", "a", "b")).To(BeADirectory())
+				Expect(filepath.Join(buildDir, "node_modules", "c", "d")).ToNot(BeADirectory())
+				Expect(filepath.Join(depsDir, depsIdx, "packages")).ToNot(BeADirectory())
+			})
+		})
+
+		Context("pkgDir/node_modules does NOT exist", func() {
+			BeforeEach(func() {
+				Expect(os.RemoveAll(filepath.Join(depsDir, depsIdx, "packages", "node_modules"))).To(Succeed())
+			})
+
+			It("does nothing", func() {
+				Expect(finalizer.MoveNodeModulesToHome()).To(Succeed())
+			})
+		})
+	})
+
 	Describe("ReadPackageJSON", func() {
 		Context("package.json has start script", func() {
 			BeforeEach(func() {

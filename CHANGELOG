@@ -1,3 +1,15 @@
+v1.6.21 Mar 21, 2018
+=====================
+
+* Add node 9.9.0, remove node 9.6.1
+  (https://www.pivotaltracker.com/story/show/156166012)
+
+* Ensure app directory is not modified in supply phase
+  (https://www.pivotaltracker.com/story/show/155602498)
+
+* Remove symlink in vendored yarn fixture
+  (https://www.pivotaltracker.com/story/show/155602498)
+
 v1.6.20 Mar 09, 2018
 =====================
 

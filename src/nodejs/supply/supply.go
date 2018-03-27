@@ -589,9 +589,11 @@ export NODE_ENV=${NODE_ENV:-production}
 export MEMORY_AVAILABLE=$(echo $VCAP_APPLICATION | jq '.limits.mem')
 export WEB_MEMORY=${WEB_MEMORY:-512}
 export WEB_CONCURRENCY=${WEB_CONCURRENCY:-1}
+if [ ! -d "$HOME/node_modules" ]; then
+	export NODE_PATH=${NODE_PATH:-%s}
+fi
 `
-
-	return s.Stager.WriteProfileD("node.sh", fmt.Sprintf(scriptContents, filepath.Join("$DEPS_DIR", s.Stager.DepsIdx(), "node")))
+	return s.Stager.WriteProfileD("node.sh", fmt.Sprintf(scriptContents, filepath.Join("$DEPS_DIR", s.Stager.DepsIdx(), "node"), filepath.Join("$DEPS_DIR", s.Stager.DepsIdx(), "packages", "node_modules")))
 }
 
 func copyAll(srcDir, destDir string, files []string) error {

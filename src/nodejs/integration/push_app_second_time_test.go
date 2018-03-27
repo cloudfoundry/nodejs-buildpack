@@ -20,7 +20,7 @@ var _ = Describe("pushing an app a second time", func() {
 
 	BeforeEach(func() {
 		if cutlass.Cached {
-			Skip("but running cached tests")
+			Skip("running uncached tests")
 		}
 
 		app = cutlass.New(filepath.Join(bpDir, "fixtures", "simple_app"))

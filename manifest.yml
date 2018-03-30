@@ -39,12 +39,6 @@ dependency_deprecation_dates:
   date: 2018-06-30
   link: https://github.com/nodejs/LTS
 dependencies:
-- name: node
-  version: 4.8.7
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.7-linux-x64-1cd64f12.tgz
-  sha256: 1cd64f1281b04dffb5de4f63b2d9114ef9c82192b1f8ef31825cedbfb6337f5a
-  cf_stacks:
-  - cflinuxfs2
 - name: yarn
   version: 1.5.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn-v1.5.1-cd316572.tar.gz
@@ -91,6 +85,12 @@ dependencies:
   version: 6.14.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.14.1-linux-x64-05813a4a.tgz
   sha256: 05813a4a577be984a8a254b00136ce6a762d23e0effc3662a79e5e0a30817df1
+  cf_stacks:
+  - cflinuxfs2
+- name: node
+  version: 4.9.1
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.9.1-linux-x64-b71f19bb.tgz
+  sha256: b71f19bb8d1b4e62dca68ed60979a726ffb8753eaf1983f254162707c320fcfd
   cf_stacks:
   - cflinuxfs2
 pre_package: scripts/build.sh

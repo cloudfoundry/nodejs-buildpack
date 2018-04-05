@@ -976,6 +976,13 @@ var _ = Describe("Supply", func() {
 			It("sets NODE_PATH environment variable", func() {
 				Expect(os.Getenv("NODE_PATH")).To(Equal(filepath.Join(depDir, "node_modules")))
 			})
+
+			It("does not error if no node_modules are installed", func() {
+				Expect(os.RemoveAll(filepath.Join(buildDir, "node_modules"))).To(Succeed())
+
+				Expect(supplier.MoveDependencyArtifacts()).To(Succeed())
+				Expect(filepath.Join(buildDir, "node_modules")).ToNot(BeADirectory())
+			})
 		})
 
 	})

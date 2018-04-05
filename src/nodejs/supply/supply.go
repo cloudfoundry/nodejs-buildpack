@@ -259,9 +259,19 @@ func (s *Supplier) MoveDependencyArtifacts() error {
 		return nil
 	}
 
+	appNodeModules := filepath.Join(s.Stager.BuildDir(), "node_modules")
+
+	_, err := os.Stat(appNodeModules)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
+	}
+
 	nodePath := filepath.Join(s.Stager.DepDir(), "node_modules")
 
-	if err := os.Rename(filepath.Join(s.Stager.BuildDir(), "node_modules"), nodePath); err != nil {
+	if err := os.Rename(appNodeModules, nodePath); err != nil {
 		return err
 	}
 

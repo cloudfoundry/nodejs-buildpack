@@ -194,15 +194,15 @@ func (m *MockYarn) EXPECT() *MockYarnMockRecorder {
 }
 
 // Build mocks base method
-func (m *MockYarn) Build(arg0, arg1, arg2 string) error {
-	ret := m.ctrl.Call(m, "Build", arg0, arg1, arg2)
+func (m *MockYarn) Build(arg0, arg1 string) error {
+	ret := m.ctrl.Call(m, "Build", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Build indicates an expected call of Build
-func (mr *MockYarnMockRecorder) Build(arg0, arg1, arg2 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockYarn)(nil).Build), arg0, arg1, arg2)
+func (mr *MockYarnMockRecorder) Build(arg0, arg1 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockYarn)(nil).Build), arg0, arg1)
 }
 
 // MockStager is a mock of Stager interface

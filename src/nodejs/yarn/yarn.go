@@ -20,7 +20,7 @@ type Yarn struct {
 	Log     *libbuildpack.Logger
 }
 
-func (y *Yarn) Build(buildDir, pkgDir, cacheDir string) error {
+func (y *Yarn) Build(buildDir, cacheDir string) error {
 	y.Log.Info("Installing node modules (yarn.lock)")
 
 	offline, err := libbuildpack.FileExists(filepath.Join(buildDir, "npm-packages-offline-cache"))
@@ -28,7 +28,7 @@ func (y *Yarn) Build(buildDir, pkgDir, cacheDir string) error {
 		return err
 	}
 
-	installArgs := []string{"install", "--pure-lockfile", "--ignore-engines", "--cache-folder", filepath.Join(cacheDir, ".cache/yarn"), "--modules-folder", filepath.Join(pkgDir, "node_modules")}
+	installArgs := []string{"install", "--pure-lockfile", "--ignore-engines", "--cache-folder", filepath.Join(cacheDir, ".cache/yarn"), "--modules-folder", filepath.Join(buildDir, "node_modules")}
 	checkArgs := []string{"check"}
 
 	yarnConfig := map[string]string{}
@@ -52,17 +52,16 @@ func (y *Yarn) Build(buildDir, pkgDir, cacheDir string) error {
 
 	for k, v := range yarnConfig {
 		cmd := exec.Command("yarn", "config", "set", k, v)
-		cmd.Dir = pkgDir
+		cmd.Dir = buildDir
 		cmd.Stdout = ioutil.Discard
 		cmd.Stderr = os.Stderr
-		cmd.Env = append(os.Environ(), "HOME="+pkgDir)
 		if err := y.Command.Run(cmd); err != nil {
 			return err
 		}
 	}
 
 	cmd := exec.Command("yarn", installArgs...)
-	cmd.Dir = pkgDir
+	cmd.Dir = buildDir
 	cmd.Stdout = y.Log.Output()
 	cmd.Stderr = y.Log.Output()
 	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
@@ -70,7 +69,7 @@ func (y *Yarn) Build(buildDir, pkgDir, cacheDir string) error {
 		return err
 	}
 
-	if err := y.Command.Execute(pkgDir, ioutil.Discard, os.Stderr, "yarn", checkArgs...); err != nil {
+	if err := y.Command.Execute(buildDir, ioutil.Discard, os.Stderr, "yarn", checkArgs...); err != nil {
 		if _, ok := err.(*exec.ExitError); !ok {
 			return err
 		}

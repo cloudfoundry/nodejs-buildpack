@@ -32,7 +32,7 @@ type NPM interface {
 }
 
 type Yarn interface {
-	Build(string, string, string) error
+	Build(string, string) error
 }
 
 type Stager interface {
@@ -60,7 +60,7 @@ type Supplier struct {
 	HasDevDependencies bool
 	PostBuild          string
 	UseYarn            bool
-	NPMRebuild         bool
+	IsVendored         bool
 	Yarn               Yarn
 	NPM                NPM
 }
@@ -139,6 +139,11 @@ func Run(s *Supplier) error {
 			return err
 		}
 
+		if err := s.MoveDependencyArtifacts(); err != nil {
+			s.Log.Error("Unable to move dependencies: %s", err.Error())
+			return err
+		}
+
 		s.ListDependencies()
 
 		if err := s.Logfile.Sync(); err != nil {
@@ -153,8 +158,6 @@ func Run(s *Supplier) error {
 
 		return nil
 	})
-	// dirChecksum.After()
-
 }
 
 func (s *Supplier) WarnUnmetDependencies() error {
@@ -229,31 +232,17 @@ func (s *Supplier) BuildDependencies() error {
 		return err
 	}
 
-	pkgDir := filepath.Join(s.Stager.DepDir(), "packages")
-	nodePath := filepath.Join(pkgDir, "node_modules")
-	if err := copyAll(s.Stager.BuildDir(), pkgDir, []string{"package.json", "package-lock.json", "npm-shrinkwrap.json", "yarn.lock", ".npmrc", ".yarnrc", "node_modules"}); err != nil {
-		return err
-	}
-
-	if err := s.Stager.WriteEnvFile("NODE_PATH", nodePath); err != nil {
-		return err
-	}
-
-	if err := os.Setenv("NODE_PATH", nodePath); err != nil {
-		return err
-	}
-
 	if s.UseYarn {
-		if err := s.Yarn.Build(s.Stager.BuildDir(), pkgDir, s.Stager.CacheDir()); err != nil {
+		if err := s.Yarn.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
 			return err
 		}
-	} else if s.NPMRebuild {
+	} else if s.IsVendored {
 		s.Log.Info("Prebuild detected (node_modules already exists)")
-		if err := s.NPM.Rebuild(pkgDir); err != nil {
+		if err := s.NPM.Rebuild(s.Stager.BuildDir()); err != nil {
 			return err
 		}
 	} else {
-		if err := s.NPM.Build(pkgDir, s.Stager.CacheDir()); err != nil {
+		if err := s.NPM.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
 			return err
 		}
 	}
@@ -263,6 +252,24 @@ func (s *Supplier) BuildDependencies() error {
 	}
 
 	return nil
+}
+
+func (s *Supplier) MoveDependencyArtifacts() error {
+	if s.IsVendored {
+		return nil
+	}
+
+	nodePath := filepath.Join(s.Stager.DepDir(), "node_modules")
+
+	if err := os.Rename(filepath.Join(s.Stager.BuildDir(), "node_modules"), nodePath); err != nil {
+		return err
+	}
+
+	if err := s.Stager.WriteEnvFile("NODE_PATH", nodePath); err != nil {
+		return err
+	}
+
+	return os.Setenv("NODE_PATH", nodePath)
 }
 
 func (s *Supplier) ReadPackageJSON() error {
@@ -280,7 +287,7 @@ func (s *Supplier) ReadPackageJSON() error {
 		return err
 	}
 
-	if s.NPMRebuild, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "node_modules")); err != nil {
+	if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "node_modules")); err != nil {
 		return err
 	}
 
@@ -593,7 +600,7 @@ if [ ! -d "$HOME/node_modules" ]; then
 	export NODE_PATH=${NODE_PATH:-%s}
 fi
 `
-	return s.Stager.WriteProfileD("node.sh", fmt.Sprintf(scriptContents, filepath.Join("$DEPS_DIR", s.Stager.DepsIdx(), "node"), filepath.Join("$DEPS_DIR", s.Stager.DepsIdx(), "packages", "node_modules")))
+	return s.Stager.WriteProfileD("node.sh", fmt.Sprintf(scriptContents, filepath.Join("$DEPS_DIR", s.Stager.DepsIdx(), "node"), filepath.Join("$DEPS_DIR", s.Stager.DepsIdx(), "node_modules")))
 }
 
 func copyAll(srcDir, destDir string, files []string) error {

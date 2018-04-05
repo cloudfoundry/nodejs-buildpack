@@ -16,7 +16,7 @@ import (
 
 //go:generate mockgen -source=npm.go --destination=mocks_test.go --package=npm_test
 
-var _ = Describe("Yarn", func() {
+var _ = Describe("NPM", func() {
 	var (
 		err         error
 		buildDir    string

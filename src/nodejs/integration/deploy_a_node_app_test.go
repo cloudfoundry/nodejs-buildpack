@@ -213,7 +213,10 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 				PushAppAndConfirm(app)
 
 				Expect(filepath.Join(app.Path, "node_modules")).ToNot(BeADirectory())
-				Expect(app.Files("deps")).To(ContainElement("deps/0/node_modules"))
+
+				depsDir, err := app.GetBody("/deps_dir")
+				Expect(err).ToNot(HaveOccurred())
+				Expect(app.Files(depsDir)).To(ContainElement(depsDir + "/0/node_modules"))
 
 				Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 
@@ -242,7 +245,9 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 				Eventually(app.Stdout.String).Should(ContainSubstring("Running yarn in online mode"))
 
-				Expect(app.Files("deps")).To(ContainElement("deps/0/node_modules"))
+				depsDir, err := app.GetBody("/deps_dir")
+				Expect(err).ToNot(HaveOccurred())
+				Expect(app.Files(depsDir)).To(ContainElement(depsDir + "/0/node_modules"))
 
 				Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 			})

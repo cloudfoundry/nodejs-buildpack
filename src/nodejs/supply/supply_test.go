@@ -1177,6 +1177,9 @@ var _ = Describe("Supply", func() {
 			nodePathString := `
 if [ ! -d "$HOME/node_modules" ]; then
 	export NODE_PATH=${NODE_PATH:-$DEPS_DIR/14/node_modules}
+	export PATH=$PATH:$HOME/bin:$NODE_PATH/.bin
+else
+	export PATH=$PATH:$HOME/bin:$HOME/node_modules/.bin
 fi`
 			Expect(string(contents)).To(ContainSubstring(nodePathString))
 		})

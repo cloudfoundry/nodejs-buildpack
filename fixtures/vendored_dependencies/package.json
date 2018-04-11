@@ -9,6 +9,7 @@
   "author": "",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "figlet-cli": "^0.1.0",
     "leftpad": "~0.0.1"
   },
   "engines": {

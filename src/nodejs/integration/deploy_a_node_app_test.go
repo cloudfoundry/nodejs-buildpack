@@ -160,6 +160,21 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 			AssertNoInternetTraffic("vendored_dependencies")
 		})
+
+		Context("Vendored Depencencies with node module binaries", func() {
+			BeforeEach(func() {
+				if !ApiSupportsSymlinks() {
+					Skip("Requires api symlink support")
+				}
+			})
+
+			It("deploys", func() {
+				app = cutlass.New(filepath.Join(bpDir, "fixtures", "vendored_dependencies_with_binaries"))
+				app.SetEnv("BP_DEBUG", "true")
+				PushAppAndConfirm(app)
+			})
+		})
+
 		Context("with an app with a yarn.lock and vendored dependencies", func() {
 			BeforeEach(func() {
 				app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_yarn_vendored"))
@@ -199,20 +214,6 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 				Expect(app.Files("app/node_modules")).To(ContainElement("app/node_modules/leftpad"))
 				Expect(app.Files("app/node_modules")).To(ContainElement("app/node_modules/hashish"))
 			})
-		})
-	})
-
-	Describe("Vendored Depencencies with binaries", func() {
-		BeforeEach(func() {
-			if !ApiSupportsSymlinks() {
-				Skip("Requires api symlink support")
-			}
-		})
-
-		It("deploys", func() {
-			app = cutlass.New(filepath.Join(bpDir, "fixtures", "vendored_dependencies_with_binaries"))
-			app.SetEnv("BP_DEBUG", "true")
-			PushAppAndConfirm(app)
 		})
 	})
 

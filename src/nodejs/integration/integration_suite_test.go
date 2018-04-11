@@ -98,8 +98,13 @@ func ApiGreaterThan(version string) bool {
 func ApiHasTask() bool {
 	return ApiGreaterThan("2.75.0")
 }
+
 func ApiHasMultiBuildpack() bool {
 	return ApiGreaterThan("2.90.0")
+}
+
+func ApiSupportsSymlinks() bool {
+	return ApiGreaterThan("2.103.0")
 }
 
 func AssertUsesProxyDuringStagingIfPresent(fixtureName string) {

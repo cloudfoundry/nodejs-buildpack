@@ -202,6 +202,20 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		})
 	})
 
+	Describe("Vendored Depencencies with binaries", func() {
+		BeforeEach(func() {
+			if !ApiSupportsSymlinks() {
+				Skip("Requires api symlink support")
+			}
+		})
+
+		It("deploys", func() {
+			app = cutlass.New(filepath.Join(bpDir, "fixtures", "vendored_dependencies_with_binaries"))
+			app.SetEnv("BP_DEBUG", "true")
+			PushAppAndConfirm(app)
+		})
+	})
+
 	Describe("No Vendored Dependencies", func() {
 		Context("with an app with no vendored dependencies", func() {
 			BeforeEach(func() {

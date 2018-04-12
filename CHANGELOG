@@ -1,3 +1,26 @@
+v1.6.22 Apr 12, 2018
+=====================
+
+* Install node_modules in the build directory
+  Running npm/yarn install in the build directory ensures custom scripts are run in that directory
+  (https://www.pivotaltracker.com/story/show/156364507)
+
+* Add node 9.11.1, remove node 9.8.0
+  (https://www.pivotaltracker.com/story/show/156531449)
+  (https://www.pivotaltracker.com/story/show/156350231)
+
+* Add node 8.11.1, remove node 8.9.4
+  (https://www.pivotaltracker.com/story/show/156394483)
+  (https://www.pivotaltracker.com/story/show/156350231)
+
+* Add node 6.14.1, remove node 6.13.0
+  (https://www.pivotaltracker.com/story/show/156394483)
+  (https://www.pivotaltracker.com/story/show/156350231)
+
+* Add node 4.9.1, remove node 4.8.6
+  (https://www.pivotaltracker.com/story/show/156394483)
+  (https://www.pivotaltracker.com/story/show/156350231)
+
 v1.6.21 Mar 21, 2018
 =====================
 

@@ -2,7 +2,7 @@ const http = require('http')
 const port = process.env.PORT || 8080
 
 const requestHandler = (request, response) => {
-  response.end(`MaxOldSpace: ${process.env.npm_config_max_old_space_size}`)
+  response.end(`NodeOptions: ${process.env.NODE_OPTIONS}`)
 }
 
 const server = http.createServer(requestHandler)

@@ -608,10 +608,10 @@ export WEB_MEMORY=${WEB_MEMORY:-512}
 export WEB_CONCURRENCY=${WEB_CONCURRENCY:-1}
 if [ ! -d "$HOME/node_modules" ]; then
 	export NODE_PATH=${NODE_PATH:-%s}
-	export PATH=$PATH:$HOME/bin:$NODE_PATH/.bin
 else
-	export PATH=$PATH:$HOME/bin:$HOME/node_modules/.bin
+	export NODE_PATH=${NODE_PATH:-$HOME/node_modules}
 fi
+	export PATH=$PATH:$HOME/bin:$NODE_PATH/.bin
 `
 	return s.Stager.WriteProfileD("node.sh", fmt.Sprintf(scriptContents, filepath.Join("$DEPS_DIR", s.Stager.DepsIdx(), "node"), filepath.Join("$DEPS_DIR", s.Stager.DepsIdx(), "node_modules")))
 }

@@ -1,3 +1,19 @@
+v1.6.23 Apr 26, 2018
+=====================
+
+* Always set NODE_PATH to node_modules location
+  (https://www.pivotaltracker.com/story/show/156828428)
+
+* Set max_old_space_size when OPTIMIZE_MEMORY=true
+  - Remove --always_compact and --optimize_for_size as they are no longer valid node options
+  (https://www.pivotaltracker.com/story/show/155192314)
+
+* Add node 10.0.0
+  (https://www.pivotaltracker.com/story/show/157065173)
+
+* Add yarn 1.6.0, remove yarn 1.5.1
+  (https://www.pivotaltracker.com/story/show/156786250)
+
 v1.6.22 Apr 12, 2018
 =====================
 

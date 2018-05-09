@@ -20,21 +20,42 @@ import (
 
 var bpDir string
 var buildpackVersion string
+var buildpackZipFile string
 var packagedBuildpack cutlass.VersionedBuildpackPackage
 
 func init() {
-	flag.StringVar(&buildpackVersion, "version", "", "version to use (builds if empty)")
+	flag.StringVar(&buildpackVersion, "version", "", "version to use (builds if version and zipFile empty)")
 	flag.BoolVar(&cutlass.Cached, "cached", true, "cached buildpack")
 	flag.StringVar(&cutlass.DefaultMemory, "memory", "128M", "default memory for pushed apps")
 	flag.StringVar(&cutlass.DefaultDisk, "disk", "256M", "default disk for pushed apps")
+	flag.StringVar(&buildpackZipFile, "zipFile", "", "buildpack zip file in buildpack root dir (builds if zipFile and version empty)")
 	flag.Parse()
 }
 
 var _ = SynchronizedBeforeSuite(func() []byte {
 	// Run once
-	if buildpackVersion == "" {
+	if buildpackVersion == "" && buildpackZipFile == "" {
 		packagedBuildpack, err := cutlass.PackageUniquelyVersionedBuildpack()
 		Expect(err).NotTo(HaveOccurred())
+
+		data, err := json.Marshal(packagedBuildpack)
+		Expect(err).NotTo(HaveOccurred())
+		return data
+	}
+	if buildpackZipFile != "" {
+		Expect(buildpackVersion).NotTo(BeEmpty())
+
+		rootDir, err := cutlass.FindRoot()
+		Expect(err).NotTo(HaveOccurred())
+
+		buildpackZipFilePath := filepath.Join(rootDir, buildpackZipFile)
+		_, err = os.Stat(buildpackZipFilePath)
+		Expect(err).NotTo(HaveOccurred())
+
+		packagedBuildpack := cutlass.VersionedBuildpackPackage{
+			Version: buildpackVersion,
+			File: buildpackZipFilePath,
+		}
 
 		data, err := json.Marshal(packagedBuildpack)
 		Expect(err).NotTo(HaveOccurred())
@@ -63,7 +84,9 @@ var _ = SynchronizedAfterSuite(func() {
 	// Run on all nodes
 }, func() {
 	// Run once
-	Expect(cutlass.RemovePackagedBuildpack(packagedBuildpack)).To(Succeed())
+	if buildpackZipFile == "" {
+		Expect(cutlass.RemovePackagedBuildpack(packagedBuildpack)).To(Succeed())
+	}
 	Expect(cutlass.DeleteOrphanedRoutes()).To(Succeed())
 })
 

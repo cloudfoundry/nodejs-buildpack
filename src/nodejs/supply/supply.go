@@ -608,7 +608,7 @@ export WEB_MEMORY=${WEB_MEMORY:-512}
 export WEB_CONCURRENCY=${WEB_CONCURRENCY:-1}
 if [ ! -d "$HOME/node_modules" ]; then
 	export NODE_PATH=${NODE_PATH:-%[2]s}
-	ln -s %[2]s $HOME/node_modules
+	ln -s %[2]s "$HOME/node_modules"
 else
 	export NODE_PATH=${NODE_PATH:-$HOME/node_modules}
 fi

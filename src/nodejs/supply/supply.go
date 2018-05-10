@@ -607,12 +607,12 @@ export MEMORY_AVAILABLE=$(echo $VCAP_APPLICATION | jq '.limits.mem')
 export WEB_MEMORY=${WEB_MEMORY:-512}
 export WEB_CONCURRENCY=${WEB_CONCURRENCY:-1}
 if [ ! -d "$HOME/node_modules" ]; then
-	export NODE_PATH=${NODE_PATH:-%[2]s}
-	ln -s %[2]s "$HOME/node_modules"
+	export NODE_PATH=${NODE_PATH:-"%[2]s"}
+	ln -s "%[2]s" "$HOME/node_modules"
 else
-	export NODE_PATH=${NODE_PATH:-$HOME/node_modules}
+	export NODE_PATH=${NODE_PATH:-"$HOME/node_modules"}
 fi
-export PATH=$PATH:$HOME/bin:$NODE_PATH/.bin
+export PATH=$PATH:"$HOME/bin":$NODE_PATH/.bin
 `
 	return s.Stager.WriteProfileD("node.sh",
 		fmt.Sprintf(scriptContents,

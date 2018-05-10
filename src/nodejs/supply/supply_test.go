@@ -1176,12 +1176,12 @@ var _ = Describe("Supply", func() {
 			Expect(string(contents)).To(ContainSubstring("export NODE_ENV=${NODE_ENV:-production}"))
 			nodePathString := `
 if [ ! -d "$HOME/node_modules" ]; then
-	export NODE_PATH=${NODE_PATH:-$DEPS_DIR/14/node_modules}
-	ln -s $DEPS_DIR/14/node_modules $HOME/node_modules
+	export NODE_PATH=${NODE_PATH:-"$DEPS_DIR/14/node_modules"}
+	ln -s "$DEPS_DIR/14/node_modules" "$HOME/node_modules"
 else
-	export NODE_PATH=${NODE_PATH:-$HOME/node_modules}
+	export NODE_PATH=${NODE_PATH:-"$HOME/node_modules"}
 fi
-export PATH=$PATH:$HOME/bin:$NODE_PATH/.bin
+export PATH=$PATH:"$HOME/bin":$NODE_PATH/.bin
 `
 			Expect(string(contents)).To(ContainSubstring(nodePathString))
 		})

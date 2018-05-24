@@ -100,9 +100,9 @@ dependencies:
   cf_stacks:
   - cflinuxfs2
 - name: node
-  version: 10.2.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.2.0-linux-x64-3db5fe4d.tgz
-  sha256: 3db5fe4de9f35a86bc657e4de6d3f3ed0c0b82a0c4abca41b0eaaeedea2529a8
+  version: 10.2.1
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.2.1-linux-x64-ed988180.tgz
+  sha256: ed9881800cdae0792203d7dd02d663e46b2a0e562abcf3e8f4114d419540349d
   cf_stacks:
   - cflinuxfs2
 pre_package: scripts/build.sh

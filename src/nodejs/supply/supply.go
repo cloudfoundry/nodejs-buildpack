@@ -22,6 +22,9 @@ type Command interface {
 type Manifest interface {
 	AllDependencyVersions(string) []string
 	DefaultVersion(string) (libbuildpack.Dependency, error)
+}
+
+type Installer interface {
 	InstallDependency(libbuildpack.Dependency, string) error
 	InstallOnlyVersion(string, string) error
 }
@@ -49,6 +52,7 @@ type Stager interface {
 type Supplier struct {
 	Stager             Stager
 	Manifest           Manifest
+	Installer          Installer
 	Log                *libbuildpack.Logger
 	Logfile            *os.File
 	Command            Command
@@ -495,7 +499,7 @@ func (s *Supplier) InstallNode(tempDir string) error {
 		}
 	}
 
-	if err := s.Manifest.InstallDependency(dep, tempDir); err != nil {
+	if err := s.Installer.InstallDependency(dep, tempDir); err != nil {
 		return err
 	}
 
@@ -549,7 +553,7 @@ func (s *Supplier) InstallYarn() error {
 
 	yarnInstallDir := filepath.Join(s.Stager.DepDir(), "yarn")
 
-	if err := s.Manifest.InstallOnlyVersion("yarn", yarnInstallDir); err != nil {
+	if err := s.Installer.InstallOnlyVersion("yarn", yarnInstallDir); err != nil {
 		return err
 	}
 

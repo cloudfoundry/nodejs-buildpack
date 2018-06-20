@@ -71,8 +71,8 @@ dependencies:
   - cflinuxfs2
 - name: node
   version: 8.11.3
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.11.3-linux-x64-1c49625d.tgz
-  sha256: 1c49625dbb7400f6c660520062a279051e1b00b974d69784e95e2876a1e59983
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.11.3-linux-x64.tgz
+  sha256: 1b1eb31315b3ffe40cefb871a3d543c2bb27b2fedbcdee2314d16f83061ab410
   cf_stacks:
   - cflinuxfs2
 - name: node

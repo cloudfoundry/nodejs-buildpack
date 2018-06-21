@@ -47,8 +47,8 @@ dependencies:
   - cflinuxfs2
 - name: node
   version: 4.9.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.9.1-linux-x64.tgz
-  sha256: ac621c509e9fd39b6e59df23f33a331605e85157b4bf254cbb9156738a42e4a1
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.9.1-linux-x64-2eccbf91.tgz
+  sha256: 2eccbf917e3418f59b6f74f859436b14347b83a5ac8b5a53c4c45ddebad47134
   cf_stacks:
   - cflinuxfs2
 - name: node

@@ -22,10 +22,6 @@ include_files:
 - profile/newrelic-setup.sh
 - profile/nodejs.sh
 dependency_deprecation_dates:
-- version_line: 4.x
-  name: node
-  date: 2018-04-01
-  link: https://github.com/nodejs/LTS
 - version_line: 6.x
   name: node
   date: 2019-04-30
@@ -39,18 +35,6 @@ dependency_deprecation_dates:
   date: 2018-06-30
   link: https://github.com/nodejs/LTS
 dependencies:
-- name: node
-  version: 4.8.7
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.8.7-linux-x64-1cd64f12.tgz
-  sha256: 1cd64f1281b04dffb5de4f63b2d9114ef9c82192b1f8ef31825cedbfb6337f5a
-  cf_stacks:
-  - cflinuxfs2
-- name: node
-  version: 4.9.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-4.9.1-linux-x64-2eccbf91.tgz
-  sha256: 2eccbf917e3418f59b6f74f859436b14347b83a5ac8b5a53c4c45ddebad47134
-  cf_stacks:
-  - cflinuxfs2
 - name: node
   version: 6.14.2
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.14.2-linux-x64-345ad39f.tgz

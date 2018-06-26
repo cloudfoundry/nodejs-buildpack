@@ -29,7 +29,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			It("resolves to a nodeJS version successfully", func() {
 				PushAppAndConfirm(app)
 
-				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 4\\.\\d+\\.\\d+"))
+				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 6\\.\\d+\\.\\d+"))
 				Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 			})
 		})

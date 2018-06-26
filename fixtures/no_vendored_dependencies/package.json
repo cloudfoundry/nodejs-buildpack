@@ -13,5 +13,5 @@
     "express": "~4.0.0",
     "figlet-cli": "^0.1.0"
   },
-  "engines" : { "node" : "~>4" }
+  "engines" : { "node" : "~>6" }
 }

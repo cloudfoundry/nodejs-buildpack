@@ -1,3 +1,10 @@
+v1.6.29 Jul 19, 2018
+=====================
+
+* Add node 10.7.0, remove node 10.4.1
+  (https://www.pivotaltracker.com/story/show/159150931)
+  (https://www.pivotaltracker.com/story/show/158826642)
+
 v1.6.28 Jul 02, 2018
 =====================
 

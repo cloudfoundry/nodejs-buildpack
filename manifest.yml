@@ -89,4 +89,5 @@ dependencies:
   sha256: e7720ee346b2bd7ec32b7e04517643c38648f5022c7981168321ba1636f2dca3
   cf_stacks:
   - cflinuxfs2
+  - cflinuxfs3
 pre_package: scripts/build.sh

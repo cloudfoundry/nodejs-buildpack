@@ -97,14 +97,14 @@ dependencies:
   - cflinuxfs2
 - name: node
   version: 10.7.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.7.0-linux-x64-cflinuxfs2-d57f23c5.tgz
-  sha256: d57f23c506c459a905deb23a9ca3c51344760ee56751e0b131fa55d1b4385fb7
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.7.0-linux-x64-cflinuxfs2-e5103d33.tgz
+  sha256: e5103d33ca6c4ee20e2b4689d11acf18075ea91285fa947a20835d42f784c945
   cf_stacks:
   - cflinuxfs2
 - name: node
   version: 10.7.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.7.0-linux-x64-cflinuxfs3-1f121c48.tgz
-  sha256: 1f121c4869895fee7f702b9433899f2e20a324c241e6b031b453b151acb45814
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.7.0-linux-x64-cflinuxfs3-17ae24d0.tgz
+  sha256: 17ae24d05914bf9e3794d648ca4bde827eb891517403777ed65039d9a906e8a4
   cf_stacks:
   - cflinuxfs3
 - name: yarn

@@ -37,8 +37,8 @@ dependency_deprecation_dates:
 dependencies:
 - name: node
   version: 6.14.2
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.14.2-linux-x64-345ad39f.tgz
-  sha256: 345ad39f0be6edd71e78a129c309aeaed6da1c14076a8fdbdc8d2e339b6102cd
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.14.2-linux-x64-cflinuxfs2-c76b27a6.tgz
+  sha256: c76b27a6dbf00a97a776dbe29e08f0d7efe9282dc8c2d4826e6522d336fc4286
   cf_stacks:
   - cflinuxfs2
 - name: node

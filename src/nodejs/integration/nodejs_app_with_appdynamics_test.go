@@ -1,6 +1,7 @@
 package integration_test
 
 import (
+	"os"
 	"os/exec"
 	"path/filepath"
 	"time"
@@ -20,6 +21,12 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		command.Stderr = GinkgoWriter
 		return command.Run()
 	}
+
+	BeforeEach(func() {
+		if os.Getenv("CF_STACK") == "cflinuxfs2" {
+			Skip("appdynamics service name causes conflicts when run in parallel")
+		}
+	})
 
 	AfterEach(func() {
 		app = DestroyApp(app)

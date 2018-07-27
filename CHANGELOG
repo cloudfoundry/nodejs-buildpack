@@ -1,3 +1,12 @@
+v1.6.30 Jul 27, 2018
+=====================
+* Rebuild node 6.14.3, 8.11.3, 9.11.2, 10.7.0
+  for stacks cflinuxfs3, cflinuxfs3 [#159252754]
+
+* Rebuild yarn 1.7.0
+  for stacks cflinuxfs2, cflinuxfs3 [#159252393]
+
+
 v1.6.29 Jul 19, 2018
 =====================
 

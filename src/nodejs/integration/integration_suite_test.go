@@ -33,7 +33,7 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 	// Run once
 	if buildpackVersion == "" {
 		packagedBuildpack, err := cutlass.PackageUniquelyVersionedBuildpack(os.Getenv("CF_STACK"), ApiHasStackAssociation())
-		Expect(err).NotTo(HaveOccurred())
+		Expect(err).NotTo(HaveOccurred(), "failed to package buildpack")
 
 		data, err := json.Marshal(packagedBuildpack)
 		Expect(err).NotTo(HaveOccurred())
@@ -92,19 +92,19 @@ func ApiHasTask() bool {
 
 func ApiHasMultiBuildpack() bool {
 	supported, err := cutlass.ApiGreaterThan("2.90.0")
-	Expect(err).NotTo(HaveOccurred())
+	Expect(err).NotTo(HaveOccurred(), "the targeted CF does not support multiple buildpacks")
 	return supported
 }
 
 func ApiSupportsSymlinks() bool {
 	supported, err := cutlass.ApiGreaterThan("2.103.0")
-	Expect(err).NotTo(HaveOccurred())
+	Expect(err).NotTo(HaveOccurred(), "the targeted CF does not support symlinks")
 	return supported
 }
 
 func ApiHasStackAssociation() bool {
 	supported, err := cutlass.ApiGreaterThan("2.113.0")
-	Expect(err).NotTo(HaveOccurred())
+	Expect(err).NotTo(HaveOccurred(), "the targeted CF does not support stack association")
 	return supported
 }
 
@@ -168,4 +168,11 @@ func AssertNoInternetTraffic(fixtureName string) {
 		// Expect(built).To(BeTrue())
 		Expect(traffic).To(BeEmpty())
 	})
+}
+
+func RunCF(args ...string) error {
+	command := exec.Command("cf", args...)
+	command.Stdout = GinkgoWriter
+	command.Stderr = GinkgoWriter
+	return command.Run()
 }

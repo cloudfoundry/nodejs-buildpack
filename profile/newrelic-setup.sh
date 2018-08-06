@@ -1,7 +1,7 @@
-VCAP_SERVICES_NEW_RELIC_LICENSE_KEY=$(echo "${VCAP_SERVICES-}" | jq -r .newrelic[0].credentials.licenseKey)
+VCAP_SERVICES_NEW_RELIC_LICENSE_KEY=$(echo "${VCAP_SERVICES-}" | jq -r '.[keys | select(.[] | contains("newrelic"))[0]].credentials.licenseKey')
 if [ -z "${VCAP_SERVICES_NEW_RELIC_LICENSE_KEY-}" ] || [ "$VCAP_SERVICES_NEW_RELIC_LICENSE_KEY" == "null" ];
 then
-  VCAP_SERVICES_NEW_RELIC_LICENSE_KEY=$(echo "${VCAP_SERVICES-}" | jq -r --arg key "newrelic" '[.[][] | select(.name | contains("newrelic"))][0] | .credentials | .["licenseKey"]');
+  VCAP_SERVICES_NEW_RELIC_LICENSE_KEY=$(echo "${VCAP_SERVICES-}" | jq -r '[.[][] | select(.name | contains("newrelic"))][0] | .credentials | .["licenseKey"]');
 fi
 
 VCAP_APPLICATION_GUID=$(echo $VCAP_APPLICATION | jq -r .application_id)

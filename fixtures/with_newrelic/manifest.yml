@@ -1,5 +1,0 @@
----
-applications:
-- name: newrelic
-  services:
-  - newrelic

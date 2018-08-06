@@ -42,7 +42,7 @@ func UnbuiltBuildpack(depName string, copyBrats func(string) *cutlass.App) {
 		})
 		AfterEach(func() {
 			defaultCleanup(app)
-			Expect(cutlass.DeleteBuildpack(bpName)).To(Succeed())
+			Expect(cutlass.DeleteBuildpack(bpName, "")).To(Succeed())
 		})
 
 		It("runs", func() {
@@ -77,11 +77,11 @@ func DeployingAnAppWithAnUpdatedVersionOfTheSameBuildpack(copyBrats func(string)
 		})
 		AfterEach(func() {
 			defaultCleanup(app)
-			Expect(cutlass.DeleteBuildpack(bpName)).To(Succeed())
+			Expect(cutlass.DeleteBuildpack(bpName, stack)).To(Succeed())
 			// With stacks, creating the buildpack twice will result in a second record, one with `nil` stack.
 			// We need to clean up both.
 			if count, err := cutlass.CountBuildpack(bpName); err == nil && count > 0 {
-				Expect(cutlass.DeleteBuildpack(bpName)).To(Succeed(), "Attempted to delete buildpack %s", bpName)
+				Expect(cutlass.DeleteBuildpack(bpName, stack)).To(Succeed(), "Attempted to delete buildpack %s", bpName)
 			}
 			// LTS errors when running `cf buildpacks`. Ignore that output.
 			count, err := cutlass.CountBuildpack(bpName)
@@ -144,7 +144,7 @@ func StagingWithBuildpackThatSetsEOL(depName string, copyBrats func(string) *cut
 		})
 		AfterEach(func() {
 			defaultCleanup(app)
-			Expect(cutlass.DeleteBuildpack(bpName)).To(Succeed())
+			Expect(cutlass.DeleteBuildpack(bpName, stack)).To(Succeed())
 		})
 
 		Context("using an uncached buildpack", func() {
@@ -228,7 +228,7 @@ func StagingWithCustomBuildpackWithCredentialsInDependencies(depRegexp string, c
 		})
 		AfterEach(func() {
 			defaultCleanup(app)
-			Expect(cutlass.DeleteBuildpack(bpName)).To(Succeed())
+			Expect(cutlass.DeleteBuildpack(bpName, stack)).To(Succeed())
 		})
 		Context("using an uncached buildpack", func() {
 			BeforeEach(func() {

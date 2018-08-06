@@ -133,8 +133,8 @@ func DeleteOrphanedRoutes() error {
 	return nil
 }
 
-func DeleteBuildpack(language string, stack string) error {
-	command := exec.Command("cf", "delete-buildpack", "-f", BuildpackNameForTest(language, stack))
+func DeleteBuildpack(language string) error {
+	command := exec.Command("cf", "delete-buildpack", "-f", fmt.Sprintf("%s_buildpack", language))
 	if data, err := command.CombinedOutput(); err != nil {
 		fmt.Println(string(data))
 		return err
@@ -143,26 +143,19 @@ func DeleteBuildpack(language string, stack string) error {
 }
 
 func UpdateBuildpack(language, file, stack string) error {
-	command := exec.Command("cf", "update-buildpack", BuildpackNameForTest(language, stack), "-p", file, "--enable", "-s", stack)
+	command := exec.Command("cf", "update-buildpack", fmt.Sprintf("%s_buildpack", language), "-p", file, "--enable", "-s", stack)
 	if data, err := command.CombinedOutput(); err != nil {
 		return fmt.Errorf("Failed to update buildpack by running '%s':\n%s\n%v", strings.Join(command.Args, " "), string(data), err)
 	}
 	return nil
 }
 
-func createBuildpack(language, file string, stack string) error {
-	command := exec.Command("cf", "create-buildpack", BuildpackNameForTest(language, stack), file, "100", "--enable")
+func createBuildpack(language, file string) error {
+	command := exec.Command("cf", "create-buildpack", fmt.Sprintf("%s_buildpack", language), file, "100", "--enable")
 	if data, err := command.CombinedOutput(); err != nil {
 		return fmt.Errorf("Failed to create buildpack by running '%s':\n%s\n%v", strings.Join(command.Args, " "), string(data), err)
 	}
 	return nil
-}
-
-func BuildpackNameForTest(language, stack string) string {
-	if stack == "" && language == "binary" {
-		return language + "_buildpack-any"
-	}
-	return language + "_buildpack"
 }
 
 func CountBuildpack(language string) (int, error) {
@@ -183,11 +176,7 @@ func CountBuildpack(language string) (int, error) {
 }
 
 func CreateOrUpdateBuildpack(language, file, stack string) error {
-	if stack == "" {
-		DeleteBuildpack(language, stack)
-		return createBuildpack(language, file, stack)
-	}
-	createBuildpack(language, file, stack)
+	createBuildpack(language, file)
 	return UpdateBuildpack(language, file, stack)
 }
 

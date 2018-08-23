@@ -158,6 +158,13 @@ func (h SnykHook) runSnykCommand(args ...string) (string, error) {
 		args = append(args, "-d")
 	}
 
+	here := filepath.Join(h.buildDir, "node_modules")
+	there := filepath.Join(h.depsDir, "node_modules")
+	if _, err := os.Stat(here); os.IsNotExist(err) {
+		h.Log.Debug("%s does not exist. making a symlink to %s", here, there)
+		os.Symlink(there, here)
+	}
+
 	// Snyk is part of the app modules.
 	if h.localAgent == true {
 		snykCliPath := filepath.Join(h.buildDir, snykLocalAgentPath)

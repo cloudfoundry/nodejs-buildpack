@@ -1,11 +1,28 @@
+v1.6.31 Aug 24, 2018
+=====================
+
+* Add node 10.9.0, remove node 10.5.0
+  (https://www.pivotaltracker.com/story/show/159814062)
+  (https://www.pivotaltracker.com/story/show/159478290)
+
+* Add node 8.11.4, remove node 8.11.2
+  (https://www.pivotaltracker.com/story/show/159814061)
+
+* Add node 6.14.4, remove node 6.14.2
+  (https://www.pivotaltracker.com/story/show/159814060)
+
+* Add yarn 1.9.4, remove yarn 1.7.0
+  (https://www.pivotaltracker.com/story/show/159534896)
+  (https://www.pivotaltracker.com/story/show/159533350)
+
 v1.6.30 Jul 27, 2018
 =====================
+
 * Rebuild node 6.14.3, 8.11.3, 9.11.2, 10.7.0
   for stacks cflinuxfs3, cflinuxfs3 [#159252754]
 
 * Rebuild yarn 1.7.0
   for stacks cflinuxfs2, cflinuxfs3 [#159252393]
-
 
 v1.6.29 Jul 19, 2018
 =====================
@@ -34,7 +51,6 @@ v1.6.26 Jun 14, 2018
   (https://www.pivotaltracker.com/story/show/158314054)
   (https://www.pivotaltracker.com/story/show/158314054)
   (https://www.pivotaltracker.com/story/show/158314054)
-
 
 v1.6.25 Jun 05, 2018
 =====================

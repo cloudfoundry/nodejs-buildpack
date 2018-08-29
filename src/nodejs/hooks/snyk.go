@@ -77,6 +77,25 @@ func (h SnykHook) AfterCompile(stager *libbuildpack.Stager) error {
 		}
 	}
 
+	// make a temporary link to depsDir next to package.json, as this is what
+	// snyk cli expects.
+	depsDirLocalPath := filepath.Join(h.buildDir, "node_modules")
+	depsDirGlobalPath := filepath.Join(h.depsDir, "node_modules")
+	if _, err := os.Lstat(depsDirLocalPath); os.IsNotExist(err) {
+		h.Log.Debug("%s does not exist. making a temporary symlink %s -> %s",
+			depsDirLocalPath, depsDirLocalPath, depsDirGlobalPath)
+
+		err := os.Symlink(depsDirGlobalPath, depsDirLocalPath)
+		if err != nil {
+			return err
+		}
+
+		defer func() {
+			h.Log.Debug("removing temporary link %s", depsDirLocalPath)
+			os.Remove(depsDirLocalPath)
+		}()
+	}
+
 	if protectBuild {
 		if err := h.runProtect(); err != nil {
 			return err

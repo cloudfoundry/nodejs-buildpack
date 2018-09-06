@@ -53,6 +53,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			app.Restart()
 
 			Eventually(app.Stdout.String()).Should(ContainSubstring("Snyk token was found"))
+			Eventually(app.Stdout.String()).ShouldNot(ContainSubstring("Missing node_modules folder: we can't test without dependencies"))
 		})
 	})
 })

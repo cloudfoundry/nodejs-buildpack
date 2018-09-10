@@ -1,3 +1,12 @@
+v1.6.32 Sep 10, 2018
+=====================
+
+* Add node 10.10.0, remove node 10.7.0
+  (https://www.pivotaltracker.com/story/show/160334231)
+
+* Bugfix for Snyk hook
+  (https://www.pivotaltracker.com/story/show/160155740)
+
 v1.6.31 Aug 24, 2018
 =====================
 

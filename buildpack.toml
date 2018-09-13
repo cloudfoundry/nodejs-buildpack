@@ -1,0 +1,7 @@
+[buildpack]
+id = "org.cloudfoundry.buildpacks.nodejs"
+version = "1.6.32"
+name = "Node.js Buildpack"
+
+[[stacks]]
+id = "org.cloudfoundry.stacks.cflinuxfs3"

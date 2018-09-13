@@ -26,3 +26,11 @@ required = ["github.com/google/subcommands"]
 [[override]]
   name = "github.com/elazarl/goproxy"
   revision = "aacba83f36a55ac31cbb71c06547a328c0cd1604"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/buildpack/libbuildpack"
+
+[[constraint]]
+  name = "github.com/BurntSushi/toml"
+  version = "0.3.0"

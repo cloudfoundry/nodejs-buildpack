@@ -34,7 +34,7 @@ var _ = Describe("Nodejs V3 buildpack", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		// We must ensure container cannot modify app dir
-		err = os.Chmod(appDir, 0744)
+		err = os.Chmod(appDir, 0755)
 		Expect(err).ToNot(HaveOccurred())
 
 		cmd := exec.Command(

@@ -19,9 +19,12 @@ var _ = Describe("Nodejs V3 buildpack", func() {
 		bpDir, err := cutlass.FindRoot()
 		Expect(err).ToNot(HaveOccurred())
 
-		workingDir, err := ioutil.TempDir("/tmp", "")
+		workingDir, err := ioutil.TempDir("/tmp", "workspace")
 		Expect(err).ToNot(HaveOccurred())
 		defer os.RemoveAll(workingDir)
+
+		err = os.Chmod(workingDir, os.ModePerm)
+		Expect(err).ToNot(HaveOccurred())
 
 		appDir := filepath.Join(workingDir, "app")
 		err = os.Mkdir(appDir, os.ModePerm)

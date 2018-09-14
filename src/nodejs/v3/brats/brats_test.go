@@ -33,6 +33,10 @@ var _ = Describe("Nodejs V3 buildpack", func() {
 		err = libbuildpack.CopyDirectory(filepath.Join(bpDir, "fixtures", "simple_app"), appDir)
 		Expect(err).ToNot(HaveOccurred())
 
+		// We must ensure container cannot modify app dir
+		err = os.Chmod(appDir, 0744)
+		Expect(err).ToNot(HaveOccurred())
+
 		cmd := exec.Command(
 			"docker",
 			"run",

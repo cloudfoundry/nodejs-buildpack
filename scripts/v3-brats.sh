@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+echo "Pull build image"
+docker pull cfbuildpacks/bpv3:build
+
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 source .envrc
 ./scripts/install_tools.sh

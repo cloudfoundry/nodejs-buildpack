@@ -15,7 +15,7 @@ import (
 )
 
 var _ = Describe("Nodejs V3 buildpack", func() {
-	XIt("should run V3 detection", func() {
+	It("should run V3 detection", func() {
 		bpDir, err := cutlass.FindRoot()
 		Expect(err).ToNot(HaveOccurred())
 
@@ -38,7 +38,7 @@ var _ = Describe("Nodejs V3 buildpack", func() {
 			fmt.Sprintf("%s:/workspace", workingDir),
 			"-v",
 			fmt.Sprintf("%s:/buildpacks/%s/latest", bpDir, "org.cloudfoundry.buildpacks.nodejs"),
-			"bpv3:build",
+			"cfbuildpacks/bpv3:build",
 			"/lifecycle/detector",
 			"-order",
 			"/buildpacks/org.cloudfoundry.buildpacks.nodejs/latest/fixtures/v3/order.toml",
@@ -70,6 +70,6 @@ var _ = Describe("Nodejs V3 buildpack", func() {
 		Expect(err).ToNot(HaveOccurred())
 		Expect(len(plan)).To(Equal(1))
 		Expect(plan).To(HaveKey("node"))
-		Expect(plan["node"].Version).To(Equal("10.10.0"))
+		Expect(plan["node"].Version).To(Equal("~>10"))
 	})
 })

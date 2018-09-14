@@ -14,6 +14,6 @@
     "url" : "http://github.com/cloudfoundry/nodejs-buildpack.git"
   },
   "engines": {
-    "node": "10.10.0"
+    "node": "~>10"
   }
 }

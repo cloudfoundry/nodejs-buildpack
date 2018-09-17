@@ -2,7 +2,7 @@
 set -euo pipefail
 
 echo "Pull build image"
-docker pull cfbuildpacks/bpv3:build
+docker pull cfbuildpacks/cflinuxfs3-cnb-experimental:build
 
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 source .envrc

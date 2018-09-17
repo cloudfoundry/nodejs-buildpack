@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "Pull build image"
-docker pull cfbuildpacks/cflinuxfs3-cnb-experimental:build
-
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 source .envrc
 ./scripts/install_tools.sh
@@ -11,6 +8,8 @@ source .envrc
 GINKGO_NODES=${GINKGO_NODES:-3}
 GINKGO_ATTEMPTS=${GINKGO_ATTEMPTS:-2}
 export CF_STACK=${CF_STACK:-cflinuxfs2}
+
+export CNB_BUILD_IMAGE=${CNB_BUILD_IMAGE:-cfbuildpacks/cflinuxfs3-cnb-experimental:build}
 
 cd src/*/v3/brats
 

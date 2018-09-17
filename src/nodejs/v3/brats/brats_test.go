@@ -45,7 +45,7 @@ var _ = Describe("Nodejs V3 buildpack", func() {
 			fmt.Sprintf("%s:/workspace", workingDir),
 			"-v",
 			fmt.Sprintf("%s:/buildpacks/%s/latest", bpDir, "org.cloudfoundry.buildpacks.nodejs"),
-			"cfbuildpacks/cflinuxfs3-cnb-experimental:build",
+			os.Getenv("CNB_BUILD_IMAGE"),
 			"/lifecycle/detector",
 			"-order",
 			"/buildpacks/org.cloudfoundry.buildpacks.nodejs/latest/fixtures/v3/order.toml",

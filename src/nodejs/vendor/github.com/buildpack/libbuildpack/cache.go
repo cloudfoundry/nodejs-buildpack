@@ -20,6 +20,8 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+
+	"github.com/buildpack/libbuildpack/internal"
 )
 
 // Cache represents cache layers for an application.
@@ -27,17 +29,18 @@ type Cache struct {
 	// Root is the path to the root directory for the caches.
 	Root string
 
-	logger Logger
+	// Logger is used to write debug and info to the console.
+	Logger Logger
 }
 
 // Layer creates a CacheLayer with a specified name.
 func (c Cache) Layer(name string) CacheLayer {
-	return CacheLayer{filepath.Join(c.Root, name), c.logger}
+	return CacheLayer{filepath.Join(c.Root, name), c.Logger}
 }
 
 // String makes Cache satisfy the Stringer interface.
 func (c Cache) String() string {
-	return fmt.Sprintf("Cache{ Root: %s, logger: %s }", c.Root, c.logger)
+	return fmt.Sprintf("Cache{ Root: %s, Logger: %s }", c.Root, c.Logger)
 }
 
 // CacheLayer represents a cache layer for an application.
@@ -45,7 +48,8 @@ type CacheLayer struct {
 	// Root is the path to the root directory for the cache layer.
 	Root string
 
-	logger Logger
+	// Logger is used to write debug and info to the console.
+	Logger Logger
 }
 
 // AppendEnv appends the value of this environment variable to any previous declarations of the value without any
@@ -67,21 +71,21 @@ func (c CacheLayer) OverrideEnv(name string, format string, args ...interface{})
 
 // String makes CacheLayer satisfy the Stringer interface.
 func (c CacheLayer) String() string {
-	return fmt.Sprintf("CacheLayer{ Root: %s, logger: %s }", c.Root, c.logger)
+	return fmt.Sprintf("CacheLayer{ Root: %s, Logger: %s }", c.Root, c.Logger)
 }
 
 func (c CacheLayer) addEnvFile(file string, format string, args ...interface{}) error {
 	f := filepath.Join(c.Root, "env", file)
 	v := fmt.Sprintf(format, args...)
 
-	c.logger.Debug("Writing environment variable: %s <= %s", f, v)
+	c.Logger.Debug("Writing environment variable: %s <= %s", f, v)
 
-	return writeToFile(strings.NewReader(v), f, 0644)
+	return internal.WriteToFile(strings.NewReader(v), f, 0644)
 }
 
 // DefaultCache creates a new instance of Cache, extracting the Root path from os.Args[2].
 func DefaultCache(logger Logger) (Cache, error) {
-	root, err := osArgs(2)
+	root, err := internal.OsArgs(2)
 	if err != nil {
 		return Cache{}, err
 	}

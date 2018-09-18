@@ -19,17 +19,22 @@ package libbuildpack
 import (
 	"fmt"
 	"os"
+
+	"github.com/buildpack/libbuildpack/internal"
 )
 
 // Application represents the application being processed by buildpacks.
 type Application struct {
 	// Root is the path to the root directory of the application.
 	Root string
+
+	// Logger is used to write debug and info to the console.
+	Logger Logger
 }
 
 // String makes Application satisfy the Stringer interface.
 func (a Application) String() string {
-	return fmt.Sprintf("Application{ Root: %s }", a.Root)
+	return fmt.Sprintf("Application{ Root: %s, Logger: %s }", a.Root, a.Logger)
 }
 
 // DefaultApplication creates a new instance of Application, extracting the Root path from the working directory.
@@ -44,10 +49,10 @@ func DefaultApplication(logger Logger) (Application, error) {
 
 // NewApplication creates a new instance of Application, configuring the Root path.
 func NewApplication(root string, logger Logger) Application {
-	a := Application{root}
+	a := Application{root, logger}
 
 	if logger.IsDebugEnabled() {
-		logger.Debug("Application contents: %s", directoryContents(root))
+		logger.Debug("Application contents: %s", internal.DirectoryContents(root))
 	}
 
 	return a

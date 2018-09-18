@@ -24,6 +24,7 @@ import (
 	"path/filepath"
 
 	"github.com/BurntSushi/toml"
+	"github.com/buildpack/libbuildpack/internal"
 )
 
 // Buildpack represents the metadata associated with a buildpack.
@@ -36,11 +37,15 @@ type Buildpack struct {
 
 	// Metadata is the additional metadata included in the buildpack.
 	Metadata BuildpackMetadata `toml:"metadata"`
+
+	// Logger is used to write debug and info to the console.
+	Logger Logger
 }
 
 // String makes Buildpack satisfy the Stringer interface.
 func (b Buildpack) String() string {
-	return fmt.Sprintf("Buildpack{ Info: %s, Stacks: %s, Metadata: %s }", b.Info, b.Stacks, b.Metadata)
+	return fmt.Sprintf("Buildpack{ Info: %s, Stacks: %s, Metadata: %s, Logger: %s }",
+		b.Info, b.Stacks, b.Metadata, b.Logger)
 }
 
 // BuildpackInfo is information about the buildpack.
@@ -106,7 +111,7 @@ func DefaultBuildpack(logger Logger) (Buildpack, error) {
 // NewBuildpack creates a new instance of Buildpack from a specified io.Reader.  Returns an error if the contents of
 // the reader are not valid TOML.
 func NewBuildpack(in io.Reader, logger Logger) (Buildpack, error) {
-	var b Buildpack
+	b := Buildpack{Logger: logger}
 
 	if _, err := toml.DecodeReader(in, &b); err != nil {
 		return Buildpack{}, err
@@ -117,7 +122,7 @@ func NewBuildpack(in io.Reader, logger Logger) (Buildpack, error) {
 }
 
 func findBuildpackToml() (string, error) {
-	exec, err := osArgs(0)
+	exec, err := internal.OsArgs(0)
 	if err != nil {
 		return "", err
 	}
@@ -133,7 +138,7 @@ func findBuildpackToml() (string, error) {
 		}
 
 		f := filepath.Join(dir, "buildpack.toml")
-		if exist, err := fileExists(f); err != nil {
+		if exist, err := internal.FileExists(f); err != nil {
 			return "", err
 		} else if exist {
 			return f, nil

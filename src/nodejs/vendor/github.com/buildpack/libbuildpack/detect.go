@@ -20,6 +20,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/buildpack/libbuildpack/internal"
 )
 
 // Detect represents all of the components available to a buildpack at detect time.
@@ -37,7 +39,7 @@ type Detect struct {
 	Logger Logger
 
 	// Stack is the stack currently available to the application.
-	Stack Stack
+	Stack string
 }
 
 // Error signals an error during detection by exiting with a specified non-zero, non-100 status code.  This should the
@@ -59,7 +61,7 @@ func (d Detect) Fail() {
 func (d Detect) Pass(buildPlan BuildPlan) {
 	d.Logger.Debug("Detection passed. Exiting with %d.", 0)
 
-	s, err := toTomlString(buildPlan)
+	s, err := internal.ToTomlString(buildPlan)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(102)

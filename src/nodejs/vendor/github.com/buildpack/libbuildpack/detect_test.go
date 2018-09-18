@@ -92,7 +92,7 @@ test-key = "test-value"
 			t.Errorf("detect.Logger should not be empty")
 		}
 
-		if reflect.DeepEqual(detect.Stack, libbuildpack.Stack("")) {
+		if reflect.DeepEqual(detect.Stack, "") {
 			t.Errorf("detect.Stack should not be empty")
 		}
 	})
@@ -197,13 +197,13 @@ test-key = "test-value"
 			t.Fatal(err)
 		}
 
-		expected, d := internal.CaptureExitStatus(t)
+		actual, d := internal.CaptureExitStatus(t)
 		defer d()
 
 		detect.Error(42)
 
-		if *expected != 42 {
-			t.Errorf("os.Exit = %d, expected 42", *expected)
+		if *actual != 42 {
+			t.Errorf("os.Exit = %d, expected 42", *actual)
 		}
 	})
 
@@ -228,13 +228,13 @@ test-key = "test-value"
 			t.Fatal(err)
 		}
 
-		expected, d := internal.CaptureExitStatus(t)
+		actual, d := internal.CaptureExitStatus(t)
 		defer d()
 
 		detect.Fail()
 
-		if *expected != 100 {
-			t.Errorf("os.Exit = %d, expected 100", *expected)
+		if *actual != 100 {
+			t.Errorf("os.Exit = %d, expected 100", *actual)
 		}
 	})
 
@@ -260,15 +260,15 @@ test-key = "test-value"
 			t.Fatal(err)
 		}
 
-		expected, d := internal.CaptureExitStatus(t)
+		actual, d := internal.CaptureExitStatus(t)
 		defer d()
 
 		detect.Pass(libbuildpack.BuildPlan{
 			"alpha": libbuildpack.BuildPlanDependency{Provider: "test-provider", Version: "test-version"},
 		})
 
-		if *expected != 0 {
-			t.Errorf("os.Exit = %d, expected 0", *expected)
+		if *actual != 0 {
+			t.Errorf("os.Exit = %d, expected 0", *actual)
 		}
 
 		stdout := c.Out(t)

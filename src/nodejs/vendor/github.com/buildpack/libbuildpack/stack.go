@@ -21,11 +21,8 @@ import (
 	"os"
 )
 
-// Stack is the name of a stack
-type Stack string
-
 // DefaultStack creates a new instance of Stack, extracting the name from the PACK_STACK_ID environment variable.
-func DefaultStack(logger Logger) (Stack, error) {
+func DefaultStack(logger Logger) (string, error) {
 	s, ok := os.LookupEnv("PACK_STACK_ID")
 
 	if !ok {
@@ -33,6 +30,6 @@ func DefaultStack(logger Logger) (Stack, error) {
 	}
 
 	logger.Debug("Stack: %s", s)
-	return Stack(s), nil
+	return s, nil
 }
 

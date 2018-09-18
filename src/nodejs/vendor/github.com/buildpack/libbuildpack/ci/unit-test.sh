@@ -5,4 +5,4 @@ set -euo pipefail
 GOCACHE="$PWD/go-build"
 
 cd libbuildpack
-go test
+go test ./...

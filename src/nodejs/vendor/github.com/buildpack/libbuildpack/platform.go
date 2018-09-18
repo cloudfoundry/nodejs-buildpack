@@ -21,6 +21,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/buildpack/libbuildpack/internal"
 )
 
 // Platform represents the platform contributions for an application.
@@ -30,11 +32,14 @@ type Platform struct {
 
 	// Envs is the collection of environment variables contributed by the platform.
 	Envs EnvironmentVariables
+
+	// Logger is used to write debug and info to the console.
+	Logger Logger
 }
 
 // String makes Platform satisfy the Stringer interface.
 func (p Platform) String() string {
-	return fmt.Sprintf("Platform{ Root :%s, Envs: %s }", p.Root, p.Envs)
+	return fmt.Sprintf("Platform{ Root: %s, Envs: %s, Logger: %s }", p.Root, p.Envs, p.Logger)
 }
 
 func (p Platform) enumerateEnvs(logger Logger) (EnvironmentVariables, error) {
@@ -102,7 +107,7 @@ func (e EnvironmentVariable) value() (string, error) {
 
 // DefaultPlatform creates a new instance of Platform, extracting the Root path from os.Args[1].
 func DefaultPlatform(logger Logger) (Platform, error) {
-	root, err := osArgs(1)
+	root, err := internal.OsArgs(1)
 	if err != nil {
 		return Platform{}, err
 	}
@@ -112,10 +117,10 @@ func DefaultPlatform(logger Logger) (Platform, error) {
 
 // NewPlatform creates a new instance of Platform, configuring the Root path.
 func NewPlatform(root string, logger Logger) (Platform, error) {
-	p := Platform{Root: root}
+	p := Platform{Root: root, Logger: logger}
 
 	if logger.IsDebugEnabled() {
-		logger.Debug("Platform contents: %s", directoryContents(root))
+		logger.Debug("Platform contents: %s", internal.DirectoryContents(root))
 	}
 
 	envs, err := p.enumerateEnvs(logger)

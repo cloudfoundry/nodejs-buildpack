@@ -18,7 +18,6 @@ package internal
 
 import (
 	"fmt"
-	"io"
 	"io/ioutil"
 	"math"
 	"os"
@@ -103,20 +102,6 @@ func (c Console) Out(t *testing.T) string {
 	}
 
 	return string(bytes)
-}
-
-// FileExists returns true if a file exists, otherwise false.
-func FileExists(file string) (bool, error) {
-	_, err := os.Stat(file)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return false, nil
-		}
-
-		return false, err
-	}
-
-	return true, nil
 }
 
 // ProtectEnv protects a collection of environment variables.  Returns a function for use with defer in order to reset
@@ -253,25 +238,4 @@ func ScratchDir(t *testing.T, prefix string) string {
 	}
 
 	return abs
-}
-
-// WriteToFile writes the contents of an io.Reader to a file.
-func WriteToFile(source io.Reader, destFile string, mode os.FileMode) error {
-	err := os.MkdirAll(filepath.Dir(destFile), 0755)
-	if err != nil {
-		return err
-	}
-
-	fh, err := os.OpenFile(destFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, mode)
-	if err != nil {
-		return err
-	}
-	defer fh.Close()
-
-	_, err = io.Copy(fh, source)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

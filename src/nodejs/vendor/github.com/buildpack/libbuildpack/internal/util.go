@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libbuildpack
+package internal
 
 import (
 	"bytes"
@@ -26,7 +26,7 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-func directoryContents(root string) []string {
+func DirectoryContents(root string) []string {
 	var contents []string
 
 	filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
@@ -37,7 +37,7 @@ func directoryContents(root string) []string {
 	return contents
 }
 
-func fileExists(file string) (bool, error) {
+func FileExists(file string) (bool, error) {
 	_, err := os.Stat(file)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -50,7 +50,7 @@ func fileExists(file string) (bool, error) {
 	return true, nil
 }
 
-func osArgs(index int) (string, error) {
+func OsArgs(index int) (string, error) {
 	if len(os.Args) < index+1 {
 		return "", fmt.Errorf("incorrect number of command line arguments")
 	}
@@ -58,7 +58,7 @@ func osArgs(index int) (string, error) {
 	return os.Args[index], nil
 }
 
-func toTomlString(v interface{}) (string, error) {
+func ToTomlString(v interface{}) (string, error) {
 	var b bytes.Buffer
 
 	if err := toml.NewEncoder(&b).Encode(v); err != nil {
@@ -68,7 +68,7 @@ func toTomlString(v interface{}) (string, error) {
 	return b.String(), nil
 }
 
-func writeToFile(source io.Reader, destFile string, mode os.FileMode) error {
+func WriteToFile(source io.Reader, destFile string, mode os.FileMode) error {
 	err := os.MkdirAll(filepath.Dir(destFile), 0755)
 	if err != nil {
 		return err

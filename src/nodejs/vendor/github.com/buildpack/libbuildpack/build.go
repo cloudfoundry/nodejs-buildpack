@@ -46,13 +46,14 @@ type Build struct {
 	Platform Platform
 
 	// Stack is the stack currently available to the application.
-	Stack Stack
+	Stack string
 }
 
 // Failure signals an unsuccessful build by exiting with a specified positive status code.  This should be the final
 // function called in building.
 func (b Build) Failure(code int) {
 	b.Logger.Debug("Build failed. Exiting with %d.", code)
+	b.Logger.Info("")
 	os.Exit(code)
 }
 
@@ -66,6 +67,7 @@ func (b Build) String() string {
 // building.
 func (b Build) Success() {
 	b.Logger.Debug("Build success. Exiting with %d.", 0)
+	b.Logger.Info("")
 	os.Exit(0)
 }
 

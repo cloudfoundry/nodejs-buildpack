@@ -1,36 +1,9 @@
 #!/usr/bin/env bash
 
-if [ -z "$PACK_STACK_ID" ]; then
-
-    # Version 2b Detection
-    # bin/detect <build-dir>
-
-    BP=$(dirname "$(dirname $0)")
-    if [ -f "$1/package.json" ]; then
-      echo "node.js "$(cat "$BP/VERSION")""
-      exit 0
-    fi
-
-    exit 1
-
-else
-
-    # Version 3 Detection
-    # bin/detect $stdin=<build plan toml> $stdout=<build plan toml> $sterr=<detection logs>
-
-    # Re-direct $stdout to stderr for the following commands to fulfill
-    # the contract for V3 and only log to $stderr.
-    {
-        export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
-        source "$BUILDPACK_DIR/scripts/install_go.sh"
-        output_dir=$(mktemp -d -t detectXXX)
-
-        echo "-----> Running go build detect"
-        GOROOT=$GoInstallDir/go GOPATH=$BUILDPACK_DIR $GoInstallDir/go/bin/go build -o $output_dir/detect nodejs/v3/detect/cmd
-
-        cp "$BUILDPACK_DIR/buildpack.toml" $output_dir
-    } 1>&2
-
-    $output_dir/detect
+BP=$(dirname "$(dirname $0)")
+if [ -f "$1/package.json" ]; then
+  echo "node.js "$(cat "$BP/VERSION")""
+  exit 0
 fi
 
+exit 1

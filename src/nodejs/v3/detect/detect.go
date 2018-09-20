@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func CreateBuildPlan(detector *libbuildpackV3.Detect) (error) {
+func UpdateBuildPlan(detector *libbuildpackV3.Detect) error {
 	packageJSONPath := filepath.Join(detector.Application.Root, "package.json")
 	if exists, err := libbuildpack.FileExists(packageJSONPath); err != nil {
 		return fmt.Errorf("error checking filepath %s", packageJSONPath)

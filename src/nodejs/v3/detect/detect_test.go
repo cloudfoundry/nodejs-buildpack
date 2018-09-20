@@ -11,14 +11,14 @@ import (
 	"path/filepath"
 )
 
-var _ = Describe("CreateBuildPlan", func() {
+var _ = Describe("UpdateBuildPlan", func() {
 	var (
 		err        error
 		dir        string
 		detectData libbuildpackV3.Detect
 	)
 
-	BeforeEach(func(){
+	BeforeEach(func() {
 		dir, err = ioutil.TempDir("", "")
 		Expect(err).NotTo(HaveOccurred())
 
@@ -63,7 +63,7 @@ var _ = Describe("CreateBuildPlan", func() {
 		})
 
 		It("should create a build plan with the required nodejs version", func() {
-			err = detect.CreateBuildPlan(&detectData)
+			err = detect.UpdateBuildPlan(&detectData)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(detectData.BuildPlan["node"].Version).To(Equal(version))
 		})
@@ -71,7 +71,7 @@ var _ = Describe("CreateBuildPlan", func() {
 
 	Context("there is no package.json", func() {
 		It("returns an error", func() {
-			err = detect.CreateBuildPlan(&detectData)
+			err = detect.UpdateBuildPlan(&detectData)
 			Expect(err).To(HaveOccurred())
 		})
 	})

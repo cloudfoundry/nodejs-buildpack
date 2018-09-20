@@ -1,82 +1,55 @@
 package brats_test
 
 import (
-	"fmt"
-	"github.com/BurntSushi/toml"
-	libbuildpackV3 "github.com/buildpack/libbuildpack"
-	"github.com/cloudfoundry/libbuildpack"
 	"github.com/cloudfoundry/libbuildpack/cutlass"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"io/ioutil"
-	"os"
-	"os/exec"
+	"nodejs/v3/dagger"
 	"path/filepath"
 )
 
 var _ = Describe("Nodejs V3 buildpack", func() {
-	It("should run V3 detection", func() {
-		bpDir, err := cutlass.FindRoot()
+	var (
+		rootDir string
+		dagg    *dagger.Dagger
+	)
+
+	BeforeEach(func() {
+		var err error
+
+		rootDir, err = cutlass.FindRoot()
 		Expect(err).ToNot(HaveOccurred())
 
-		workingDir, err := ioutil.TempDir("/tmp", "workspace")
-		Expect(err).ToNot(HaveOccurred())
-		defer os.RemoveAll(workingDir)
-
-		err = os.Chmod(workingDir, os.ModePerm)
+		dagg, err = dagger.NewDagger(rootDir)
 		Expect(err).ToNot(HaveOccurred())
 
-		appDir := filepath.Join(workingDir, "app")
-		err = os.Mkdir(appDir, os.ModePerm)
+		err = dagg.BundleBuildpack()
+		Expect(err).ToNot(HaveOccurred())
+	})
+
+	AfterEach(func() {
+		dagg.Destroy()
+	})
+
+	It("should run V3 detect", func() {
+		detectResult, err := dagg.Detect(filepath.Join(rootDir, "fixtures", "simple_app"))
 		Expect(err).ToNot(HaveOccurred())
 
-		err = libbuildpack.CopyDirectory(filepath.Join(bpDir, "fixtures", "simple_app"), appDir)
+		Expect(len(detectResult.Group.Buildpacks)).To(Equal(1))
+		Expect(detectResult.Group.Buildpacks[0].Id).To(Equal("org.cloudfoundry.buildpacks.nodejs"))
+		Expect(detectResult.Group.Buildpacks[0].Version).To(Equal("1.6.32"))
+
+		Expect(len(detectResult.BuildPlan)).To(Equal(1))
+		Expect(detectResult.BuildPlan).To(HaveKey("node"))
+		Expect(detectResult.BuildPlan["node"].Version).To(Equal("~>10"))
+	})
+
+	It("should run V3 build", func() {
+		launch, err := dagg.Build(filepath.Join(rootDir, "fixtures", "simple_app"))
 		Expect(err).ToNot(HaveOccurred())
 
-		// We must ensure container cannot modify app dir
-		err = os.Chmod(appDir, 0755)
-		Expect(err).ToNot(HaveOccurred())
-
-		cmd := exec.Command(
-			"docker",
-			"run",
-			"--rm",
-			"-v",
-			fmt.Sprintf("%s:/workspace", workingDir),
-			"-v",
-			fmt.Sprintf("%s:/buildpacks/%s/latest", bpDir, "org.cloudfoundry.buildpacks.nodejs"),
-			os.Getenv("CNB_BUILD_IMAGE"),
-			"/lifecycle/detector",
-			"-order",
-			"/buildpacks/org.cloudfoundry.buildpacks.nodejs/latest/fixtures/v3/order.toml",
-			"-group",
-			"/workspace/group.toml",
-			"-plan",
-			"/workspace/plan.toml",
-		)
-		cmd.Stdout = os.Stderr
-		cmd.Stderr = os.Stderr
-		if err = cmd.Run(); err != nil {
-			Fail("failed to run V3 detection")
-		}
-
-		group := struct {
-			Buildpacks []struct {
-				Id      string `toml:"id"`
-				Version string `toml:"version"`
-			} `toml:"buildpacks"`
-		}{}
-		_, err = toml.DecodeFile(filepath.Join(workingDir, "group.toml"), &group)
-		Expect(err).ToNot(HaveOccurred())
-		Expect(len(group.Buildpacks)).To(Equal(1))
-		Expect(group.Buildpacks[0].Id).To(Equal("org.cloudfoundry.buildpacks.nodejs"))
-		Expect(group.Buildpacks[0].Version).To(Equal("1.6.32"))
-
-		plan := libbuildpackV3.BuildPlan{}
-		_, err = toml.DecodeFile(filepath.Join(workingDir, "plan.toml"), &plan)
-		Expect(err).ToNot(HaveOccurred())
-		Expect(len(plan)).To(Equal(1))
-		Expect(plan).To(HaveKey("node"))
-		Expect(plan["node"].Version).To(Equal("~>10"))
+		Expect(len(launch.Processes)).To(Equal(1))
+		Expect(launch.Processes[0].Type).To(Equal("web"))
+		Expect(launch.Processes[0].Command).To(Equal("npm start"))
 	})
 })

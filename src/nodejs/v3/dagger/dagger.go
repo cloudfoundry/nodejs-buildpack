@@ -21,6 +21,10 @@ func NewDagger(rootDir string) (*Dagger, error) {
 		return nil, err
 	}
 
+	if err := os.Chmod(buildpackDir, 0755); err != nil {
+		return nil, err
+	}
+
 	workspaceDir, err := ioutil.TempDir("/tmp", "workspace")
 	if err != nil {
 		return nil, err

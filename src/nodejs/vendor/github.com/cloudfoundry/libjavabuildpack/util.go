@@ -71,7 +71,12 @@ func ExtractZip(zipfile, destDir string, stripComponents int) error {
 	defer r.Close()
 
 	for _, f := range r.File {
-		path := filepath.Join(append([]string{destDir}, strings.Split(f.Name, string(filepath.Separator))[stripComponents:]...)...)
+		pathComponents := strings.Split(f.Name, string(filepath.Separator))
+		if len(pathComponents) <= stripComponents {
+			continue
+		}
+
+		path := filepath.Join(append([]string{destDir}, pathComponents[stripComponents:]...)...)
 
 		rc, err := f.Open()
 		if err != nil {
@@ -174,7 +179,12 @@ func extractTar(src io.Reader, destDir string, stripComponents int) error {
 			break
 		}
 
-		path := filepath.Join(append([]string{destDir}, strings.Split(hdr.Name, string(filepath.Separator))[stripComponents:]...)...)
+		pathComponents := strings.Split(hdr.Name, string(filepath.Separator))
+		if len(pathComponents) <= stripComponents {
+			continue
+		}
+
+		path := filepath.Join(append([]string{destDir}, pathComponents[stripComponents:]...)...)
 		fi := hdr.FileInfo()
 
 		if fi.IsDir() {

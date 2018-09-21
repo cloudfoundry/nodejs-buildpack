@@ -61,7 +61,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3c9f2daca60c5f96b871e69d5eabb769ed7ac15432b81d88d532375b58a58eb3"
+  digest = "1:7d3cfbfccb3a56b10d363bce9de56b7db0f12956a236721367d723655c047004"
   name = "github.com/cloudfoundry/libjavabuildpack"
   packages = [
     ".",
@@ -69,7 +69,7 @@
     "test",
   ]
   pruneopts = ""
-  revision = "253b99289cdcaca9bcd7b8d9ffaf9c716972434e"
+  revision = "714d6d40a4caa966c3da2c7b11d5c64089b605dc"
 
 [[projects]]
   digest = "1:7ce300e943482aff885b3318c1c6a609827f43e3ba26a073380d5ba6143a0c48"

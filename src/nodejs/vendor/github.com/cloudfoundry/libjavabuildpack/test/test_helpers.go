@@ -129,6 +129,12 @@ func FindRoot(t *testing.T) string {
 	}
 }
 
+// FixturePath returns the absolute path to the desired fixture.
+func FixturePath(t *testing.T, fixture string) string {
+	t.Helper()
+	return filepath.Join(FindRoot(t), "fixtures", fixture)
+}
+
 // ProtectEnv protects a collection of environment variables.  Returns a function for use with defer in order to reset
 // the previous values.
 //

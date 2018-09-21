@@ -73,7 +73,7 @@ func (f *BuildFactory) cacheFixture(t *testing.T, dependency libjavabuildpack.De
 	t.Helper()
 
 	l := f.Build.Cache.Layer(dependency.SHA256)
-	if err := libjavabuildpack.CopyFile(filepath.Join(FindRoot(t), "fixtures", fixture), filepath.Join(l.Root, filepath.Base(fixture))); err != nil {
+	if err := libjavabuildpack.CopyFile(FixturePath(t, fixture), filepath.Join(l.Root, filepath.Base(fixture))); err != nil {
 		t.Fatal(err)
 	}
 

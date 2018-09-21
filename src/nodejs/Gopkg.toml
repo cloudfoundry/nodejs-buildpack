@@ -34,3 +34,7 @@ required = ["github.com/google/subcommands"]
 [[constraint]]
   name = "github.com/BurntSushi/toml"
   version = "0.3.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/cloudfoundry/libjavabuildpack"

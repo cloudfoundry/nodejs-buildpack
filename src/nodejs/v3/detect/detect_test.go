@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"io/ioutil"
+	"nodejs/v3/build"
 	"nodejs/v3/detect"
 	"os"
 	"path/filepath"
@@ -33,7 +34,7 @@ var _ = Describe("UpdateBuildPlan", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	Context("there is a package.json with a nodejs version in engines", func() {
+	Context("there is a package.json with a node version in engines", func() {
 		const version string = "1.2.3"
 
 		BeforeEach(func() {
@@ -62,10 +63,10 @@ var _ = Describe("UpdateBuildPlan", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
-		It("should create a build plan with the required nodejs version", func() {
+		It("should create a build plan with the required node version", func() {
 			err = detect.UpdateBuildPlan(&detectData)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(detectData.BuildPlan["node"].Version).To(Equal(version))
+			Expect(detectData.BuildPlan[build.NodeDependency].Version).To(Equal(version))
 		})
 	})
 

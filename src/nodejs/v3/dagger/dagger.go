@@ -80,9 +80,9 @@ func (d *Dagger) BundleBuildpack() error {
 type DetectResult struct {
 	Group struct {
 		Buildpacks []struct {
-			Id      string `toml:"id"`
-			Version string `toml:"version"`
-		} `toml:"buildpacks"`
+			Id      string
+			Version string
+		}
 	}
 	BuildPlan libbuildpackV3.BuildPlan
 }
@@ -134,7 +134,19 @@ func (d *Dagger) Detect(appDir string) (*DetectResult, error) {
 	return result, nil
 }
 
-func (d *Dagger) Build(appDir string) (*libbuildpackV3.LaunchMetadata, error) {
+type Layer struct {
+	Metadata struct {
+		Version string
+	}
+	Root string
+}
+
+type BuildResult struct {
+	LaunchMetadata libbuildpackV3.LaunchMetadata
+	Layer          Layer
+}
+
+func (d *Dagger) Build(appDir string) (*BuildResult, error) {
 	cmd := exec.Command(
 		"docker",
 		"run",
@@ -158,20 +170,30 @@ func (d *Dagger) Build(appDir string) (*libbuildpackV3.LaunchMetadata, error) {
 		"-plan",
 		"/input/plan.toml",
 	)
-
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		return nil, err
 	}
 
-	launch := &libbuildpackV3.LaunchMetadata{}
-	_, err := toml.DecodeFile(filepath.Join(d.workspaceDir, "org.cloudfoundry.buildpacks.nodejs", "launch.toml"), &launch)
+	rootDir := filepath.Join(d.workspaceDir, "org.cloudfoundry.buildpacks.nodejs")
+
+	launchMetadata := libbuildpackV3.LaunchMetadata{}
+	_, err := toml.DecodeFile(filepath.Join(rootDir, "launch.toml"), &launchMetadata)
 	if err != nil {
 		return nil, err
 	}
 
-	return launch, nil
+	nodeLayer := Layer{Root: rootDir}
+	_, err = toml.DecodeFile(filepath.Join(nodeLayer.Root, "node.toml"), &nodeLayer.Metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	return &BuildResult{
+		LaunchMetadata: launchMetadata,
+		Layer:          nodeLayer,
+	}, nil
 }
 
 func copyFile(from, to string) error {

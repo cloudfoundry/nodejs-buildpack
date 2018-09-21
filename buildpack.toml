@@ -5,3 +5,11 @@ name = "Node.js Buildpack"
 
 [[stacks]]
 id = "org.cloudfoundry.stacks.cflinuxfs3"
+
+[[metadata.dependencies]]
+id      = "node"
+name    = "NodeJS"
+version = "10.11.0"
+uri     = "https://buildpacks.cloudfoundry.org/dependencies/node/node-10.11.0-linux-x64-cflinuxfs3-001127c0.tgz"
+sha256  = "001127c04d8cfb541df44053796144e6fb6dcdf89b4076edd3286aeff0b13a29"
+stacks  = [ "org.cloudfoundry.stacks.cflinuxfs3" ]

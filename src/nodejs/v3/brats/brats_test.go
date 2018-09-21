@@ -41,15 +41,24 @@ var _ = Describe("Nodejs V3 buildpack", func() {
 
 		Expect(len(detectResult.BuildPlan)).To(Equal(1))
 		Expect(detectResult.BuildPlan).To(HaveKey("node"))
-		Expect(detectResult.BuildPlan["node"].Version).To(Equal("~>10"))
+		Expect(detectResult.BuildPlan["node"].Version).To(Equal("~10"))
 	})
 
 	It("should run V3 build", func() {
-		launch, err := dagg.Build(filepath.Join(rootDir, "fixtures", "simple_app"))
+		launchResult, err := dagg.Build(filepath.Join(rootDir, "fixtures", "simple_app"))
 		Expect(err).ToNot(HaveOccurred())
 
-		Expect(len(launch.Processes)).To(Equal(1))
-		Expect(launch.Processes[0].Type).To(Equal("web"))
-		Expect(launch.Processes[0].Command).To(Equal("npm start"))
+		Expect(len(launchResult.LaunchMetadata.Processes)).To(Equal(1))
+		Expect(launchResult.LaunchMetadata.Processes[0].Type).To(Equal("web"))
+		Expect(launchResult.LaunchMetadata.Processes[0].Command).To(Equal("npm start"))
+
+		nodeLayer := launchResult.Layer
+		Expect(nodeLayer.Metadata.Version).To(MatchRegexp("10.*.*"))
+		Expect(filepath.Join(nodeLayer.Root, "node", "bin")).To(BeADirectory())
+		Expect(filepath.Join(nodeLayer.Root, "node", "lib")).To(BeADirectory())
+		Expect(filepath.Join(nodeLayer.Root, "node", "include")).To(BeADirectory())
+		Expect(filepath.Join(nodeLayer.Root, "node", "share")).To(BeADirectory())
+		Expect(filepath.Join(nodeLayer.Root, "node", "bin", "node")).To(BeAnExistingFile())
+		Expect(filepath.Join(nodeLayer.Root, "node", "bin", "npm")).To(BeAnExistingFile())
 	})
 })

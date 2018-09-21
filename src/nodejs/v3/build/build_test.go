@@ -1,7 +1,6 @@
 package build_test
 
 import (
-	"fmt"
 	"github.com/buildpack/libbuildpack"
 	"github.com/cloudfoundry/libjavabuildpack/test"
 	. "github.com/onsi/ginkgo"

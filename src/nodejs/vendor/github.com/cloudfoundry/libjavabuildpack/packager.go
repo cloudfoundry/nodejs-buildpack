@@ -25,6 +25,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/buildpack/libbuildpack"
 )
@@ -94,7 +95,16 @@ func (p Packager) archivePath() (string, error) {
 
 	info := p.Buildpack.Info
 
-	return filepath.Join(dir, fmt.Sprintf("%s-v%s.tar.gz", info.ID, info.Version)), nil
+	path := []string{dir}
+	path = append(path, strings.Split(info.ID, ".")...)
+	path = append(path, info.ID, info.Version)
+
+	f := fmt.Sprintf("%s-%s.tgz", info.ID, info.Version)
+	f = strings.Replace(f, "SNAPSHOT", fmt.Sprintf("%s-1", time.Now().Format("20060102.150405")), 1)
+
+	path = append(path, f)
+
+	return filepath.Join(path...), nil
 }
 
 func (p Packager) createArchive(files []string) error {
@@ -104,6 +114,10 @@ func (p Packager) createArchive(files []string) error {
 	}
 
 	p.Logger.FirstLine("Creating archive %s", archive)
+
+	if err = os.MkdirAll(filepath.Dir(archive), 0755); err != nil {
+		return err
+	}
 
 	file, err := os.OpenFile(archive, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {

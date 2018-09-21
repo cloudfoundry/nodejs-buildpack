@@ -64,6 +64,7 @@ type Supplier struct {
 	HasDevDependencies bool
 	PostBuild          string
 	UseYarn            bool
+	UsesYarnWorkspaces bool
 	IsVendored         bool
 	Yarn               Yarn
 	NPM                NPM
@@ -132,9 +133,11 @@ func Run(s *Supplier) error {
 			return err
 		}
 
-		if err := s.MoveDependencyArtifacts(); err != nil {
-			s.Log.Error("Unable to move dependencies: %s", err.Error())
-			return err
+		if !s.UseYarn || !s.UsesYarnWorkspaces {
+			if err := s.MoveDependencyArtifacts(); err != nil {
+				s.Log.Error("Unable to move dependencies: %s", err.Error())
+				return err
+			}
 		}
 
 		s.ListDependencies()
@@ -284,6 +287,7 @@ func (s *Supplier) ReadPackageJSON() error {
 			StartScript string `json:"start"`
 		} `json:"scripts"`
 		DevDependencies map[string]string `json:"devDependencies"`
+		Workspaces      []string          `json:"workspaces"`
 	}
 
 	if s.UseYarn, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "yarn.lock")); err != nil {
@@ -303,6 +307,7 @@ func (s *Supplier) ReadPackageJSON() error {
 		}
 	}
 
+	s.UsesYarnWorkspaces = (len(p.Workspaces) > 0)
 	s.HasDevDependencies = (len(p.DevDependencies) > 0)
 	s.PreBuild = p.Scripts.PreBuild
 	s.PostBuild = p.Scripts.PostBuild

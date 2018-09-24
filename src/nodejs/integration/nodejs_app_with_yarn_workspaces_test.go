@@ -23,9 +23,8 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			app = cutlass.New(filepath.Join(bpDir, "fixtures", "yarn_with_workspaces"))
 		})
 
-		FIt("outputs config contents when queried", func() {
+		It("outputs config contents when queried", func() {
 			PushAppAndConfirm(app)
-			// Eventually(app.Stdout.String).Should(MatchRegexp("Installing node modules (yarn.lock)"))
 			Expect(app.GetBody("/check")).To(ContainSubstring(
 				`"config":{"prop1":"Package A value 1","prop2":"Package A value 2"}`,
 			))

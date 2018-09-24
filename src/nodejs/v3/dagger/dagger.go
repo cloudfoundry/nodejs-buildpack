@@ -6,6 +6,7 @@ import (
 	"github.com/BurntSushi/toml"
 	libbuildpackV3 "github.com/buildpack/libbuildpack"
 	"github.com/cloudfoundry/libbuildpack/cutlass"
+	"html/template"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +15,11 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+)
+
+const (
+	originalImage = "cnb-pack-builder"
+	builderImage  = "cnb-acceptance-builder"
 )
 
 type Dagger struct {
@@ -210,18 +216,49 @@ func (d *Dagger) Build(appDir string) (*BuildResult, error) {
 	}, nil
 }
 
-func (d *Dagger) Pack(appDir string) (*App, error) {
-	// TODO : replace the following with pack create-builder when it is ready
-	const originalImage = "cnb-pack-builder"
+func (d *Dagger) createBuilderFile() (string, error) {
+	builderTemplate, err := template.ParseFiles(filepath.Join(d.rootDir, "fixtures", "v3", "builder.toml.tmpl"))
+	if err != nil {
+		return "", err
+	}
 
-	cmd := exec.Command("pack", "create-builder", originalImage, "-b", filepath.Join(d.rootDir, "fixtures", "v3", "builder.toml"))
+	builderFile, err := ioutil.TempFile("", "")
+	if err != nil {
+		return "", err
+	}
+
+	bpData := struct {
+		ID      string
+		URI     string
+		Version string
+	}{
+		ID:      "org.cloudfoundry.buildpacks.nodejs",
+		URI:     d.buildpackDir,
+		Version: "1.6.32",
+	}
+	err = builderTemplate.Execute(builderFile, bpData)
+	if err != nil {
+		return "", err
+	}
+
+	return builderFile.Name(), nil
+}
+
+func (d *Dagger) Pack(appDir string) (*App, error) {
+	builderFile, err := d.createBuilderFile()
+	if err != nil {
+		return nil, err
+	}
+	defer os.Remove(builderFile)
+
+	// TODO : replace the following with pack create-builder when it is ready
+	cmd := exec.Command("pack", "create-builder", originalImage, "-b", builderFile)
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		return nil, err
 	}
 
-	const builderImage = "cnb-acceptance-builder"
 	cmd = exec.Command("docker", "build", filepath.Join(d.rootDir, "fixtures", "v3"), "-t", builderImage)
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr

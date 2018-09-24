@@ -1,0 +1,17 @@
+{
+  "name": "@sample/sample-monorepo-app",
+  "repository": "git@github.com:giedrioks/sample-monorepo.git",
+  "main": "packages/sample-app/index.js",
+  "scripts": {
+    "start": "node packages/sample-app/index.js",
+    "start:app": "cd packages/sample-app && exec npm start"
+  },
+  "private": true,
+  "engines": {
+    "node": "8.11.x",
+    "yarn": "1.x"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

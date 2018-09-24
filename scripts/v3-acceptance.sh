@@ -10,6 +10,9 @@ GINKGO_ATTEMPTS=${GINKGO_ATTEMPTS:-1}
 
 export CNB_BUILD_IMAGE=${CNB_BUILD_IMAGE:-cfbuildpacks/cflinuxfs3-cnb-experimental:build}
 
+echo "Pull Run Image"
+docker pull packs/run
+
 cd src/*/v3/acceptance
 
 echo "Run V3 Buildpack Runtime Acceptance Tests"

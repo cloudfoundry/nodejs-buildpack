@@ -259,7 +259,30 @@ func (d *Dagger) Pack(appDir string) (*App, error) {
 		return nil, err
 	}
 
-	cmd = exec.Command("docker", "build", filepath.Join(d.rootDir, "fixtures", "v3"), "-t", builderImage)
+	tmpImageName := cutlass.RandStringRunes(16)
+	cmd = exec.Command("docker", "build", filepath.Join(d.rootDir, "fixtures", "v3"), "-t", tmpImageName)
+	cmd.Stdout = os.Stderr
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return nil, err
+	}
+
+	cmd = exec.Command("docker", "run", "--user", "root", tmpImageName, "chmod", "0755", "/buildpacks")
+	cmd.Stdout = os.Stderr
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return nil, err
+	}
+
+	buf := &bytes.Buffer{}
+	cmd = exec.Command("docker", "ps", "-lq")
+	cmd.Stdout = buf
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return nil, err
+	}
+
+	cmd = exec.Command("docker", "commit", strings.TrimSpace(buf.String()), builderImage)
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
@@ -268,7 +291,7 @@ func (d *Dagger) Pack(appDir string) (*App, error) {
 	// TODO : remove above the above when pack create-builder works
 
 	appImageName := cutlass.RandStringRunes(16)
-	cmd = exec.Command("pack", "build", appImageName, "--builder", builderImage)
+	cmd = exec.Command("pack", "build", appImageName, "--builder", builderImage, "--no-pull")
 	cmd.Dir = appDir
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr

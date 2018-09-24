@@ -1,4 +1,4 @@
 [[groups]]
 buildpacks = [
-  { id = "org.cloudfoundry.buildpacks.nodejs", version = "latest"}
+  { id = "org.cloudfoundry.buildpacks.nodejs", version = "1.6.32"}
 ]

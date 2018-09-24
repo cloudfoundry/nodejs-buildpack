@@ -1,4 +1,4 @@
-package brats_test
+package integration_test
 
 import (
 	"github.com/cloudfoundry/libbuildpack/cutlass"

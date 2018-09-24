@@ -1,4 +1,4 @@
-package brats_test
+package acceptance_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestBratsV3(t *testing.T) {
+func TestAcceptanceV3(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "V3 Brats Suite")
+	RunSpecs(t, "V3 Acceptance Suite")
 }

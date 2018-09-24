@@ -1,0 +1,7 @@
+[[buildpacks]]
+id = "org.cloudfoundry.buildpacks.nodejs"
+uri = "/tmp/nodejs-bp/bp"
+
+[[groups]]
+buildpacks = [{ id = "org.cloudfoundry.buildpacks.nodejs", version = "1.6.32" }]
+

@@ -10,7 +10,7 @@ GINKGO_ATTEMPTS=${GINKGO_ATTEMPTS:-1}
 
 export CNB_BUILD_IMAGE=${CNB_BUILD_IMAGE:-cfbuildpacks/cflinuxfs3-cnb-experimental:build}
 
-cd src/*/v3/brats
+cd src/*/v3/acceptance
 
 echo "Run V3 Buildpack Runtime Acceptance Tests"
 ginkgo -r --flakeAttempts=$GINKGO_ATTEMPTS -nodes $GINKGO_NODES

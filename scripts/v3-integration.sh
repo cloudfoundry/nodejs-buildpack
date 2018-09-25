@@ -10,6 +10,9 @@ GINKGO_ATTEMPTS=${GINKGO_ATTEMPTS:-1}
 
 export CNB_BUILD_IMAGE=${CNB_BUILD_IMAGE:-cfbuildpacks/cflinuxfs3-cnb-experimental:build}
 
+# TODO: change default to `cfbuildpacks/cflinuxfs3-cnb-experimental:run` when pack cli can use it
+export CNB_RUN_IMAGE=${CNB_RUN_IMAGE:-packs/run}
+
 cd src/*/v3/integration
 
 echo "Run V3 Buildpack Runtime Integration Tests"

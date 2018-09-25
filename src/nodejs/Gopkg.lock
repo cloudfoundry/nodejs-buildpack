@@ -2,14 +2,6 @@
 
 
 [[projects]]
-  digest = "1:e4b30804a381d7603b8a344009987c1ba351c26043501b23b8c7ce21f0b67474"
-  name = "github.com/BurntSushi/toml"
-  packages = ["."]
-  pruneopts = ""
-  revision = "3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005"
-  version = "v0.3.1"
-
-[[projects]]
   digest = "1:b856d8248663c39265a764561c1a1a149783f6cc815feb54a1f3a591b91f6eca"
   name = "github.com/Masterminds/semver"
   packages = ["."]
@@ -26,27 +18,8 @@
   version = "v3.5.1"
 
 [[projects]]
-  digest = "1:a6ee710e45210bafe11f2f28963571be2ac8809f9a7b675a6d2c02302a1ce1a9"
-  name = "github.com/bouk/monkey"
-  packages = ["."]
-  pruneopts = ""
-  revision = "5df1f207ff77e025801505ae4d903133a0b4353f"
-  version = "v1.0.0"
-
-[[projects]]
   branch = "master"
-  digest = "1:4cbb8f9a4b415ef4dcee5394ffd59110da625068c5e9e23d3aaa529647da891b"
-  name = "github.com/buildpack/libbuildpack"
-  packages = [
-    ".",
-    "internal",
-  ]
-  pruneopts = ""
-  revision = "e0a1f1ae6c054e5c2cd8a6db5e1d518aa81aa0b3"
-
-[[projects]]
-  branch = "master"
-  digest = "1:f56e5efb02cb6669bedd82c0ad4d79d01bea282a1785ea8e84d9be1c270476ca"
+  digest = "1:7376b1ba3a85c3405aad24e02736107a3ca90483bd42f7dd1236177328c9d21f"
   name = "github.com/cloudfoundry/libbuildpack"
   packages = [
     ".",
@@ -57,19 +30,7 @@
     "packager",
   ]
   pruneopts = ""
-  revision = "e722b94c65b57c621db6ee9ddb3afdb2b3a29d69"
-
-[[projects]]
-  branch = "master"
-  digest = "1:30fdee85dd21c8fc37265b16134d5c94859cb7e0281264335026c3dfa4dd8dc7"
-  name = "github.com/cloudfoundry/libjavabuildpack"
-  packages = [
-    ".",
-    "internal",
-    "test",
-  ]
-  pruneopts = ""
-  revision = "e42458f4dcc7c0af742d656aed17c57cf5b25e38"
+  revision = "c4b9f2cc9968de27834905abb624eceb7789d2ef"
 
 [[projects]]
   digest = "1:7ce300e943482aff885b3318c1c6a609827f43e3ba26a073380d5ba6143a0c48"
@@ -77,14 +38,6 @@
   packages = ["."]
   pruneopts = ""
   revision = "aacba83f36a55ac31cbb71c06547a328c0cd1604"
-
-[[projects]]
-  digest = "1:e988ed0ca0d81f4d28772760c02ee95084961311291bdfefc1b04617c178b722"
-  name = "github.com/fatih/color"
-  packages = ["."]
-  pruneopts = ""
-  revision = "5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4"
-  version = "v1.7.0"
 
 [[projects]]
   branch = "master"
@@ -101,22 +54,6 @@
   packages = ["."]
   pruneopts = ""
   revision = "5bae204cdfb2d92dcc333d56014bae6a2f6c58b1"
-
-[[projects]]
-  digest = "1:9ea83adf8e96d6304f394d40436f2eb44c1dc3250d223b74088cc253a6cd0a1c"
-  name = "github.com/mattn/go-colorable"
-  packages = ["."]
-  pruneopts = ""
-  revision = "167de6bfdfba052fa6b2d3664c8f5272e23c9072"
-  version = "v0.0.9"
-
-[[projects]]
-  digest = "1:3140e04675a6a91d2a20ea9d10bdadf6072085502e6def6768361260aee4b967"
-  name = "github.com/mattn/go-isatty"
-  packages = ["."]
-  pruneopts = ""
-  revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
-  version = "v0.0.4"
 
 [[projects]]
   digest = "1:1eece6e2aa8a8f94e0461483229f0c4b0555c17e76e0e7e6b8597c2093d269f8"
@@ -184,7 +121,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:507e8b2dd680599d447d627e102f161b58f4f5ef17eea0e81c181adad2d28a1f"
+  digest = "1:6846191f608c0dd6109f37ca46b784f9630191ff13f86ae974135c05a4c92971"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -193,15 +130,15 @@
     "html/charset",
   ]
   pruneopts = ""
-  revision = "2f5d2388922f370f4355f327fcf4cfe9f5583908"
+  revision = "f04abc6bdfa7a0171a8a0c9fd2ada9391044d056"
 
 [[projects]]
   branch = "master"
-  digest = "1:599d10864dbd891db49513bbf6cbe9229710c932cf3991074d5fb547a3f15c50"
+  digest = "1:18ebd6e65d5223778b5fc92bbf2afffb54c6ac3889bbc362df692b965f932fae"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "d47a0f3392421c5624713c9a19fe781f651f8a50"
+  revision = "b09afc3d579e346c4a7e4705953acaf6f9e551bd"
 
 [[projects]]
   digest = "1:5acd3512b047305d49e8763eef7ba423901e85d5dd2fd1e71778a0ea8de10bd4"
@@ -249,15 +186,11 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/BurntSushi/toml",
-    "github.com/buildpack/libbuildpack",
     "github.com/cloudfoundry/libbuildpack",
     "github.com/cloudfoundry/libbuildpack/ansicleaner",
     "github.com/cloudfoundry/libbuildpack/bratshelper",
     "github.com/cloudfoundry/libbuildpack/checksum",
     "github.com/cloudfoundry/libbuildpack/cutlass",
-    "github.com/cloudfoundry/libjavabuildpack",
-    "github.com/cloudfoundry/libjavabuildpack/test",
     "github.com/golang/mock/gomock",
     "github.com/google/subcommands",
     "github.com/onsi/ginkgo",

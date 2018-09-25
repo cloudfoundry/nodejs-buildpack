@@ -12,6 +12,7 @@ export CNB_BUILD_IMAGE=${CNB_BUILD_IMAGE:-cfbuildpacks/cflinuxfs3-cnb-experiment
 
 # TODO: change default to `cfbuildpacks/cflinuxfs3-cnb-experimental:run` when pack cli can use it
 export CNB_RUN_IMAGE=${CNB_RUN_IMAGE:-packs/run}
+docker pull $CNB_RUN_IMAGE
 
 cd src/*/v3/acceptance
 

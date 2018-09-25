@@ -291,7 +291,7 @@ func (d *Dagger) Pack(appDir string) (*App, error) {
 	// TODO : remove above the above when pack create-builder works
 
 	appImageName := cutlass.RandStringRunes(16)
-	cmd = exec.Command("pack", "build", appImageName, "--run-image", os.Getenv("CNB_RUN_IMAGE"), "--builder", builderImage)
+	cmd = exec.Command("pack", "build", appImageName, "--run-image", os.Getenv("CNB_RUN_IMAGE"), "--builder", builderImage, "--no-pull")
 	cmd.Dir = appDir
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr

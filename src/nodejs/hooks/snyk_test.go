@@ -2,6 +2,7 @@ package hooks_test
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -301,6 +302,35 @@ var _ = Describe("snykHook", func() {
 				Expect(buffer.String()).To(ContainSubstring("Snyk token was found."))
 				Expect(buffer.String()).To(ContainSubstring("Run Snyk monitor..."))
 				Expect(buffer.String()).To(ContainSubstring("Snyk finished successfully"))
+			})
+		})
+		Context("We set a severity threshold", func() {
+			var currentSeverityThreshold string
+			BeforeEach(func() {
+				os.Setenv("VCAP_SERVICES", `{
+						"0": [{"name":"mysql"}],
+						"snyk-broker-external": [{"name":"snyk-service-broker-external","credentials":{"apiToken":"SECRET_TOKEN"}}],
+						"2": [{"name":"redis"}]
+					}`)
+				os.Setenv("VCAP_APPLICATION", `{"name":"monitored_app"}`)
+				os.Setenv("BP_DEBUG", "TRUE")
+				currentSeverityThreshold = "low"
+				os.Setenv("SNYK_SEVERITY_THRESHOLD", currentSeverityThreshold)
+			})
+
+			AfterEach(func() {
+				os.Setenv("SNYK_SEVERITY_THRESHOLD", "")
+			})
+
+			It("should add severity threshold to command args", func() {
+				gomock.InOrder(
+					mockSnykCommand.EXPECT().Output(buildDir, "npm", "install", "-g", "snyk"),
+					mockSnykCommand.EXPECT().Output(buildDir, filepath.Join(depsDir, "node", "bin", "snyk"), "test", "-d", fmt.Sprintf(`--severity-threshold="%s"`, currentSeverityThreshold)),
+					mockSnykCommand.EXPECT().Output(buildDir, filepath.Join(depsDir, "node", "bin", "snyk"), "monitor", "--project-name=monitored_app", "-d", fmt.Sprintf(`--severity-threshold="%s"`, currentSeverityThreshold)),
+				)
+				err = snyk.AfterCompile(stager)
+				Expect(err).To(BeNil())
+				Expect(buffer.String()).To(ContainSubstring("SNYK_SEVERITY_THRESHOLD is set to: %s", currentSeverityThreshold))
 			})
 		})
 

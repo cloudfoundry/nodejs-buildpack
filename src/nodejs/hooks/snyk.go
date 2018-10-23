@@ -16,12 +16,13 @@ type SnykCommand interface {
 // SnykHook
 type SnykHook struct {
 	libbuildpack.DefaultHook
-	Log         *libbuildpack.Logger
-	SnykCommand SnykCommand
-	buildDir    string
-	depsDir     string
-	localAgent  bool
-	orgName     string
+	Log               *libbuildpack.Logger
+	SnykCommand       SnykCommand
+	buildDir          string
+	depsDir           string
+	localAgent        bool
+	orgName           string
+	severityThreshold string
 }
 
 type SnykCredentials struct {
@@ -37,12 +38,13 @@ func init() {
 	command := &libbuildpack.Command{}
 
 	libbuildpack.AddHook(SnykHook{
-		Log:         logger,
-		SnykCommand: command,
-		buildDir:    "",
-		depsDir:     "",
-		localAgent:  true,
-		orgName:     "",
+		Log:               logger,
+		SnykCommand:       command,
+		buildDir:          "",
+		depsDir:           "",
+		localAgent:        true,
+		orgName:           "",
+		severityThreshold: "",
 	})
 }
 
@@ -59,15 +61,20 @@ func (h SnykHook) AfterCompile(stager *libbuildpack.Stager) error {
 	monitorBuild := strings.ToLower(os.Getenv("SNYK_MONITOR_BUILD")) == "true"
 	protectBuild := strings.ToLower(os.Getenv("SNYK_PROTECT_BUILD")) == "true"
 	orgName := strings.ToLower(os.Getenv("SNYK_ORG_NAME"))
+	severityThreshold := strings.ToLower(os.Getenv("SNYK_SEVERITY_THRESHOLD"))
 
 	h.Log.Debug("SNYK_DONT_BREAK_BUILD is enabled: %t", dontBreakBuild)
 	h.Log.Debug("SNYK_MONITOR_BUILD is enabled: %t", monitorBuild)
 	h.Log.Debug("SNYK_PROTECT_BUILD is enabled: %t", protectBuild)
+	if severityThreshold != "" {
+		h.Log.Debug("SNYK_SEVERITY_THRESHOLD is set to: %s", severityThreshold)
+	}
 
 	h.buildDir = stager.BuildDir()
 	h.depsDir = stager.DepDir()
 	h.localAgent = true
 	h.orgName = orgName
+	h.severityThreshold = severityThreshold
 
 	snykExists := h.isAgentExists()
 	if snykExists == false {
@@ -175,6 +182,10 @@ func (h SnykHook) runSnykCommand(args ...string) (string, error) {
 
 	if os.Getenv("BP_DEBUG") != "" {
 		args = append(args, "-d")
+	}
+
+	if h.severityThreshold != "" {
+		args = append(args, "--severity-threshold="+h.severityThreshold)
 	}
 
 	// Snyk is part of the app modules.

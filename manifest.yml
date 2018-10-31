@@ -34,6 +34,14 @@ dependency_deprecation_dates:
   name: node
   date: 2018-06-30
   link: https://github.com/nodejs/LTS
+- version_line: 10.x
+  name: node
+  date: 2021-04-30
+  link: https://github.com/nodejs/LTS
+- version_line: 11.x
+  name: node
+  date: 2019-06-30
+  link: https://github.com/nodejs/LTS
 dependencies:
 - name: node
   version: 6.14.3

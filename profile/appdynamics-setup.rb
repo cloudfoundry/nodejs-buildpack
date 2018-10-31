@@ -28,6 +28,6 @@ if credentials
   if vcap['application_name']
     f.puts "export APPDYNAMICS_AGENT_APPLICATION_NAME=#{vcap['application_name']}"
     f.puts "export APPDYNAMICS_AGENT_TIER_NAME=#{vcap['application_name']}"
-    f.puts "export APPDYNAMICS_AGENT_NODE_NAME=#{vcap['application_name']}:\\$CF_INSTANCE_INDEX"
+    f.puts "export APPDYNAMICS_AGENT_NODE_NAME=#{vcap['application_name']}:\$CF_INSTANCE_INDEX"
   end
 end

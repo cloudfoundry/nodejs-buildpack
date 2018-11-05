@@ -24,6 +24,7 @@ var _ = Describe("pushing an app a second time", func() {
 		}
 
 		app = cutlass.New(filepath.Join(bpDir, "fixtures", "simple_app"))
+		app.Buildpacks = []string{"nodejs_buildpack"}
 	})
 
 	Regexp := `\[.*/node\-[\d\.]+\-linux\-x64\-(cflinuxfs.*-)?[\da-f]+\.tgz\]`

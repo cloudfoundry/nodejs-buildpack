@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"nodejs/package_json"
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/package_json"
 	"os"
 	"path/filepath"
 	"strings"

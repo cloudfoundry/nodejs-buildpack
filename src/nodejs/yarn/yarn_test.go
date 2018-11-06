@@ -3,7 +3,7 @@ package yarn_test
 import (
 	"bytes"
 	"io/ioutil"
-	"nodejs/yarn"
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/yarn"
 	"os"
 	"os/exec"
 	"path/filepath"

@@ -3,7 +3,7 @@ package finalize_test
 import (
 	"bytes"
 	"io/ioutil"
-	"nodejs/finalize"
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/finalize"
 	"os"
 	"path/filepath"
 

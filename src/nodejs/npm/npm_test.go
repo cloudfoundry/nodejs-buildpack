@@ -3,7 +3,7 @@ package npm_test
 import (
 	"bytes"
 	"io/ioutil"
-	n "nodejs/npm"
+	n "github.com/cloudfoundry/nodejs-buildpack/src/nodejs/npm"
 	"os"
 	"path/filepath"
 

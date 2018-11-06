@@ -3,8 +3,8 @@ package main
 import (
 	"io"
 	"io/ioutil"
-	"nodejs/finalize"
-	_ "nodejs/hooks"
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/finalize"
+	_ "github.com/cloudfoundry/nodejs-buildpack/src/nodejs/hooks"
 	"os"
 	"time"
 

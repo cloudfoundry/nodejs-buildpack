@@ -3,10 +3,10 @@ package main
 import (
 	"io"
 	"io/ioutil"
-	_ "nodejs/hooks"
-	"nodejs/npm"
-	"nodejs/supply"
-	"nodejs/yarn"
+	_ "github.com/cloudfoundry/nodejs-buildpack/src/nodejs/hooks"
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/npm"
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/supply"
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/yarn"
 	"os"
 	"time"
 

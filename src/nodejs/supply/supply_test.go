@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"nodejs/supply"
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/supply"
 	"os"
 	"path/filepath"
 

@@ -24,6 +24,7 @@ github.com/tidwall/match v0.0.0-20171002075945-1731857f09b1 h1:pWIN9LOlFRCJFqWIO
 github.com/tidwall/match v0.0.0-20171002075945-1731857f09b1/go.mod h1:LujAq0jyVjBy028G1WhWfIzbpQfMO8bBZ6Tyb0+pL9E=
 golang.org/x/net v0.0.0-20180906233101-161cd47e91fd h1:nTDtHvHSdCn1m6ITfMRqtOd/9+7a3s8RBNOZ3eYZzJA=
 golang.org/x/net v0.0.0-20180906233101-161cd47e91fd/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
+golang.org/x/net v0.0.0-20181107093936-a544f70c90f1 h1:SwqD3GJ9PsSBBVv1HlDeSwjjPSeZjUZQcAgGnwsWpyc=
 golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sys v0.0.0-20180909124046-d0be0721c37e/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20181106135930-3a76605856fd h1:5lx5yH6109ClL0rlBzOj++ZkX/njUT+RVgTO2RMbmZo=

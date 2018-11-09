@@ -6,7 +6,6 @@ require (
 	github.com/cloudfoundry/libbuildpack v0.0.0-20181102183835-772a83a22345
 	github.com/elazarl/goproxy v0.0.0-20181003060214-f58a169a71a5 // indirect
 	github.com/golang/mock v1.1.1
-	github.com/google/subcommands v0.0.0-20181012225330-46f0354f6315 // indirect
 	github.com/onsi/ginkgo v1.6.0
 	github.com/onsi/gomega v1.4.2
 	github.com/tidwall/gjson v1.1.3 // indirect

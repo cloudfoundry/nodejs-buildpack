@@ -12,7 +12,11 @@ source "$BUILDPACK_DIR/scripts/install_go.sh"
 output_dir=$(mktemp -d -t finalizeXXX)
 
 echo "-----> Running go build finalize"
-GOROOT=$GoInstallDir/go GOPATH=$BUILDPACK_DIR $GoInstallDir/go/bin/go build -o $output_dir/finalize nodejs/finalize/cli
+pushd $BUILDPACK_DIR
+$GoInstallDir/go/bin/go env
+
+GOROOT=$GoInstallDir/go GO111MODULE=on $GoInstallDir/go/bin/go build -o $output_dir/finalize ./src/nodejs/finalize/cli
+popd
 
 $output_dir/finalize "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" "$DEPS_IDX" "$PROFILE_DIR"
 

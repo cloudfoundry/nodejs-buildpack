@@ -3,6 +3,7 @@ set -euo pipefail
 
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 source .envrc
+go mod download
 
 if [ ! -f .bin/ginkgo ]; then
   go get -u github.com/onsi/ginkgo/ginkgo

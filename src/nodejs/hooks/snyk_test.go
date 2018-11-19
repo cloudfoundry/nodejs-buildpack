@@ -325,8 +325,8 @@ var _ = Describe("snykHook", func() {
 			It("should add severity threshold to command args", func() {
 				gomock.InOrder(
 					mockSnykCommand.EXPECT().Output(buildDir, "npm", "install", "-g", "snyk"),
-					mockSnykCommand.EXPECT().Output(buildDir, filepath.Join(depsDir, "node", "bin", "snyk"), "test", "-d", fmt.Sprintf(`--severity-threshold=%s`, currentSeverityThreshold)),
-					mockSnykCommand.EXPECT().Output(buildDir, filepath.Join(depsDir, "node", "bin", "snyk"), "monitor", "--project-name=monitored_app", "-d", fmt.Sprintf(`--severity-threshold=%s`, currentSeverityThreshold)),
+					mockSnykCommand.EXPECT().Output(buildDir, filepath.Join(depsDir, "node", "bin", "snyk"), "test", "-d", fmt.Sprintf("--severity-threshold=%s", currentSeverityThreshold)),
+					mockSnykCommand.EXPECT().Output(buildDir, filepath.Join(depsDir, "node", "bin", "snyk"), "monitor", "--project-name=monitored_app", "-d", fmt.Sprintf("--severity-threshold=%s", currentSeverityThreshold)),
 				)
 				err = snyk.AfterCompile(stager)
 				Expect(err).To(BeNil())

@@ -15,7 +15,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	var (
 		app, serviceBrokerApp *cutlass.App
 		serviceBrokerURL      string
-		serviceOffering = "snyk" + cutlass.RandStringRunes(10)
+		serviceOffering       = "snyk" + cutlass.RandStringRunes(10)
 	)
 
 	AfterEach(func() {
@@ -46,6 +46,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 			app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_snyk"))
 			app.SetEnv("BP_DEBUG", "true")
+			app.SetEnv("SNYK_SEVERITY_THRESHOLD", "low")
 			Expect(app.PushNoStart()).To(Succeed())
 
 			app.Stdout.Reset()
@@ -54,6 +55,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 			Eventually(app.Stdout.String()).Should(ContainSubstring("Snyk token was found"))
 			Eventually(app.Stdout.String()).ShouldNot(ContainSubstring("Missing node_modules folder: we can't test without dependencies"))
+			Eventually(app.Stdout.String()).ShouldNot(ContainSubstring("Error: INVALID_SEVERITY_THRESHOLD"))
 		})
 	})
 })

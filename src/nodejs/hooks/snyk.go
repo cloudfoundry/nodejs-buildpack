@@ -186,7 +186,7 @@ func (h SnykHook) runSnykCommand(args ...string) (string, error) {
 	}
 
 	if h.severityThreshold != "" {
-		args = append(args, fmt.Sprintf(`--severity-threshold=%s`, h.severityThreshold))
+		args = append(args, fmt.Sprintf("--severity-threshold=%s", h.severityThreshold))
 	}
 
 	// Snyk is part of the app modules.

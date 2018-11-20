@@ -1,3 +1,31 @@
+v1.6.35 Nov 20, 2018
+=====================
+
+* Add node 8.13.0, remove node 8.11.4
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/162096699)
+
+* Add node 10.13.0, remove node 10.10.0
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/161581085)
+
+* Add node 11.1.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/161677942)
+
+* Add yarn 1.12.3, remove yarn 1.12.1
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/161784171)
+
+* Update dependency deprecation dates for nodejs 10.X and 11.X
+  (https://www.pivotaltracker.com/story/show/161427586)
+
+* Merge pull request #169 from snyk-partners/snyk-fix-parameter-delivery
+  fix parameter delivery in snyk hook
+
+* Merge pull request #168 from dtran808/patch-1
+  remove extraneous escape
+
 v1.6.34 Oct 29, 2018
 =====================
 

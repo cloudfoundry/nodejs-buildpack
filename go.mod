@@ -3,7 +3,7 @@ module github.com/cloudfoundry/nodejs-buildpack
 require (
 	github.com/Masterminds/semver v1.4.2 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
-	github.com/cloudfoundry/libbuildpack v0.0.0-20181128152316-6c9f6f40cec2
+	github.com/cloudfoundry/libbuildpack v0.0.0-20181128221744-1145c99db82c
 	github.com/elazarl/goproxy v0.0.0-20181003060214-f58a169a71a5 // indirect
 	github.com/golang/mock v1.1.1
 	github.com/onsi/ginkgo v1.7.0

@@ -144,11 +144,12 @@ dependencies:
   cf_stacks:
   - cflinuxfs3
 - name: node
-  version: 11.2.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-11.2.0-linux-x64-cflinuxfs3-e548fb0b.tgz
-  sha256: e548fb0b1653fa455762bfffa95334412a0fe66e2b3c330af4b476ac07c8a60f
+  version: 11.3.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-11.3.0-linux-x64-cflinuxfs3-9e94f8dc.tgz
+  sha256: 9e94f8dc5fc343bd9bd85ea807fc20b786effb29e6fa4ce203fe9b3324b93e12
   cf_stacks:
   - cflinuxfs3
+  source: https://nodejs.org/dist/v11.3.0/node-v11.3.0.tar.gz
 - name: yarn
   version: 1.12.3
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn-1.12.3-any-stack-02cd4b58.tar.gz

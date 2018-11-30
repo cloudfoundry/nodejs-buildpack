@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/package_json"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/package_json"
 
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/cloudfoundry/libbuildpack/checksum"
@@ -111,6 +112,11 @@ func Run(s *Supplier) error {
 		}
 
 		if err := s.TipVendorDependencies(); err != nil {
+			s.Log.Error(err.Error())
+			return err
+		}
+
+		if err := s.NoPackageLockTip(); err != nil {
 			s.Log.Error(err.Error())
 			return err
 		}
@@ -313,6 +319,30 @@ func (s *Supplier) ReadPackageJSON() error {
 	s.PostBuild = p.Scripts.PostBuild
 	s.StartScript = p.Scripts.StartScript
 
+	return nil
+}
+
+func (s *Supplier) NoPackageLockTip() error {
+	var lockFiles []string
+	if s.UseYarn {
+		lockFiles = append(lockFiles, "yarn.lock")
+	} else {
+		lockFiles = append(lockFiles, "package-lock.json", "npm-shrinkwrap.json")
+	}
+
+	for _, lockFile := range lockFiles {
+		if lockFileExists, err := libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), lockFile)); err != nil {
+			return err
+		} else if lockFileExists {
+			return nil
+		}
+
+		if s.IsVendored {
+			s.Log.Protip("Warning: package-lock.json not found. The buildpack may reach out to the internet to download module updates, even if they are vendored.", "https://docs.cloudfoundry.org/buildpacks/node/index.html#offline_environments")
+		}
+
+		return nil
+	}
 	return nil
 }
 

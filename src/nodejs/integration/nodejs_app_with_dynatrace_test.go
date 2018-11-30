@@ -1,20 +1,18 @@
 package integration_test
 
 import (
-		"os/exec"
+	"os/exec"
+	"path/filepath"
 
 	"github.com/cloudfoundry/libbuildpack/cutlass"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"path/filepath"
 )
 
 var _ = Describe("CF NodeJS Buildpack", func() {
-	var (
-		app             *cutlass.App
-		createdServices []string
-	)
+	var app *cutlass.App
+	var createdServices []string
 
 	BeforeEach(func() {
 		app = cutlass.New(filepath.Join(bpDir, "fixtures", "logenv"))
@@ -58,8 +56,6 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(app.Stdout.String()).To(ContainSubstring("Copy dynatrace-env.sh"))
 			Expect(app.Stdout.String()).To(ContainSubstring("Dynatrace PaaS agent installed."))
 			Expect(app.Stdout.String()).To(ContainSubstring("Dynatrace PaaS agent injection is set up."))
-
-			Expect(app.GetBody("/")).To(ContainSubstring("\"DT_HOST_ID\":\"" + app.Name + "_0\""))
 		})
 	})
 
@@ -108,6 +104,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			_, err = command.Output()
 			Expect(err).To(BeNil())
 
+			Expect(app.Stdout.String()).To(ContainSubstring("Download returned with status 404"))
 			Expect(app.Stdout.String()).To(ContainSubstring("Error during installer download, skipping installation"))
 		})
 	})
@@ -143,8 +140,54 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(app.Stdout.String()).To(ContainSubstring("Copy dynatrace-env.sh"))
 			Expect(app.Stdout.String()).To(ContainSubstring("Dynatrace PaaS agent installed."))
 			Expect(app.Stdout.String()).To(ContainSubstring("Dynatrace PaaS agent injection is set up."))
+		})
+	})
 
-			Expect(app.GetBody("/")).To(ContainSubstring("\"DT_HOST_ID\":\"" + app.Name + "_0\""))
+	Context("deploying a NodeJS app with Dynatrace agent with single credentials service and without manifest.json", func() {
+		It("checks if Dynatrace injection was successful", func() {
+			serviceName := "dynatrace-" + cutlass.RandStringRunes(20) + "-service"
+			command := exec.Command("cf", "cups", serviceName, "-p", "'{\"apitoken\":\"secretpaastoken\",\"apiurl\":\"https://s3.amazonaws.com/dt-paas\",\"environmentid\":\"envid\"}'")
+			_, err := command.CombinedOutput()
+			Expect(err).To(BeNil())
+			createdServices = append(createdServices, serviceName)
+
+			command = exec.Command("cf", "bind-service", app.Name, serviceName)
+			_, err = command.CombinedOutput()
+			Expect(err).To(BeNil())
+			command = exec.Command("cf", "restage", app.Name)
+			_, err = command.Output()
+			Expect(err).To(BeNil())
+
+			Expect(app.ConfirmBuildpack(buildpackVersion)).To(Succeed())
+			Expect(app.Stdout.String()).To(ContainSubstring("Dynatrace service credentials found. Setting up Dynatrace PaaS agent."))
+			Expect(app.Stdout.String()).To(ContainSubstring("Starting Dynatrace PaaS agent installer"))
+			Expect(app.Stdout.String()).To(ContainSubstring("Copy dynatrace-env.sh"))
+			Expect(app.Stdout.String()).To(ContainSubstring("Dynatrace PaaS agent installed."))
+			Expect(app.Stdout.String()).To(ContainSubstring("Dynatrace PaaS agent injection is set up."))
+		})
+	})
+
+	Context("deploying a NodeJS app with Dynatrace agent with failing agent download and checking retry", func() {
+		It("checks if retrying downloads works", func() {
+			CredentialsServiceName := "dynatrace-" + cutlass.RandStringRunes(20) + "-service"
+			command := exec.Command("cf", "cups", CredentialsServiceName, "-p", "'{\"apitoken\":\"secretpaastoken\",\"apiurl\":\"https://s3.amazonaws.com/dt-paasFAILING/manifest\",\"environmentid\":\"envid\"}'")
+			_, err := command.CombinedOutput()
+			Expect(err).To(BeNil())
+			createdServices = append(createdServices, CredentialsServiceName)
+
+			command = exec.Command("cf", "bind-service", app.Name, CredentialsServiceName)
+			_, err = command.CombinedOutput()
+			Expect(err).To(BeNil())
+
+			command = exec.Command("cf", "restage", app.Name)
+			_, err = command.CombinedOutput()
+
+			Eventually(app.Stdout.String).Should(ContainSubstring("Error during installer download, retrying in 4s"))
+			Eventually(app.Stdout.String).Should(ContainSubstring("Error during installer download, retrying in 5s"))
+			Eventually(app.Stdout.String).Should(ContainSubstring("Error during installer download, retrying in 7s"))
+			Eventually(app.Stdout.String).Should(ContainSubstring("Download returned with status 404"))
+
+			Eventually(app.Stdout.String).Should(ContainSubstring("Failed to compile droplet"))
 		})
 	})
 
@@ -163,7 +206,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			command = exec.Command("cf", "cups", redisServiceName, "-p", "'{\"name\":\"redis\", \"credentials\":{\"db_type\":\"redis\", \"instance_administration_api\":{\"deployment_id\":\"12345asdf\", \"instance_id\":\"12345asdf\", \"root\":\"https://doesnotexi.st\"}}}'")
 			_, err = command.CombinedOutput()
 			Expect(err).To(BeNil())
-			createdServices = append(createdServices, serviceName)
+			createdServices = append(createdServices, redisServiceName)
 			command = exec.Command("cf", "bind-service", app.Name, redisServiceName)
 			_, err = command.CombinedOutput()
 			Expect(err).To(BeNil())
@@ -178,8 +221,6 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(app.Stdout.String()).To(ContainSubstring("Copy dynatrace-env.sh"))
 			Expect(app.Stdout.String()).To(ContainSubstring("Dynatrace PaaS agent installed."))
 			Expect(app.Stdout.String()).To(ContainSubstring("Dynatrace PaaS agent injection is set up."))
-
-			Expect(app.GetBody("/")).To(ContainSubstring("\"DT_HOST_ID\":\"" + app.Name + "_0\""))
 		})
 	})
 })

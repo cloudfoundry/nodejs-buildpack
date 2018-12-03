@@ -1,7 +1,7 @@
 module github.com/cloudfoundry/nodejs-buildpack
 
 require (
-	github.com/cloudfoundry/libbuildpack v0.0.0-20181130221911-df2259c35386
+	github.com/cloudfoundry/libbuildpack v0.0.0-20181203192608-40fcf6231d2e
 	github.com/elazarl/goproxy v0.0.0-20181003060214-f58a169a71a5 // indirect
 	github.com/golang/mock v1.1.1
 	github.com/onsi/ginkgo v1.7.0

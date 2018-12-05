@@ -1,3 +1,18 @@
+v1.6.37 Dec 05, 2018
+=====================
+
+* Add node 6.15.1, remove node 6.14.4
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/162382561)
+
+* Add node 10.14.1, remove node 10.13.0
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/162314539)
+
+* Display warning when vendored app lacks a package-lock.json
+  - If app is vendored and there's no lock, modules may update
+  (https://www.pivotaltracker.com/story/show/159291499)
+
 v1.6.36 Nov 29, 2018
 =====================
 

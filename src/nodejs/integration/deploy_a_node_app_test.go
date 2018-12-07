@@ -301,50 +301,6 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		})
 	})
 
-	PContext("with a cached buildpack in an air gapped environment", func() {
-		BeforeEach(func() {
-			if !cutlass.Cached {
-				Skip("running uncached tests")
-			}
-		})
-		// TODO :cached tag only
-		//     before(:each) do
-		//       `cf unbind-staging-security-group public_networks`
-		//       `cf unbind-staging-security-group dns`
-		//     end
-		//
-		//     after(:each) do
-		//       `cf bind-staging-security-group public_networks`
-		//       `cf bind-staging-security-group dns`
-		//     end
-		//
-		//     context 'with no npm version specified' do
-		//       let (:app_name) { 'airgapped_no_npm_version' }
-		//
-		//       subject(:app) do
-		//         Machete.deploy_app(app_name)
-		//       end
-		//
-		//       it 'is running with the default version of npm' do
-		//         expect(app).to be_running
-		//         expect(app).not_to have_internet_traffic
-		//
-		//         default_version = YAML.load_file(File.join(File.dirname(__FILE__), '..', '..', 'manifest.yml'))['default_versions'].find { |a| a['name'] == 'node' }['version']
-		//         expect(app).to have_logged /Installing node #{default_version}/
-		//         expect(app).to have_logged("Using default npm version")
-		//       end
-		//     end
-		//
-		//     context 'with invalid npm version specified' do
-		//       let (:app_name) { 'airgapped_invalid_npm_version' }
-		//
-		//       it 'is not running and prints an error message' do
-		//         expect(app).not_to be_running
-		//         expect(app).to have_logged("We're unable to download the version of npm")
-		//       end
-		//     end
-	})
-
 	Describe("NODE_HOME and NODE_ENV", func() {
 		BeforeEach(func() {
 			if !cutlass.Cached {

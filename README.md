@@ -22,13 +22,13 @@ To build this buildpack, run the following commands from the buildpack's directo
 1. Install buildpack-packager
 
     ```bash
-    (cd src/nodejs/vendor/github.com/cloudfoundry/libbuildpack/packager/buildpack-packager && go install)
+     go install github.com/cloudfoundry/libbuildpack/packager/buildpack-packager
     ```
 
 1. Build the buildpack
 
     ```bash
-    buildpack-packager build [ --cached=(true|false) ]
+    buildpack-packager build -stack [STACK] [ --cached=(true|false) ]
     ```
 
 1. Use in Cloud Foundry

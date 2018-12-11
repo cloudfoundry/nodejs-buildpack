@@ -116,20 +116,6 @@ dependencies:
   cf_stacks:
   - cflinuxfs3
 - name: node
-  version: 10.14.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.14.0-linux-x64-cflinuxfs2-7ed8093c.tgz
-  sha256: 7ed8093c196e66fa639ea1467c12eb3d5673157c9db89111c69bd805642abd4a
-  cf_stacks:
-  - cflinuxfs2
-  source: https://nodejs.org/dist/v10.14.0/node-v10.14.0.tar.gz
-- name: node
-  version: 10.14.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.14.0-linux-x64-cflinuxfs3-72f3ac30.tgz
-  sha256: 72f3ac305982ba4b727be462c90cb1f5eb4394e3f7e193636242c3b1b4f039be
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v10.14.0/node-v10.14.0.tar.gz
-- name: node
   version: 10.14.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.14.1-linux-x64-cflinuxfs2-53066dff.tgz
   sha256: 53066dffbe52a6d7c0fd65efb9733313d39e2cde191b5d3a6a56325626c921ba
@@ -143,6 +129,20 @@ dependencies:
   cf_stacks:
   - cflinuxfs3
   source: https://nodejs.org/dist/v10.14.1/node-v10.14.1.tar.gz
+- name: node
+  version: 10.14.2
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.14.2-linux-x64-cflinuxfs2-331f06e2.tgz
+  sha256: 331f06e2a5fdeeb0f681adce81bc07682bac0418c114f775d07cdabaa0808726
+  cf_stacks:
+  - cflinuxfs2
+  source: https://nodejs.org/dist/v10.14.2/node-v10.14.2.tar.gz
+- name: node
+  version: 10.14.2
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.14.2-linux-x64-cflinuxfs3-75646627.tgz
+  sha256: 756466276ce74c3ea9fd7f59e6b9e02f10e8841d430f51b2a5d754a8eb080ce0
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v10.14.2/node-v10.14.2.tar.gz
 - name: node
   version: 11.3.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-11.3.0-linux-x64-cflinuxfs3-9e94f8dc.tgz

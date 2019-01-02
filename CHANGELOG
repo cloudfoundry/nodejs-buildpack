@@ -1,3 +1,25 @@
+v1.6.39 Jan 02, 2019
+=====================
+
+* Add node 11.6.0, remove node 11.3.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/162847279)
+
+* Add node 10.15.0, remove node 10.14.1
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/162847345)
+
+* Add node 8.15.0, remove node 8.14.0
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/162848337)
+
+* Add node 6.16.0, remove node 6.15.0
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/162848357)
+
+* Use common library for Dynatrace hook - See https://github.com/Dynatrace/libbuildpack-dynatrace - Compared to previous hook implementation:   - If download fails, we try a few more times.   - Default agent output now goes to STDOUT.   - Few other small improvements.
+
+
 v1.6.38 Dec 19, 2018
 =====================
 

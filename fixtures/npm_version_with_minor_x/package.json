@@ -13,8 +13,8 @@
     "express": "~4.0.0"
   },
   "engines" : {
-    "node" : "~>6",
-		"npm"  : "3.10.x"
+    "node" : "*",
+    "npm"  : "6.4.x"
   },
 
   "repository" :

@@ -3,18 +3,17 @@ package supply_test
 import (
 	"bytes"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/supply"
-	"os"
-	"path/filepath"
-
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/cloudfoundry/libbuildpack/ansicleaner"
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/supply"
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 //go:generate mockgen -source=supply.go --destination=mocks_test.go --package=supply_test
@@ -160,7 +159,7 @@ var _ = Describe("Supply", func() {
 					err = supplier.LoadPackageJSON()
 					Expect(err).To(BeNil())
 
-					Expect(supplier.NodeVersion).To(Equal("node-y"))
+					Expect(supplier.PackageJSONNodeVersion).To(Equal("node-y"))
 					Expect(supplier.YarnVersion).To(Equal("*"))
 					Expect(supplier.NPMVersion).To(Equal("npm-x"))
 				})
@@ -249,20 +248,102 @@ var _ = Describe("Supply", func() {
 					Expect(buffer.String()).To(ContainSubstring("engines.npm (package.json): unspecified (use default)"))
 				})
 			})
+
+		})
+	})
+
+	Describe("Load .nvmrc contents", func() {
+		Context("digits", func() {
+			It("will trim and transform nvmrc to appropriate semver for Masterminds semver library", func() {
+				nvmrcFile := filepath.Join(buildDir, ".nvmrc")
+				defer os.Remove(nvmrcFile)
+
+				testCases := [][]string{
+					{"10", "10.*.*"},
+					{"10.2", "10.2.*"},
+					{"v10", "10.*.*"},
+					{"10.2.3", "10.2.3"},
+					{"v10.2.3", "10.2.3"},
+				}
+
+				for _, testCase := range testCases {
+					Expect(ioutil.WriteFile(nvmrcFile, []byte(testCase[0]), 0777)).To(Succeed())
+					Expect(supplier.LoadNvmrc()).To(Succeed())
+					Expect(supplier.NvmrcNodeVersion).To(Equal(testCase[1]), fmt.Sprintf("failed for test case %s : %s", testCase[0], testCase[1]))
+				}
+			})
+		})
+
+		Context("lts/something", func() {
+			It("will read and trim lts versions to appropriate semver for Masterminds semver library", func() {
+				nvmrcFile := filepath.Join(buildDir, ".nvmrc")
+				defer os.Remove(nvmrcFile)
+
+				testCases := [][]string{
+					{"lts/*", "10.*.*"},
+					{"lts/argon", "4.*.*"},
+					{"lts/boron", "6.*.*"},
+					{"lts/carbon", "8.*.*"},
+					{"lts/dubnium", "10.*.*"},
+				}
+
+				for _, testCase := range testCases {
+					Expect(ioutil.WriteFile(nvmrcFile, []byte(testCase[0]), 0777)).To(Succeed())
+					Expect(supplier.LoadNvmrc()).To(Succeed())
+					Expect(supplier.NvmrcNodeVersion).To(Equal(testCase[1]), fmt.Sprintf("failed for test case %s : %s", testCase[0], testCase[1]))
+				}
+			})
+		})
+
+		Context("node", func() {
+			It("should read and trim lts versions", func() {
+				nvmrcFile := filepath.Join(buildDir, ".nvmrc")
+				defer os.Remove(nvmrcFile)
+				Expect(ioutil.WriteFile(nvmrcFile, []byte("node"), 0777)).To(Succeed())
+				Expect(supplier.LoadNvmrc()).To(Succeed())
+				Expect(supplier.NvmrcNodeVersion).To(Equal("*"), fmt.Sprintf("failed for test case %s : %s", "node", "*"))
+			})
 		})
 	})
 
 	Describe("WarnNodeEngine", func() {
 		Context("node version not specified", func() {
-			It("warns that node version hasn't been set", func() {
+			It("warns that nvmrc version will be ignored in favor of package.json", func() {
+				supplier.NvmrcNodeVersion = "lts/*"
+				supplier.PackageJSONNodeVersion = "*"
 				supplier.WarnNodeEngine()
-				Expect(buffer.String()).To(ContainSubstring("**WARNING** Node version not specified in package.json. See: http://docs.cloudfoundry.org/buildpacks/node/node-tips.html"))
+				Expect(buffer.String()).To(ContainSubstring("**WARNING** Node version in .nvmrc ignored in favor of 'engines' field in package.json"))
+			})
+
+			It("warns that node version hasn't been set", func() {
+				supplier.NvmrcNodeVersion = ""
+				supplier.PackageJSONNodeVersion = ""
+				supplier.WarnNodeEngine()
+				Expect(buffer.String()).To(ContainSubstring("**WARNING** Node version not specified in package.json or .nvmrc. See: http://docs.cloudfoundry.org/buildpacks/node/node-tips.html"))
+			})
+		})
+
+		Context("node version is set to node in nvmrc", func() {
+			It("warns that latest node version is being used", func() {
+				supplier.NvmrcNodeVersion = "node"
+				supplier.WarnNodeEngine()
+				Expect(buffer.String()).To(ContainSubstring("**WARNING** .nvmrc specified latest node version, this will be selected from versions available in manifest.yml"))
+				Expect(buffer.String()).To(ContainSubstring("**WARNING** Using the node version specified in your .nvmrc See: http://docs.cloudfoundry.org/buildpacks/node/node-tips.html"))
+
+			})
+		})
+
+		Context("node version is set to lts in nvmrc", func() {
+			It("warns that latest lts version is being used", func() {
+				supplier.NvmrcNodeVersion = "lts/*"
+				supplier.WarnNodeEngine()
+				Expect(buffer.String()).To(ContainSubstring("**WARNING** .nvmrc specified an lts version, this will be selected from versions available in manifest.yml"))
 			})
 		})
 
 		Context("node version is *", func() {
 			It("warns that the node semver is dangerous", func() {
-				supplier.NodeVersion = "*"
+				supplier.PackageJSONNodeVersion = "*"
 				supplier.WarnNodeEngine()
 				Expect(buffer.String()).To(ContainSubstring("**WARNING** Dangerous semver range (*) in engines.node. See: http://docs.cloudfoundry.org/buildpacks/node/node-tips.html"))
 			})
@@ -270,7 +351,7 @@ var _ = Describe("Supply", func() {
 
 		Context("node version is >x", func() {
 			It("warns that the node semver is dangerous", func() {
-				supplier.NodeVersion = ">5"
+				supplier.PackageJSONNodeVersion = ">5"
 				supplier.WarnNodeEngine()
 				Expect(buffer.String()).To(ContainSubstring("**WARNING** Dangerous semver range (>) in engines.node. See: http://docs.cloudfoundry.org/buildpacks/node/node-tips.html"))
 			})
@@ -278,9 +359,94 @@ var _ = Describe("Supply", func() {
 
 		Context("node version is 'safe' semver", func() {
 			It("does not log anything", func() {
-				supplier.NodeVersion = "~>6"
+				supplier.PackageJSONNodeVersion = "~>6"
 				supplier.WarnNodeEngine()
 				Expect(buffer.String()).To(Equal(""))
+			})
+		})
+
+	})
+
+	Describe("When nvmrc is present", func() {
+		var (
+			dep      libbuildpack.Dependency
+			versions []string
+		)
+
+		BeforeEach(func() {
+			dep = libbuildpack.Dependency{Name: "node", Version: "6.10.2"}
+			mockManifest.EXPECT().DefaultVersion("node").Return(dep, nil).AnyTimes()
+			versions = []string{
+				"4.0.0", "4.0.1", "4.2.3",
+				"6.0.0", "6.0.2", "6.2.3",
+				"8.0.1", "8.0.3", "8.2.3",
+				"10.0.0", "10.0.4", "10.2.3",
+				"11.0.0", "11.0.5", "11.2.3",
+			}
+			mockManifest.EXPECT().AllDependencyVersions("node").Return(versions).AnyTimes()
+		})
+
+		Context("nvmrc is present and engines field in package.json is present", func() {
+			It("selects the version from the engines field in packages.json", func() {
+				supplier.PackageJSONNodeVersion = "10.0.0"
+				supplier.NvmrcNodeVersion = "10.2.3"
+				Expect(supplier.ChooseNodeVersion()).To(Succeed())
+				Expect(supplier.NodeVersion).To(Equal("10.0.0"))
+			})
+		})
+
+		Context("nvmrc is present and engines field in package.json is missing", func() {
+			It("selects the version in nvmrc", func() {
+				supplier.PackageJSONNodeVersion = ""
+				supplier.NvmrcNodeVersion = "10.2.3"
+				Expect(supplier.ChooseNodeVersion()).To(Succeed())
+				Expect(supplier.NodeVersion).To(Equal("10.2.3"))
+			})
+		})
+
+		Context("nvmrc is missing and engines field in package.json is present", func() {
+			It("selects version from engines in package.json", func() {
+				supplier.PackageJSONNodeVersion = "11.2.3"
+				supplier.NvmrcNodeVersion = ""
+				Expect(supplier.ChooseNodeVersion()).To(Succeed())
+				Expect(supplier.NodeVersion).To(Equal("11.2.3"))
+			})
+		})
+
+		Context("package.json engines field and nvmrc are both specified", func() {
+			It("selects version from package.json engines field", func() {
+				supplier.NvmrcNodeVersion = "8.*.*"
+				supplier.PackageJSONNodeVersion = ">8.0.3"
+				err := supplier.ChooseNodeVersion()
+				Expect(err).ToNot(HaveOccurred())
+				Expect(supplier.NodeVersion).To(Equal("11.2.3"))
+			})
+		})
+	})
+
+	Describe(".nvmrc validation", func() {
+
+		AfterEach(func() {
+			Expect(os.Remove(filepath.Join(buildDir, ".nvmrc"))).To(Succeed())
+		})
+
+		Context("given valid .nvmrc", func() {
+			It("validate should succeed", func() {
+				validVersions := []string{"11.4", "node", "lts/*", "lts/carbon", "10", "10.1.1"}
+				for _, version := range validVersions {
+					Expect(ioutil.WriteFile(filepath.Join(buildDir, ".nvmrc"), []byte(version), 0777)).To(Succeed())
+					Expect(supplier.LoadNvmrc()).To(Succeed())
+				}
+			})
+		})
+
+		Context("given an invalid .nvmrc", func() {
+			It("validate should be fail", func() {
+				invalidVersions := []string{"11.4.x", "invalid", "~1.1.2", ">11.0", "< 11.4.2", "^1.2.3", "11.*.*", "10.1.x", "10.1.X", "lts/invalidname"}
+				for _, version := range invalidVersions {
+					Expect(ioutil.WriteFile(filepath.Join(buildDir, ".nvmrc"), []byte(version), 0777)).To(Succeed())
+					Expect(supplier.LoadNvmrc()).ToNot(Succeed())
+				}
 			})
 		})
 	})
@@ -301,13 +467,16 @@ var _ = Describe("Supply", func() {
 			BeforeEach(func() {
 				versions := []string{"6.10.2", "6.11.1", "4.8.2", "4.8.3", "7.0.0"}
 				mockManifest.EXPECT().AllDependencyVersions("node").Return(versions)
+				mockManifest.EXPECT().DefaultVersion("node").Return(libbuildpack.Dependency{"node", "0.0.0"}, nil).AnyTimes()
 			})
 
 			It("installs the correct version from the manifest", func() {
 				dep := libbuildpack.Dependency{Name: "node", Version: "4.8.3"}
 				mockInstaller.EXPECT().InstallDependency(dep, nodeTmpDir).Do(installNode).Return(nil)
 
-				supplier.NodeVersion = "~>4"
+				supplier.PackageJSONNodeVersion = "~>4"
+				err = supplier.ChooseNodeVersion()
+				Expect(err).To(BeNil())
 				err = supplier.InstallNode(nodeTmpDir)
 				Expect(err).To(BeNil())
 			})
@@ -316,7 +485,9 @@ var _ = Describe("Supply", func() {
 				dep := libbuildpack.Dependency{Name: "node", Version: "6.11.1"}
 				mockInstaller.EXPECT().InstallDependency(dep, nodeTmpDir).Do(installNode).Return(nil)
 
-				supplier.NodeVersion = ">=6.11.1 <7.0.0"
+				supplier.PackageJSONNodeVersion = ">=6.11.1 <7.0.0"
+				err = supplier.ChooseNodeVersion()
+				Expect(err).To(BeNil())
 				err = supplier.InstallNode(nodeTmpDir)
 				Expect(err).To(BeNil())
 			})
@@ -325,7 +496,9 @@ var _ = Describe("Supply", func() {
 				dep := libbuildpack.Dependency{Name: "node", Version: "6.11.1"}
 				mockInstaller.EXPECT().InstallDependency(dep, nodeTmpDir).Do(installNode).Return(nil)
 
-				supplier.NodeVersion = ">=6.11.1, <7.0"
+				supplier.PackageJSONNodeVersion = ">=6.11.1, <7.0"
+				err = supplier.ChooseNodeVersion()
+				Expect(err).To(BeNil())
 				err = supplier.InstallNode(nodeTmpDir)
 				Expect(err).To(BeNil())
 			})
@@ -333,8 +506,9 @@ var _ = Describe("Supply", func() {
 			It("creates a symlink in <depDir>/bin", func() {
 				dep := libbuildpack.Dependency{Name: "node", Version: "6.10.2"}
 				mockInstaller.EXPECT().InstallDependency(dep, nodeTmpDir).Do(installNode).Return(nil)
-
-				supplier.NodeVersion = "6.10.*"
+				supplier.PackageJSONNodeVersion = "6.10.*"
+				err = supplier.ChooseNodeVersion()
+				Expect(err).To(BeNil())
 				err = supplier.InstallNode(nodeTmpDir)
 				Expect(err).To(BeNil())
 
@@ -354,9 +528,13 @@ var _ = Describe("Supply", func() {
 			It("installs the default version from the manifest", func() {
 				dep := libbuildpack.Dependency{Name: "node", Version: "6.10.2"}
 				mockManifest.EXPECT().DefaultVersion("node").Return(dep, nil)
+				mockManifest.EXPECT().AllDependencyVersions(gomock.Any())
 				mockInstaller.EXPECT().InstallDependency(dep, nodeTmpDir).Do(installNode).Return(nil)
 
 				supplier.NodeVersion = ""
+
+				err = supplier.ChooseNodeVersion()
+				Expect(err).To(BeNil())
 
 				err = supplier.InstallNode(nodeTmpDir)
 				Expect(err).To(BeNil())
@@ -963,6 +1141,10 @@ var _ = Describe("Supply", func() {
 				supplier.IsVendored = false
 				Expect(os.MkdirAll(filepath.Join(buildDir, "node_modules", "a", "b"), 0755)).To(Succeed())
 				Expect(supplier.MoveDependencyArtifacts()).To(Succeed())
+			})
+
+			AfterEach(func() {
+				Expect(os.Unsetenv("NODE_PATH")).To(Succeed())
 			})
 
 			It("moves node_modules and .yarnrc into deps directory after installing them", func() {

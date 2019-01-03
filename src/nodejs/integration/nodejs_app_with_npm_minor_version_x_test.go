@@ -25,7 +25,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		It("should not attempt to download npm because it should match existing version", func() {
 			PushAppAndConfirm(app)
-			Expect(app.Stdout.String()).ToNot(ContainSubstring("Downloading and installing npm 3.10.x"))
+			Expect(app.Stdout.String()).ToNot(ContainSubstring("Downloading and installing npm 6.4.x"))
 		})
 	})
 })

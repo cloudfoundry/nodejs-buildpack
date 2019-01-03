@@ -79,7 +79,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 				app = cutlass.New(filepath.Join(bpDir, "fixtures", "unreleased_node_version"))
 			})
 
-			It("displays a nice error messages and gracefully fails", func() {
+			It("displays a nice error message and gracefully fails", func() {
 				Expect(app.Push()).ToNot(BeNil())
 
 				Eventually(app.Stdout.String, 2*time.Second).Should(ContainSubstring("Unable to install node: no match found for 9000.0.0"))
@@ -123,6 +123,18 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			PushAppAndConfirm(app)
 
 			Expect(app.GetBody("/")).To(ContainSubstring("NodeOptions: undefined"))
+		})
+
+		Context("a nvmrc file that takes precedence over package.json", func() {
+			BeforeEach(func() {
+				app = cutlass.New(filepath.Join(bpDir, "fixtures", "simple_app_with_nvmrc"))
+			})
+
+			It("deploys", func() {
+				PushAppAndConfirm(app)
+
+				Expect(app.GetBody("/")).To(ContainSubstring("NodeOptions: undefined"))
+			})
 		})
 	})
 

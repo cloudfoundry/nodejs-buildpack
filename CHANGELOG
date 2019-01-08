@@ -1,3 +1,11 @@
+v1.6.40 Jan 08, 2019
+=====================
+
+* Adds support for using an .nvmrc file in an apps home directory to specify the version of node
+  - Note that .nvmrc will only be used if we do not specify the node version in the engines field of package.json
+  (https://www.pivotaltracker.com/story/show/158526860)
+
+
 v1.6.39 Jan 02, 2019
 =====================
 

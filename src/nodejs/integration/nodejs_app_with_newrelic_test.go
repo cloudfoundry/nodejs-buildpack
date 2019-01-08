@@ -12,7 +12,7 @@ import (
 
 var _ = Describe("CF NodeJS Buildpack", func() {
 	var (
-		app, serviceBrokerApp         *cutlass.App
+		app, serviceBrokerApp                          *cutlass.App
 		serviceBrokerURL, serviceName, serviceOffering string
 	)
 
@@ -34,6 +34,9 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	It("deploying a NodeJS app with NewRelic", func() {
 		By("set up a service broker", func() {
 			serviceBrokerApp = cutlass.New(filepath.Join(bpDir, "fixtures", "fake_newrelic_service_broker"))
+			serviceBrokerApp.Buildpacks = []string{
+				"https://github.com/cloudfoundry/ruby-buildpack#master",
+			}
 			serviceBrokerApp.SetEnv("OFFERING_NAME", serviceOffering)
 			Expect(serviceBrokerApp.Push()).To(Succeed())
 			Eventually(func() ([]string, error) { return serviceBrokerApp.InstanceStates() }, 20*time.Second).Should(Equal([]string{"RUNNING"}))

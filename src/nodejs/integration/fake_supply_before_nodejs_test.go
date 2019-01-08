@@ -26,7 +26,7 @@ var _ = Describe("running supply buildpacks before the nodejs buildpack", func()
 
 			app = cutlass.New(filepath.Join(bpDir, "fixtures", "fake_supply_nodejs_app"))
 			app.Buildpacks = []string{
-				"https://github.com/cloudfoundry/dotnet-core-buildpack#develop",
+				"https://github.com/cloudfoundry/dotnet-core-buildpack#master",
 				"nodejs_buildpack",
 			}
 			app.Disk = "1G"

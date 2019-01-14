@@ -148,6 +148,17 @@ func (h *Hook) AfterCompile(stager *libbuildpack.Stager) error {
 		extra += "\nexport DT_LOGSTREAM=stdout"
 	}
 
+	lang := stager.BuildpackLanguage()
+	ver, err := stager.BuildpackVersion()
+	if err != nil {
+		h.Log.Warning("Failed to get buildpack version: %v", err)
+		ver = "unknown"
+	}
+
+	h.Log.Debug("Preparing custom properties...")
+	extra += fmt.Sprintf(
+		"\nexport DT_CUSTOM_PROP=\"${DT_CUSTOM_PROP} CloudFoundryBuildpackLanguage=%s CloudFoundryBuildpackVersion=%s\"", lang, ver)
+
 	if _, err = f.WriteString(extra); err != nil {
 		return err
 	}
@@ -229,7 +240,20 @@ func (h *Hook) download(url, filePath string) error {
 	for i := 0; ; i++ {
 		var resp *http.Response
 		if resp, err = http.Get(url); err == nil {
-			// TODO: are partial writes possible? We'd need to either recreate the file, or seek the start of the file.
+			// We truncate the file to make it empty, we also need to move the offset to the beginning. For errors
+			// here, these would be unexpected so we just fail the function without retrying.
+
+			if err = out.Truncate(0); err != nil {
+				resp.Body.Close()
+				return err
+			}
+
+			if _, err = out.Seek(0, io.SeekStart); err != nil {
+				resp.Body.Close()
+				return err
+			}
+
+			// Now we copy the response content into the file.
 			_, err = io.Copy(out, resp.Body)
 
 			resp.Body.Close() // Ignore error, nothing worth doing if it fails.

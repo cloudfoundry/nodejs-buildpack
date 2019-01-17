@@ -1,3 +1,19 @@
+v1.6.41 Jan 17, 2019
+=====================
+
+* Merge pull request #177 from lrgar/release
+  Update libbuildpack-dynatrace
+
+* Add yarn 1.13.0, remove yarn 1.12.3
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/163083614)
+
+* Vendor with go modules
+  - Fix performance regression when the buildpack is executed
+    directly from github by re-vendoring source code
+  (https://www.pivotaltracker.com/story/show/162654926)
+
+
 v1.6.40 Jan 08, 2019
 =====================
 

@@ -1,3 +1,13 @@
+v1.6.42 Jan 28, 2019
+=====================
+
+* Add node 11.8.0, remove node 11.5.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/163473112)
+
+* Use S3-hosted version of go 1.11.4 in online unbuilt/URL buildpack
+  (https://www.pivotaltracker.com/story/show/163089977)
+
 v1.6.41 Jan 17, 2019
 =====================
 

@@ -146,19 +146,19 @@ dependencies:
   - cflinuxfs3
   source: https://nodejs.org/dist/v10.15.0/node-v10.15.0.tar.gz
 - name: node
-  version: 11.6.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-11.6.0-linux-x64-cflinuxfs3-befc85be.tgz
-  sha256: befc85be6c40ae877ca08d2c0825b77d81c5c6463d9f0567bfad11c28f6b869d
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v11.6.0/node-v11.6.0.tar.gz
-- name: node
   version: 11.8.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-11.8.0-linux-x64-cflinuxfs3-6278dd3f.tgz
   sha256: 6278dd3f3e631e1ebdbeb3bede1df09f8fbd59fe86c5dd3e43fd5364196182ad
   cf_stacks:
   - cflinuxfs3
   source: https://nodejs.org/dist/v11.8.0/node-v11.8.0.tar.gz
+- name: node
+  version: 11.9.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-11.9.0-linux-x64-cflinuxfs3-6214eecb.tgz
+  sha256: 6214eecbe1a333179a017d9a19b537b514deb5e21175a8f41caf117e70bf897f
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v11.9.0/node-v11.9.0.tar.gz
 - name: yarn
   version: 1.13.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn-1.13.0-any-stack-125d40eb.tar.gz

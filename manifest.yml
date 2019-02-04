@@ -101,10 +101,11 @@ dependencies:
   source: https://nodejs.org/dist/v8.15.0/node-v8.15.0.tar.gz
 - name: node
   version: 9.11.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-9.11.1-linux-x64-cflinuxfs2-a0086713.tgz
-  sha256: a008671311b82aac5d30a0c1f40b55f80b79406da9f0f11fd1df5b4d7cfd882b
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-9.11.1-linux-x64-cflinuxfs2-68b8abeb.tgz
+  sha256: 68b8abebf655a09f7feccb33b5a5e97ba364c5d51dc416387161e95a403aea87
   cf_stacks:
   - cflinuxfs2
+  source: https://nodejs.org/dist/v9.11.1/node-v9.11.1.tar.gz
 - name: node
   version: 9.11.2
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-9.11.2-linux-x64-cflinuxfs2-58d0bbd0.tgz

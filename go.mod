@@ -4,7 +4,7 @@ require (
 	cloud.google.com/go v0.34.0 // indirect
 	github.com/Dynatrace/libbuildpack-dynatrace v1.1.0
 	github.com/Masterminds/semver v1.4.2
-	github.com/cloudfoundry/libbuildpack v0.0.0-20190212192345-d922c2bfc6ec
+	github.com/cloudfoundry/libbuildpack v0.0.0-20190213200103-30ffb32767ef
 	github.com/golang/mock v1.2.0
 	github.com/inconshreveable/go-vhost v0.0.0-20160627193104-06d84117953b // indirect
 	github.com/onsi/ginkgo v1.7.0

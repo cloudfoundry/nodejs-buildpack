@@ -1,3 +1,13 @@
+v1.6.44 Feb 19, 2019
+=====================
+
+* Add node 11.10.0, remove node 11.8.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/163995835)
+
+* Fix jq indexing for New Relic integration
+  (https://www.pivotaltracker.com/story/show/163402164)
+
 v1.6.43 Feb 05, 2019
 =====================
 

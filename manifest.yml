@@ -74,29 +74,12 @@ dependencies:
   source: https://nodejs.org/dist/v6.17.0/node-v6.17.0.tar.gz
   source_sha256: ef7b5cdffd110c194ef25fe14e455e0dea0fd894550ba33aadb90b0da8e14be2
 - name: node
-  version: 8.14.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.14.1-linux-x64-cflinuxfs2-ae41693a.tgz
-  sha256: ae41693a9d26a1fa3f55fd4613292d4ada8d55da7f000b5cb94793d04b8dcc08
-  cf_stacks:
-  - cflinuxfs2
-  source: https://nodejs.org/dist/v8.14.1/node-v8.14.1.tar.gz
-  source_sha256: 88f8b2ac6241abcf92a2fd80c82d91884a9520a7bbc895f3f6217b5d4f3e6681
-- name: node
-  version: 8.14.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.14.1-linux-x64-cflinuxfs3-a4e189cb.tgz
-  sha256: a4e189cbe5b8d8329ca8004b23f510e1b796bc22dbeea00d89f01fcd0612685c
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v8.14.1/node-v8.14.1.tar.gz
-  source_sha256: 88f8b2ac6241abcf92a2fd80c82d91884a9520a7bbc895f3f6217b5d4f3e6681
-- name: node
   version: 8.15.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.15.0-linux-x64-cflinuxfs2-1e19815b.tgz
   sha256: 1e19815bf98e0555a9f6cbdb6b3031611718a38cacf7704ffb904be5a7bb9e58
   cf_stacks:
   - cflinuxfs2
   source: https://nodejs.org/dist/v8.15.0/node-v8.15.0.tar.gz
-  source_sha256: 590fc8b09c2466f8f7854ce3342ae1d0ba421c104999b7bd54ec0c690321d2aa
 - name: node
   version: 8.15.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.15.0-linux-x64-cflinuxfs3-97413182.tgz
@@ -104,7 +87,22 @@ dependencies:
   cf_stacks:
   - cflinuxfs3
   source: https://nodejs.org/dist/v8.15.0/node-v8.15.0.tar.gz
-  source_sha256: 590fc8b09c2466f8f7854ce3342ae1d0ba421c104999b7bd54ec0c690321d2aa
+- name: node
+  version: 8.15.1
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.15.1-linux-x64-cflinuxfs2-ed20b1fb.tgz
+  sha256: ed20b1fb7feac745e0c5a221caa907f1f66f77c2de2ac9f1e6edb06448f71575
+  cf_stacks:
+  - cflinuxfs2
+  source: https://nodejs.org/dist/v8.15.1/node-v8.15.1.tar.gz
+  source_sha256: 413e0086bd3abde2dfdd3a905c061a6188cc0faceb819768a53ca9c6422418b4
+- name: node
+  version: 8.15.1
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.15.1-linux-x64-cflinuxfs3-bed0d0e6.tgz
+  sha256: bed0d0e675f46be256f292e2bf693e59a82ea46eb4d9d593575483d0c4428312
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v8.15.1/node-v8.15.1.tar.gz
+  source_sha256: 413e0086bd3abde2dfdd3a905c061a6188cc0faceb819768a53ca9c6422418b4
 - name: node
   version: 9.11.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-9.11.1-linux-x64-cflinuxfs2-68b8abeb.tgz

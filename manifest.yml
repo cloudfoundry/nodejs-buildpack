@@ -44,29 +44,12 @@ dependency_deprecation_dates:
   link: https://github.com/nodejs/LTS
 dependencies:
 - name: node
-  version: 6.15.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.15.1-linux-x64-cflinuxfs2-16abb1a8.tgz
-  sha256: 16abb1a8bcef1bc6339a738b51f5f2a5e7d48f820da2cec3f4912504517f7490
-  cf_stacks:
-  - cflinuxfs2
-  source: https://nodejs.org/dist/v6.15.1/node-v6.15.1.tar.gz
-  source_sha256: 3e08c82c95ab32f476199369e894b48d70cbaaaa12c1b67f60584c618a6eb0ca
-- name: node
-  version: 6.15.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.15.1-linux-x64-cflinuxfs3-c8da2b6c.tgz
-  sha256: c8da2b6c146c4bf3c72b35a879be1a5e6764229702ddf3b0ca159ed74debd381
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v6.15.1/node-v6.15.1.tar.gz
-  source_sha256: 3e08c82c95ab32f476199369e894b48d70cbaaaa12c1b67f60584c618a6eb0ca
-- name: node
   version: 6.16.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.16.0-linux-x64-cflinuxfs2-fa3b7202.tgz
   sha256: fa3b72020ee4005fd0168bef41a765bbc382e4c4fdf65011f6b1c0b5b631c1ab
   cf_stacks:
   - cflinuxfs2
   source: https://nodejs.org/dist/v6.16.0/node-v6.16.0.tar.gz
-  source_sha256: 5432c6cba59bfef5794951193e93dbbd1707960b6c722925afcdb4517f4dc742
 - name: node
   version: 6.16.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.16.0-linux-x64-cflinuxfs3-45f43c54.tgz
@@ -74,7 +57,22 @@ dependencies:
   cf_stacks:
   - cflinuxfs3
   source: https://nodejs.org/dist/v6.16.0/node-v6.16.0.tar.gz
-  source_sha256: 5432c6cba59bfef5794951193e93dbbd1707960b6c722925afcdb4517f4dc742
+- name: node
+  version: 6.17.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.17.0-linux-x64-cflinuxfs2-d510e3a2.tgz
+  sha256: d510e3a24c7b617eaf46b166621c6978ebc7fd175e63ef8a970128c9c14edbd8
+  cf_stacks:
+  - cflinuxfs2
+  source: https://nodejs.org/dist/v6.17.0/node-v6.17.0.tar.gz
+  source_sha256: ef7b5cdffd110c194ef25fe14e455e0dea0fd894550ba33aadb90b0da8e14be2
+- name: node
+  version: 6.17.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-6.17.0-linux-x64-cflinuxfs3-7d9e1436.tgz
+  sha256: 7d9e14363e41e8e74610657c7dc08921486680350b8522d2981d50e9a0eb538f
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v6.17.0/node-v6.17.0.tar.gz
+  source_sha256: ef7b5cdffd110c194ef25fe14e455e0dea0fd894550ba33aadb90b0da8e14be2
 - name: node
   version: 8.14.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.14.1-linux-x64-cflinuxfs2-ae41693a.tgz

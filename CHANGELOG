@@ -1,3 +1,25 @@
+v1.6.45 Mar 04, 2019
+=====================
+
+* Add node 11.10.1, remove node 11.9.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/164301719)
+
+* Add node 10.15.2
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/164301704)
+
+* Add node 8.15.1, remove node 8.14.1
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/164301709)
+
+* Add node 6.17.0, remove node 6.15.1
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/164301707)
+
+* Support location on service credentials on the Dynatrace hook Set UserAgent when downloading the agent
+  (https://www.pivotaltracker.com/story/show/164210763)
+
 v1.6.44 Feb 19, 2019
 =====================
 

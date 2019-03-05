@@ -41,13 +41,15 @@ func (n *NPM) Rebuild(buildDir string) error {
 		return nil
 	}
 
+
+
 	n.Log.Info("Rebuilding any native modules")
 	if err := n.Command.Execute(buildDir, n.Log.Output(), n.Log.Output(), "npm", "rebuild", "--nodedir="+os.Getenv("NODE_HOME")); err != nil {
 		return err
 	}
 
 	n.Log.Info("Installing any new modules (%s)", source)
-	npmArgs := []string{"install", "--unsafe-perm", "--userconfig", filepath.Join(buildDir, ".npmrc")}
+	npmArgs := []string{"install", "--no-audit", "--unsafe-perm", "--userconfig", filepath.Join(buildDir, ".npmrc")}
 	return n.Command.Execute(buildDir, n.Log.Output(), n.Log.Output(), "npm", npmArgs...)
 }
 

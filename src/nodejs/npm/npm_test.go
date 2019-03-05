@@ -116,7 +116,7 @@ var _ = Describe("NPM", func() {
 				Expect(ioutil.WriteFile(filepath.Join(buildDir, "package.json"), []byte("xxx"), 0644)).To(Succeed())
 				gomock.InOrder(
 					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "npm", []string{"rebuild", "--nodedir=test_node_home"}).Return(nil),
-					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "npm", []string{"install", "--unsafe-perm", "--userconfig", filepath.Join(buildDir, ".npmrc")}).Return(nil),
+					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "npm", []string{"install", "--no-audit", "--unsafe-perm", "--userconfig", filepath.Join(buildDir, ".npmrc")}).Return(nil),
 				)
 			})
 

@@ -1,3 +1,26 @@
+v1.6.46 Mar 20, 2019
+=====================
+
+* Add node 11.12.0, remove node 11.10.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/164675145)
+  (https://www.pivotaltracker.com/story/show/164443683)
+
+* Add yarn 1.15.2, remove yarn 1.13.0
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/164657895)
+  (https://www.pivotaltracker.com/story/show/164518593)
+
+* Remove node 9.x
+  (https://www.pivotaltracker.com/story/show/163601607)
+
+* Adding --no-audit flag to offline buildpack's npm-install
+  (https://www.pivotaltracker.com/story/show/164386481)
+
+* Add node 10.15.3, remove node 10.15.1
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/164408746)
+
 v1.6.45 Mar 04, 2019
 =====================
 

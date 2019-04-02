@@ -1,3 +1,15 @@
+v1.6.47 Apr 02, 2019
+=====================
+
+* Add node 11.13.0, remove node 11.10.1
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/164970456)
+
+* Use Ginkgo -mod vendor in unit, integration and brats tests
+  - Update install_tools to always update ginkgo if there is an available update, to pick up Ginkgo 1.8
+  (https://www.pivotaltracker.com/story/show/164548554)
+
+
 v1.6.46 Mar 20, 2019
 =====================
 
@@ -11,7 +23,7 @@ v1.6.46 Mar 20, 2019
   (https://www.pivotaltracker.com/story/show/164657895)
   (https://www.pivotaltracker.com/story/show/164518593)
 
-* Remove node 9.x
+* Remove all node 9.X.X versions
   (https://www.pivotaltracker.com/story/show/163601607)
 
 * Adding --no-audit flag to offline buildpack's npm-install

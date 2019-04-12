@@ -2,7 +2,7 @@
 language: nodejs
 default_versions:
 - name: node
-  version: 6.x
+  version: 10.x
 include_files:
 - CHANGELOG
 - CONTRIBUTING.md

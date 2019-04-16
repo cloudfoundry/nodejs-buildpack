@@ -36,22 +36,6 @@ dependency_deprecation_dates:
   link: https://github.com/nodejs/LTS
 dependencies:
 - name: node
-  version: 8.15.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.15.0-linux-x64-cflinuxfs2-1e19815b.tgz
-  sha256: 1e19815bf98e0555a9f6cbdb6b3031611718a38cacf7704ffb904be5a7bb9e58
-  cf_stacks:
-  - cflinuxfs2
-  source: https://nodejs.org/dist/v8.15.0/node-v8.15.0.tar.gz
-  source_sha256: 590fc8b09c2466f8f7854ce3342ae1d0ba421c104999b7bd54ec0c690321d2aa
-- name: node
-  version: 8.15.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.15.0-linux-x64-cflinuxfs3-97413182.tgz
-  sha256: 974131821556a7272c9025766ab6620e059068c5eb5418eb72abc6c397bac12d
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v8.15.0/node-v8.15.0.tar.gz
-  source_sha256: 590fc8b09c2466f8f7854ce3342ae1d0ba421c104999b7bd54ec0c690321d2aa
-- name: node
   version: 8.15.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.15.1-linux-x64-cflinuxfs2-ed20b1fb.tgz
   sha256: ed20b1fb7feac745e0c5a221caa907f1f66f77c2de2ac9f1e6edb06448f71575
@@ -67,6 +51,22 @@ dependencies:
   - cflinuxfs3
   source: https://nodejs.org/dist/v8.15.1/node-v8.15.1.tar.gz
   source_sha256: 413e0086bd3abde2dfdd3a905c061a6188cc0faceb819768a53ca9c6422418b4
+- name: node
+  version: 8.16.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.16.0-linux-x64-cflinuxfs2-81e87176.tgz
+  sha256: 81e871767a33ad4dd275db81bd9a7143e697c1477f5fa1a268b776dc9499fa1b
+  cf_stacks:
+  - cflinuxfs2
+  source: https://nodejs.org/dist/v8.16.0/node-v8.16.0.tar.gz
+  source_sha256: a1a885add3e511177f05676f0834df710886b68cb559b893169f8674a23adfcf
+- name: node
+  version: 8.16.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.16.0-linux-x64-cflinuxfs3-6c24afa4.tgz
+  sha256: 6c24afa448a7552650d7a768e7ad782fcbf11b4f077a7c810e6c76320eafb4aa
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v8.16.0/node-v8.16.0.tar.gz
+  source_sha256: a1a885add3e511177f05676f0834df710886b68cb559b893169f8674a23adfcf
 - name: node
   version: 10.14.2
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.14.2-linux-x64-cflinuxfs2-331f06e2.tgz

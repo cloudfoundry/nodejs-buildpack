@@ -3,6 +3,11 @@ package supply_test
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/cloudfoundry/libbuildpack/ansicleaner"
 	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/supply"
@@ -10,10 +15,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
-	"io"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 )
 
 //go:generate mockgen -source=supply.go --destination=mocks_test.go --package=supply_test
@@ -359,7 +360,7 @@ var _ = Describe("Supply", func() {
 
 		Context("node version is 'safe' semver", func() {
 			It("does not log anything", func() {
-				supplier.PackageJSONNodeVersion = "~>6"
+				supplier.PackageJSONNodeVersion = "~>10"
 				supplier.WarnNodeEngine()
 				Expect(buffer.String()).To(Equal(""))
 			})
@@ -1192,14 +1193,29 @@ var _ = Describe("Supply", func() {
 				})
 
 				It("lists the installed packages", func() {
-					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), ioutil.Discard, "yarn", "list", "--depth=0").Return(nil)
-					supplier.ListDependencies()
+					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), ioutil.Discard, "npm", "ls", "--depth=0").Return(nil).Do(func(_ string, outBuf io.Writer, _ io.Writer, _ string, _ ...string) {
+						_, err := outBuf.Write([]byte("some-dep" + supply.UnmetDependency))
+						Expect(err).NotTo(HaveOccurred())
+					})
+
+					deps, err := supplier.ListDependencies()
+					Expect(err).NotTo(HaveOccurred())
+					Expect(deps).To(ContainSubstring(supply.UnmetDependency))
+					Expect(buffer.String()).To(ContainSubstring(supply.UnmetDependency))
 				})
 			})
 
 			Context("NODE_VERBOSE is not true", func() {
 				It("does not list the installed packages", func() {
-					supplier.ListDependencies()
+					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), ioutil.Discard, "npm", "ls", "--depth=0").Return(nil).Do(func(_ string, outBuf io.Writer, _ io.Writer, _ string, _ ...string) {
+						_, err := outBuf.Write([]byte("some-dep" + supply.UnmetDependency))
+						buffer.WriteString("some-dep")
+						Expect(err).NotTo(HaveOccurred())
+					})
+					deps, err := supplier.ListDependencies()
+					Expect(err).NotTo(HaveOccurred())
+					Expect(deps).To(ContainSubstring(supply.UnmetDependency))
+					Expect(buffer.String()).NotTo(ContainSubstring(supply.UnmetDependency))
 				})
 			})
 		})
@@ -1207,25 +1223,11 @@ var _ = Describe("Supply", func() {
 
 	Describe("WarnUnmetDependencies", func() {
 		var (
-			logfile  *os.File
 			contents string
 		)
 
 		JustBeforeEach(func() {
-			logfile, err = ioutil.TempFile("", "nodejs-buildpack.log")
-			Expect(err).To(BeNil())
-
-			_, err = logfile.Write([]byte(contents))
-			Expect(err).To(BeNil())
-			Expect(logfile.Sync()).To(Succeed())
-
-			supplier.Logfile = logfile
-			Expect(supplier.WarnUnmetDependencies()).To(Succeed())
-		})
-
-		AfterEach(func() {
-			Expect(logfile.Close()).To(Succeed())
-			Expect(os.Remove(logfile.Name())).To(Succeed())
+			supplier.WarnUnmetDependencies(contents)
 		})
 
 		Context("package manager is yarn", func() {

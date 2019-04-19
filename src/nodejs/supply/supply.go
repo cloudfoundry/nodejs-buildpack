@@ -4,19 +4,26 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/Masterminds/semver"
 	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
 
+	"github.com/Masterminds/semver"
+
 	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/package_json"
 
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/cloudfoundry/libbuildpack/checksum"
+)
+
+const (
+	UnmetDependency     = "unmet dependency"
+	UnmetPeerDependency = "unmet peer dependency"
 )
 
 type Command interface {
@@ -169,50 +176,64 @@ func Run(s *Supplier) error {
 			}
 		}
 
-		s.ListDependencies()
+		deps, err := s.ListDependencies()
+		if err != nil {
+			s.Log.Error(err.Error())
+			return err
+		}
 
 		if err := s.Logfile.Sync(); err != nil {
 			s.Log.Error(err.Error())
 			return err
 		}
 
-		if err := s.WarnUnmetDependencies(); err != nil {
-			s.Log.Error(err.Error())
-			return err
-		}
+		s.WarnUnmetDependencies(deps)
 
 		return nil
 	})
 }
 
-func (s *Supplier) WarnUnmetDependencies() error {
-	if unmet, err := fileHasString(s.Logfile.Name(), "unmet dependency", "unmet peer dependency"); err != nil {
-		return err
-	} else if !unmet {
-		return nil
+func (s *Supplier) WarnUnmetDependencies(deps string) {
+	unmetLogEntries := []string{UnmetDependency, UnmetPeerDependency}
+	unmet := false
+
+	for _, s := range unmetLogEntries {
+		if strings.Contains(strings.ToLower(deps), s) {
+			unmet = true
+			break
+		}
 	}
 
-	pkgMan := "npm"
-	if s.UseYarn {
-		pkgMan = "yarn"
-	}
+	if unmet {
+		pkgMan := "npm"
+		if s.UseYarn {
+			pkgMan = "yarn"
+		}
 
-	warning := "Unmet dependencies don't fail " + pkgMan + " install but may cause runtime issues\n"
-	warning += "See: https://github.com/npm/npm/issues/7494"
-	s.Log.Warning(warning)
-	return nil
+		warning := "Unmet dependencies don't fail " + pkgMan + " install but may cause runtime issues\n"
+		warning += "See: https://github.com/npm/npm/issues/7494"
+		s.Log.Warning(warning)
+	}
 }
 
-func (s *Supplier) ListDependencies() {
-	if os.Getenv("NODE_VERBOSE") != "true" {
-		return
+func (s *Supplier) ListDependencies() (string, error) {
+	var result string
+	var buf bytes.Buffer
+	var err error
+
+	err = s.Command.Execute(s.Stager.BuildDir(), &buf, ioutil.Discard, "npm", "ls", "--depth=0")
+
+	if err != nil && !isExitError(err) {
+		return "", err
 	}
 
-	if s.UseYarn {
-		_ = s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), ioutil.Discard, "yarn", "list", "--depth=0")
-	} else {
-		_ = s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), ioutil.Discard, "npm", "ls", "--depth=0")
+	result = buf.String()
+
+	if os.Getenv("NODE_VERBOSE") == "true" {
+		s.Log.Info(result)
 	}
+
+	return result, nil
 }
 
 func (s *Supplier) runPostbuild(tool string) error {
@@ -799,4 +820,9 @@ func validateNvmrc(content string) (string, error) {
 	}
 
 	return content, nil
+}
+
+func isExitError(err error) bool {
+	_, ok := err.(*exec.ExitError)
+	return ok
 }

@@ -13,13 +13,11 @@
     "express": "~4.0.0",
     "grunt-steroids": "0.2.3"
   },
-  "engines" : {
-    "node" : "~>6"
+  "engines": {
+    "node": "~>10"
   },
-
-  "repository" :
-  {
-    "type" : "git",
-    "url" : "http://github.com/cloudfoundry/nodejs-buildpack.git"
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/cloudfoundry/nodejs-buildpack.git"
   }
 }

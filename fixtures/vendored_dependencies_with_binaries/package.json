@@ -13,7 +13,7 @@
     "leftpad": "~0.0.1"
   },
   "engines": {
-    "node": "~>6"
+    "node": "~>10"
   },
   "repository": {
     "type": "git",

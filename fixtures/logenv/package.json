@@ -10,6 +10,6 @@
   "license": "BSD-2-Clause",
   "dependencies": {},
   "engines" : {
-    "node" : "~>6"
+    "node" : "~>10"
   }
 }

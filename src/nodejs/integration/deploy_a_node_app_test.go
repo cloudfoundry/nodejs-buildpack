@@ -29,7 +29,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			It("resolves to a nodeJS version successfully", func() {
 				PushAppAndConfirm(app)
 
-				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 6\\.\\d+\\.\\d+"))
+				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 10\\.\\d+\\.\\d+"))
 				Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 			})
 		})
@@ -42,7 +42,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			It("resolves to a nodeJS version successfully", func() {
 				PushAppAndConfirm(app)
 
-				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 6\\.\\d+\\.\\d+"))
+				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 10\\.\\d+\\.\\d+"))
 				Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 
 				if ApiHasTask() {
@@ -54,7 +54,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 							Eventually(func() string {
 								return app.Stdout.String()
-							}, "30s").Should(MatchRegexp("RUNNING A TASK: v6\\.\\d+\\.\\d+"))
+							}, "30s").Should(MatchRegexp("RUNNING A TASK: v10\\.\\d+\\.\\d+"))
 						})
 					})
 				}
@@ -69,7 +69,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			It("resolves to the stable nodeJS version successfully", func() {
 				PushAppAndConfirm(app)
 
-				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 6\\.\\d+\\.\\d+"))
+				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 10\\.\\d+\\.\\d+"))
 				Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 			})
 		})
@@ -223,10 +223,11 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 				app = cutlass.New(filepath.Join(bpDir, "fixtures", "incomplete_package_json"))
 			})
 
-			It("does not overwrite the vendored modules not listed in package.json", func() {
+			It("overwrites the vendored modules not listed in package.json", func() {
 				PushAppAndConfirm(app)
 				Expect(app.Files("app/node_modules")).To(ContainElement("app/node_modules/leftpad"))
-				Expect(app.Files("app/node_modules")).To(ContainElement("app/node_modules/hashish"))
+				Expect(app.Files("app/node_modules")).NotTo(ContainElement("app/node_modules/hashish"))
+				Expect(app.Files("app/node_modules")).NotTo(ContainElement("app/node_modules/traverse"))
 			})
 		})
 	})
@@ -252,8 +253,6 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 				By("outputs protip that recommends user vendors dependencies", func() {
 					Eventually(app.Stdout.String).Should(MatchRegexp("PRO TIP:(.*) It is recommended to vendor the application's Node.js dependencies"))
 				})
-
-				Expect(app).To(HaveUnchangedAppDir())
 			})
 
 			AssertUsesProxyDuringStagingIfPresent("no_vendored_dependencies")

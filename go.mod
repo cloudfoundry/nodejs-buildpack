@@ -1,29 +1,12 @@
 module github.com/cloudfoundry/nodejs-buildpack
 
 require (
-	cloud.google.com/go v0.34.0
-	github.com/BurntSushi/toml v0.3.1
 	github.com/Dynatrace/libbuildpack-dynatrace v1.2.0
 	github.com/Masterminds/semver v1.4.2
-	github.com/blang/semver v3.5.1+incompatible
-	github.com/cloudfoundry/libbuildpack v0.0.0-20190405154814-5050d4f28264
-	github.com/elazarl/goproxy v0.0.0-20181111060418-2ce16c963a8a
+	github.com/cloudfoundry/libbuildpack v0.0.0-20190422215933-a1b6aa2c7381
 	github.com/golang/mock v1.2.0
-	github.com/golang/protobuf v1.2.0
-	github.com/google/subcommands v0.0.0-20181012225330-46f0354f6315
-	github.com/inconshreveable/go-vhost v0.0.0-20160627193104-06d84117953b
 	github.com/onsi/ginkgo v1.8.0
 	github.com/onsi/gomega v1.4.3
-	github.com/rogpeppe/go-charset v0.0.0-20180617210344-2471d30d28b4
-	github.com/tidwall/gjson v1.1.3
-	github.com/tidwall/match v1.0.1
-	go4.org v0.0.0-20181109185143-00e24f1b2599
-	golang.org/x/build v0.0.0-20190107193049-6a02381872d7
-	golang.org/x/crypto v0.0.0-20190418165655-df01cb2cc480
-	golang.org/x/net v0.0.0-20190419010253-1f3472d942ba
-	golang.org/x/sys v0.0.0-20190419153524-e8e3143a4f4a
-	golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2
-	golang.org/x/tools v0.0.0-20190418235243-4796d4bd3df0
+	golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2 // indirect
 	gopkg.in/jarcoal/httpmock.v1 v1.0.0-20181117152235-275e9df93516
-	gopkg.in/yaml.v2 v2.2.2
 )

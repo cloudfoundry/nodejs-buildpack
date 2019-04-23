@@ -1,3 +1,22 @@
+v1.6.49 Apr 23, 2019
+=====================
+
+* Remove warning logs causing bosh cli error
+
+* Add node 11.14.0, remove node 11.12.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/165292190)
+
+* Add node 8.16.0, remove node 8.15.0
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/165399297)
+
+* Change default version of node from 6.x to 10.x
+  (https://www.pivotaltracker.com/story/show/164581167)
+
+* Remove node 6.X.X
+  (https://www.pivotaltracker.com/story/show/164575785)
+
 v1.6.48 Apr 10, 2019
 =====================
 

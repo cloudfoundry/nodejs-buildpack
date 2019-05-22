@@ -18,7 +18,6 @@ include_files:
 - bin/release
 - bin/supply
 - manifest.yml
-- profile/appdynamics-setup.rb
 - profile/newrelic-setup.sh
 - profile/nodejs.sh
 dependency_deprecation_dates:

@@ -6,3 +6,4 @@
 /nodejs_buildpack-*.zip
 /.bin
 /pkg/
+buildpack.sh

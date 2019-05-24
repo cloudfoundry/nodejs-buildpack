@@ -34,7 +34,7 @@ func init() {
 }
 
 func (h ContrastSecurityHook) AfterCompile(stager *libbuildpack.Stager) error {
-  h.Log.Info("Contrast Security after compile hook")
+  h.Log.Debug("Contrast Security after compile hook")
 
   success, contrastSecurityCredentials := h.GetCredentialsFromEnvironment()
 
@@ -61,7 +61,7 @@ func (h ContrastSecurityHook) AfterCompile(stager *libbuildpack.Stager) error {
   if(err != nil) {
     h.Log.Error(err.Error())
   } else {
-    h.Log.Info("Contrast Security successfully wrote %s", filepath.Join(profileDDir, "contrast_security"));
+    h.Log.Debug("Contrast Security successfully wrote %s", filepath.Join(profileDDir, "contrast_security"));
   }
 
   return nil
@@ -78,7 +78,7 @@ func (h ContrastSecurityHook) GetCredentialsFromEnvironment() (bool, ContrastSec
  vcapServicesEnvironment := os.Getenv("VCAP_SERVICES")
 
  if vcapServicesEnvironment == ""  {
-   h.Log.Warning("Contrast Security could not find VCAP_SERVICES in the environment")
+   h.Log.Debug("Contrast Security could not find VCAP_SERVICES in the environment")
    return false, ContrastSecurityCredentials{}
  }
 
@@ -90,7 +90,7 @@ func (h ContrastSecurityHook) GetCredentialsFromEnvironment() (bool, ContrastSec
 
  for key, services := range vcapServices {
    if strings.Contains(key, "contrast-security") {
-     h.Log.Info("Contrast Security found credentials in VCAP_SERVICES")
+     h.Log.Debug("Contrast Security found credentials in VCAP_SERVICES")
      for _, service := range services {
        apiKey      := getCredentialString(service.Credentials, "api_key")
        orgUuid     := getCredentialString(service.Credentials, "org_uuid")

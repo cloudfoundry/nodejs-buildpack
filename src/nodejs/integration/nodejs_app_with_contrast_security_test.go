@@ -31,7 +31,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
     serviceBrokerApp = DestroyApp(serviceBrokerApp)
   })
 
-  It("deploying a NodeJS app with Contrast Security", func() {
+  FIt("deploying a NodeJS app with Contrast Security", func() {
     By("set up a service broker", func() {
       serviceBrokerApp = cutlass.New(filepath.Join(bpDir, "fixtures", "fake_contrast_security_service_broker"))
       serviceBrokerApp.Buildpacks = []string{
@@ -49,6 +49,8 @@ var _ = Describe("CF NodeJS Buildpack", func() {
     By("Pushing an app with a marketplace provided service", func() {
       app = cutlass.New(filepath.Join(bpDir, "fixtures", "simple_app"))
       PushAppAndConfirm(app)
+
+      app.SetEnv("BP_DEBUG", "true")
 
       serviceFromBroker := "contrast-security-service-broker-app-" + cutlass.RandStringRunes(10)
       RunCF("create-service-broker", serviceBrokerApp.Name, "username", "password", serviceBrokerURL, "--space-scoped")

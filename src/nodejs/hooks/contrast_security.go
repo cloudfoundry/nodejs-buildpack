@@ -46,7 +46,7 @@ func (h ContrastSecurityHook) AfterCompile(stager *libbuildpack.Stager) error {
   profileDDir := path.Join(stager.BuildDir(), ".profile.d")
 
   if _, err := os.Stat(profileDDir); os.IsNotExist(err) {
-    os.Mkdir(profileDDir, 0755)
+    os.Mkdir(profileDDir, 0777)
   }
 
   var b bytes.Buffer
@@ -56,7 +56,7 @@ func (h ContrastSecurityHook) AfterCompile(stager *libbuildpack.Stager) error {
   b.WriteString(fmt.Sprintf("export CONTRAST__API__SERVICE_KEY=%s\n", contrastSecurityCredentials.ServiceKey))
   b.WriteString(fmt.Sprintf("export CONTRAST__API__USER_NAME=%s\n", contrastSecurityCredentials.Username))
 
-  err := ioutil.WriteFile(filepath.Join(profileDDir, "contrast_security"), b.Bytes(), 0644)
+  err := ioutil.WriteFile(filepath.Join(profileDDir, "contrast_security"), b.Bytes(), 0666)
 
   if(err != nil) {
     h.Log.Error(err.Error())

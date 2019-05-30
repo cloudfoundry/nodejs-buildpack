@@ -31,7 +31,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
     serviceBrokerApp = DestroyApp(serviceBrokerApp)
   })
 
-  FIt("deploying a NodeJS app with Contrast Security", func() {
+  It("deploying a NodeJS app with Contrast Security", func() {
     By("set up a service broker", func() {
       serviceBrokerApp = cutlass.New(filepath.Join(bpDir, "fixtures", "fake_contrast_security_service_broker"))
       serviceBrokerApp.Buildpacks = []string{

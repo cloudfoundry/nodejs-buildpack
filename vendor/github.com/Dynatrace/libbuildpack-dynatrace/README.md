@@ -31,7 +31,7 @@ We support the following configuration fields,
 | apitoken      | string  | The API Token for the Dynatrace environment.                                                | Yes      | N/A             |
 | apiurl        | string  | Overrides the default Dynatrace API URL to connect to.                                      | No       | Default API URL |
 | skiperrors    | boolean | If true, the deployment doesn't fail if the Dynatrace agent download fails.                 | No       | false           |
-| location      | string  | If set, agent is configured to choose communication endpoints located at the field's value. | No       | empty           |
+| networkzone      | string  | If set, agent is configured to choose communication endpoints located at the field's value. | No       | empty           |
 
 For example,
 

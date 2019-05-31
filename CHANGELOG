@@ -1,3 +1,28 @@
+v1.6.51 May 31, 2019
+=====================
+
+* Use floating version for npm test
+  - We shouldn't depend on any versions for any dependencies
+    in integration tests, except for brats tests
+
+* Add node 10.16.0, remove node 10.15.2
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/166317034)
+
+* Add node 12.3.1, remove node 12.2.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/166194213)
+  (https://www.pivotaltracker.com/story/show/166165638)
+
+* Add yarn 1.16.0, remove yarn 1.15.2
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/165924485)
+
+* Add node 12.2.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/165865903)
+
+
 v1.6.50 May 02, 2019
 =====================
 

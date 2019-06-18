@@ -22,10 +22,6 @@ include_files:
 - profile/newrelic-setup.sh
 - profile/nodejs.sh
 dependency_deprecation_dates:
-- version_line: 8.x
-  name: node
-  date: 2019-12-31
-  link: https://github.com/nodejs/LTS
 - version_line: 10.x
   name: node
   date: 2021-04-30
@@ -33,6 +29,14 @@ dependency_deprecation_dates:
 - version_line: 11.x
   name: node
   date: 2019-06-30
+  link: https://github.com/nodejs/LTS
+- version_line: 12.x.x
+  name: node
+  date: 2020-04-01
+  link: https://github.com/nodejs/Release
+- version_line: 8.x
+  name: node
+  date: 2019-12-31
   link: https://github.com/nodejs/LTS
 dependencies:
 - name: node
@@ -125,8 +129,8 @@ dependencies:
   source_sha256: d9132342815f04fdb8eb6cac5607fcee929a79e0339449774f411efed81693ac
 - name: node
   version: 12.4.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-12.4.0-linux-x64-cflinuxfs3-0fe753f4.tgz
-  sha256: 0fe753f4a46d1509a872dc097962b4e8e47e128aaaf075415e591f5f5bb0aa62
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-12.4.0-linux-x64-cflinuxfs3-15ae929b.tgz
+  sha256: 15ae929b337203a1748dadb10c6ef5035332cf96c681f9752cff2697f2ea2b4f
   cf_stacks:
   - cflinuxfs3
   source: https://nodejs.org/dist/v12.4.0/node-v12.4.0.tar.gz

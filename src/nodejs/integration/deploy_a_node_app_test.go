@@ -205,6 +205,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 			AssertNoInternetTraffic("with_yarn_vendored")
 		})
+
 		Context("with an incomplete node_modules directory", func() {
 			BeforeEach(func() {
 				app = cutlass.New(filepath.Join(bpDir, "fixtures", "incomplete_node_modules"))
@@ -282,6 +283,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 			AssertUsesProxyDuringStagingIfPresent("with_yarn")
 		})
+
 		Context("with an app with an out of date yarn.lock", func() {
 			BeforeEach(func() {
 				app = cutlass.New(filepath.Join(bpDir, "fixtures", "out_of_date_yarn_lock"))
@@ -292,6 +294,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 				Eventually(app.Stdout.String).Should(ContainSubstring("yarn.lock is outdated"))
 			})
 		})
+
 		Context("with an app with pre and post scripts", func() {
 			BeforeEach(func() {
 				app = cutlass.New(filepath.Join(bpDir, "fixtures", "pre_post_commands"))
@@ -310,6 +313,19 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 				Eventually(app.Stdout.String, 2*time.Second).Should(ContainSubstring("Current dir: /tmp/app"))
 			})
 		})
+
+		Context("with an app using node-pre-gyp and yarn", func() {
+			BeforeEach(func() {
+				app = cutlass.New(filepath.Join(bpDir, "fixtures", "yarn_pre_gyp"))
+			})
+
+			It("successfully deploys", func() {
+				PushAppAndConfirm(app)
+				Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
+
+			})
+		})
+
 	})
 
 	Describe("NODE_HOME and NODE_ENV", func() {

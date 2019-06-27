@@ -1,0 +1,20 @@
+{
+  "name": "simple_app",
+  "version": "0.0.0",
+  "description": "some app",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "logfmt": "~1.1.2",
+    "express": "~4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  }
+}

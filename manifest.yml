@@ -26,10 +26,6 @@ dependency_deprecation_dates:
   name: node
   date: 2021-04-30
   link: https://github.com/nodejs/LTS
-- version_line: 11.x
-  name: node
-  date: 2019-06-30
-  link: https://github.com/nodejs/LTS
 - version_line: 12.x.x
   name: node
   date: 2020-04-01
@@ -103,22 +99,6 @@ dependencies:
   - cflinuxfs3
   source: https://nodejs.org/dist/v10.16.0/node-v10.16.0.tar.gz
   source_sha256: d00f1ffdb0a7413eaaf3afc393fb652ea713db135dcd3ccf6809370a07395713
-- name: node
-  version: 11.14.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-11.14.0-linux-x64-cflinuxfs3-c352f13e.tgz
-  sha256: c352f13e9701b052e88b5241af1d89e928d900cdf2cd470607e53da3fb0a854d
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v11.14.0/node-v11.14.0.tar.gz
-  source_sha256: b903ba6dc8131b9357e7c5e26967a0f48aa460c708154244a6348d49a7d8ff9a
-- name: node
-  version: 11.15.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-11.15.0-linux-x64-cflinuxfs3-e3bda126.tgz
-  sha256: e3bda126d878f78e4371dcbfe33a2f621b353e4075f938a15bd0f2169659146e
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v11.15.0/node-v11.15.0.tar.gz
-  source_sha256: 2045ace2fcf130b0f18b82b027015dd31b262c2c97fe9bf2533227c52b59c01c
 - name: node
   version: 12.3.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-12.3.1-linux-x64-cflinuxfs3-3477d546.tgz

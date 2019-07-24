@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/cloudfoundry/libbuildpack"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -18,6 +17,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/cloudfoundry/libbuildpack"
 )
 
 const EntryPointFile = "SEEKER_APP_ENTRY_POINT"
@@ -270,7 +271,7 @@ func (h SeekerAfterCompileHook) fetchSeekerAgentTarballDirectDownload(compiler *
 	if err != nil {
 		return err, ""
 	}
-	parsedEnterpriseServerUrl.Path = path.Join(parsedEnterpriseServerUrl.Path, "/rest/ui/installers/agents/binaries/NODEJS")
+	parsedEnterpriseServerUrl.Path = path.Join(parsedEnterpriseServerUrl.Path, "/rest/api/latest/installers/agents/binaries/NODEJS")
 	agentDownloadAbsoluteUrl := parsedEnterpriseServerUrl.String()
 	h.Log.Info("Agent download url %s", agentDownloadAbsoluteUrl)
 	var seekerTempFolder = filepath.Join(os.TempDir(), "seeker_tmp")

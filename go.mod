@@ -5,7 +5,7 @@ go 1.12
 require (
 	github.com/Dynatrace/libbuildpack-dynatrace v1.2.1
 	github.com/Masterminds/semver v1.4.2
-	github.com/cloudfoundry/libbuildpack v0.0.0-20190724153911-afcbb4418ec3
+	github.com/cloudfoundry/libbuildpack v0.0.0-20190801135423-3c80317f4baf
 	github.com/golang/mock v1.3.1
 	github.com/onsi/ginkgo v1.8.0
 	github.com/onsi/gomega v1.5.0

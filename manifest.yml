@@ -96,13 +96,13 @@ dependencies:
   source: https://nodejs.org/dist/v10.16.0/node-v10.16.0.tar.gz
   source_sha256: d00f1ffdb0a7413eaaf3afc393fb652ea713db135dcd3ccf6809370a07395713
 - name: node
-  version: 10.16.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.16.1-linux-x64-cflinuxfs3-90d7afe0.tgz
-  sha256: 90d7afe06325bc248927aebeb8dfb3267795fc10e441bf640b9ddc7ee24c2f4e
+  version: 10.16.2
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.16.2-linux-x64-cflinuxfs3-9d21a165.tgz
+  sha256: 9d21a165fedeccc9ffdd50657e51312e83ce7204370434d1cba9d02dc728c50a
   cf_stacks:
   - cflinuxfs3
-  source: https://nodejs.org/dist/v10.16.1/node-v10.16.1.tar.gz
-  source_sha256: 98c92edcfced73b572917d01a53aa9deefec85d8a2fe96c46fe10ee1d0a7763d
+  source: https://nodejs.org/dist/v10.16.2/node-v10.16.2.tar.gz
+  source_sha256: 5936ef12ab3f0ce5fbb6751c1bb41f626b6058f414a297b3d8c5eb418a27e8fe
 - name: node
   version: 12.6.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-12.6.0-linux-x64-cflinuxfs3-1d6cccfc.tgz

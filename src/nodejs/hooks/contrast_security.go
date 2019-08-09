@@ -1,28 +1,25 @@
 package hooks
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"os"
-	"path"
-	"path/filepath"
 	"strings"
 
 	"github.com/cloudfoundry/libbuildpack"
 )
 
+// ContrastSecurityHook implements libbuildpack.Hook to get Contrast credentials from bound Contrast service.
 type ContrastSecurityHook struct {
 	libbuildpack.DefaultHook
 	Log *libbuildpack.Logger
 }
 
+// ContrastSecurityCredentials represents the credentials used to authenticate with the ContrastUI (formerly TeamServer)
 type ContrastSecurityCredentials struct {
-	ApiKey      string
-	OrgUuid     string
+	APIKey      string
+	OrgUUID     string
 	ServiceKey  string
-	ContrastUrl string //formerly Teamserver URL
+	ContrastURL string //formerly Teamserver URL
 	Username    string
 }
 
@@ -34,6 +31,7 @@ func init() {
 	})
 }
 
+// AfterCompile gets the Contrast Security credentials from the VCAP_SERVICES environment variable.
 func (h ContrastSecurityHook) AfterCompile(stager *libbuildpack.Stager) error {
 	h.Log.Debug("Contrast Security after compile hook")
 
@@ -44,26 +42,12 @@ func (h ContrastSecurityHook) AfterCompile(stager *libbuildpack.Stager) error {
 		return nil
 	}
 
-	profileDDir := path.Join(stager.BuildDir(), ".profile.d")
+	var contrastSecurityScript = "export CONTRAST__API__API_KEY=" + contrastSecurityCredentials.APIKey + "\n" +
+		"export CONTRAST__API__URL=" + contrastSecurityCredentials.ContrastURL + "/Contrast/\n" +
+		"export CONTRAST__API__SERVICE_KEY=" + contrastSecurityCredentials.ServiceKey + "\n" +
+		"export CONTRAST__API__USER_NAME=" + contrastSecurityCredentials.Username + "\n"
 
-	if _, err := os.Stat(profileDDir); os.IsNotExist(err) {
-		os.Mkdir(profileDDir, 0777)
-	}
-
-	var b bytes.Buffer
-
-	b.WriteString(fmt.Sprintf("export CONTRAST__API__API_KEY=%s\n", contrastSecurityCredentials.ApiKey))
-	b.WriteString(fmt.Sprintf("export CONTRAST__API__URL=%s\n", contrastSecurityCredentials.ContrastUrl+"/Contrast/"))
-	b.WriteString(fmt.Sprintf("export CONTRAST__API__SERVICE_KEY=%s\n", contrastSecurityCredentials.ServiceKey))
-	b.WriteString(fmt.Sprintf("export CONTRAST__API__USER_NAME=%s\n", contrastSecurityCredentials.Username))
-
-	err := ioutil.WriteFile(filepath.Join(profileDDir, "contrast_security"), b.Bytes(), 0666)
-
-	if err != nil {
-		h.Log.Error(err.Error())
-	} else {
-		h.Log.Debug("Contrast Security successfully wrote %s", filepath.Join(profileDDir, "contrast_security"))
-	}
+	stager.WriteProfileD("contrast_security", contrastSecurityScript)
 
 	return nil
 }
@@ -141,10 +125,10 @@ func (h ContrastSecurityHook) GetCredentialsFromEnvironment() (bool, ContrastSec
 					username := getContrastCredentialString(credentials, "username")
 
 					contrastSecurityCredentials := ContrastSecurityCredentials{
-						ApiKey:      apiKey,
-						OrgUuid:     orgUUID,
+						APIKey:      apiKey,
+						OrgUUID:     orgUUID,
 						ServiceKey:  serviceKey,
-						ContrastUrl: contrastURL,
+						ContrastURL: contrastURL,
 						Username:    username,
 					}
 					return true, contrastSecurityCredentials

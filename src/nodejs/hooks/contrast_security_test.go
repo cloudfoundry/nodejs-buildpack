@@ -2,9 +2,12 @@ package hooks_test
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
+	"strings"
 
 	"github.com/cloudfoundry/libbuildpack"
 
@@ -40,53 +43,116 @@ var _ = Describe("contrastSecurityHook", func() {
 		})
 
 		AfterEach(func() {
-			os.RemoveAll(stager.BuildDir())
+			os.RemoveAll(filepath.Join(stager.DepDir(), "profile.d"))
 		})
 
 		Context("Contrast Security credentials in VCAP_SERVICES", func() {
 			BeforeEach(func() {
 				os.Setenv("VCAP_APPLICATION", `{}`)
 				os.Setenv("VCAP_SERVICES", `{
-                                                "contrast-security": [
-                                                 {
-                                                  "binding_name": "CCC",
-                                                  "credentials": {
-                                                   "api_key": "sample_api_key",
-                                                   "org_uuid": "sampe_org_uuid",
-                                                   "service_key": "sample_service_key",
-                                                   "teamserver_url": "sample_teamserver_url",
-                                                   "username": "username@example.com"
-                                                  }
-                                                 }
-                                                ]
-                                               }`)
+		                                                "contrast-security": [
+		                                                 {
+		                                                  "binding_name": "CCC",
+		                                                  "credentials": {
+		                                                   "api_key": "sample_api_key",
+		                                                   "org_uuid": "sampe_org_uuid",
+		                                                   "service_key": "sample_service_key",
+		                                                   "teamserver_url": "sample_teamserver_url",
+		                                                   "username": "username@example.com"
+		                                                  }
+		                                                 }
+		                                                ]
+		                                               }`)
 			})
 
-			It("writes the Contrast Security credentials to a file in .profile.d", func() {
+			It("writes the Contrast Security credentials to a file in profile.d/", func() {
 				err := contrast.AfterCompile(stager)
 				Expect(err).To(BeNil())
 
-				files, err := ioutil.ReadDir(path.Join(stager.BuildDir(), ".profile.d"))
+				profileDir := filepath.Join(stager.DepDir(), "profile.d")
+				files, err := ioutil.ReadDir(profileDir)
 				Expect(err).To(BeNil())
-				Expect(len(files)).To(Equal(1))
 
-				file := files[0]
-				Expect(file.Name()).To(Equal("contrast_security"))
+				var fileExists bool
+				var fileIndex int
+				for index, file := range files {
+					if strings.Contains(file.Name(), "contrast_security") {
+						fmt.Println(file.Name())
+						fileExists = true
+						fileIndex = index
+					}
+				}
+				Expect(fileExists).To(Equal(true))
 
-				fileBytes, err := ioutil.ReadFile(path.Join(stager.BuildDir(), ".profile.d", file.Name()))
+				fileBytes, err := ioutil.ReadFile(filepath.Join(profileDir, files[fileIndex].Name()))
 
 				if err != nil {
 					Fail(err.Error())
 				}
 
 				fileContents := string(fileBytes)
-				Expect(fileContents).To(Equal(`export CONTRAST__API__API_KEY=sample_api_key
-export CONTRAST__API__URL=sample_teamserver_url/Contrast/
-export CONTRAST__API__SERVICE_KEY=sample_service_key
-export CONTRAST__API__USER_NAME=username@example.com
-`))
+				var sampleExportList string = "export CONTRAST__API__API_KEY=sample_api_key\n" +
+					"export CONTRAST__API__URL=sample_teamserver_url/Contrast/\n" +
+					"export CONTRAST__API__SERVICE_KEY=sample_service_key\n" +
+					"export CONTRAST__API__USER_NAME=username@example.com\n"
+				Expect(fileContents).To(Equal(sampleExportList))
+			})
+		})
+
+		Context("Contrast Security credentials in user-provided VCAP_SERVICES", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_APPLICATION", `{}`)
+				os.Setenv("VCAP_SERVICES", `{"user-provided":[
+														{ "label": "user-provided",
+															"name": "contrast-security-service",
+															"tags": [ ],
+															"instance_name": "sample_instance_name",
+															"binding_name": null,
+															"credentials": {
+															"api_key": "sample_api_key",
+															"service_key": "sample_service_key",
+															"teamserver_url": "sample_teamserver_url",
+															"username": "username@example.com"
+															},
+															"syslog_drain_url": "",
+															"volume_mounts": [ ]
+															}
+													    ]}`)
 			})
 
+			It("writes the Contrast Security credentials to a file in profile.d/", func() {
+				err := contrast.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				profileDir := filepath.Join(stager.DepDir(), "profile.d")
+				files, err := ioutil.ReadDir(profileDir)
+				Expect(err).To(BeNil())
+				//Expect(len(files)).To(Equal(1))
+
+				var fileExists bool
+				var fileIndex int
+				for index, file := range files {
+					if strings.Contains(file.Name(), "contrast_security") {
+						fmt.Println(file.Name())
+						fileExists = true
+						fileIndex = index
+					}
+				}
+				Expect(fileExists).To(Equal(true))
+
+				fileBytes, err := ioutil.ReadFile(filepath.Join(profileDir, files[fileIndex].Name()))
+
+				if err != nil {
+					Fail(err.Error())
+				}
+
+				fileContents := string(fileBytes)
+				var sampleExportList string = "export CONTRAST__API__API_KEY=sample_api_key\n" +
+					"export CONTRAST__API__URL=sample_teamserver_url/Contrast/\n" +
+					"export CONTRAST__API__SERVICE_KEY=sample_service_key\n" +
+					"export CONTRAST__API__USER_NAME=username@example.com\n"
+				Expect(fileContents).To(Equal(sampleExportList))
+			})
 		})
 
 		Context("No Contrast Security credentials in VCAP_SERVICES", func() {
@@ -135,9 +201,9 @@ export CONTRAST__API__USER_NAME=username@example.com
 				success, credentials := contrast.GetCredentialsFromEnvironment()
 				Expect(success).To(BeTrue())
 				Expect(credentials).To(BeEquivalentTo(hooks.ContrastSecurityCredentials{
-					ApiKey:      "sample_api_key",
+					APIKey:      "sample_api_key",
 					ServiceKey:  "sample_service_key",
-					ContrastUrl: "sample_teamserver_url",
+					ContrastURL: "sample_teamserver_url",
 					Username:    "username@example.com",
 				}))
 			})
@@ -169,9 +235,9 @@ export CONTRAST__API__USER_NAME=username@example.com
 				success, credentials := contrast.GetCredentialsFromEnvironment()
 				Expect(success).To(BeTrue())
 				Expect(credentials).To(BeEquivalentTo(hooks.ContrastSecurityCredentials{
-					ApiKey:      "sample_api_key",
+					APIKey:      "sample_api_key",
 					ServiceKey:  "sample_service_key",
-					ContrastUrl: "sample_teamserver_url",
+					ContrastURL: "sample_teamserver_url",
 					Username:    "username@example.com",
 				}))
 			})
@@ -203,9 +269,9 @@ export CONTRAST__API__USER_NAME=username@example.com
 				success, credentials := contrast.GetCredentialsFromEnvironment()
 				Expect(success).To(BeTrue())
 				Expect(credentials).To(BeEquivalentTo(hooks.ContrastSecurityCredentials{
-					ApiKey:      "sample_api_key",
+					APIKey:      "sample_api_key",
 					ServiceKey:  "sample_service_key",
-					ContrastUrl: "sample_teamserver_url",
+					ContrastURL: "sample_teamserver_url",
 					Username:    "username@example.com",
 				}))
 			})
@@ -254,9 +320,9 @@ export CONTRAST__API__USER_NAME=username@example.com
 				success, credentials := contrast.GetCredentialsFromEnvironment()
 				Expect(success).To(BeTrue())
 				Expect(credentials).To(BeEquivalentTo(hooks.ContrastSecurityCredentials{
-					ApiKey:      "sample_api_key",
+					APIKey:      "sample_api_key",
 					ServiceKey:  "sample_service_key",
-					ContrastUrl: "sample_teamserver_url",
+					ContrastURL: "sample_teamserver_url",
 					Username:    "username@example.com",
 				}))
 			})
@@ -356,10 +422,10 @@ export CONTRAST__API__USER_NAME=username@example.com
 				success, credentials := contrast.GetCredentialsFromEnvironment()
 				Expect(success).To(BeTrue())
 				Expect(credentials).To(BeEquivalentTo(hooks.ContrastSecurityCredentials{
-					ApiKey:      "sample_api_key",
-					OrgUuid:     "sample_org_uuid",
+					APIKey:      "sample_api_key",
+					OrgUUID:     "sample_org_uuid",
 					ServiceKey:  "sample_service_key",
-					ContrastUrl: "sample_teamserver_url",
+					ContrastURL: "sample_teamserver_url",
 					Username:    "username@example.com",
 				}))
 			})

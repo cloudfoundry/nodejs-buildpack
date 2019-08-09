@@ -28,7 +28,7 @@ func (y *Yarn) Build(buildDir, cacheDir string) error {
 		return err
 	}
 
-	installArgs := []string{"install", "--pure-lockfile", "--ignore-engines", "--cache-folder", filepath.Join(cacheDir, ".cache/yarn"), "--modules-folder", filepath.Join(buildDir, "node_modules")}
+	installArgs := []string{"install", "--pure-lockfile", "--ignore-engines", "--cache-folder", filepath.Join(cacheDir, ".cache/yarn")}
 	checkArgs := []string{"check"}
 
 	yarnConfig := map[string]string{}

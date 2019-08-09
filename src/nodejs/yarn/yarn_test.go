@@ -3,10 +3,11 @@ package yarn_test
 import (
 	"bytes"
 	"io/ioutil"
-	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/yarn"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/yarn"
 
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/cloudfoundry/libbuildpack/ansicleaner"
@@ -106,7 +107,7 @@ var _ = Describe("Yarn", func() {
 
 			It("runs yarn install with offline arguments and npm_config_nodedir", func() {
 				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
-				Expect(yarnInstallArgs).To(Equal([]string{"yarn", "install", "--pure-lockfile", "--ignore-engines", "--cache-folder", filepath.Join(cacheDir, ".cache/yarn"), "--modules-folder", filepath.Join(buildDir, "node_modules"), "--offline"}))
+				Expect(yarnInstallArgs).To(Equal([]string{"yarn", "install", "--pure-lockfile", "--ignore-engines", "--cache-folder", filepath.Join(cacheDir, ".cache/yarn"), "--offline"}))
 			})
 
 			Context("package.json matches yarn.lock", func() {
@@ -154,7 +155,7 @@ var _ = Describe("Yarn", func() {
 
 			It("runs yarn install", func() {
 				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
-				Expect(yarnInstallArgs).To(Equal([]string{"yarn", "install", "--pure-lockfile", "--ignore-engines", "--cache-folder", filepath.Join(cacheDir, ".cache/yarn"), "--modules-folder", filepath.Join(buildDir, "node_modules")}))
+				Expect(yarnInstallArgs).To(Equal([]string{"yarn", "install", "--pure-lockfile", "--ignore-engines", "--cache-folder", filepath.Join(cacheDir, ".cache/yarn")}))
 			})
 
 			Context("package.json matches yarn.lock", func() {

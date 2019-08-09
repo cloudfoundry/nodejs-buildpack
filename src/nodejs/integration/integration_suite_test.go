@@ -121,7 +121,7 @@ func AssertUsesProxyDuringStagingIfPresent(fixtureName string) {
 			Expect(err).To(BeNil())
 			defer proxy.Close()
 
-			bpFile := filepath.Join(bpDir, buildpackVersion+"tmp")
+			bpFile := filepath.Join(bpDir, buildpackVersion+cutlass.RandStringRunes(6)+"tmp")
 			cmd := exec.Command("cp", packagedBuildpack.File, bpFile)
 			err = cmd.Run()
 			Expect(err).To(BeNil())
@@ -152,7 +152,7 @@ func AssertNoInternetTraffic(fixtureName string) {
 			Skip("Running uncached tests")
 		}
 
-		bpFile := filepath.Join(bpDir, buildpackVersion+"tmp")
+		bpFile := filepath.Join(bpDir, buildpackVersion+cutlass.RandStringRunes(6)+"tmp")
 		cmd := exec.Command("cp", packagedBuildpack.File, bpFile)
 		err := cmd.Run()
 		Expect(err).To(BeNil())

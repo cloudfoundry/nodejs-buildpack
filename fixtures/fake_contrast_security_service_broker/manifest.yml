@@ -1,0 +1,5 @@
+---
+applications:
+- name: fake_contrast_security_service_broker
+  buildpack: ruby_buildpack
+

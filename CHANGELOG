@@ -1,3 +1,74 @@
+v1.6.53 Jul 25, 2019
+=====================
+
+* Add node 12.7.0, remove node 12.3.1
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/167474840)
+
+* Merge pull request #200 from kanikashah90/deleteAppDynamicsBP
+  Guarding the appdynamics baked-in buildpack with environment variable
+
+* Merge pull request #194 from seymurfarziyev/develop
+  downloaded and installed libbuildpack-dynatrace release v1.2.1
+
+* Add yarn 1.17.3, remove yarn 1.16.0
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/167268056)
+
+* Guarding the appdynamics baked-in buildpack with environment variable
+
+* Downloaded and installed libbuildpack-dynatrace release v1.2.1
+
+
+v1.6.52 Jul 08, 2019
+=====================
+
+* Add node 12.6.0, remove node 12.5.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/167069784)
+
+* Pin appdynamics to previously working version
+  (https://www.pivotaltracker.com/story/show/166825935)
+
+* Remove node 11.X.X as it is deprecated
+  (https://www.pivotaltracker.com/story/show/166471531)
+
+* Add node 12.5.0, remove node 12.4.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/166957050)
+
+* Add Contrast Security hook
+  (https://www.pivotaltracker.com/story/show/166244737)
+
+* Add node 12.4.0, remove node 12.1.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/166445141)
+
+v1.6.51 May 31, 2019
+=====================
+
+* Use floating version for npm test
+  - We shouldn't depend on any versions for any dependencies
+    in integration tests, except for brats tests
+
+* Add node 10.16.0, remove node 10.15.2
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/166317034)
+
+* Add node 12.3.1, remove node 12.2.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/166194213)
+  (https://www.pivotaltracker.com/story/show/166165638)
+
+* Add yarn 1.16.0, remove yarn 1.15.2
+  for stack(s) cflinuxfs2, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/165924485)
+
+* Add node 12.2.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/165865903)
+
+
 v1.6.50 May 02, 2019
 =====================
 

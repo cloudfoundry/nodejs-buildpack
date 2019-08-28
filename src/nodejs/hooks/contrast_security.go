@@ -1,11 +1,11 @@
 package hooks
 
 import (
-  "encoding/json"
-  "os"
-  "strings"
+	"encoding/json"
+	"os"
+	"strings"
 
-  "github.com/cloudfoundry/libbuildpack"
+	"github.com/cloudfoundry/libbuildpack"
 )
 
 type ContrastSecurityHook struct {
@@ -39,14 +39,14 @@ func (h ContrastSecurityHook) AfterCompile(stager *libbuildpack.Stager) error {
 		return nil
 	}
 
-  h.Log.Info("Contrast Security credentials found. Configuring environment for [%s].", contrastSecurityCredentials.ContrastUrl)
+	h.Log.Info("Contrast Security credentials found. Configuring environment for [%s].", contrastSecurityCredentials.ContrastUrl)
 
-  var contrastSecurityScript = "export CONTRAST__API__API_KEY=" + contrastSecurityCredentials.ApiKey + "\n" +
-    "export CONTRAST__API__URL=" + contrastSecurityCredentials.ContrastUrl + "/Contrast/\n" +
-    "export CONTRAST__API__SERVICE_KEY=" + contrastSecurityCredentials.ServiceKey + "\n" +
-    "export CONTRAST__API__USER_NAME=" + contrastSecurityCredentials.Username + "\n"
+	var contrastSecurityScript = "export CONTRAST__API__API_KEY=" + contrastSecurityCredentials.ApiKey + "\n" +
+		"export CONTRAST__API__URL=" + contrastSecurityCredentials.ContrastUrl + "/Contrast/\n" +
+		"export CONTRAST__API__SERVICE_KEY=" + contrastSecurityCredentials.ServiceKey + "\n" +
+		"export CONTRAST__API__USER_NAME=" + contrastSecurityCredentials.Username + "\n"
 
-  stager.WriteProfileD("contrast_security", contrastSecurityScript)
+	stager.WriteProfileD("contrast_security", contrastSecurityScript)
 
 	h.Log.Debug("Contrast Security successfully wrote to .profile.d")
 
@@ -54,49 +54,49 @@ func (h ContrastSecurityHook) AfterCompile(stager *libbuildpack.Stager) error {
 }
 
 func getContrastCredentialString(credentials map[string]interface{}, key string) string {
-  if value, exists := credentials[key]; exists {
-    return value.(string)
-  }
-  return ""
+	if value, exists := credentials[key]; exists {
+		return value.(string)
+	}
+	return ""
 }
 
 func containsContrastService(key string, services interface{}, query string) bool {
-  var serviceName string
-  var serviceLabel string
-  var serviceTags []interface{}
+	var serviceName string
+	var serviceLabel string
+	var serviceTags []interface{}
 
-  if strings.Contains(key, query) {
-    return true
-  }
-  val := services.([]interface{})
-  for serviceIndex := range val {
-    service := val[serviceIndex].(map[string]interface{})
-    if v, ok := service["name"]; ok {
-      serviceName = v.(string)
-    }
-    if v, ok := service["label"]; ok {
-      serviceLabel = v.(string)
-    }
-    if strings.Contains(serviceName, query) || strings.Contains(serviceLabel, query) {
-      return true
-    }
-    if v, ok := service["tags"]; ok {
-      serviceTags = v.([]interface{})
-    }
-    for _, tagValue := range serviceTags {
-      if strings.Contains(tagValue.(string), query) {
-        return true
-      }
-    }
-  }
-  return false
+	if strings.Contains(key, query) {
+		return true
+	}
+	val := services.([]interface{})
+	for serviceIndex := range val {
+		service := val[serviceIndex].(map[string]interface{})
+		if v, ok := service["name"]; ok {
+			serviceName = v.(string)
+		}
+		if v, ok := service["label"]; ok {
+			serviceLabel = v.(string)
+		}
+		if strings.Contains(serviceName, query) || strings.Contains(serviceLabel, query) {
+			return true
+		}
+		if v, ok := service["tags"]; ok {
+			serviceTags = v.([]interface{})
+		}
+		for _, tagValue := range serviceTags {
+			if strings.Contains(tagValue.(string), query) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (h ContrastSecurityHook) GetCredentialsFromEnvironment() (bool, ContrastSecurityCredentials) {
 
-  type rawVcapServicesJSONValue map[string]interface{}
+	type rawVcapServicesJSONValue map[string]interface{}
 
-  var vcapServices rawVcapServicesJSONValue
+	var vcapServices rawVcapServicesJSONValue
 
 	vcapServicesEnvironment := os.Getenv("VCAP_SERVICES")
 
@@ -112,29 +112,29 @@ func (h ContrastSecurityHook) GetCredentialsFromEnvironment() (bool, ContrastSec
 	}
 
 	for key, services := range vcapServices {
-    if containsContrastService(key, services, "contrast-security") {
-      h.Log.Debug("Contrast Security found credentials in VCAP_SERVICES")
-      val := services.([]interface{})
-      for serviceIndex := range val {
-        service := val[serviceIndex].(map[string]interface{})
-        if credentials, exists := service["credentials"].(map[string]interface{}); exists {
-          apiKey := getContrastCredentialString(credentials, "api_key")
-          orgUuid := getContrastCredentialString(credentials, "org_uuid")
-          serviceKey := getContrastCredentialString(credentials, "service_key")
-          contrastUrl := getContrastCredentialString(credentials, "teamserver_url")
-          username := getContrastCredentialString(credentials, "username")
+		if containsContrastService(key, services, "contrast-security") {
+			h.Log.Debug("Contrast Security found credentials in VCAP_SERVICES")
+			val := services.([]interface{})
+			for serviceIndex := range val {
+				service := val[serviceIndex].(map[string]interface{})
+				if credentials, exists := service["credentials"].(map[string]interface{}); exists {
+					apiKey := getContrastCredentialString(credentials, "api_key")
+					orgUuid := getContrastCredentialString(credentials, "org_uuid")
+					serviceKey := getContrastCredentialString(credentials, "service_key")
+					contrastUrl := getContrastCredentialString(credentials, "teamserver_url")
+					username := getContrastCredentialString(credentials, "username")
 
-          contrastSecurityCredentials := ContrastSecurityCredentials{
-            ApiKey:      apiKey,
-            OrgUuid:     orgUuid,
-            ServiceKey:  serviceKey,
-            ContrastUrl: contrastUrl,
-            Username:    username,
-          }
-          return true, contrastSecurityCredentials
-        }
-      }
-    }
+					contrastSecurityCredentials := ContrastSecurityCredentials{
+						ApiKey:      apiKey,
+						OrgUuid:     orgUuid,
+						ServiceKey:  serviceKey,
+						ContrastUrl: contrastUrl,
+						Username:    username,
+					}
+					return true, contrastSecurityCredentials
+				}
+			}
+		}
 	}
 
 	return false, ContrastSecurityCredentials{}

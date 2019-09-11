@@ -1,3 +1,13 @@
+v1.6.56 Sep 11, 2019
+=====================
+
+* Add node 12.10.0, remove node 12.8.1
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/168299359)
+
+* Configure Contrast Security hook to respond to user provided services
+
+
 v1.6.55 Aug 28, 2019
 =====================
 

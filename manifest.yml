@@ -92,11 +92,11 @@ dependencies:
   source: https://nodejs.org/dist/v12.10.0/node-v12.10.0.tar.gz
   source_sha256: 371a3e39f1a14adbd7b37dee57641075ccfa240bd990630ff213298f16ad49b4
 - name: yarn
-  version: 1.18.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn-1.18.0-any-stack-2f8d93c2.tar.gz
-  sha256: 2f8d93c217ecca06eb720794c8d1484a67d37bdb58ab761108b5c651d59d3fc6
+  version: 1.19.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn-1.19.0-any-stack-6bbdaab9.tar.gz
+  sha256: 6bbdaab9c31eedbe7b53cbcde2be06b8c926f139bd0f7c00fccad406016e8934
   cf_stacks:
   - cflinuxfs3
-  source: https://github.com/yarnpkg/yarn/releases/download/v1.18.0/yarn-v1.18.0.tar.gz
-  source_sha256: 2f8d93c217ecca06eb720794c8d1484a67d37bdb58ab761108b5c651d59d3fc6
+  source: https://github.com/yarnpkg/yarn/releases/download/v1.19.0/yarn-v1.19.0.tar.gz
+  source_sha256: 6bbdaab9c31eedbe7b53cbcde2be06b8c926f139bd0f7c00fccad406016e8934
 pre_package: scripts/build.sh

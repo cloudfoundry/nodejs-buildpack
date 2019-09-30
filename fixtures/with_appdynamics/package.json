@@ -11,7 +11,7 @@
   "dependencies": {
     "express": "~4.15.2",
     "logfmt": "~1.2.0",
-    "appdynamics": "4.5.20"
+    "appdynamics": "4.5.15"
   },
   "engines": {
     "node": "~>10"

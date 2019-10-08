@@ -1,7 +1,6 @@
 package integration_test
 
 import (
-	"path/filepath"
 	"time"
 
 	"github.com/cloudfoundry/libbuildpack/cutlass"
@@ -29,7 +28,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 	It("bind NodeJS app with snyk service", func() {
 		By("set up a service broker", func() {
-			serviceBrokerApp = cutlass.New(filepath.Join(bpDir, "fixtures", "fake_snyk_service_broker"))
+			serviceBrokerApp = cutlass.New(Fixtures("fake_snyk_service_broker"))
 			serviceBrokerApp.Buildpacks = []string{
 				"https://github.com/cloudfoundry/ruby-buildpack#master",
 			}
@@ -47,7 +46,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			RunCF("create-service-broker", serviceBrokerApp.Name, "username", "password", serviceBrokerURL, "--space-scoped")
 			RunCF("create-service", serviceOffering, "public", serviceFromBroker)
 
-			app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_snyk"))
+			app = cutlass.New(Fixtures("with_snyk"))
 			app.SetEnv("BP_DEBUG", "true")
 			app.SetEnv("SNYK_SEVERITY_THRESHOLD", "low")
 			Expect(app.PushNoStart()).To(Succeed())

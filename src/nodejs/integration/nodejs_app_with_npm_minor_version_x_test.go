@@ -1,8 +1,6 @@
 package integration_test
 
 import (
-	"path/filepath"
-
 	"github.com/cloudfoundry/libbuildpack/cutlass"
 
 	. "github.com/onsi/ginkgo"
@@ -20,7 +18,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 	Context("deploying a Node.js app with a specified npm version ending with .x", func() {
 		BeforeEach(func() {
-			app = cutlass.New(filepath.Join(bpDir, "fixtures", "npm_version_with_minor_x"))
+			app = cutlass.New(Fixtures("npm_version_with_minor_x"))
 		})
 
 		It("should not attempt to download npm because it should match existing version", func() {

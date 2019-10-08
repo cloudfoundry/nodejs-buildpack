@@ -1,7 +1,6 @@
 package integration_test
 
 import (
-	"path/filepath"
 	"time"
 
 	"github.com/cloudfoundry/libbuildpack/cutlass"
@@ -42,7 +41,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	})
 
 	It("deploying a NodeJS app with appdynamics", func() {
-		app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_appdynamics"))
+		app = cutlass.New(Fixtures("with_appdynamics"))
 		app.Name = "nodejs-appdynamics-" + cutlass.RandStringRunes(10)
 		app.Memory = "256M"
 		app.Disk = "512M"
@@ -99,7 +98,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		By("Pushing an app with a marketplace provided service", func() {
 			By("set up a service broker", func() {
-				serviceBrokerApp = cutlass.New(filepath.Join(bpDir, "fixtures", "fake_appdynamics_service_broker"))
+				serviceBrokerApp = cutlass.New(Fixtures("fake_appdynamics_service_broker"))
 				serviceBrokerApp.Buildpacks = []string{
 					"https://github.com/cloudfoundry/ruby-buildpack#master",
 				}

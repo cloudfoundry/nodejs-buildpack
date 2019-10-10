@@ -1,3 +1,31 @@
+v1.7.0 Oct 10, 2019
+=====================
+
+* Add node 8.16.2, remove node 8.16.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/169051314)
+
+* Add yarn 1.19.1, remove yarn 1.19.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/169010397)
+
+* Add node 12.11.1, remove node 12.9.1
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/168880454)
+
+* Corrects configuration settings to enable AppDynamics agent
+  The appdynamics npm package v4.5.16 introduced 2 undocumented changes
+  that broke the node agent booting process:
+    1. they switched the toggle for choosing to use libagent vs. the Java
+    proxy
+    2. they required an environment variable to be set so that the
+    appdynamics-jre npm package would be installed
+  (https://www.pivotaltracker.com/story/show/168543239)
+
+* Remove cflinuxfs2 dependencies.
+  Fixes #198
+  (https://www.pivotaltracker.com/story/show/166710427)
+
 v1.6.56 Sep 11, 2019
 =====================
 

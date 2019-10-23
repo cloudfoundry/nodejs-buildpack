@@ -1,12 +1,11 @@
 package cutlass
 
 import (
+	"bytes"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
@@ -17,11 +16,6 @@ import (
 	"github.com/blang/semver"
 	"github.com/tidwall/gjson"
 )
-
-var DefaultMemory string = ""
-var DefaultDisk string = ""
-var Cached bool = false
-var DefaultStdoutStderr io.Writer = nil
 
 type cfConfig struct {
 	SpaceFields struct {
@@ -383,10 +377,11 @@ func (a *App) Push() error {
 	}
 
 	command := exec.Command("cf", "start", a.Name)
-	command.Stdout = DefaultStdoutStderr
-	command.Stderr = DefaultStdoutStderr
+	buf := &bytes.Buffer{}
+	command.Stdout = buf
+	command.Stderr = buf
 	if err := command.Run(); err != nil {
-		return err
+		return fmt.Errorf("err: %s\n\nlogs: %s", err, buf)
 	}
 	return nil
 }
@@ -492,14 +487,4 @@ func (a *App) Destroy() error {
 	command.Stdout = DefaultStdoutStderr
 	command.Stderr = DefaultStdoutStderr
 	return command.Run()
-}
-
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz")
-
-func RandStringRunes(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
 }

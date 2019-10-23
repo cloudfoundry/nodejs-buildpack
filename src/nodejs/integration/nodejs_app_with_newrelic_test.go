@@ -1,7 +1,6 @@
 package integration_test
 
 import (
-	"path/filepath"
 	"time"
 
 	"github.com/cloudfoundry/libbuildpack/cutlass"
@@ -33,7 +32,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 	It("deploying a NodeJS app with NewRelic", func() {
 		By("set up a service broker", func() {
-			serviceBrokerApp = cutlass.New(filepath.Join(bpDir, "fixtures", "fake_newrelic_service_broker"))
+			serviceBrokerApp = cutlass.New(Fixtures("fake_newrelic_service_broker"))
 			serviceBrokerApp.Buildpacks = []string{
 				"https://github.com/cloudfoundry/ruby-buildpack#master",
 			}
@@ -46,7 +45,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_newrelic"))
+		app = cutlass.New(Fixtures("with_newrelic"))
 
 		By("Pushing a newrelic app without a service", func() {
 			PushAppAndConfirm(app)

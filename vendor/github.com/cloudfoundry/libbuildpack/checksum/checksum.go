@@ -4,28 +4,24 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/cloudfoundry/libbuildpack"
+	"time"
 )
 
+const separator = string(filepath.Separator)
+
 type Checksum struct {
-	dir           string
-	timestampFile string
+	dir   string
+	start time.Time
 }
 
 func New(dir string) *Checksum {
-	c := &Checksum{dir: dir}
-
-	if f, err := ioutil.TempFile("", "checksum"); err == nil {
-		f.Close()
-		c.timestampFile = f.Name()
+	return &Checksum{
+		dir:   dir,
+		start: time.Now(),
 	}
-
-	return c
 }
 
 func Do(dir string, debug func(format string, args ...interface{}), exec func() error) error {
@@ -33,18 +29,47 @@ func Do(dir string, debug func(format string, args ...interface{}), exec func() 
 	if sum, err := checksum.calc(); err == nil {
 		debug("Checksum Before (%s): %s", dir, sum)
 	}
+
 	err := exec()
+	if err != nil {
+		return err
+	}
+
 	if sum, err := checksum.calc(); err == nil {
 		debug("Checksum After (%s): %s", dir, sum)
 	}
 
-	if checksum.timestampFile != "" {
-		if filesChanged, err := (&libbuildpack.Command{}).Output(checksum.dir, "find", ".", "-newer", checksum.timestampFile, "-not", "-path", "./.cloudfoundry/*", "-not", "-path", "./.cloudfoundry"); err == nil && filesChanged != "" {
-			debug("Below files changed:")
-			debug(filesChanged)
+	var changedFiles []string
+	err = filepath.Walk(checksum.dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.ModTime().After(checksum.start) {
+			relativePath, err := filepath.Rel(checksum.dir, path)
+			if err != nil {
+				return err
+			}
+
+			if parts := strings.Split(relativePath, separator); parts[0] != ".cloudfoundry" {
+				changedFiles = append(changedFiles, strings.Join([]string{".", relativePath}, separator))
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	if len(changedFiles) > 0 {
+		debug("Below files changed:")
+		for _, file := range changedFiles {
+			debug(file)
 		}
 	}
-	return err
+
+	return nil
 }
 
 func (c *Checksum) calc() (string, error) {

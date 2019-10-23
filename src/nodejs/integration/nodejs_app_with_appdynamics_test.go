@@ -1,7 +1,6 @@
 package integration_test
 
 import (
-	"path/filepath"
 	"time"
 
 	"github.com/cloudfoundry/libbuildpack/cutlass"
@@ -12,8 +11,12 @@ import (
 
 var _ = Describe("CF NodeJS Buildpack", func() {
 	var (
-		app, serviceBrokerApp                                             *cutlass.App
-		serviceBrokerURL, serviceNameOne, serviceNameTwo, serviceOffering string
+		app              *cutlass.App
+		serviceBrokerApp *cutlass.App
+		serviceBrokerURL string
+		serviceNameOne   string
+		serviceNameTwo   string
+		serviceOffering  string
 	)
 
 	appConfig := func() (string, error) {
@@ -38,27 +41,19 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	})
 
 	It("deploying a NodeJS app with appdynamics", func() {
-		By("set up a service broker", func() {
-			serviceBrokerApp = cutlass.New(filepath.Join(bpDir, "fixtures", "fake_appdynamics_service_broker"))
-			serviceBrokerApp.Buildpacks = []string{
-				"https://github.com/cloudfoundry/ruby-buildpack#master",
-			}
-			serviceBrokerApp.SetEnv("OFFERING_NAME", serviceOffering)
-			Expect(serviceBrokerApp.Push()).To(Succeed())
-			Eventually(func() ([]string, error) { return serviceBrokerApp.InstanceStates() }, 20*time.Second).Should(Equal([]string{"RUNNING"}))
-
-			var err error
-			serviceBrokerURL, err = serviceBrokerApp.GetUrl("")
-			Expect(err).ToNot(HaveOccurred())
-		})
-
-		app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_appdynamics"))
+		app = cutlass.New(Fixtures("with_appdynamics"))
 		app.Name = "nodejs-appdynamics-" + cutlass.RandStringRunes(10)
 		app.Memory = "256M"
 		app.Disk = "512M"
 
 		By("Pushing an app with a user provided service", func() {
-			Expect(RunCF("create-user-provided-service", serviceNameOne, "-p", `{"host-name":"test-ups-host","port":"1234","account-name":"test-account","ssl-enabled":"true","account-access-key":"test-key"}`)).To(Succeed())
+			Expect(RunCF("create-user-provided-service", serviceNameOne, "-p", `{
+				"account-access-key": "test-key",
+				"account-name": "test-account",
+				"host-name": "test-ups-host",
+				"port": "1234",
+				"ssl-enabled": "true"
+			}`)).To(Succeed())
 
 			Expect(app.PushNoStart()).To(Succeed())
 			Expect(RunCF("bind-service", app.Name, serviceNameOne)).To(Succeed())
@@ -77,7 +72,13 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		})
 
 		By("Pushing an app with a user provided service named app-dynamics", func() {
-			Expect(RunCF("create-user-provided-service", serviceNameTwo, "-p", `{"host-name":"test-ups-2-host","port":"1234","account-name":"test-account","ssl-enabled":"true","account-access-key":"test-key"}`)).To(Succeed())
+			Expect(RunCF("create-user-provided-service", serviceNameTwo, "-p", `{
+					"account-access-key": "test-key",
+					"account-name": "test-account",
+					"host-name": "test-ups-2-host",
+					"port": "1234",
+					"ssl-enabled": "true"
+				}`)).To(Succeed())
 
 			app.Stdout.Reset()
 
@@ -95,7 +96,21 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(RunCF("delete-service", "-f", serviceNameTwo)).To(Succeed())
 		})
 
-		By("Pushing an app with a marketplace pr ovided service", func() {
+		By("Pushing an app with a marketplace provided service", func() {
+			By("set up a service broker", func() {
+				serviceBrokerApp = cutlass.New(Fixtures("fake_appdynamics_service_broker"))
+				serviceBrokerApp.Buildpacks = []string{
+					"https://github.com/cloudfoundry/ruby-buildpack#master",
+				}
+				serviceBrokerApp.SetEnv("OFFERING_NAME", serviceOffering)
+				Expect(serviceBrokerApp.Push()).To(Succeed())
+				Eventually(func() ([]string, error) { return serviceBrokerApp.InstanceStates() }, 20*time.Second).Should(Equal([]string{"RUNNING"}))
+
+				var err error
+				serviceBrokerURL, err = serviceBrokerApp.GetUrl("")
+				Expect(err).ToNot(HaveOccurred())
+			})
+
 			serviceFromBroker := "appdynamics-sb-" + cutlass.RandStringRunes(10)
 			Expect(RunCF("create-service-broker", serviceBrokerApp.Name, "username", "password", serviceBrokerURL, "--space-scoped")).To(Succeed())
 			Expect(RunCF("create-service", serviceOffering, "public", serviceFromBroker)).To(Succeed())

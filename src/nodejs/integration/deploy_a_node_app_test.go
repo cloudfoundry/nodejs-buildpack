@@ -23,7 +23,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	Describe("nodeJS versions", func() {
 		Context("when specifying a range for the nodeJS version in the package.json", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "node_version_range"))
+				app = cutlass.New(Fixtures("node_version_range"))
 			})
 
 			It("resolves to a nodeJS version successfully", func() {
@@ -36,7 +36,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		Context("when specifying a version 6 for the nodeJS version in the package.json", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "node_version_6"))
+				app = cutlass.New(Fixtures("node_version_6"))
 			})
 
 			It("resolves to a nodeJS version successfully", func() {
@@ -63,7 +63,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		Context("when not specifying a nodeJS version in the package.json", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "without_node_version"))
+				app = cutlass.New(Fixtures("without_node_version"))
 			})
 
 			It("resolves to the stable nodeJS version successfully", func() {
@@ -76,7 +76,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		Context("with an unreleased nodejs version", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "unreleased_node_version"))
+				app = cutlass.New(Fixtures("unreleased_node_version"))
 			})
 
 			It("displays a nice error message and gracefully fails", func() {
@@ -89,7 +89,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		Context("with an unsupported, but released, nodejs version", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "unsupported_node_version"))
+				app = cutlass.New(Fixtures("unsupported_node_version"))
 			})
 
 			It("displays a nice error messages and gracefully fails", func() {
@@ -103,7 +103,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 	Context("with no Procfile and OPTIMIZE_MEMORY=true", func() {
 		BeforeEach(func() {
-			app = cutlass.New(filepath.Join(bpDir, "fixtures", "simple_app"))
+			app = cutlass.New(Fixtures("simple_app"))
 			app.SetEnv("OPTIMIZE_MEMORY", "true")
 		})
 
@@ -116,7 +116,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 	Context("with no Procfile and OPTIMIZE_MEMORY is unset", func() {
 		BeforeEach(func() {
-			app = cutlass.New(filepath.Join(bpDir, "fixtures", "simple_app"))
+			app = cutlass.New(Fixtures("simple_app"))
 		})
 
 		It("is not running with autosized max_old_space_size", func() {
@@ -127,7 +127,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		Context("a nvmrc file that takes precedence over package.json", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "simple_app_with_nvmrc"))
+				app = cutlass.New(Fixtures("simple_app_with_nvmrc"))
 			})
 
 			It("deploys", func() {
@@ -141,7 +141,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	Describe("Vendored Dependencies", func() {
 		Context("with an app that has vendored dependencies", func() {
 			It("deploys", func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "vendored_dependencies"))
+				app = cutlass.New(Fixtures("vendored_dependencies"))
 				app.SetEnv("BP_DEBUG", "true")
 				PushAppAndConfirm(app)
 
@@ -183,7 +183,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			})
 
 			It("deploys", func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "vendored_dependencies_with_binaries"))
+				app = cutlass.New(Fixtures("vendored_dependencies_with_binaries"))
 				app.SetEnv("BP_DEBUG", "true")
 				PushAppAndConfirm(app)
 			})
@@ -191,7 +191,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		Context("with an app with a yarn.lock and vendored dependencies", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_yarn_vendored"))
+				app = cutlass.New(Fixtures("with_yarn_vendored"))
 				app.SetEnv("BP_DEBUG", "true")
 			})
 
@@ -208,7 +208,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		Context("with an incomplete node_modules directory", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "incomplete_node_modules"))
+				app = cutlass.New(Fixtures("incomplete_node_modules"))
 			})
 
 			It("downloads missing dependencies from package.json", func() {
@@ -221,7 +221,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		})
 		Context("with an incomplete package.json", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "incomplete_package_json"))
+				app = cutlass.New(Fixtures("incomplete_package_json"))
 			})
 
 			It("overwrites the vendored modules not listed in package.json", func() {
@@ -236,7 +236,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	Describe("No Vendored Dependencies", func() {
 		Context("with an app with no vendored dependencies", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "no_vendored_dependencies"))
+				app = cutlass.New(Fixtures("no_vendored_dependencies"))
 				app.SetEnv("BP_DEBUG", "true")
 			})
 
@@ -260,7 +260,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		})
 		Context("with an app with a yarn.lock file", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "with_yarn"))
+				app = cutlass.New(Fixtures("with_yarn"))
 				app.SetEnv("BP_DEBUG", "true")
 			})
 
@@ -286,7 +286,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		Context("with an app with an out of date yarn.lock", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "out_of_date_yarn_lock"))
+				app = cutlass.New(Fixtures("out_of_date_yarn_lock"))
 			})
 
 			It("warns that yarn.lock is out of date", func() {
@@ -297,7 +297,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		Context("with an app with pre and post scripts", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "pre_post_commands"))
+				app = cutlass.New(Fixtures("pre_post_commands"))
 			})
 
 			It("runs the scripts through npm run", func() {
@@ -316,7 +316,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		Context("with an app using node-pre-gyp and yarn", func() {
 			BeforeEach(func() {
-				app = cutlass.New(filepath.Join(bpDir, "fixtures", "yarn_pre_gyp"))
+				app = cutlass.New(Fixtures("yarn_pre_gyp"))
 			})
 
 			It("successfully deploys", func() {
@@ -333,7 +333,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			if !cutlass.Cached {
 				Skip("running uncached tests")
 			}
-			app = cutlass.New(filepath.Join(bpDir, "fixtures", "logenv"))
+			app = cutlass.New(Fixtures("logenv"))
 		})
 
 		It("sets the NODE_HOME to correct value", func() {
@@ -350,7 +350,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 	Describe("System CA Store", func() {
 		BeforeEach(func() {
-			app = cutlass.New(filepath.Join(bpDir, "fixtures", "use-openssl-ca"))
+			app = cutlass.New(Fixtures("use-openssl-ca"))
 			app.SetEnv("SSL_CERT_FILE", "cert.pem")
 		})
 		It("uses the system CA store (or env)", func() {

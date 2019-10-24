@@ -26,11 +26,25 @@ const EntryPointFile = "SEEKER_APP_ENTRY_POINT"
 type SeekerCommand interface {
 	Execute(dir string, stdout io.Writer, stderr io.Writer, program string, args ...string) error
 }
+
+type Downloader interface {
+	DownloadFile(url, destFile string) error
+}
+type Unzipper interface {
+	Unzip(zipFile, absoluteFolderPath string) error
+}
+type Versioner interface {
+	GetSeekerVersion(SeekerCredentials) (error, string)
+}
+
 type SeekerAfterCompileHook struct {
 	libbuildpack.DefaultHook
 	Log                *libbuildpack.Logger
 	serviceCredentials *SeekerCredentials
 	Command            SeekerCommand
+	Downloader         Downloader
+	Unzzipper          Unzipper
+	Versioner          Versioner
 }
 
 type SeekerCredentials struct {
@@ -43,7 +57,13 @@ type SeekerCredentials struct {
 func init() {
 	logger := libbuildpack.NewLogger(os.Stdout)
 	command := &libbuildpack.Command{}
-	libbuildpack.AddHook(&SeekerAfterCompileHook{Log: logger, Command: command})
+	libbuildpack.AddHook(&SeekerAfterCompileHook{
+		Log:        logger,
+		Command:    command,
+		Downloader: SeekerDownloader{},
+		Unzzipper:  SeekerUnzipper{Command: command},
+		Versioner:  SeekerVersioner{Log: logger}},
+	)
 }
 
 func (h SeekerAfterCompileHook) AfterCompile(compiler *libbuildpack.Stager) error {
@@ -113,41 +133,7 @@ func (h SeekerAfterCompileHook) AfterCompile(compiler *libbuildpack.Stager) erro
 }
 
 func (h SeekerAfterCompileHook) getSeekerVersion() (error, string) {
-	type SeekerVersionResponse struct {
-		PublicName  string `json:"publicName"`
-		Version     string `json:"version"`
-		BuildNumber string `json:"buildNumber"`
-		ScmBranch   string `json:"scmBranch"`
-		ScmRevision string `json:"scmRevision"`
-	}
-	var err error
-	var response *http.Response
-	parsedEnterpriseServerUrl, err := url.Parse(h.serviceCredentials.EnterpriseServerURL)
-	if err != nil {
-		return err, ""
-	}
-	parsedEnterpriseServerUrl.Path = path.Join(parsedEnterpriseServerUrl.Path, "/rest/api/version")
-	versionApiAbsoluteUrl := parsedEnterpriseServerUrl.String()
-	if strings.HasPrefix(versionApiAbsoluteUrl, "https") {
-		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-		response, err = http.Get(versionApiAbsoluteUrl)
-	} else {
-		response, err = http.Get(versionApiAbsoluteUrl)
-	}
-
-	var seekerVersionString = ""
-	if err != nil {
-		h.Log.Error("The HTTP request to: `%s` failed with error %s\n", err, versionApiAbsoluteUrl)
-	} else {
-		var jsonData []byte
-		jsonData, err = ioutil.ReadAll(response.Body)
-		h.Log.Debug("Seeker version response `%s`", jsonData)
-		var seekerVersionDetails SeekerVersionResponse
-		json.Unmarshal([]byte(jsonData), &seekerVersionDetails)
-		seekerVersionString = seekerVersionDetails.Version
-		h.Log.Debug("Seeker version `%s`", seekerVersionString)
-	}
-	return err, seekerVersionString
+	return h.Versioner.GetSeekerVersion(*h.serviceCredentials)
 }
 
 func (h SeekerAfterCompileHook) shouldDownloadSensor(seekerVersionString string) bool {
@@ -202,25 +188,6 @@ func assertServiceCredentialsValid(credentials SeekerCredentials) error {
 	return nil
 }
 
-func (h SeekerAfterCompileHook) downloadFile(url, destFile string) error {
-	var err error
-	var resp *http.Response
-	if strings.HasPrefix(url, "https") {
-		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-		resp, err = http.Get(url)
-	} else {
-		resp, err = http.Get(url)
-	}
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return errors.New("could not download: " + strconv.Itoa(resp.StatusCode))
-	}
-	return writeToFile(resp.Body, destFile, 0666)
-}
 func (h SeekerAfterCompileHook) fetchSeekerAgentTarballWithinSensor(compiler *libbuildpack.Stager) (error, string) {
 	parsedEnterpriseServerUrl, err := url.Parse(h.serviceCredentials.EnterpriseServerURL)
 	if err != nil {
@@ -239,22 +206,20 @@ func (h SeekerAfterCompileHook) fetchSeekerAgentTarballWithinSensor(compiler *li
 	}
 	sensorInstallerZipAbsolutePath := path.Join(seekerTempFolder, "SensorInstaller.zip")
 	h.Log.Info("Downloading '%s' to '%s'", sensorDownloadAbsoluteUrl, sensorInstallerZipAbsolutePath)
-	err = h.downloadFile(sensorDownloadAbsoluteUrl, sensorInstallerZipAbsolutePath)
+	err = h.Downloader.DownloadFile(sensorDownloadAbsoluteUrl, sensorInstallerZipAbsolutePath)
 	if err == nil {
 		h.Log.Info("Download completed without errors")
 	}
 	if err != nil {
 		return err, ""
 	}
-	// no native zip support for unzip - using shell utility
-	unzipCommandArgs := []string{sensorInstallerZipAbsolutePath, "-d", seekerTempFolder}
-	err = h.Command.Execute("", os.Stdout, os.Stderr, "unzip", unzipCommandArgs...)
+	err = h.Unzzipper.Unzip(sensorInstallerZipAbsolutePath, seekerTempFolder)
 	if err != nil {
 		return err, ""
 	}
 	sensorJarFile := path.Join(seekerTempFolder, "SeekerInstaller.jar")
 	agentPathInsideJarFile := "inline/agents/nodejs/*"
-	unzipCommandArgs = []string{"-j", sensorJarFile, agentPathInsideJarFile, "-d", os.TempDir()}
+	unzipCommandArgs := []string{"-j", sensorJarFile, agentPathInsideJarFile, "-d", os.TempDir()}
 	err = h.Command.Execute("", os.Stdout, os.Stderr, "unzip", unzipCommandArgs...)
 	if err != nil {
 		return err, ""
@@ -284,15 +249,14 @@ func (h SeekerAfterCompileHook) fetchSeekerAgentTarballDirectDownload(compiler *
 	}
 	agentZipAbsolutePath := path.Join(seekerTempFolder, "seeker-node-agent.zip")
 	h.Log.Info("Downloading '%s' to '%s'", agentDownloadAbsoluteUrl, agentZipAbsolutePath)
-	err = h.downloadFile(agentDownloadAbsoluteUrl, agentZipAbsolutePath)
+	err = h.Downloader.DownloadFile(agentDownloadAbsoluteUrl, agentZipAbsolutePath)
 	if err == nil {
 		h.Log.Info("Download completed without errors")
 	} else {
 		return err, ""
 	}
 	// no native zip support for unzip - using shell utility
-	unzipCommandArgs := []string{agentZipAbsolutePath, "-d", os.TempDir()}
-	err = h.Command.Execute("", os.Stdout, os.Stderr, "unzip", unzipCommandArgs...)
+	err = h.Unzzipper.Unzip(agentZipAbsolutePath, os.TempDir())
 	if err != nil {
 		return err, ""
 	}
@@ -306,7 +270,7 @@ func (h SeekerAfterCompileHook) fetchSeekerAgentTarballDirectDownload(compiler *
 func (h SeekerAfterCompileHook) updateNodeModules(pathToSeekerLibrary string, buildDir string) error {
 	// No need to handle YARN, since NPM is installed even when YARN is the selected package manager
 	if err := h.Command.Execute(buildDir, ioutil.Discard, ioutil.Discard, "npm", "install", "--save", pathToSeekerLibrary, "--prefix", "seeker"); err != nil {
-		h.Log.Error("npm install --save " + pathToSeekerLibrary + "--prefix seeker Error: " + err.Error())
+		h.Log.Error("npm install --save " + pathToSeekerLibrary + " --prefix seeker Error: " + err.Error())
 		return err
 	}
 	return nil
@@ -430,24 +394,6 @@ func isSeekerRelated(descriptors ...string) bool {
 	}
 	return isSeekerRelated
 }
-func writeToFile(source io.Reader, destFile string, mode os.FileMode) error {
-	err := os.MkdirAll(filepath.Dir(destFile), 0755)
-	if err != nil {
-		return err
-	}
-
-	fh, err := os.OpenFile(destFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, mode)
-	if err != nil {
-		return err
-	}
-	defer fh.Close()
-
-	_, err = io.Copy(fh, source)
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
 type Record struct {
 	Filename string
@@ -512,4 +458,98 @@ func (r *Record) Prepend(content string) error {
 	}
 
 	return nil
+}
+
+type SeekerDownloader struct {
+}
+
+func (d SeekerDownloader) DownloadFile(url, destFile string) error {
+	var err error
+	var resp *http.Response
+	if strings.HasPrefix(url, "https") {
+		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		resp, err = http.Get(url)
+	} else {
+		resp, err = http.Get(url)
+	}
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return errors.New("could not download: " + strconv.Itoa(resp.StatusCode))
+	}
+	return d.writeToFile(resp.Body, destFile, 0666)
+}
+
+func (d SeekerDownloader) writeToFile(source io.Reader, destFile string, mode os.FileMode) error {
+	err := os.MkdirAll(filepath.Dir(destFile), 0755)
+	if err != nil {
+		return err
+	}
+
+	fh, err := os.OpenFile(destFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, mode)
+	if err != nil {
+		return err
+	}
+	defer fh.Close()
+
+	_, err = io.Copy(fh, source)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type SeekerUnzipper struct {
+	Command SeekerCommand
+}
+
+func (s SeekerUnzipper) Unzip(zipFile, absoluteFolderPath string) error {
+	// no native zip support for unzip - using shell utility
+	unzipCommandArgs := []string{zipFile, "-d", absoluteFolderPath}
+	return s.Command.Execute("", os.Stdout, os.Stderr, "unzip", unzipCommandArgs...)
+}
+
+type SeekerVersioner struct {
+	Log *libbuildpack.Logger
+}
+
+func (v SeekerVersioner) GetSeekerVersion(c SeekerCredentials) (error, string) {
+	type SeekerVersionResponse struct {
+		PublicName  string `json:"publicName"`
+		Version     string `json:"version"`
+		BuildNumber string `json:"buildNumber"`
+		ScmBranch   string `json:"scmBranch"`
+		ScmRevision string `json:"scmRevision"`
+	}
+	var err error
+	var response *http.Response
+	parsedEnterpriseServerUrl, err := url.Parse(c.EnterpriseServerURL)
+	if err != nil {
+		return err, ""
+	}
+	parsedEnterpriseServerUrl.Path = path.Join(parsedEnterpriseServerUrl.Path, "/rest/api/version")
+	versionApiAbsoluteUrl := parsedEnterpriseServerUrl.String()
+	if strings.HasPrefix(versionApiAbsoluteUrl, "https") {
+		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		response, err = http.Get(versionApiAbsoluteUrl)
+	} else {
+		response, err = http.Get(versionApiAbsoluteUrl)
+	}
+
+	var seekerVersionString = ""
+	if err != nil {
+		v.Log.Error("The HTTP request to: `%s` failed with error %s\n", err, versionApiAbsoluteUrl)
+	} else {
+		var jsonData []byte
+		jsonData, err = ioutil.ReadAll(response.Body)
+		v.Log.Debug("Seeker version response `%s`", jsonData)
+		var seekerVersionDetails SeekerVersionResponse
+		json.Unmarshal([]byte(jsonData), &seekerVersionDetails)
+		seekerVersionString = seekerVersionDetails.Version
+		v.Log.Debug("Seeker version `%s`", seekerVersionString)
+	}
+	return err, seekerVersionString
 }

@@ -4,9 +4,7 @@ set -euo pipefail
 
 GO_VERSION="1.12.4"
 
-if [ $CF_STACK == "cflinuxfs2" ]; then
-    GO_SHA256="1a6d80b16a845f6a9692857a5978c0d69a89b58af4d50f66209435beafb07b5b"
-elif [ $CF_STACK == "cflinuxfs3" ]; then
+if [ $CF_STACK == "cflinuxfs3" ]; then
     GO_SHA256="e68279204493307782c51105c3dd5254ab066d0b5d9aafa3ce3a2878ebbef53f"
 else
   echo "       **ERROR** Unsupported stack"

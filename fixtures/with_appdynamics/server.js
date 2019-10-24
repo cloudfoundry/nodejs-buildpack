@@ -9,7 +9,8 @@ var appdynamics = require("appdynamics").profile({
   applicationName: process.env.APPDYNAMICS_AGENT_APPLICATION_NAME,
   tierName: process.env.APPDYNAMICS_AGENT_TIER_NAME,
   nodeName: process.env.APPDYNAMICS_AGENT_NODE_NAME,
-  debug: true
+  debug: true,
+  proxy: true
 });
 var express = require("express");
 var logfmt = require("logfmt");

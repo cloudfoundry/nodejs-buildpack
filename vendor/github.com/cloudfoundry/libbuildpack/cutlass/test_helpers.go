@@ -2,18 +2,22 @@ package cutlass
 
 import (
 	"archive/zip"
+	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
 	"github.com/cloudfoundry/libbuildpack"
+	"github.com/cloudfoundry/libbuildpack/cutlass/execution"
+	"github.com/cloudfoundry/libbuildpack/cutlass/glow"
 	"github.com/cloudfoundry/libbuildpack/packager"
+	"gopkg.in/yaml.v2"
 )
 
 type VersionedBuildpackPackage struct {
@@ -122,52 +126,95 @@ func PackageUniquelyVersionedBuildpack(stack string, stackAssociationSupported b
 	return PackageUniquelyVersionedBuildpackExtra(strings.Replace(manifest.Language, "-", "_", -1), buildpackVersion, stack, Cached, stackAssociationSupported)
 }
 
-func PackageShimmedBuildpack(stack string) (VersionedBuildpackPackage, error) {
-	bpDir, err := FindRoot()
-	if err != nil {
-		return VersionedBuildpackPackage{}, fmt.Errorf("Failed to find root: %v", err)
+func PackageShimmedBuildpack(bpDir, stack string) (VersionedBuildpackPackage, error) {
+	var (
+		name    string
+		version string
+		err     error
+	)
+
+	DefaultLogger.Debug("package-shimmed-buildpack")
+
+	bpFilePath := os.Getenv("BUILDPACK_FILE")
+	if bpFilePath == "" {
+		session := DefaultLogger.Session("package-shim")
+
+		cnb2cf := execution.NewExecutable(glow.ExecutableName, session)
+		cli := glow.NewCLI(cnb2cf)
+		archiver := glow.NewArchiver(cli)
+
+		timestamp := time.Now().Format("20060102150405")
+		bpFilePath, err = archiver.Archive(bpDir, stack, timestamp, Cached)
+		if err != nil {
+			return VersionedBuildpackPackage{}, fmt.Errorf("failed to package shimmed buildpack: %s", err)
+		}
 	}
 
-	data, err := ioutil.ReadFile(filepath.Join(bpDir, "VERSION"))
-	if err != nil {
-		return VersionedBuildpackPackage{}, fmt.Errorf("Failed to read VERSION file: %v", err)
+	if !filepath.IsAbs(bpFilePath) {
+		bpFilePath = filepath.Join(bpDir, bpFilePath)
 	}
-	version := strings.TrimSpace(string(data))
-	version = fmt.Sprintf("%s.%s", version, time.Now().Format("20060102150405"))
 
-	shimmerPath := filepath.Join(bpDir, ".bin", "cnb2cf")
-	args := []string{"package", "-stack", stack, "-version", version, "-dev"}
-	if Cached {
-		args = append(args, "-cached")
-	}
-	cmd := exec.Command(shimmerPath, args...)
-	cmd.Dir = bpDir
-	out, err := cmd.CombinedOutput()
+	version, name, err = extractVersionAndNameFromPackagedBuildpack(bpFilePath)
 	if err != nil {
 		return VersionedBuildpackPackage{}, err
 	}
 
-	r := regexp.MustCompile(`Packaged Shimmed Buildpack at: [\w-\.^]*.zip`)
-	matches := r.FindAllString(string(out), -1)
-	match := matches[len(matches)-1]
-	fileName := strings.Split(match, ": ")[1]
-	filePath := filepath.Join(bpDir, fileName)
-
-	err = libbuildpack.NewYAML().Load(filepath.Join(bpDir, "manifest.yml"), &manifest)
-	if err != nil {
-		return VersionedBuildpackPackage{}, fmt.Errorf("Failed to load manifest.yml file: %v", err)
-	}
-	name := strings.Replace(manifest.Language, "-", "_", -1)
-
-	err = CreateOrUpdateBuildpack(name, filePath, stack)
+	name = strings.Replace(name, "-", "_", -1)
+	err = CreateOrUpdateBuildpack(name, bpFilePath, stack)
 	if err != nil {
 		return VersionedBuildpackPackage{}, fmt.Errorf("Failed to create or update buildpack: %v", err)
 	}
 
 	return VersionedBuildpackPackage{
 		Version: version,
-		File:    filePath,
+		File:    bpFilePath,
 	}, nil
+}
+
+func extractVersionAndNameFromPackagedBuildpack(bpFilePath string) (version string, name string, err error) {
+	r, err := zip.OpenReader(bpFilePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer r.Close()
+
+	for _, f := range r.File {
+		if f.Name == "VERSION" {
+			versionContents, err := readZipFile(f)
+			if err != nil {
+				return "", "", nil
+			}
+
+			version = versionContents.String()
+		} else if f.Name == "manifest.yml" {
+			manifestContents, err := readZipFile(f)
+			if err != nil {
+				return "", "", nil
+			}
+
+			if err := yaml.Unmarshal(manifestContents.Bytes(), &manifest); err != nil {
+				return "", "", nil
+			}
+
+			name = manifest.Language
+		}
+	}
+	return version, name, nil
+}
+
+func readZipFile(f *zip.File) (*bytes.Buffer, error) {
+	rc, err := f.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer rc.Close()
+
+	buf := &bytes.Buffer{}
+	if _, err := io.Copy(buf, rc); err != nil {
+		return nil, err
+	}
+
+	return buf, nil
 }
 
 func CopyCfHome() error {

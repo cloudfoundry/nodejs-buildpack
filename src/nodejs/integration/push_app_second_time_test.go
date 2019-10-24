@@ -1,8 +1,6 @@
 package integration_test
 
 import (
-	"path/filepath"
-
 	"github.com/cloudfoundry/libbuildpack/cutlass"
 
 	. "github.com/onsi/ginkgo"
@@ -23,7 +21,7 @@ var _ = Describe("pushing an app a second time", func() {
 			Skip("running uncached tests")
 		}
 
-		app = cutlass.New(filepath.Join(bpDir, "fixtures", "simple_app"))
+		app = cutlass.New(Fixtures("simple_app"))
 		app.Buildpacks = []string{"nodejs_buildpack"}
 	})
 

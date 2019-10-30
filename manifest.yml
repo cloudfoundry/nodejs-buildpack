@@ -22,10 +22,10 @@ include_files:
 - profile/newrelic-setup.sh
 - profile/nodejs.sh
 dependency_deprecation_dates:
-- version_line: 10.x
+- version_line: 8.x.x
   name: node
-  date: 2021-04-30
-  link: https://github.com/nodejs/LTS
+  date: 2019-12-01
+  link: https://github.com/nodejs/Release
 - version_line: 10.x.x
   name: node
   date: 2021-04-01
@@ -33,14 +33,6 @@ dependency_deprecation_dates:
 - version_line: 12.x.x
   name: node
   date: 2020-04-01
-  link: https://github.com/nodejs/Release
-- version_line: 8.x
-  name: node
-  date: 2019-12-31
-  link: https://github.com/nodejs/LTS
-- version_line: 8.x.x
-  name: node
-  date: 2019-12-01
   link: https://github.com/nodejs/Release
 dependencies:
 - name: node

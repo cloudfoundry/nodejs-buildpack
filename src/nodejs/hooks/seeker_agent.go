@@ -1,11 +1,12 @@
 package hooks
 
 import (
-	"bufio"
+	"archive/zip"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/cloudfoundry/libbuildpack"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -16,12 +17,15 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
-
-	"github.com/cloudfoundry/libbuildpack"
 )
 
-const EntryPointFile = "SEEKER_APP_ENTRY_POINT"
+const (
+	EntryPointFile    = "SEEKER_APP_ENTRY_POINT"
+	agentDownloadPath = "/rest/api/latest/installers/agents/binaries/NODEJS"
+	SeekerRequire     = "require('./seeker/node_modules/@synopsys-sig/seeker');\n"
+)
+
+var pattern = regexp.MustCompile(`require\(['"].*@synopsys-sig/seeker['"]\)`)
 
 type SeekerCommand interface {
 	Execute(dir string, stdout io.Writer, stderr io.Writer, program string, args ...string) error
@@ -33,9 +37,6 @@ type Downloader interface {
 type Unzipper interface {
 	Unzip(zipFile, absoluteFolderPath string) error
 }
-type Versioner interface {
-	GetSeekerVersion(SeekerCredentials) (error, string)
-}
 
 type SeekerAfterCompileHook struct {
 	libbuildpack.DefaultHook
@@ -44,14 +45,10 @@ type SeekerAfterCompileHook struct {
 	Command            SeekerCommand
 	Downloader         Downloader
 	Unzzipper          Unzipper
-	Versioner          Versioner
 }
 
 type SeekerCredentials struct {
-	SensorHost          string
-	SensorPort          string
-	EnterpriseServerURL string
-	SeekerServerURL     string
+	SeekerServerURL string
 }
 
 func init() {
@@ -61,182 +58,89 @@ func init() {
 		Log:        logger,
 		Command:    command,
 		Downloader: SeekerDownloader{},
-		Unzzipper:  SeekerUnzipper{Command: command},
-		Versioner:  SeekerVersioner{Log: logger}},
-	)
+		Unzzipper:  SeekerUnzipper{},
+	})
 }
 
 func (h SeekerAfterCompileHook) AfterCompile(compiler *libbuildpack.Stager) error {
 	h.Log.Debug("Seeker - AfterCompileHook Start")
-	vcapServicesString := os.Getenv("VCAP_SERVICES")
-	h.Log.Debug(vcapServicesString)
-	entryPointPath := os.Getenv(EntryPointFile)
-	h.Log.Info("%s=%s", EntryPointFile, entryPointPath)
+	c := SeekerCredentials{}
 	var err error
-
-	serviceCredentials, extractErrors := extractServiceCredentialsUserProvidedService(h.Log)
-	if extractErrors != nil {
-		h.Log.Error(extractErrors.Error())
-		return nil
-	}
-	if serviceCredentials == (SeekerCredentials{}) {
-		serviceCredentials, extractErrors = extractServiceCredentials(h.Log)
-	}
-	if extractErrors != nil {
-		h.Log.Error(extractErrors.Error())
-		return nil
-	}
-	err = assertServiceCredentialsValid(serviceCredentials)
-	if err != nil {
+	if c, err = extractServiceCredentialsUserProvidedService(h.Log); err != nil {
 		return err
 	}
-	h.serviceCredentials = &serviceCredentials
+	if c == (SeekerCredentials{}) {
+		if c, err = extractServiceCredentials(h.Log); err != nil {
+			return err
+		}
+	}
+	if err = assertServiceCredentialsValid(c); err != nil {
+		return err
+	}
+	h.serviceCredentials = &c
 	credentialsJSON, _ := json.Marshal(h.serviceCredentials)
 	h.Log.Info("Credentials extraction ok: %s", credentialsJSON)
 
-	err, seekerVersion := h.getSeekerVersion()
+	if err = h.prependRequire(compiler); err != nil {
+		return err
+	}
+
+	err, seekerLibraryToInstall := h.downloadAgent(compiler)
 	if err != nil {
 		return err
 	}
 
-	if entryPointPath != "" {
-		h.Log.Debug("Handling Seeker agent library import")
-		err = h.addSeekerAgentRequire(compiler.BuildDir(), entryPointPath, seekerVersion)
-	}
+	h.Log.Info("Before Installing seeker agent dependency")
+	err = h.updateNodeModules(seekerLibraryToInstall, compiler.BuildDir())
 	if err != nil {
-		h.Log.Error(err.Error())
 		return err
 	}
-
-	useSensorDownload := h.shouldDownloadSensor(seekerVersion)
-	seekerLibraryToInstall := ""
-	if err == nil {
-		if useSensorDownload {
-			err, seekerLibraryToInstall = h.fetchSeekerAgentTarballWithinSensor(compiler)
-		} else {
-			err, seekerLibraryToInstall = h.fetchSeekerAgentTarballDirectDownload(compiler)
-		}
-	}
-	if err == nil {
-		h.Log.Info("Before Installing seeker agent dependency")
-		h.updateNodeModules(seekerLibraryToInstall, compiler.BuildDir())
-		h.Log.Info("After Installing seeker agent dependency")
-		envVarsError := h.createSeekerEnvironmentScript(compiler)
-		if envVarsError != nil {
-			err = errors.New("Error creating seeker-env.sh script: " + envVarsError.Error())
-		} else {
-			h.Log.Info("Done creating seeker-env.sh script")
-		}
-	}
-	return err
-
-}
-
-func (h SeekerAfterCompileHook) getSeekerVersion() (error, string) {
-	return h.Versioner.GetSeekerVersion(*h.serviceCredentials)
-}
-
-func (h SeekerAfterCompileHook) shouldDownloadSensor(seekerVersionString string) bool {
-	return h.isSeekerVersionSupportOnlySensorDownload(seekerVersionString)
-}
-
-func (h SeekerAfterCompileHook) isSeekerVersionEarlierThan(seekerVersionString string, seekerTargetVersionString string) bool {
-	dateFormatInSeekerResponse := "2006.01.02"
-	seekerTargetVersion, _ := time.Parse(dateFormatInSeekerResponse, seekerTargetVersionString)
-	currentSeekerVersionString := seekerVersionString[0:7] + ".01"
-	currentSeekerVersion, _ := time.Parse(dateFormatInSeekerResponse, currentSeekerVersionString)
-	return !currentSeekerVersion.After(seekerTargetVersion)
-}
-
-func (h SeekerAfterCompileHook) isSeekerVersionSupportOnlySensorDownload(seekerVersionString string) bool {
-	return h.isSeekerVersionEarlierThan(seekerVersionString, "2018.05.01")
-}
-
-func (h SeekerAfterCompileHook) getSeekerRequireStatement(seekerVersionString string) string {
-	if h.isSeekerVersionEarlierThan(seekerVersionString, "2019.02.01") {
-		return "require('./seeker/node_modules/@synopsys-sig/seeker-inline');"
-	}
-	return "require('./seeker/node_modules/@synopsys-sig/seeker');"
-}
-
-func (h SeekerAfterCompileHook) addSeekerAgentRequire(buildDir string, pathToEntryPointFile string, seekerVersionString string) error {
-	absolutePathToEntryPoint := filepath.Join(buildDir, pathToEntryPointFile)
-	seekerRequireCode := h.getSeekerRequireStatement(seekerVersionString)
-	h.Log.Debug("Trying to prepend %s to %s", seekerRequireCode, absolutePathToEntryPoint)
-	err := NewRecord(absolutePathToEntryPoint).Prepend(seekerRequireCode)
+	h.Log.Info("After Installing seeker agent dependency")
+	err = h.createSeekerEnvironmentScript(compiler)
 	if err != nil {
-		h.Log.Error("failed to prepend: %+v", err)
-		return err
+		return errors.New("Error creating seeker-env.sh script: " + err.Error())
 	}
-	h.Log.Debug("Prepend ended without any errors")
+	h.Log.Info("Done creating seeker-env.sh script")
 	return nil
 }
+
+func (h SeekerAfterCompileHook) prependRequire(compiler *libbuildpack.Stager) error {
+	entryPointPath := os.Getenv(EntryPointFile)
+	if entryPointPath == "" {
+		return nil
+	}
+	h.Log.Debug("Adding Seeker agent require to application entry point %s", entryPointPath)
+	return h.addSeekerAgentRequire(compiler.BuildDir(), entryPointPath)
+}
+
+func (h SeekerAfterCompileHook) addSeekerAgentRequire(buildDir string, pathToEntryPointFile string) error {
+	absolutePathToEntryPoint := filepath.Join(buildDir, pathToEntryPointFile)
+	h.Log.Debug("Trying to prepend %s to %s", SeekerRequire, absolutePathToEntryPoint)
+	c, err := ioutil.ReadFile(absolutePathToEntryPoint)
+	if err != nil {
+		return err
+	}
+	// do not require twice
+	if pattern.Match(c) {
+		return nil
+	}
+	return ioutil.WriteFile(absolutePathToEntryPoint, append([]byte(SeekerRequire), c...), 0644)
+}
+
 func assertServiceCredentialsValid(credentials SeekerCredentials) error {
 	errorFormat := "mandatory `%s` is missing in Seeker service configuration"
-	if credentials.SensorPort == "" {
-		return errors.New(fmt.Sprintf(errorFormat, "sensor_port"))
-	}
-	if credentials.SensorHost == "" {
-		return errors.New(fmt.Sprintf(errorFormat, "sensor_host"))
-	}
-	if credentials.EnterpriseServerURL == "" {
-		return errors.New(fmt.Sprintf(errorFormat, "enterprise_server_url"))
-	}
 	if credentials.SeekerServerURL == "" {
-		return errors.New(fmt.Sprintf(errorFormat, "seeker_server_url"))
+		return fmt.Errorf(errorFormat, "seeker_server_url")
 	}
 	return nil
 }
 
-func (h SeekerAfterCompileHook) fetchSeekerAgentTarballWithinSensor(compiler *libbuildpack.Stager) (error, string) {
-	parsedEnterpriseServerUrl, err := url.Parse(h.serviceCredentials.EnterpriseServerURL)
+func (h SeekerAfterCompileHook) downloadAgent(compiler *libbuildpack.Stager) (error, string) {
+	parsedEnterpriseServerUrl, err := url.Parse(h.serviceCredentials.SeekerServerURL)
 	if err != nil {
 		return err, ""
 	}
-	parsedEnterpriseServerUrl.Path = path.Join(parsedEnterpriseServerUrl.Path, "rest/ui/installers/binaries/LINUX")
-	sensorDownloadAbsoluteUrl := parsedEnterpriseServerUrl.String()
-	h.Log.Info("Sensor download url %s", sensorDownloadAbsoluteUrl)
-	var seekerTempFolder = filepath.Join(os.TempDir(), "seeker_tmp")
-	seekerLibraryPath := filepath.Join(os.TempDir(), "seeker-agent.tgz")
-	os.RemoveAll(seekerTempFolder)
-	os.Remove(seekerLibraryPath)
-	err = os.MkdirAll(seekerTempFolder, 0755)
-	if err != nil {
-		return err, ""
-	}
-	sensorInstallerZipAbsolutePath := path.Join(seekerTempFolder, "SensorInstaller.zip")
-	h.Log.Info("Downloading '%s' to '%s'", sensorDownloadAbsoluteUrl, sensorInstallerZipAbsolutePath)
-	err = h.Downloader.DownloadFile(sensorDownloadAbsoluteUrl, sensorInstallerZipAbsolutePath)
-	if err == nil {
-		h.Log.Info("Download completed without errors")
-	}
-	if err != nil {
-		return err, ""
-	}
-	err = h.Unzzipper.Unzip(sensorInstallerZipAbsolutePath, seekerTempFolder)
-	if err != nil {
-		return err, ""
-	}
-	sensorJarFile := path.Join(seekerTempFolder, "SeekerInstaller.jar")
-	agentPathInsideJarFile := "inline/agents/nodejs/*"
-	unzipCommandArgs := []string{"-j", sensorJarFile, agentPathInsideJarFile, "-d", os.TempDir()}
-	err = h.Command.Execute("", os.Stdout, os.Stderr, "unzip", unzipCommandArgs...)
-	if err != nil {
-		return err, ""
-	}
-	if _, err := os.Stat(seekerLibraryPath); os.IsNotExist(err) {
-		return errors.New("Could not find " + seekerLibraryPath), ""
-	}
-	// Cleanup unneeded files
-	os.Remove(seekerTempFolder)
-	return err, seekerLibraryPath
-}
-func (h SeekerAfterCompileHook) fetchSeekerAgentTarballDirectDownload(compiler *libbuildpack.Stager) (error, string) {
-	parsedEnterpriseServerUrl, err := url.Parse(h.serviceCredentials.EnterpriseServerURL)
-	if err != nil {
-		return err, ""
-	}
-	parsedEnterpriseServerUrl.Path = path.Join(parsedEnterpriseServerUrl.Path, "/rest/api/latest/installers/agents/binaries/NODEJS")
+	parsedEnterpriseServerUrl.Path = path.Join(parsedEnterpriseServerUrl.Path, agentDownloadPath)
 	agentDownloadAbsoluteUrl := parsedEnterpriseServerUrl.String()
 	h.Log.Info("Agent download url %s", agentDownloadAbsoluteUrl)
 	var seekerTempFolder = filepath.Join(os.TempDir(), "seeker_tmp")
@@ -249,10 +153,7 @@ func (h SeekerAfterCompileHook) fetchSeekerAgentTarballDirectDownload(compiler *
 	}
 	agentZipAbsolutePath := path.Join(seekerTempFolder, "seeker-node-agent.zip")
 	h.Log.Info("Downloading '%s' to '%s'", agentDownloadAbsoluteUrl, agentZipAbsolutePath)
-	err = h.Downloader.DownloadFile(agentDownloadAbsoluteUrl, agentZipAbsolutePath)
-	if err == nil {
-		h.Log.Info("Download completed without errors")
-	} else {
+	if err = h.Downloader.DownloadFile(agentDownloadAbsoluteUrl, agentZipAbsolutePath); err != nil {
 		return err, ""
 	}
 	// no native zip support for unzip - using shell utility
@@ -278,12 +179,8 @@ func (h SeekerAfterCompileHook) updateNodeModules(pathToSeekerLibrary string, bu
 func (h *SeekerAfterCompileHook) createSeekerEnvironmentScript(stager *libbuildpack.Stager) error {
 	seekerEnvironmentScript := "seeker-env.sh"
 
-	const sensorHostTemplate = "\nexport SEEKER_SENSOR_HOST=%s"
-	const sensorPortTemplate = "\nexport SEEKER_SENSOR_HTTP_PORT=%s"
-	const seekerServerTemplate = "\nexport SEEKER_SERVER_URL=%s\n"
-
-	template := sensorHostTemplate + sensorPortTemplate + seekerServerTemplate
-	scriptContent := fmt.Sprintf(template, h.serviceCredentials.SensorHost, h.serviceCredentials.SensorPort, h.serviceCredentials.SeekerServerURL)
+	const seekerServerTemplate = "export SEEKER_SERVER_URL=%s\n"
+	scriptContent := fmt.Sprintf(seekerServerTemplate, h.serviceCredentials.SeekerServerURL)
 	stager.Logger().Info(seekerEnvironmentScript + " content: " + scriptContent)
 	return stager.WriteProfileD(seekerEnvironmentScript, scriptContent)
 }
@@ -306,7 +203,7 @@ func extractServiceCredentials(Log *libbuildpack.Logger) (SeekerCredentials, err
 
 	err := json.Unmarshal([]byte(os.Getenv("VCAP_SERVICES")), &vcapServices)
 	if err != nil {
-		return SeekerCredentials{}, errors.New(fmt.Sprintf("Failed to unmarshal VCAP_SERVICES: %s", err))
+		return SeekerCredentials{}, fmt.Errorf("failed to unmarshal VCAP_SERVICES: %s", err)
 	}
 
 	var detectedCredentials []SeekerCredentials
@@ -314,35 +211,38 @@ func extractServiceCredentials(Log *libbuildpack.Logger) (SeekerCredentials, err
 	for _, services := range vcapServices {
 		for _, service := range services {
 			if isSeekerRelated(service.Name, service.Label, service.InstanceName) {
-				credentials := SeekerCredentials{
-					SensorHost:          service.Credentials.SensorHost,
-					SensorPort:          service.Credentials.SensorPort,
-					EnterpriseServerURL: service.Credentials.EnterpriseServerUrl,
-					SeekerServerURL:     service.Credentials.SeekerServerUrl}
-
+				credentials := SeekerCredentials{SeekerServerURL: service.Credentials.SeekerServerUrl}
 				detectedCredentials = append(detectedCredentials, credentials)
 			}
 		}
 	}
 
-	if len(detectedCredentials) == 1 {
-		Log.Info("Found one matching service")
+	found, err := assertZeroOrOneServicesExist(len(detectedCredentials))
+	if err != nil {
+		return SeekerCredentials{}, err
+	}
+	if found {
 		return detectedCredentials[0], nil
-	} else if len(detectedCredentials) > 1 {
-		Log.Warning("More than one matching service found!")
+	}
+	return SeekerCredentials{}, nil
+}
+
+func assertZeroOrOneServicesExist(c int) (bool, error) {
+	if c > 1 {
+		return false, fmt.Errorf("expected to find 1 Seeker service but found %d", c)
+	}
+	if c == 1 {
+		return true, nil
 	}
 
-	return SeekerCredentials{}, nil
+	return false, nil
 }
 
 func extractServiceCredentialsUserProvidedService(Log *libbuildpack.Logger) (SeekerCredentials, error) {
 	type UserProvidedService struct {
 		BindingName interface{} `json:"binding_name"`
 		Credentials struct {
-			EnterpriseServerUrl string `json:"enterprise_server_url"`
-			SeekerServerUrl     string `json:"seeker_server_url"`
-			SensorHost          string `json:"sensor_host"`
-			SensorPort          string `json:"sensor_port"`
+			SeekerServerUrl string `json:"seeker_server_url"`
 		} `json:"credentials"`
 		InstanceName   string   `json:"instance_name"`
 		Label          string   `json:"label"`
@@ -362,7 +262,7 @@ func extractServiceCredentialsUserProvidedService(Log *libbuildpack.Logger) (See
 	}
 	err := json.Unmarshal([]byte(vcapServicesString), &vcapServices)
 	if err != nil {
-		return SeekerCredentials{}, errors.New(fmt.Sprintf("Failed to unmarshal VCAP_SERVICES: %s", err))
+		return SeekerCredentials{}, fmt.Errorf("failed to unmarshal VCAP_SERVICES: %s", err.Error())
 	}
 
 	var detectedCredentials []UserProvidedService
@@ -372,20 +272,19 @@ func extractServiceCredentialsUserProvidedService(Log *libbuildpack.Logger) (See
 			detectedCredentials = append(detectedCredentials, service)
 		}
 	}
-	if len(detectedCredentials) == 1 {
-		Log.Info("Found one matching service: %s", detectedCredentials[0].Name)
-		seekerCreds := SeekerCredentials{
-			SensorHost:          detectedCredentials[0].Credentials.SensorHost,
-			SensorPort:          detectedCredentials[0].Credentials.SensorPort,
-			EnterpriseServerURL: detectedCredentials[0].Credentials.EnterpriseServerUrl,
-			SeekerServerURL:     detectedCredentials[0].Credentials.SeekerServerUrl}
-		return seekerCreds, nil
-	} else if len(detectedCredentials) > 1 {
-		Log.Warning("More than one matching service found!")
-	}
 
+	found, err := assertZeroOrOneServicesExist(len(detectedCredentials))
+	if err != nil {
+		return SeekerCredentials{}, err
+	}
+	if found {
+		c := SeekerCredentials{
+			SeekerServerURL: detectedCredentials[0].Credentials.SeekerServerUrl}
+		return c, nil
+	}
 	return SeekerCredentials{}, nil
 }
+
 func isSeekerRelated(descriptors ...string) bool {
 	isSeekerRelated := false
 	for _, descriptor := range descriptors {
@@ -393,71 +292,6 @@ func isSeekerRelated(descriptors ...string) bool {
 		isSeekerRelated = isSeekerRelated || containsSeeker
 	}
 	return isSeekerRelated
-}
-
-type Record struct {
-	Filename string
-	Contents []string
-}
-
-func NewRecord(filename string) *Record {
-	return &Record{
-		Filename: filename,
-		Contents: make([]string, 0),
-	}
-}
-
-func (r *Record) readLines() error {
-	if _, err := os.Stat(r.Filename); err != nil {
-		return nil
-	}
-
-	f, err := os.OpenFile(r.Filename, os.O_RDONLY, 0600)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		if tmp := scanner.Text(); len(tmp) != 0 {
-			r.Contents = append(r.Contents, tmp)
-		}
-	}
-
-	return nil
-}
-
-func (r *Record) Prepend(content string) error {
-	_, err := os.Stat(r.Filename)
-	if err != nil {
-		return err
-	}
-	err = r.readLines()
-	if err != nil {
-		return err
-	}
-
-	f, err := os.OpenFile(r.Filename, os.O_WRONLY, 0600)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	writer := bufio.NewWriter(f)
-	writer.WriteString(fmt.Sprintf("%s\n", content))
-	for _, line := range r.Contents {
-		_, err := writer.WriteString(fmt.Sprintf("%s\n", line))
-		if err != nil {
-			return err
-		}
-	}
-
-	if err := writer.Flush(); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 type SeekerDownloader struct {
@@ -503,53 +337,53 @@ func (d SeekerDownloader) writeToFile(source io.Reader, destFile string, mode os
 }
 
 type SeekerUnzipper struct {
-	Command SeekerCommand
 }
 
-func (s SeekerUnzipper) Unzip(zipFile, absoluteFolderPath string) error {
-	// no native zip support for unzip - using shell utility
-	unzipCommandArgs := []string{zipFile, "-d", absoluteFolderPath}
-	return s.Command.Execute("", os.Stdout, os.Stderr, "unzip", unzipCommandArgs...)
-}
-
-type SeekerVersioner struct {
-	Log *libbuildpack.Logger
-}
-
-func (v SeekerVersioner) GetSeekerVersion(c SeekerCredentials) (error, string) {
-	type SeekerVersionResponse struct {
-		PublicName  string `json:"publicName"`
-		Version     string `json:"version"`
-		BuildNumber string `json:"buildNumber"`
-		ScmBranch   string `json:"scmBranch"`
-		ScmRevision string `json:"scmRevision"`
-	}
-	var err error
-	var response *http.Response
-	parsedEnterpriseServerUrl, err := url.Parse(c.EnterpriseServerURL)
+func (s SeekerUnzipper) Unzip(zipFile, destFolder string) error {
+	r, err := zip.OpenReader(zipFile)
 	if err != nil {
-		return err, ""
+		return err
 	}
-	parsedEnterpriseServerUrl.Path = path.Join(parsedEnterpriseServerUrl.Path, "/rest/api/version")
-	versionApiAbsoluteUrl := parsedEnterpriseServerUrl.String()
-	if strings.HasPrefix(versionApiAbsoluteUrl, "https") {
-		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-		response, err = http.Get(versionApiAbsoluteUrl)
-	} else {
-		response, err = http.Get(versionApiAbsoluteUrl)
-	}
+	defer r.Close()
 
-	var seekerVersionString = ""
-	if err != nil {
-		v.Log.Error("The HTTP request to: `%s` failed with error %s\n", err, versionApiAbsoluteUrl)
-	} else {
-		var jsonData []byte
-		jsonData, err = ioutil.ReadAll(response.Body)
-		v.Log.Debug("Seeker version response `%s`", jsonData)
-		var seekerVersionDetails SeekerVersionResponse
-		json.Unmarshal([]byte(jsonData), &seekerVersionDetails)
-		seekerVersionString = seekerVersionDetails.Version
-		v.Log.Debug("Seeker version `%s`", seekerVersionString)
+	for _, f := range r.File {
+		p := filepath.Join(destFolder, f.Name)
+
+		// Check for ZipSlip
+		if !strings.HasPrefix(p, filepath.Clean(destFolder)+string(os.PathSeparator)) {
+			return fmt.Errorf("%s: illegal file path", p)
+		}
+
+		if f.FileInfo().IsDir() {
+			// Make Folder
+			os.MkdirAll(p, os.ModePerm)
+			continue
+		}
+
+		// Make File
+		if err = os.MkdirAll(filepath.Dir(p), os.ModePerm); err != nil {
+			return err
+		}
+
+		outFile, err := os.OpenFile(p, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err != nil {
+			return err
+		}
+
+		rc, err := f.Open()
+		if err != nil {
+			return err
+		}
+		_, err = io.Copy(outFile, rc)
+
+		if err = outFile.Close(); err != nil {
+			return err
+		}
+
+		if err = rc.Close(); err != nil {
+			return err
+		}
+
 	}
-	return err, seekerVersionString
+	return nil
 }

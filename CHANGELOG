@@ -1,3 +1,14 @@
+v1.7.2 Oct 31, 2019
+====================
+
+* Add node 13.0.0 (manually)
+  (https://www.pivotaltracker.com/story/show/169295552)
+
+* Add node 13.0.1
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/169349866)
+
+
 v1.7.1 Oct 23, 2019
 ====================
 

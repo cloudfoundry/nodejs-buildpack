@@ -128,7 +128,6 @@ func AssertUsesProxyDuringStagingIfPresent(fixtureName string) {
 			defer os.Remove(bpFile)
 
 			traffic, _, _, err := cutlass.InternetTraffic(
-				bpDir,
 				Fixtures(fixtureName),
 				bpFile,
 				[]string{"HTTP_PROXY=" + proxy.URL, "HTTPS_PROXY=" + proxy.URL},
@@ -167,7 +166,6 @@ func AssertNoInternetTraffic(fixtureName string) {
 		defer os.Remove(bpFile)
 
 		traffic, _, _, err := cutlass.InternetTraffic(
-			bpDir,
 			Fixtures(fixtureName),
 			bpFile,
 			[]string{},

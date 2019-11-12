@@ -22,6 +22,10 @@ app.get('/', function(req, res) {
   res.send('Hello, World!');
 });
 
+app.get('/name', function(req, res) {
+ res.send(String(process.env.APPDYNAMICS_AGENT_APPLICATION_NAME));
+});
+
 app.get('/config', function(req, res) {
   child_process.exec('cat /tmp/appd/*/*.json', {}, function(err, stdout, stderr) {
     console.log(err, stdout, stderr);

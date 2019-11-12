@@ -26,7 +26,13 @@ if ENV["APPD_BUILDPACK"].nil? || ENV["APPD_BUILDPACK"]=="false"
     f.puts "export APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY=#{credentials['account-access-key']}" if credentials['account-access-key']
   
     vcap = JSON.load(ENV['VCAP_APPLICATION']) rescue {}
-    if vcap['application_name']
+
+    app_name = ENV["APPDYNAMICS_AGENT_APPLICATION_NAME"]
+    if !app_name.nil?
+      f.puts "export APPDYNAMICS_AGENT_APPLICATION_NAME=#{app_name}"
+      f.puts "export APPDYNAMICS_AGENT_TIER_NAME=#{app_name}"
+      f.puts "export APPDYNAMICS_AGENT_NODE_NAME=#{app_name}:\$CF_INSTANCE_INDEX"
+    elsif vcap['application_name']
       f.puts "export APPDYNAMICS_AGENT_APPLICATION_NAME=#{vcap['application_name']}"
       f.puts "export APPDYNAMICS_AGENT_TIER_NAME=#{vcap['application_name']}"
       f.puts "export APPDYNAMICS_AGENT_NODE_NAME=#{vcap['application_name']}:\$CF_INSTANCE_INDEX"

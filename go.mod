@@ -1,7 +1,5 @@
 module github.com/cloudfoundry/nodejs-buildpack
 
-go 1.12
-
 require (
 	github.com/Dynatrace/libbuildpack-dynatrace v1.2.1
 	github.com/Masterminds/semver v1.5.0
@@ -11,3 +9,5 @@ require (
 	github.com/onsi/gomega v1.7.0
 	gopkg.in/jarcoal/httpmock.v1 v1.0.0-20181117152235-275e9df93516
 )
+
+go 1.13

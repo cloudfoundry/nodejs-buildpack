@@ -1,3 +1,14 @@
+v1.7.4 Nov 21, 2019
+====================
+
+* Add node 12.13.1, remove node 12.11.1
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/169838553)
+
+* Respects the user setting APPDYNAMICS_AGENT_APPLICATION_NAME
+  (https://www.pivotaltracker.com/story/show/169687796)
+
+
 v1.7.3 Nov 11, 2019
 ====================
 

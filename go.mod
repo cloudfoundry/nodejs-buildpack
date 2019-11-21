@@ -3,7 +3,7 @@ module github.com/cloudfoundry/nodejs-buildpack
 go 1.12
 
 require (
-	github.com/Dynatrace/libbuildpack-dynatrace v1.2.1
+	github.com/Dynatrace/libbuildpack-dynatrace v1.2.2
 	github.com/Masterminds/semver v1.5.0
 	github.com/cloudfoundry/libbuildpack v0.0.0-20191107210012-50982838f2a1
 	github.com/golang/mock v1.3.1

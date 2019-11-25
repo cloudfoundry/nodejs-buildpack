@@ -1,3 +1,19 @@
+v1.7.5 Nov 25, 2019
+====================
+
+* Add Synopsys Seeker support
+  Merge pull request #203 from synopsys-sig/master
+    Seeker Agent integration with pivotal
+
+* Add yarn 1.19.2, remove yarn 1.19.1
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/169916770)
+
+* Add node 13.2.0, remove node 13.0.1
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/169908109)
+
+
 v1.7.4 Nov 21, 2019
 ====================
 

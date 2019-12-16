@@ -1,3 +1,11 @@
+v1.7.7 Dec 16, 2019
+====================
+
+* Add yarn 1.21.1, remove yarn 1.21.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/170241478)
+
+
 v1.7.6 Dec 09, 2019
 ====================
 

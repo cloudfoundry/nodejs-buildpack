@@ -49,8 +49,8 @@ dependencies:
   source_sha256: 4f94361bbe087bc3a9d48ff69c2cefabb6460c64cb7d959204726467b9ee84b8
 - name: node
   version: 8.17.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.17.0-linux-x64-cflinuxfs3-8570ccda.tgz
-  sha256: 8570ccdaa36f2afe11985254d7916f60ddebe09e351a3006487145c6b6350001
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.17.0-linux-x64-cflinuxfs3-e456fcb7.tgz
+  sha256: e456fcb7ff0b49d044519726039df7e9fe5b5374cb2a89a06c13977a8656934f
   cf_stacks:
   - cflinuxfs3
   source: https://nodejs.org/dist/v8.17.0/node-v8.17.0.tar.gz

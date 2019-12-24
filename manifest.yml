@@ -41,8 +41,8 @@ dependency_deprecation_dates:
 dependencies:
 - name: node
   version: 8.16.2
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.16.2-linux-x64-cflinuxfs3-41238419.tgz
-  sha256: 41238419bb4f3070bf5a31e83652c8506c79e392060e1b948fbdafd704b3a65f
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.16.2-linux-x64-cflinuxfs3-6120016c.tgz
+  sha256: 6120016c056a845f6cbae158a53d4a64382aa237bb7bea98cbdaf16a8d73f020
   cf_stacks:
   - cflinuxfs3
   source: https://nodejs.org/dist/v8.16.2/node-v8.16.2.tar.gz

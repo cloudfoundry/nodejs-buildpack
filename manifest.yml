@@ -73,8 +73,8 @@ dependencies:
   source_sha256: f9c8785c5d5ba0e5412dada04a89ab3fe32531423c47232217aad79757a769e7
 - name: node
   version: 12.13.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-12.13.1-linux-x64-cflinuxfs3-1e528ef4.tgz
-  sha256: 1e528ef48f0922b8fcb0a766edfaf6ececedd092964231f1eab3f8a97ed2a571
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-12.13.1-linux-x64-cflinuxfs3-46fb87ab.tgz
+  sha256: 46fb87ab11214dafbace9ea3d179e77c28004d2de8c7850195a8c45b7e73a7c0
   cf_stacks:
   - cflinuxfs3
   source: https://nodejs.org/dist/v12.13.1/node-v12.13.1.tar.gz

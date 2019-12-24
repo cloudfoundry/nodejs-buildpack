@@ -105,8 +105,8 @@ dependencies:
   source_sha256: 4b8078d896a7550d7ed399c1b4ac9043e9f883be404d9b337185c8d8479f2db8
 - name: yarn
   version: 1.21.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn-1.21.1-any-stack-d1d9f4a0.tar.gz
-  sha256: d1d9f4a0f16f5ed484e814afeb98f39b82d4728c6c8beaafb5abc99c02db6674
+  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn-1.21.1-any-stack-fd04cba1.tgz
+  sha256: fd04cba1d0061c05ad6bf76af88ee8eae67dd899015479b39f15ccd626eb2ddd
   cf_stacks:
   - cflinuxfs3
   source: https://github.com/yarnpkg/yarn/releases/download/v1.21.1/yarn-v1.21.1.tar.gz

@@ -111,7 +111,7 @@ func Run(s *Supplier) error {
 			return err
 		}
 
-		if err := s.InstallNode("/tmp/node"); err != nil {
+		if err := s.InstallNode(); err != nil {
 			s.Log.Error("Unable to install node: %s", err.Error())
 			return err
 		}
@@ -623,19 +623,15 @@ func (s *Supplier) WarnNodeEngine() {
 	}
 }
 
-func (s *Supplier) InstallNode(tempDir string) error {
-	var dep libbuildpack.Dependency
-
-	nodeInstallDir := filepath.Join(s.Stager.DepDir(), "node")
-
-	dep.Name = "node"
-	dep.Version = s.NodeVersion
-
-	if err := s.Installer.InstallDependency(dep, tempDir); err != nil {
-		return err
+func (s *Supplier) InstallNode() error {
+	dep := libbuildpack.Dependency{
+		Name:    "node",
+		Version: s.NodeVersion,
 	}
 
-	if err := os.Rename(filepath.Join(tempDir, fmt.Sprintf("node-v%s-linux-x64", dep.Version)), nodeInstallDir); err != nil {
+
+	nodeInstallDir := filepath.Join(s.Stager.DepDir(), "node")
+	if err := s.Installer.InstallDependency(dep, nodeInstallDir); err != nil {
 		return err
 	}
 
@@ -687,14 +683,6 @@ func (s *Supplier) InstallYarn() error {
 
 	if err := s.Installer.InstallOnlyVersion("yarn", yarnInstallDir); err != nil {
 		return err
-	}
-
-	if paths, err := filepath.Glob(filepath.Join(yarnInstallDir, "yarn-v*")); err != nil {
-		return fmt.Errorf("Unable to find yarn distribution dir: %v", err)
-	} else if len(paths) != 1 {
-		return fmt.Errorf("Unable to find yarn distribution dir")
-	} else {
-		yarnInstallDir = paths[0]
 	}
 
 	if err := s.Stager.LinkDirectoryInDepDir(filepath.Join(yarnInstallDir, "bin"), "bin"); err != nil {

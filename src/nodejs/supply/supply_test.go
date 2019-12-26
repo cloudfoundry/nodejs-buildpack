@@ -67,25 +67,24 @@ var _ = Describe("Supply", func() {
 		mockNPM = NewMockNPM(mockCtrl)
 
 		installNode = func(dep libbuildpack.Dependency, nodeDir string) {
-			subDir := fmt.Sprintf("node-v%s-linux-x64", dep.Version)
-			err := os.MkdirAll(filepath.Join(nodeDir, subDir, "bin"), 0755)
+			err := os.MkdirAll(filepath.Join(nodeDir, "bin"), 0755)
 			Expect(err).To(BeNil())
 
-			err = ioutil.WriteFile(filepath.Join(nodeDir, subDir, "bin", "node"), []byte("node exe"), 0644)
+			err = ioutil.WriteFile(filepath.Join(nodeDir, "bin", "node"), []byte("node exe"), 0644)
 			Expect(err).To(BeNil())
 
-			err = ioutil.WriteFile(filepath.Join(nodeDir, subDir, "bin", "npm"), []byte("npm exe"), 0644)
+			err = ioutil.WriteFile(filepath.Join(nodeDir, "bin", "npm"), []byte("npm exe"), 0644)
 			Expect(err).To(BeNil())
 		}
 
 		installOnlyYarn = func(_ string, yarnDir string) {
-			err := os.MkdirAll(filepath.Join(yarnDir, "yarn-v1.2.3", "bin"), 0755)
+			err := os.MkdirAll(filepath.Join(yarnDir, "bin"), 0755)
 			Expect(err).To(BeNil())
 
-			err = ioutil.WriteFile(filepath.Join(yarnDir, "yarn-v1.2.3", "bin", "yarn"), []byte("yarn exe"), 0644)
+			err = ioutil.WriteFile(filepath.Join(yarnDir, "bin", "yarn"), []byte("yarn exe"), 0644)
 			Expect(err).To(BeNil())
 
-			err = ioutil.WriteFile(filepath.Join(yarnDir, "yarn-v1.2.3", "bin", "yarnpkg"), []byte("yarnpkg exe"), 0644)
+			err = ioutil.WriteFile(filepath.Join(yarnDir, "bin", "yarnpkg"), []byte("yarnpkg exe"), 0644)
 			Expect(err).To(BeNil())
 		}
 
@@ -453,15 +452,14 @@ var _ = Describe("Supply", func() {
 	})
 
 	Describe("InstallNode", func() {
-		var nodeTmpDir string
+		var nodeDir string
 
 		BeforeEach(func() {
-			nodeTmpDir, err = ioutil.TempDir("", "nodejs-buildpack.temp")
-			Expect(err).To(BeNil())
+			nodeDir = filepath.Join(depDir, "node")
 		})
 
 		AfterEach(func() {
-			Expect(os.RemoveAll(nodeTmpDir)).To(Succeed())
+			Expect(os.RemoveAll(nodeDir)).To(Succeed())
 		})
 
 		Context("node version use semver", func() {
@@ -473,44 +471,44 @@ var _ = Describe("Supply", func() {
 
 			It("installs the correct version from the manifest", func() {
 				dep := libbuildpack.Dependency{Name: "node", Version: "4.8.3"}
-				mockInstaller.EXPECT().InstallDependency(dep, nodeTmpDir).Do(installNode).Return(nil)
+				mockInstaller.EXPECT().InstallDependency(dep, nodeDir).Do(installNode).Return(nil)
 
 				supplier.PackageJSONNodeVersion = "~>4"
 				err = supplier.ChooseNodeVersion()
 				Expect(err).To(BeNil())
-				err = supplier.InstallNode(nodeTmpDir)
+				err = supplier.InstallNode()
 				Expect(err).To(BeNil())
 			})
 
 			It("handles '>=6.11.1 <7.0'", func() {
 				dep := libbuildpack.Dependency{Name: "node", Version: "6.11.1"}
-				mockInstaller.EXPECT().InstallDependency(dep, nodeTmpDir).Do(installNode).Return(nil)
+				mockInstaller.EXPECT().InstallDependency(dep, nodeDir).Do(installNode).Return(nil)
 
 				supplier.PackageJSONNodeVersion = ">=6.11.1 <7.0.0"
 				err = supplier.ChooseNodeVersion()
 				Expect(err).To(BeNil())
-				err = supplier.InstallNode(nodeTmpDir)
+				err = supplier.InstallNode()
 				Expect(err).To(BeNil())
 			})
 
 			It("handles '>=6.11.1, <7.0'", func() {
 				dep := libbuildpack.Dependency{Name: "node", Version: "6.11.1"}
-				mockInstaller.EXPECT().InstallDependency(dep, nodeTmpDir).Do(installNode).Return(nil)
+				mockInstaller.EXPECT().InstallDependency(dep, nodeDir).Do(installNode).Return(nil)
 
 				supplier.PackageJSONNodeVersion = ">=6.11.1, <7.0"
 				err = supplier.ChooseNodeVersion()
 				Expect(err).To(BeNil())
-				err = supplier.InstallNode(nodeTmpDir)
+				err = supplier.InstallNode()
 				Expect(err).To(BeNil())
 			})
 
 			It("creates a symlink in <depDir>/bin", func() {
 				dep := libbuildpack.Dependency{Name: "node", Version: "6.10.2"}
-				mockInstaller.EXPECT().InstallDependency(dep, nodeTmpDir).Do(installNode).Return(nil)
+				mockInstaller.EXPECT().InstallDependency(dep, nodeDir).Do(installNode).Return(nil)
 				supplier.PackageJSONNodeVersion = "6.10.*"
 				err = supplier.ChooseNodeVersion()
 				Expect(err).To(BeNil())
-				err = supplier.InstallNode(nodeTmpDir)
+				err = supplier.InstallNode()
 				Expect(err).To(BeNil())
 
 				link, err := os.Readlink(filepath.Join(depsDir, depsIdx, "bin", "node"))
@@ -530,14 +528,14 @@ var _ = Describe("Supply", func() {
 				dep := libbuildpack.Dependency{Name: "node", Version: "6.10.2"}
 				mockManifest.EXPECT().DefaultVersion("node").Return(dep, nil)
 				mockManifest.EXPECT().AllDependencyVersions(gomock.Any())
-				mockInstaller.EXPECT().InstallDependency(dep, nodeTmpDir).Do(installNode).Return(nil)
+				mockInstaller.EXPECT().InstallDependency(dep, nodeDir).Do(installNode).Return(nil)
 
 				supplier.NodeVersion = ""
 
 				err = supplier.ChooseNodeVersion()
 				Expect(err).To(BeNil())
 
-				err = supplier.InstallNode(nodeTmpDir)
+				err = supplier.InstallNode()
 				Expect(err).To(BeNil())
 			})
 		})
@@ -574,11 +572,11 @@ var _ = Describe("Supply", func() {
 
 				link, err := os.Readlink(filepath.Join(depsDir, depsIdx, "bin", "yarn"))
 				Expect(err).To(BeNil())
-				Expect(link).To(Equal("../yarn/yarn-v1.2.3/bin/yarn"))
+				Expect(link).To(Equal("../yarn/bin/yarn"))
 
 				link, err = os.Readlink(filepath.Join(depsDir, depsIdx, "bin", "yarnpkg"))
 				Expect(err).To(BeNil())
-				Expect(link).To(Equal("../yarn/yarn-v1.2.3/bin/yarnpkg"))
+				Expect(link).To(Equal("../yarn/bin/yarnpkg"))
 			})
 		})
 

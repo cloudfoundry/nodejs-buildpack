@@ -1,3 +1,24 @@
+v1.7.8 Dec 30, 2019
+====================
+
+* Add node 13.5.0, remove node 13.2.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/170368048)
+  (https://www.pivotaltracker.com/story/show/170350764)
+
+* Add node 12.14.0, remove node 12.13.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/170349768)
+
+* Add node 10.18.0, remove node 10.16.3
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/170349784)
+
+* Add node 8.17.0, remove node 8.16.1
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/170349769)
+
+
 v1.7.7 Dec 16, 2019
 ====================
 

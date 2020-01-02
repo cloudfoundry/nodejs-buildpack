@@ -11,13 +11,14 @@ class App < Roda
 
     r.on 'v2/service_instances', String do |name|
       r.on 'service_bindings', String  do |sbid|
-        '"credentials": {
+        '{"credentials": {
               "api_key": "sample_api_key",
               "org_uuid": "sample_org_uuid",
               "service_key": "sample_service_key",
               "teamserver_url": "sample_teamserver_url",
               "username": "sample_username"
-             }'
+             }
+         }'
       end
 
       r.on do

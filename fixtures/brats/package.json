@@ -4,10 +4,10 @@
 	"description": "hello, world",
 	"main": "server.js",
 	"engines": {
-		"node": "8.x"
+		"node": "10.x"
 	},
 	"dependencies": {
-		"bcrypt": "~1.0.3",
+		"bcrypt": "*",
 		"bson-ext": "*"
 	}
 }

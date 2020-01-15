@@ -34,27 +34,7 @@ dependency_deprecation_dates:
   name: node
   date: 2020-06-01
   link: https://github.com/nodejs/Release
-- version_line: 8.x.x
-  name: node
-  date: 2019-12-01
-  link: https://github.com/nodejs/Release
 dependencies:
-- name: node
-  version: 8.16.2
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.16.2-linux-x64-cflinuxfs3-6120016c.tgz
-  sha256: 6120016c056a845f6cbae158a53d4a64382aa237bb7bea98cbdaf16a8d73f020
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v8.16.2/node-v8.16.2.tar.gz
-  source_sha256: 4f94361bbe087bc3a9d48ff69c2cefabb6460c64cb7d959204726467b9ee84b8
-- name: node
-  version: 8.17.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-8.17.0-linux-x64-cflinuxfs3-e456fcb7.tgz
-  sha256: e456fcb7ff0b49d044519726039df7e9fe5b5374cb2a89a06c13977a8656934f
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v8.17.0/node-v8.17.0.tar.gz
-  source_sha256: aa583f19065545fa4c9b480ba13cf94f29350415ca5a853a5afde3c9b6982c4b
 - name: node
   version: 10.18.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.18.0-linux-x64-cflinuxfs3-ceb4bbfb.tgz

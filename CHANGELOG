@@ -1,3 +1,22 @@
+v1.7.9 Jan 15, 2020
+====================
+
+* Remove nodejs 8.x.x dependency line
+  (https://www.pivotaltracker.com/story/show/170154276)
+
+* Add node 10.18.1, remove node 10.17.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/170636221)
+
+* Add node 13.6.0, remove node 13.3.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/170589423)
+
+* Add node 12.14.1, remove node 12.13.1
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/170582839)
+
+
 v1.7.8 Dec 30, 2019
 ====================
 

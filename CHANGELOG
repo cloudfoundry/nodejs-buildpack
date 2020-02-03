@@ -1,3 +1,21 @@
+v1.7.10 Feb 03, 2020
+=====================
+
+* Add node 13.7.0, remove node 13.5.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/170829605)
+
+* Fixes dynatrace integration tests
+  (https://www.pivotaltracker.com/story/show/169891740)
+
+* Merge pull request #215 from rbamberger/develop
+  Replace GET parameters with headers for requests
+
+* Dynatrace Module Version changed to 1.2.2
+
+* Use latest DT libbuildpack Module
+
+
 v1.7.9 Jan 15, 2020
 ====================
 

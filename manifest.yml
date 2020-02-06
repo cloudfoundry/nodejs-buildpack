@@ -52,14 +52,6 @@ dependencies:
   source: https://nodejs.org/dist/v10.19.0/node-v10.19.0.tar.gz
   source_sha256: db85b9992f1ec66629731d82f690987883dd2989abb4cc136eb65dd720b1bda8
 - name: node
-  version: 12.14.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-12.14.0-linux-x64-cflinuxfs3-6f7f2ce2.tgz
-  sha256: 6f7f2ce21372d0299f3fc4151cc9730ef3c9f89e155f2c7fef9004c379e9d498
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v12.14.0/node-v12.14.0.tar.gz
-  source_sha256: 5c1939867228f3845c808ef84a89c8ee93cc35f857bf7587ecee1b5a6d9da67b
-- name: node
   version: 12.14.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-12.14.1-linux-x64-cflinuxfs3-741170cc.tgz
   sha256: 741170cc67890fcc84470b358991c2425fbe4b9c1021f79e49d127a7728a97d4
@@ -67,6 +59,14 @@ dependencies:
   - cflinuxfs3
   source: https://nodejs.org/dist/v12.14.1/node-v12.14.1.tar.gz
   source_sha256: 42a7f0777fea8825611cb9250ff927824dba4f7aea854b47d522798acf4bdbc6
+- name: node
+  version: 12.15.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-12.15.0-linux-x64-cflinuxfs3-974e36bd.tgz
+  sha256: 974e36bd8e1f49e1394e3bf81e354b0005e8a0ab2976cecd5eb974c1e30f9d9a
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v12.15.0/node-v12.15.0.tar.gz
+  source_sha256: fb357de9262f60425ea3970dd09afd63312006a7b8355a808d358694e867f4fd
 - name: node
   version: 13.6.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-13.6.0-linux-x64-cflinuxfs3-1dc4fe76.tgz

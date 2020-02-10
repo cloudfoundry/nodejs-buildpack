@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-if ENV["APPD_BUILDPACK"].nil? || ENV["APPD_BUILDPACK"]=="false"
+if ENV["APPD_AGENT"].nil?
   f = $stdout
   $stdout = open("/tmp/appdynamics-setup-profile.out.log", "w")
   $stderr.reopen("/tmp/appdynamics-setup-profile.err.log", "w")
@@ -24,18 +24,18 @@ if ENV["APPD_BUILDPACK"].nil? || ENV["APPD_BUILDPACK"]=="false"
     f.puts "export APPDYNAMICS_AGENT_ACCOUNT_NAME=#{credentials['account-name']}" if credentials['account-name']
     f.puts "export APPDYNAMICS_CONTROLLER_SSL_ENABLED=#{credentials['ssl-enabled']}" if credentials['ssl-enabled']
     f.puts "export APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY=#{credentials['account-access-key']}" if credentials['account-access-key']
-  
-    vcap = JSON.load(ENV['VCAP_APPLICATION']) rescue {}
 
-    app_name = ENV["APPDYNAMICS_AGENT_APPLICATION_NAME"]
-    if !app_name.nil?
-      f.puts "export APPDYNAMICS_AGENT_APPLICATION_NAME=#{app_name}"
-      f.puts "export APPDYNAMICS_AGENT_TIER_NAME=#{app_name}"
-      f.puts "export APPDYNAMICS_AGENT_NODE_NAME=#{app_name}:\$CF_INSTANCE_INDEX"
-    elsif vcap['application_name']
-      f.puts "export APPDYNAMICS_AGENT_APPLICATION_NAME=#{vcap['application_name']}"
-      f.puts "export APPDYNAMICS_AGENT_TIER_NAME=#{vcap['application_name']}"
-      f.puts "export APPDYNAMICS_AGENT_NODE_NAME=#{vcap['application_name']}:\$CF_INSTANCE_INDEX"
+    vcap = JSON.load(ENV['VCAP_APPLICATION']) rescue {}
+    if vcap['application_name']
+      if ENV["APPDYNAMICS_AGENT_APPLICATION_NAME"].nil?
+        f.puts "export APPDYNAMICS_AGENT_APPLICATION_NAME=#{vcap['application_name']}"
+      end
+      if ENV["APPDYNAMICS_AGENT_TIER_NAME"].nil?
+        f.puts "export APPDYNAMICS_AGENT_TIER_NAME=#{vcap['application_name']}"
+      end
+      if ENV["APPDYNAMICS_AGENT_NODE_NAME"].nil?
+        f.puts "export APPDYNAMICS_AGENT_NODE_NAME=#{vcap['application_name']}:\$CF_INSTANCE_INDEX"
+      end
     end
   end
 end

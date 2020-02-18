@@ -1,3 +1,13 @@
+v1.7.12 Feb 18, 2020
+=====================
+
+* Add node 12.16.0, remove node 12.14.1
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/171217143)
+
+* correct the flag logic in case of non multibuildpack usage
+
+
 v1.7.11 Feb 10, 2020
 =====================
 

@@ -1,3 +1,15 @@
+v1.7.15 Mar 16, 2020
+=====================
+
+* Add node 13.11.0, remove node 13.8.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/171761974)
+
+* Add yarn 1.22.4, remove yarn 1.22.2
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/171703811)
+
+
 v1.7.14 Mar 09, 2020
 =====================
 

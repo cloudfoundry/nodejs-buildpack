@@ -36,14 +36,6 @@ dependency_deprecation_dates:
   link: https://github.com/nodejs/Release
 dependencies:
 - name: node
-  version: 10.18.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.18.1-linux-x64-cflinuxfs3-ad0376cb.tgz
-  sha256: ad0376cbe4dfc3d6092d0ea9fdc4fd3fcb44c477bd4a2c800ccd48eee95e994d
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v10.18.1/node-v10.18.1.tar.gz
-  source_sha256: 80a61ffbe6d156458ed54120eb0e9fff7b626502e0986e861d91b365f7e876db
-- name: node
   version: 10.19.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-10.19.0-linux-x64-cflinuxfs3-0bcac686.tgz
   sha256: 0bcac6860f8103e37d85a271898d019edb8d50ba7e3aaee50a0526684f962f10
@@ -51,6 +43,14 @@ dependencies:
   - cflinuxfs3
   source: https://nodejs.org/dist/v10.19.0/node-v10.19.0.tar.gz
   source_sha256: db85b9992f1ec66629731d82f690987883dd2989abb4cc136eb65dd720b1bda8
+- name: node
+  version: 10.20.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_10.20.0_linux_x64_cflinuxfs3_76f4a198.tgz
+  sha256: 76f4a198a539f35b66894424bef1421b1b9f231945a31e1f2a67c963f29a48c3
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v10.20.0/node-v10.20.0.tar.gz
+  source_sha256: 5b7166da554743989c657918a0246b09770bea9706df3b531d7a08e53f77981f
 - name: node
   version: 12.16.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node-12.16.0-linux-x64-cflinuxfs3-e4ed0bdc.tgz

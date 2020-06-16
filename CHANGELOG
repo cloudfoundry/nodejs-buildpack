@@ -1,3 +1,10 @@
+v1.7.22 Jun 16, 2020
+=====================
+
+* Remove Node 13.x due to End of Support
+  See issue #222
+
+
 v1.7.21 Jun 08, 2020
 =====================
 

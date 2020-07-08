@@ -8,7 +8,7 @@ A Cloud Foundry [buildpack](http://docs.cloudfoundry.org/buildpacks/) for Node b
 
 Official buildpack documentation can be found at [node buildpack docs](http://docs.cloudfoundry.org/buildpacks/node/index.html).
 
-### Building the Buildpack
+### Building the Buildpack 
 
 To build this buildpack, run the following commands from the buildpack's directory:
 

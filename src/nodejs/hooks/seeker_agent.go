@@ -18,9 +18,11 @@ import (
 )
 
 const (
-	EntryPointFile    = "SEEKER_APP_ENTRY_POINT"
+	SeekerRequire     = "require('/home/vcap/app/seeker/node_modules/@synopsys-sig/seeker');\n"
+	entryPointFile    = "SEEKER_APP_ENTRY_POINT"
 	agentDownloadPath = "/rest/api/latest/installers/agents/binaries/NODEJS"
-	SeekerRequire     = "require('./seeker/node_modules/@synopsys-sig/seeker');\n"
+	seekerTarGZ       = "seeker-agent.tgz"
+	seekerZIP         = "seeker-node-agent.zip"
 )
 
 var pattern = regexp.MustCompile(`require\(['"].*@synopsys-sig/seeker['"]\)`)
@@ -69,21 +71,26 @@ func (h *SeekerAfterCompileHook) AfterCompile(compiler *libbuildpack.Stager) err
 		h.Log.Debug("Seeker service credentials not found!")
 		return nil
 	}
-
 	if err = h.PrependRequire(compiler); err != nil {
 		return err
 	}
-
-	seekerLibraryToInstall, err := h.downloadAgent(*c)
+	seekerTempFolder, err := ioutil.TempDir(os.TempDir(), "seeker_tmp")
+	if err != nil {
+		h.Log.Error("Failed to create temp dir")
+		return err
+	}
+	tgzPath, err := h.downloadAgent(*c, seekerTempFolder)
 	if err != nil {
 		return err
 	}
 
-	h.Log.Info("Before Installing seeker agent dependency")
-	err = h.updateNodeModules(seekerLibraryToInstall, compiler.BuildDir())
+	appRoot := compiler.BuildDir()
+	h.Log.Info("Before Installing seeker agent dependency to %s", appRoot)
+	err = h.updateNodeModules(tgzPath, appRoot)
 	if err != nil {
 		return err
 	}
+	h.cleanupUnusedFiles(seekerTempFolder)
 	h.Log.Info("After Installing seeker agent dependency")
 	err = h.createSeekerEnvironmentScript(*c, compiler)
 	if err != nil {
@@ -94,14 +101,12 @@ func (h *SeekerAfterCompileHook) AfterCompile(compiler *libbuildpack.Stager) err
 }
 
 func (h *SeekerAfterCompileHook) PrependRequire(compiler *libbuildpack.Stager) error {
-	entryPointPath := os.Getenv(EntryPointFile)
+	entryPointPath := os.Getenv(entryPointFile)
 	if entryPointPath == "" {
-		h.Log.Debug("%s is not defined", EntryPointFile)
+		h.Log.Warning("%s is not defined, ignore this message if you required Seeker using: `require('/home/vcap/app/seeker/node_modules/@synopsys-sig/seeker')`", entryPointFile)
 		return nil
 	}
-
 	absolutePathToEntryPoint := filepath.Join(compiler.BuildDir(), entryPointPath)
-
 	c, err := ioutil.ReadFile(absolutePathToEntryPoint)
 	if err != nil {
 		h.Log.Error("Failed to read entry point module: %s, Seeker agent will not be enabled", absolutePathToEntryPoint)
@@ -112,26 +117,19 @@ func (h *SeekerAfterCompileHook) PrependRequire(compiler *libbuildpack.Stager) e
 		h.Log.Debug("Seeker agent is already required...")
 		return nil
 	}
-
 	h.Log.Debug("Trying to prepend %s to %s", SeekerRequire, absolutePathToEntryPoint)
 	return ioutil.WriteFile(absolutePathToEntryPoint, append([]byte(SeekerRequire), c...), 0644)
 }
 
-func (h *SeekerAfterCompileHook) downloadAgent(serviceCredentials SeekerCredentials) (string, error) {
+func (h *SeekerAfterCompileHook) downloadAgent(serviceCredentials SeekerCredentials, seekerTempFolder string) (string, error) {
 	agentDownloadAbsoluteURL, err := h.getAgentDownloadURL(serviceCredentials)
 	if err != nil {
 		return "", err
 	}
 
 	h.Log.Info("Agent download url %s", agentDownloadAbsoluteURL)
-	seekerTempFolder, err := ioutil.TempDir(os.TempDir(), "seeker_tmp")
-	if err != nil {
-		h.Log.Error("Failed to create temp dir")
-		return "", err
-	}
-	defer os.Remove(seekerTempFolder)
-	seekerLibraryPath := filepath.Join(seekerTempFolder, "seeker-agent.tgz")
-	agentZipAbsolutePath := path.Join(seekerTempFolder, "seeker-node-agent.zip")
+	seekerLibraryPath := filepath.Join(seekerTempFolder, seekerTarGZ)
+	agentZipAbsolutePath := path.Join(seekerTempFolder, seekerZIP)
 	h.Log.Info("Downloading '%s' to '%s'", agentDownloadAbsoluteURL, agentZipAbsolutePath)
 	if err = h.downloadFile(agentDownloadAbsoluteURL, agentZipAbsolutePath); err != nil {
 		return "", err
@@ -149,18 +147,32 @@ func (h *SeekerAfterCompileHook) downloadAgent(serviceCredentials SeekerCredenti
 	return seekerLibraryPath, err
 }
 
-func (h *SeekerAfterCompileHook) updateNodeModules(pathToSeekerLibrary string, buildDir string) error {
+func (h *SeekerAfterCompileHook) updateNodeModules(tgzPath string, appRoot string) error {
 	// No need to handle YARN, since NPM is installed even when YARN is the selected package manager
-	h.Log.Debug("About to install seeker agent, build dir: %s, seeker package: %s", buildDir, pathToSeekerLibrary)
+	h.Log.Debug("About to install seeker agent, build dir: %s, seeker package: %s", appRoot, tgzPath)
 	var err error
+	const seekerModule = "seeker"
 	if os.Getenv("BP_DEBUG") != "" {
-		err = h.Command.Execute(buildDir, os.Stdout, os.Stderr, "npm", "install", "--save", pathToSeekerLibrary, "--prefix", "seeker")
+		err = h.Command.Execute(appRoot, os.Stdout, os.Stderr, "npm", "install", "--save", tgzPath, "--prefix", seekerModule)
 	} else {
-		err = h.Command.Execute(buildDir, ioutil.Discard, ioutil.Discard, "npm", "install", "--save", pathToSeekerLibrary, "--prefix", "seeker")
+		err = h.Command.Execute(appRoot, ioutil.Discard, ioutil.Discard, "npm", "install", "--save", tgzPath, "--prefix", seekerModule)
 	}
 	if err != nil {
-		h.Log.Error("npm install --save " + pathToSeekerLibrary + " --prefix seeker Error: " + err.Error())
+		h.Log.Error("npm install --save " + tgzPath + " --prefix seeker Error: " + err.Error())
 		return err
+	}
+	seekerModuleDir := filepath.Join(appRoot, seekerModule)
+	return h.listContents(seekerModuleDir)
+}
+
+func (h *SeekerAfterCompileHook) listContents(dir string) error {
+	files, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return err
+	}
+	h.Log.Debug("listing content of: %s", dir)
+	for _, file := range files {
+		h.Log.Debug(file.Name())
 	}
 	return nil
 }
@@ -259,4 +271,11 @@ func (h *SeekerAfterCompileHook) writeToFile(source io.Reader, destFile string, 
 		return err
 	}
 	return nil
+}
+
+func (h *SeekerAfterCompileHook) cleanupUnusedFiles(directory string) {
+	files := [...]string{path.Join(directory, seekerTarGZ), path.Join(directory, seekerZIP)}
+	for _, f := range files {
+		os.Remove(f) // do not fail on error
+	}
 }

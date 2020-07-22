@@ -31,6 +31,9 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 	appConfig := func() (string, error) {
 		return app.GetBody("/config")
 	}
+	appSource := func() (string, error) {
+		return app.GetBody("/self")
+	}
 
 	It("deploying a NodeJS app with seeker", func() {
 		app = cutlass.New(Fixtures("with_seeker"))
@@ -39,7 +42,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		app.Disk = "512M"
 
 		app.SetEnv("BP_DEBUG", "true")
-		app.SetEnv("SEEKER_APP_ENTRY_POINT", "server.js")
+		app.SetEnv("SEEKER_APP_ENTRY_POINT", "dist/server.js")
 		app.SetEnv("SEEKER_AGENT_DOWNLOAD_URL", "https://github.com/synopsys-sig/seeker-nodejs-buildpack-test/releases/download/1.1/synopsys-sig-seeker-1.1.0.zip")
 
 		By("Pushing an app with a user provided service", func() {
@@ -58,6 +61,8 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(app.Stdout.String()).To(ContainSubstring("Hello from Seeker"))
 			// test that the credentials were passed successfully
 			Eventually(appConfig, 10*time.Second).Should(ContainSubstring("SEEKER_SERVER_URL: http://non-existing-domain.seeker-test.com"))
+			// test Seeker was required by the buildpack
+			Eventually(appSource, 10*time.Second).Should(HavePrefix("require('/home/vcap/app/seeker/node_modules/@synopsys-sig/seeker');"))
 		})
 
 		By("Unbinding and deleting the CUPS seeker service", func() {

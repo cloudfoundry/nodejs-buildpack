@@ -601,15 +601,19 @@ func (s *Supplier) WarnNodeEngine() {
 	if s.NvmrcNodeVersion != "" && s.PackageJSONNodeVersion == "" {
 		s.Log.Warning("Using the node version specified in your .nvmrc See: %s", docsLink)
 	}
-	if s.PackageJSONNodeVersion != "" && s.NvmrcNodeVersion != "" {
+
+	if s.PackageJSONNodeVersion != "" && s.NvmrcNodeVersion != "" && s.PackageJSONNodeVersion != s.NvmrcNodeVersion {
 		s.Log.Warning("Node version in .nvmrc ignored in favor of 'engines' field in package.json")
 	}
+
 	if s.PackageJSONNodeVersion == "" && s.NvmrcNodeVersion == "" {
 		s.Log.Warning("Node version not specified in package.json or .nvmrc. See: %s", docsLink)
 	}
+
 	if s.PackageJSONNodeVersion == "*" {
 		s.Log.Warning("Dangerous semver range (*) in engines.node. See: %s", docsLink)
 	}
+
 	if s.NvmrcNodeVersion == "node" {
 		s.Log.Warning(".nvmrc specified latest node version, this will be selected from versions available in manifest.yml")
 	}
@@ -628,7 +632,6 @@ func (s *Supplier) InstallNode() error {
 		Name:    "node",
 		Version: s.NodeVersion,
 	}
-
 
 	nodeInstallDir := filepath.Join(s.Stager.DepDir(), "node")
 	if err := s.Installer.InstallDependency(dep, nodeInstallDir); err != nil {

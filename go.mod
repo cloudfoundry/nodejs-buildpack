@@ -7,7 +7,7 @@ require (
 	github.com/golang/mock v1.4.4
 	github.com/onsi/ginkgo v1.14.0
 	github.com/onsi/gomega v1.10.1
-	golang.org/x/sys v0.0.0-20200728102440-3e129f6d46b1 // indirect
+	golang.org/x/sys v0.0.0-20200806125547-5acd03effb82 // indirect
 	gopkg.in/jarcoal/httpmock.v1 v1.0.0-20181117152235-275e9df93516
 )
 

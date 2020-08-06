@@ -309,8 +309,15 @@ var _ = Describe("Supply", func() {
 	Describe("WarnNodeEngine", func() {
 		Context("node version not specified", func() {
 			It("warns that nvmrc version will be ignored in favor of package.json", func() {
-				supplier.NvmrcNodeVersion = "lts/*"
-				supplier.PackageJSONNodeVersion = "*"
+				supplier.NvmrcNodeVersion = "13.*.*"
+				supplier.PackageJSONNodeVersion = "13.*.*"
+				supplier.WarnNodeEngine()
+				Expect(buffer.String()).To(BeEmpty())
+			})
+
+			It("warns that different nvmrc version will be ignored in favor of package.json", func() {
+				supplier.NvmrcNodeVersion = "13.*.*"
+				supplier.PackageJSONNodeVersion = "14.*.*"
 				supplier.WarnNodeEngine()
 				Expect(buffer.String()).To(ContainSubstring("**WARNING** Node version in .nvmrc ignored in favor of 'engines' field in package.json"))
 			})

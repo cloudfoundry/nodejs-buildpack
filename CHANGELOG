@@ -1,3 +1,17 @@
+v1.7.26 Aug 17, 2020
+=====================
+
+* Update libbuildpack
+
+* Add node 14.8.0, remove node 14.5.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/174281369)
+
+* Prints warning in more specific case
+  The warning should not appear if the versions specified by .nvmrc and
+  package.json are the same.
+
+
 v1.7.25 Jul 30, 2020
 =====================
 

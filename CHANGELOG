@@ -1,3 +1,11 @@
+v1.7.32 Oct 19, 2020
+=====================
+
+* Add node 14.14.0, remove node 14.13.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/175298310)
+
+
 v1.7.31 Oct 12, 2020
 =====================
 

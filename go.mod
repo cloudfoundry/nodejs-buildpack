@@ -3,7 +3,7 @@ module github.com/cloudfoundry/nodejs-buildpack
 require (
 	github.com/Dynatrace/libbuildpack-dynatrace v1.3.0
 	github.com/Masterminds/semver v1.5.0
-	github.com/cloudfoundry/libbuildpack v0.0.0-20210202182049-39ed3f6a1634
+	github.com/cloudfoundry/libbuildpack v0.0.0-20210203171418-e004e3b143a6
 	github.com/golang/mock v1.4.4
 	github.com/nxadm/tail v1.4.6 // indirect
 	github.com/onsi/ginkgo v1.15.0

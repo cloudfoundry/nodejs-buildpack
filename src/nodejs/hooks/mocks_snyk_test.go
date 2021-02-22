@@ -5,34 +5,35 @@
 package hooks_test
 
 import (
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
 )
 
-// MockSnykCommand is a mock of SnykCommand interface
+// MockSnykCommand is a mock of SnykCommand interface.
 type MockSnykCommand struct {
 	ctrl     *gomock.Controller
 	recorder *MockSnykCommandMockRecorder
 }
 
-// MockSnykCommandMockRecorder is the mock recorder for MockSnykCommand
+// MockSnykCommandMockRecorder is the mock recorder for MockSnykCommand.
 type MockSnykCommandMockRecorder struct {
 	mock *MockSnykCommand
 }
 
-// NewMockSnykCommand creates a new mock instance
+// NewMockSnykCommand creates a new mock instance.
 func NewMockSnykCommand(ctrl *gomock.Controller) *MockSnykCommand {
 	mock := &MockSnykCommand{ctrl: ctrl}
 	mock.recorder = &MockSnykCommandMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockSnykCommand) EXPECT() *MockSnykCommandMockRecorder {
 	return m.recorder
 }
 
-// Output mocks base method
+// Output mocks base method.
 func (m *MockSnykCommand) Output(arg0, arg1 string, arg2 ...string) (string, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0, arg1}
@@ -45,7 +46,7 @@ func (m *MockSnykCommand) Output(arg0, arg1 string, arg2 ...string) (string, err
 	return ret0, ret1
 }
 
-// Output indicates an expected call of Output
+// Output indicates an expected call of Output.
 func (mr *MockSnykCommandMockRecorder) Output(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)

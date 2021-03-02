@@ -152,6 +152,12 @@ func (h *SeekerAfterCompileHook) updateNodeModules(tgzPath string, appRoot strin
 	h.Log.Debug("About to install seeker agent, build dir: %s, seeker package: %s", appRoot, tgzPath)
 	var err error
 	const seekerModule = "seeker"
+	// create the seeker dir to workaround a known bug in npm 7
+	seekerModulePath := filepath.Join(appRoot, seekerModule)
+	err = os.Mkdir(seekerModulePath, 0755)
+	if err != nil {
+		h.Log.Debug("Failed to create seeker folder in: %s. Error: %s", seekerModulePath, err.Error())
+	}
 	if os.Getenv("BP_DEBUG") != "" {
 		err = h.Command.Execute(appRoot, os.Stdout, os.Stderr, "npm", "install", "--save", tgzPath, "--prefix", seekerModule)
 	} else {

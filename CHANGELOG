@@ -1,3 +1,22 @@
+v1.7.48 Apr 16, 2021
+=====================
+
+* Add node 15.14.0, remove node 15.12.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/177655037)
+
+* Add node 14.16.1, remove node 14.15.5
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/177654221)
+
+* Add node 12.22.1, remove node 12.21.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/177654216)
+
+* Add node 10.24.1, remove node 10.23.3
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/177654217)
+
 v1.7.47 Apr 05, 2021
 =====================
 

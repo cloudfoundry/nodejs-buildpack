@@ -115,6 +115,14 @@ dependencies:
   - cflinuxfs3
   source: https://nodejs.org/dist/v16.0.0/node-v16.0.0.tar.gz
   source_sha256: ef4928ed381dcb8f5eca9c521b3ffa4a384c75cc76656999e16f5d1c171d8e7b
+- name: node
+  version: 16.1.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_16.1.0_linux_x64_cflinuxfs3_aebbbe59.tgz
+  sha256: aebbbe594a3dece9121dc91999e94efb9e617f99aaeb7cc656d2937a579463ea
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v16.1.0/node-v16.1.0.tar.gz
+  source_sha256: cdc229fff0e18ff9ca29c057691ff29da7bee8b7107b72d8181bdb5c3eeaba00
 - name: yarn
   version: 1.22.10
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.10_linux_noarch_any-stack_0057c1c9.tgz

@@ -1,3 +1,12 @@
+v1.7.51 May 18, 2021
+=====================
+
+* Add node 14.17.0, remove node 14.16.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/178122733)
+
+* Update libbuildpack
+
 v1.7.50 May 05, 2021
 =====================
 

@@ -1,8 +1,24 @@
 #!/usr/bin/env bash
-set -exuo pipefail
 
-cd "$( dirname "${BASH_SOURCE[0]}" )/.."
-source .envrc
+set -e
+set -u
+set -o pipefail
 
-GOOS=linux go build -mod=vendor -ldflags="-s -w" -o bin/supply ./src/nodejs/supply/cli
-GOOS=linux go build -mod=vendor -ldflags="-s -w" -o bin/finalize ./src/nodejs/finalize/cli
+ROOTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+readonly ROOTDIR
+
+function main() {
+  local src
+  src="$(find "${ROOTDIR}/src" -mindepth 1 -maxdepth 1 -type d )"
+
+  for name in supply finalize; do
+    GOOS=linux \
+      go build \
+        -mod vendor \
+        -ldflags="-s -w" \
+        -o "${ROOTDIR}/bin/${name}" \
+          "${src}/${name}/cli"
+  done
+}
+
+main "${@:-}"

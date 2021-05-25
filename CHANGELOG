@@ -1,3 +1,10 @@
+v1.7.52 May 25, 2021
+=====================
+
+* Add node 16.2.0, remove node 16.0.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/178212453)
+
 v1.7.51 May 18, 2021
 =====================
 

@@ -1,7 +1,6 @@
 Sample monorepo application. It has 2 packages - express app (`packages/sample-app`) and separate config package (`packages/sample-config`). Express application uses config package. 
 
 **Prerequisites**
-- Node `10.x`
 - Yarn `1.x`
 
 **Build project**

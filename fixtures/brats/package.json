@@ -3,6 +3,9 @@
 	"version": "0.0.0",
 	"description": "hello, world",
 	"main": "server.js",
+	"engines": {
+		"node": "14.x"
+	},
 	"dependencies": {
 		"bcrypt": "*",
 		"bson-ext": "*"

@@ -14,6 +14,6 @@
     "appdynamics": "4.5.20"
   },
   "engines": {
-    "node": "~>10"
+    "node": "~>14"
   }
 }

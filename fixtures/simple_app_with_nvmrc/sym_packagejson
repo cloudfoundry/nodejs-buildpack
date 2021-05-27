@@ -13,6 +13,6 @@
     "url": "http://github.com/cloudfoundry/nodejs-buildpack.git"
   },
   "engines": {
-    "node": "~10"
+    "node": "~14"
   }
 }

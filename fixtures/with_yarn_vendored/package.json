@@ -6,7 +6,7 @@
   "dependencies": {
     "express": "~4.0.0",
     "logfmt": "~1.1.2",
-    "microtime": "^2.1.9"
+    "microtime": "~3.0.0"
   },
   "engines": {
     "yarn": "*"

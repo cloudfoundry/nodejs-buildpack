@@ -1,3 +1,12 @@
+v1.7.53 Jun 01, 2021
+=====================
+
+* Remove node 10.x
+(https://github.com/cloudfoundry/nodejs-buildpack/issues/300)
+
+* Make node 14.x the default version
+(https://github.com/cloudfoundry/nodejs-buildpack/issues/300)
+
 v1.7.52 May 25, 2021
 =====================
 

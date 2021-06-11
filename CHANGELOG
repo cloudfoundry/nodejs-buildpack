@@ -1,3 +1,13 @@
+v1.7.54 Jun 11, 2021
+=====================
+
+* Add node 16.3.0, remove node 16.1.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/178389043)
+
+* Updating github-config
+
+
 v1.7.53 Jun 01, 2021
 =====================
 

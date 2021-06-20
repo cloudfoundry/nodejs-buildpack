@@ -104,11 +104,10 @@ dependencies:
   source: https://nodejs.org/dist/v16.3.0/node-v16.3.0.tar.gz
   source_sha256: 11d00034a9864660eadf9835d09de2bed97b245093626705d8917897d8f36704
 - name: yarn
-  version: 1.22.10
-  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.10_linux_noarch_any-stack_0057c1c9.tgz
+  version: berry
+  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_berry_linux_noarch_any-stack_0057c1c9.tgz
   sha256: 0057c1c90c3eadc953cc3e6772fd1477179d30a7007ac46ca148dd7bfab1d188
   cf_stacks:
   - cflinuxfs3
-  source: https://github.com/yarnpkg/yarn/releases/download/v1.22.10/yarn-v1.22.10.tar.gz
-  source_sha256: 7e433d4a77e2c79e6a7ae4866782608a8e8bcad3ec6783580577c59538381a6e
+  source: https://github.com/yarnpkg/berry/blob/master/packages/berry-cli/bin/berry.js
 pre_package: scripts/build.sh

@@ -1,7 +1,7 @@
 module github.com/cloudfoundry/nodejs-buildpack
 
 require (
-	github.com/Dynatrace/libbuildpack-dynatrace v1.4.0
+	github.com/Dynatrace/libbuildpack-dynatrace v1.4.1
 	github.com/Masterminds/semver v1.5.0
 	github.com/cloudfoundry/libbuildpack v0.0.0-20210615150252-561bcf1024cf
 	github.com/golang/mock v1.6.0

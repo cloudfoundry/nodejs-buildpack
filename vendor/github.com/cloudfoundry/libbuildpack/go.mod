@@ -6,7 +6,7 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/elazarl/goproxy v0.0.0-20190911111923-ecfe977594f1
 	github.com/elazarl/goproxy/ext v0.0.0-20190911111923-ecfe977594f1 // indirect
-	github.com/golang/mock v1.5.0
+	github.com/golang/mock v1.6.0
 	github.com/google/subcommands v1.2.0
 	github.com/jarcoal/httpmock v1.0.8
 	github.com/onsi/ginkgo v1.16.4

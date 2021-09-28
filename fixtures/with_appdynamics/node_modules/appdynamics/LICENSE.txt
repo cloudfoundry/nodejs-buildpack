@@ -1,0 +1,357 @@
+APPDYNAMICS
+END USER LICENSE AGREEMENT
+
+1. SOFTWARE LICENSE.
+
+1.1 LICENSE GRANT.
+
+This End User License Agreement (this “Agreement”) between AppDynamics LLC, a limited liability company with its principal place of business located at 303 Second Street, North Tower, 8th Floor, San Francisco, CA 94107 (“AppDynamics”) and the customer set forth in the Order Form (as defined below) (“End User”) is effective as of the date the initial Order Form is executed or the date this Agreement is referenced by the applicable purchase order (the “Effective Date”). This Agreement shall govern each order form, sales quotation, proposal, purchase order or other ordering document that references this Agreement (each an “Order Form”). Each Order Form will form part of this Agreement. Subject to the terms of this Agreement, AppDynamics grants to End User, during the License Term (as defined below), a non-exclusive, non-transferable, non-sublicensable right and license to use AppDynamics’ software product, including one Controller (as defined in Exhibit B), as designated in the Order Form(s) (the “Software”) for internal business purposes only for the quantity of units in the Order Form. The “License Term” begins on the date AppDynamics delivers the Software license keys to End User and lasts for the period specified in the applicable Order Form (unless terminated earlier in accordance with this Agreement). This Agreement supersedes any other agreement (including any click-through or electronic agreements within the Software) between AppDynamics and End User with respect to the Software. Any references in the Order Form to an “agreement” or “EULA” or other similar term shall be deemed to refer to this Agreement. 
+
+1.2 RESTRICTIONS ON USE.
+
+AppDynamics Test & Dev Edition licenses shall only be used in test-only non-production environments. Except as otherwise expressly provided in this Agreement, End User shall not (and shall not permit any third party to): (a) sublicense, sell, resell, transfer, assign, distribute, share, lease, make any external commercial use of, outsource, use on a timeshare or service bureau basis, or use in an application service provider or managed service provider environment, or otherwise generate income from the Software; (b) copy the Software onto any public or distributed network, except for secure cloud computing environments; (c) cause the decompiling, disassembly, or reverse engineering of any portion of the Software, or attempt to discover any source code or other operational mechanisms of the Software (except where such restriction is expressly prohibited by law without the possibility of waiver, and then only upon prior written notice to AppDynamics); (d) modify, adapt, translate or create derivative works based on all or any part of the Software; (e) use any Third Party Software (as defined below) provided with the Software other than with the Software; (f) modify any proprietary rights notices that appear in the Software or components thereof; (g) publish the results of any benchmarking tests run on any Third Party Software; (h) use the Software in violation of any applicable laws and regulations; (i) use the Software in support of any nuclear proliferation, chemical weapon, biological weapon or missile proliferation activity; (j) configure the Software to collect any (1) social security numbers or other government-issued identification numbers, (2) unencrypted passwords or other authentication credentials, (3) health information, biometric data, genetic data or any other such information subject to HIPAA requirements (4) payment, financial information, or any other such information subject to PCI security standards, (5) any data relating to a person under the age of 13 years old, or (6) any other data that is subject to regulatory or contractual handling requirements pursuant to the Gramm-Leach-Bliley Act) (collectively, “Prohibited Data”); or (k) use the Software to (1) store, download or transmit infringing, libelous, or otherwise unlawful or tortious material, or malicious code or malware, or (2) engage in phishing, spamming, denial-of-service attacks or other fraudulent or criminal activity, (3) interfere with or disrupt the integrity or performance of third party systems, or the Software or data contained therein, or (4) attempt to gain unauthorized access to the Software or AppDynamics' systems or networks, or (5) perform, or engage any third party to perform, authenticated or unauthenticated penetration testing, vulnerability assessments or other security assessments on the SaaS version of the Software. 
+
+1.3 EVALUATION USE.
+
+If End User accesses any software provided by AppDynamics pursuant to a no-fee or beta evaluation (“Beta Software”), then the License Term is for the period enabled by the license key for the Beta Software. AppDynamics shall have the right to terminate, downgrade, limit or otherwise modify the Beta Software at any time without notice or compensation, and no warranty, indemnity, availability, Maintenance or Support obligations of AppDynamics will apply to Beta Software. End User may use the number and type of licenses enabled by End User’s specific license key, but only to test and evaluate the Beta Software for its intended purpose. End User agrees to provide feedback related to the Beta Software as reasonably requested by AppDynamics. End User grants to AppDynamics, without charge, the fully paid-up, perpetual, sublicensable right to exploit such feedback for any purpose. The provision of Beta Software is not a guarantee of future product features or the availability of any future product and should not be relied upon in making any purchasing decisions. The Beta Software is subject to the terms of Section 1.2 (Restrictions on Use) to the same extent as the Software.
+
+1.4 AFFILIATE USE.
+
+“Affiliate” means, in relation to a party, any entity that directly or indirectly controls, is controlled by, or is under direct or indirect common control with such party, or which is a wholly owned subsidiary of such party, where “control” means owning, directly or indirectly, at least 51% of the equity securities or equity interests of such entity. 
+
+(a)	End User Affiliates will have the right to make purchases pursuant to this Agreement by executing an Order Form (or issuing a purchase order referencing an Order Form) and agreeing to be bound by this Agreement. Where an Affiliate makes a purchase pursuant to this Agreement, references to each party in the Agreement shall be read as references to the Affiliate of each party stated on the Order Form. If an End User Affiliate purchases under this Agreement, then a separate Agreement will be deemed made between AppDynamics (or its Affiliate, as applicable) and such End User Affiliate. 
+
+(b)	End User may also permit Affiliates to use the Software provided that: (1) End User shall procure that its Affiliates comply with the terms of this Agreement, and End User shall remain liable for all acts and omissions of its Affiliates; (2) only End User may bring actions against AppDynamics with respect to any losses, damage or liabilities suffered or incurred by any Affiliate caused by the Software; and (3i) the exclusions and limitations of liability in this Agreement will apply to End User and End User Affiliates as a whole, so that they apply to all liabilities incurred under or in connection with this Agreement by AppDynamics to End User and End User Affiliates in aggregate.
+
+
+1.5 MAINTENANCE AND SUPPORT.
+
+“Support” is defined as AppDynamics' obligations to respond to support requests as described in Exhibit A (Enterprise Support). “Maintenance” has the meaning given in the Exhibit A. Subject to End User’s payment of the fees set forth in the applicable Order Form(s), AppDynamics will (a) provide Maintenance and Support for the Software; and (b) solely if End User has purchased access to the software-as-a-service version of the Software, provide Availability (as defined in Exhibit B) in accordance with Exhibit B (Availability). For time-limited licenses for the Software (as set forth in an Order Form, “Subscription Licenses”), the fees for Maintenance and Support are included in the fees for the Software. For perpetual licenses, (a) AppDynamics shall invoice End User the applicable fees for Maintenance and Support (“Maintenance and Support Fees”) upon execution of the Order Form, and (b) subject to payment of the Maintenance and Support Fees, AppDynamics will provide Support for the Maintenance and Support period set forth in the Order Form (the “Maintenance and Support Term”). If Maintenance and Support terminates with respect to any perpetual licenses, then End User may reinstate Maintenance and Support on payment of the cumulative Maintenance and Support Fees applicable for the period during which Maintenance and Support lapsed, plus Maintenance and Support Fees for the reinstated Maintenance and Support Term. 
+
+1.6 SERVICES.
+
+AppDynamics will provide training, enablement and/or other services described in an Order Form (or statement of work referencing this Agreement), if any (“Services”). The license in Section 1.1 applies to any educational, training and other informational materials resulting from the Services. All Services will be rendered on a time and materials basis. AppDynamics will not exceed the total time purchased without prior written approval from End User. If not used, pre-purchased Services and expenses expire 12 months after the date purchased (unless otherwise agreed in the applicable Order Form). End User agrees to provide reasonable cooperation and information as necessary to permit AppDynamics to perform the Services. End User will reimburse AppDynamics for travel and expenses (at cost) incurred in connection with the Services (if any) by the Invoice Due Date (as defined below). Services will be performed on business days (a business day means Monday through Friday, excluding national holidays, during working hours, in the location where the Services are delivered). Saturday Services, and hours worked during the week that exceed the local working hours in a week, will only be worked with prior approval from End User and will be charged at 1.5 x the agreed rate. Services performed on Sundays or national holidays will be charged at 2 x the agreed rate. If End User cancels or delays any scheduled Services less than ten business days before the start date of such Services, then AppDynamics will use reasonable efforts to reallocate the resource for the cancelled Services. If AppDynamics is unable to reallocate such resources AppDynamics may deduct from End User's pre-paid Services (or End User will pay for) the amount of Services that were scheduled in any of the ten business days following the date of cancellation (or notification of the delay, as applicable), and End User will fully reimburse AppDynamics for any reasonable travel and expenses incurred by AppDynamics for such Services (and for any Services rescheduled by End User) for which AppDynamics is unable to obtain a refund. 
+
+1.7 EXPORT.
+
+The Software and Documentation are subject to local and extraterritorial export control laws and regulations. Each party will comply with such laws and regulations governing use, export, re-export, and transfer of the Software and Documentation and will obtain all required local and extraterritorial authorizations, permits or licenses. 
+
+2. FEES.
+
+2.1 PRICING.
+
+End User will be invoiced for the amounts and set forth in an Order Form (the “Fees”). If End User’s usage of the Software is in excess of those amounts set forth in the Order Form, End User may be billed for those overages. If AppDynamics believes in good faith that End User’s usage of the Software exceeds that set forth on the applicable Order Form, for on-premises deployments, End User agrees to report to AppDynamics (or allow AppDynamics to audit) the quantity of Software license units used by End User, upon at least three business days’ notice. AppDynamics may monitor at any time the quantity of Software license units used by End User for SaaS deployments of the Software. 
+
+2.2 PAYMENTS.
+
+End User shall pay invoices within 30 days of the invoice date (the “Invoice Due Date”). All payment obligations are non-cancelable and all amounts paid are non-refundable, except as otherwise set forth in this Agreement. The Fees are exclusive of any relevant local sales taxes for which End User shall be responsible. AppDynamics shall have no responsibility for any Fees that are not received due to inaccurate or missing information provided by End User. End User shall pay interest on all payments not received by the Invoice Due Date at a rate of 1% per month or the maximum amount allowed by law, whichever is lesser. All amounts due under this Agreement shall be paid by End User in full without any set-off, counterclaim, deduction or withholding (other than any deduction or withholding of tax as required by law). If requested by AppDynamics, End User will obtain and furnish to AppDynamics tax receipts or other certificates issued by the competent taxation office showing the payments of the withholding tax within a reasonable time after payment. Following notice, AppDynamics may suspend End User’s access to the Software if payments are not received within 30 days of the Invoice Due Date. If End User purchases the Software, Services or both from an authorized partner of AppDynamics, the payment terms in the agreement between the partner and End User will apply.
+
+3. CONFIDENTIALITY
+
+3.1 SCOPE AND RESTRICTIONS.
+
+“Confidential Information” means all information of a party (“Disclosing Party”) disclosed to the other party (“Receiving Party”) that is identified as confidential at the time of disclosure or should be reasonably known by the Receiving Party to be confidential due to the nature of the information and the circumstances surrounding the disclosure. The Receiving Party will: (a) not use the Disclosing Party’s Confidential Information for any purpose outside of this Agreement; (b) not disclose such Confidential Information to any person or entity, other than its affiliates, employees, consultants, agents and professional advisers who have a “need to know” for the Receiving Party to exercise its rights or perform its obligations hereunder, provided that such affiliates, employees, consultants, and agents are bound by agreements or, in the case of professional advisers, ethical duties respecting such Confidential Information in accordance with the terms of this Section 3; and (c) use reasonable measures to protect the confidentiality of such Confidential Information. If the Receiving Party is required by applicable law or court order to make any disclosure of such Confidential Information, it will first give written notice of such requirement to the Disclosing Party, and, to the extent within its control, permit the Disclosing Party to intervene in any relevant proceedings to protect its interests in its Confidential Information, and provide cooperation to the Disclosing Party in seeking to obtain such protection.
+
+3.2 This Section 3 will not apply to information that the Receiving Party can document: (a) was rightfully in its possession or known to it prior to receipt without any restriction on its disclosure; (b) is or has become public knowledge or publicly available through no fault of the Receiving Party; (c) is rightfully obtained by the Receiving Party from a third party without breach of any confidentiality obligation; or (d) is independently developed by employees of the Receiving Party who had no access to such information. 
+
+3.3 EQUITABLE RELIEF.
+
+The Receiving Party acknowledges that unauthorized disclosure of the Disclosing Party’s Confidential Information could cause substantial harm to the Disclosing Party for which damages alone might not be a sufficient remedy and, therefore, that upon any such disclosure by the Receiving Party, the Disclosing Party may seek appropriate equitable relief in addition to whatever other remedies it might have at law or equity. 
+
+4. PROPRIETARY RIGHTS. 
+
+AppDynamics and its suppliers shall retain all intellectual property rights in and to the Software and the results of any Services. Certain “free” or “open source” software (the “FOSS Software”) and third party software are included with the Software (the “Third Party Software”).  A list of the FOSS Software and Third Party Software, and any applicable license terms, is available at https://docs.appdynamics.com/display/DASH/Legal+Notices. The Software and Third Party Software may only be used by End User as prescribed by the AppDynamics documentation located at http://docs.appdynamics.com/ (as it may be updated from time to time, the “Documentation”).
+
+5. TERM AND TERMINATION.
+
+The term of this Agreement begins on the Effective Date and will remain in effect until all Subscription Licenses (and Maintenance and Support Terms, if applicable) expire or until this Agreement is otherwise terminated in accordance with the terms hereof, whichever occurs first (the “Term”). If either party commits a material breach of this Agreement, and such breach has not been cured within 30 days after receipt of written notice thereof, the non-breaching party may terminate this Agreement, except that AppDynamics may immediately terminate this Agreement and/or End User’s license to the Software upon End User’s breach of Section 1.2(c). Either party may also terminate this Agreement upon written notice if the other party suspends payment of its debts or experiences any other insolvency or bankruptcy-type event. Upon expiration or termination of this Agreement for any reason: (a) with respect to Subscription Licenses, all rights granted to End User shall terminate and End User shall destroy any copies of the Software and Documentation within End User’s possession and control; (b) with respect to perpetual licenses, these will survive termination of this Agreement unless AppDynamics terminates the Agreement for End User’s breach of this Agreement in which case all rights granted to End User shall terminate and End User shall destroy any copies of the Software and Documentation within End User’s possession and control; and (c) each Receiving Party will destroy the Disclosing Party’s Confidential Information in the Receiving Party’s possession or control. All fees that have accrued as of such expiration or termination, and Sections 1.2, 1.3, 1.4, 2, 3, 4, 5, 6.2 and 8 through 12, will survive any expiration or termination hereof.
+
+6. WARRANTIES.
+
+6.1 LIMITED WARRANTY.
+
+AppDynamics warrants that during the first 30 days following the date the Software is purchased, the Software will, in all material respects, conform to the functionality described in the then-current Documentation for the applicable Software version. AppDynamics’ sole and exclusive obligation, and End User’s sole and exclusive remedy, for a breach of this warranty shall be that AppDynamics shall be required to repair or replace the Software to conform in all material respects to the Documentation, and if AppDynamics is unable to materially restore such functionality within 30 days from the date of written notice of such breach, End User may terminate the license to the affected Software upon written notice and AppDynamics shall promptly provide a pro-rata refund of the Software license fees (or Maintenance and Support Fees, for perpetual licenses) that have been paid in advance for the remainder of the License Term for the applicable Software (beginning on the date of termination). End User must notify AppDynamics in accordance with Section 12 of any warranty breaches within such warranty period, and End User must have installed and configured the Software in accordance with the Documentation to be eligible for the foregoing remedy.
+
+6.2 WARRANTY DISCLAIMER.
+
+Except as expressly provided in this Section 6.1, all software, documentation, maintenance and support and services are provided “as is” and AppDynamics and its suppliers expressly disclaim any and all other representations and warranties, either express, implied, statutory, or otherwise with respect thereto. AppDynamics expressly disclaims any warranty as to the accuracy or completeness of any information or data accessed or used in connection with the software, documentation, maintenance and support, or services or that the software will be compatible or work with any end user or third party software or hardware. Each party acknowledges that, in entering into this Agreement, it has not relied on, and shall have no right or remedy in respect of, any statement, representation, assurance or warranty (whether made negligently or innocently) other than as expressly set out in this Agreement. The Software is not fault-tolerant and is not designed or intended for use in hazardous environments, including without limitation, in the operation of aircraft or other modes of human mass transportation, nuclear or chemical facilities, life support systems, implantable medical equipment, motor vehicles or weaponry systems, or any other application in which failure of the Software could lead to death or serious bodily injury of a person, or to severe physical or environmental damage (each, a “High Risk Use”). AppDynamics expressly disclaims any express or implied warranty or representation of fitness for High Risk Use. AppDynamics shall not be liable to End User for any loss, damage or harm suffered by End User that is directly or indirectly caused by End User’s unauthorized use of the Software to process Prohibited Data.
+
+7. INDEMNIFICATION.
+
+7.1 BY APPDYNAMICS.
+
+Subject to Section 7.2 and End User’s compliance with Section 7.4, AppDynamics agrees at its expense to defend End User against (or, at AppDynamics’ option, settle), any third party claim to the extent such claim alleges that the Software infringes or misappropriates any patent, copyright, trademark or trade secret of a third party, and AppDynamics shall pay all costs and damages finally awarded against End User by a court of competent jurisdiction as a result of any such claim. If the use of the Software is, or in AppDynamics’ sole opinion is likely to become, subject to such a claim, AppDynamics, at its option and expense, may (a) replace the applicable Software with functionally equivalent non-infringing technology, (b) obtain a license for End User’s continued use of the applicable Software, or (c) terminate the license and provide a pro-rata refund of the Software license fees (or Maintenance and Support Fees, for perpetual licenses) that have been paid in advance for the remainder of the License Term for the applicable Software (beginning on the date of termination). The foregoing indemnification obligation of AppDynamics will not apply: (a) if the Software is modified by End User or its agent; (b) if the Software is combined with other non-AppDynamics products, applications, or processes, but solely to the extent the alleged infringement is caused by such combination; or (c) to any unauthorized use of the Software. The foregoing shall be End User’s sole remedy with respect to any claim of infringement of third party intellectual property rights. 
+
+7.2 BY END USER.
+
+Subject to AppDynamics’ compliance with Section 7.3, End User agrees to defend, at its expense, AppDynamics and its affiliates, its suppliers and its resellers against any third party claim to the extent such claim arises from or is made in connection with End User’s breach of Section 1 or End User’s negligence or willful misconduct, and End User shall pay all costs and damages finally awarded against AppDynamics by a court of competent jurisdiction as a result of any such claim.
+
+7.3 INDEMNIFICATION REQUIREMENTS.
+
+The following are conditions to any claim for indemnification under this Section 7. The indemnified party must promptly provide the indemnifying party with notice of any claim that the indemnified party believes is within the scope of the obligation to indemnify, provided, that the failure to provide such notice shall not relieve the indemnifying party of its obligations under this Section 7, except to the extent that such failure materially prejudices the indemnifying party’s defense of such claim. The indemnified party may, at its own expense, assist in the defense if it so chooses, but the indemnifying party shall control the defense and all negotiations related to the settlement of any such claim. Any such settlement intended to bind either party shall not be final without the other party’s written consent, which consent shall not be unreasonably withheld, conditioned or delayed; provided that, End User’s consent shall not be required when AppDynamics is the indemnifying party if the settlement involves only the payment of money by AppDynamics.
+
+8. LIMITATION OF LIABILITY.
+
+8.1 Subject to Section 8.3, in no event shall either party be liable for any indirect, incidental, special, punitive or consequential damages, including damages for loss of revenues or profits, loss of use, business interruption, or loss of data, whether in an action in contract or tort (including negligence), even if the other party has been advised of the possibility of such damages.
+
+8.2 Subject to Section 8.1 and 8.3, neither party’s liability for any damages (whether for breach of contract, misrepresentations, negligence, strict liability, other torts or otherwise) under this agreement shall exceed an amount equal to 100% of the total fees paid (plus Fees payable) to AppDynamics during the 12 months immediately preceding the claim giving rise to such damages. This limitation of liability is aggregate and not per incident. If End User has made an upfront payment of Fees for the entire License Term, the 100% cap shall be calculated by using 12 times the pro rata monthly fee of the fees paid upfront. These limitations shall apply notwithstanding any failure of essential purpose of any remedy.
+
+8.3 Nothing in this Agreement will limit or exclude either party’s liability for: (a) any other matter which by law may not be excluded or limited; (b) in the case of End User, for (1) breach of Section 1.2 (c); and (2) payment of the Fees.
+
+9. FORCE MAJEURE.
+
+Except for payment obligations, neither party hereto will be liable for defaults or delays due to acts of God or the public enemy, acts or demands of any government or governmental agency, fires, earthquakes, floods, other natural disasters, accidents, or other unforeseeable causes beyond its reasonable control and not due to its fault or negligence.
+
+10. DATA COLLECTION.
+
+10.1 Subject to AppDynamics’ compliance with data protection laws applicable to it, End User acknowledges that AppDynamics may collect information generated by instrumentation and logging systems created through the use and operation of the Software which AppDynamics may use for its internal business purposes.If End User provides AppDynamics with any personally identifiable information (“PII”), End User represents and warrants that such information has been collected in accordance with the provisions of all applicable data protection legislation and that End User has all right and consents necessary to provide such PII to AppDynamics. 
+
+10.2 If End User is subject to Regulation 2016/679 of the European Parliament and of the Council on the protection of natural persons with regard to the processing of personal data and on the free movement of such data, and repealing Directive 95/46/EC (General Data Protection Regulation), the terms of Exhibit C shall apply.
+
+11. US GOVERNMENT MATTERS.
+
+As defined in FAR section 2.101, the Software and Documentation are “commercial items” and according to DFAR section 252.227 7014(a)(1) and (5) are deemed to be “commercial computer software” and “commercial computer software documentation.” Consistent with DFAR section 227.7202 and FAR section 12.212, any use modification, reproduction, release, performance, display, or disclosure of such commercial software or commercial software documentation by the U.S. Government will be governed solely by the terms of this Agreement and will be prohibited except to the extent expressly permitted by the terms of this Agreement. 
+
+12. MISCELLANEOUS.
+
+This Agreement shall be governed by and construed under the laws of the State of California, U.S.A. Failure by either Party to exercise any of its rights under, or to enforce any provision of, this Agreement will not be deemed a waiver or forfeiture of such rights or ability to enforce such provision. If any provision of this Agreement is held by a court of competent jurisdiction to be illegal, invalid or unenforceable, such provision will be amended to achieve as nearly as possible the same economic effect of the original provision and the remainder of this Agreement will remain in full force and effect. This Agreement and its exhibits, together with the Order Form(s) and any statements of work incorporating this Agreement, if applicable, represent the entire agreement between the parties and supersede any previous or contemporaneous oral or written agreements or communications regarding the subject matter of this Agreement. The person signing or otherwise accepting this Agreement for each party represents that s/he is duly authorized by all necessary and appropriate corporate action to enter this Agreement. Any modification to this Agreement must be in writing and signed by a duly authorized signatory of both parties and no previous, contemporaneous or future oral statements will be deemed to modify this Agreement. Neither the Uniform Commercial Code (UCC) nor the Uniform Computer Information Transactions Act (UCITA) will apply to this Agreement. This Agreement shall control over additional or different terms of any purchase order, confirmation, invoice, statement of work or similar document (other than an AppDynamics Order Form, which will take precedence), even if accepted in writing by both parties, and waivers and amendments to this Agreement shall be effective only if made by non-pre-printed agreements clearly understood by both parties to be an amendment or waiver to this Agreement. For purposes of this Agreement, “including” means “including without limitation.” The rights and remedies of the parties hereunder will be deemed cumulative and not exclusive of any other right or remedy conferred by this Agreement or by law or equity. No joint venture, partnership, employment, or agency relationship exists between the parties as a result of this Agreement or use of the Software. AppDynamics reserves the right to perform its obligations from locations and/or through use of affiliates and subcontractors, worldwide, provided that AppDynamics will be responsible for such parties. End User may not assign this Agreement without the prior written approval of AppDynamics and any purported assignment in violation of this section shall be void; AppDynamics may assign, transfer or subcontract this Agreement in whole or in part. Upon any assignment of this Agreement by End User that is approved by AppDynamics, any licenses that contain an “unlimited” aspect will, with respect to End User or the successor entity, as applicable, be capped at the number of authorized Software units in use immediately prior to such assignment. End User agrees that AppDynamics may refer to End User by its trade name and logo, and may briefly describe End User’s business, in AppDynamics’ marketing materials and website. AppDynamics may give notice to End User by electronic mail to End User’s email address on record in End User’s account information, or by letter sent by nationally recognized overnight delivery service to End User’s address on record in End User’s account information. End User may give notice to AppDynamics at any time by letter sent by nationally recognized overnight delivery service or first class postage prepaid mail to AppDynamics at the following address or such other address as may be notified to End User from time to time: AppDynamics, 303 Second Street, North Tower, 8th Floor, San Francisco, CA 94107, Attn: Legal Department. Notice under this Agreement shall be deemed given: (a) when received, if personally delivered; (b) when receipt is electronically confirmed, if transmitted by email; (c) the next business day after it is sent, if sent by first class postage prepaid post; (d) five business days following postage if sent by pre-paid mail; and (e) upon receipt, if sent by certified or registered mail, return receipt requested.
+
+EXHIBIT A
+
+ENTERPRISE SUPPORT
+
+GENERAL REQUIREMENTS.
+
+AppDynamics will provide access to a ticketing system that will be available 24 hours per day, seven days per week. The ticketing system will be maintained by qualified support specialists, who shall provide technical support regarding the Software.
+
+ERROR CLASSIFICATION.
+
+Any reported errors are classified in the following manner, in each case when caused by the Software:
+
+Error Classification  Criteria
+====================  ========
+Urgent                End User production application is down or there is a
+                      major malfunction, resulting in a business revenue loss and
+                      impacting the End User application functionality for a
+                      majority of users.
+
+High                  Critical loss of End User application functionality or
+                      performance, impacting the application functionality for a
+                      high number of users.
+
+Normal                Moderate loss of End User application functionality or
+                      performance, impacting multiple users.
+
+Low                   Minor loss of End User application functionality or
+                      product feature in question.
+
+
+ERROR DEFINITION.
+
+An “error” means a reproducible malfunction in the Software that is reported by End User through AppDynamics’ ticketing system that prevents the Software from performing in accordance with the operating specifications described in the then-current Documentation. 
+
+AUTHORIZED SUPPORT CONTACTS.
+
+Maintenance and Support will be provided to End User’s designated support contacts. 
+
+END USER’S OBLIGATION TO ASSIST.
+
+If End User reports a purported error in the Software to AppDynamics, AppDynamics’ ticketing system will request the following minimum information: 
+A general description of the operating environment
+A list of all hardware components, operating systems and networks
+A reproducible test case
+Any log files, trace and systems files 
+
+End User’s failure to provide this information may prevent or significantly delay AppDynamics’ ability to identify and fix the reported error. AppDynamics’ time to respond to any error will begin when AppDynamics has received all requested information from the End User and is able to reproduce the error.
+
+
+ERROR RESOLUTION.
+
+If AppDynamics determines there is an error in the Software, AppDynamics may, at its sole option, repair that error in the version of the Software that End User is currently using or instruct End User to install a newer version of the Software with that error repaired. AppDynamics reserves the right to provide End User with a workaround in lieu of fixing an error. 
+
+
+MAINTENANCE. Provided End User is current on Fees AppDynamics will make available to End User updates and upgrades to the Software that it, in its sole discretion, makes generally commercially available to all customers.
+
+RESPONSE TIME. AppDynamics shall respond to error tickets in accordance with the tables set forth below. AppDynamics will use reasonable means to repair the error and keep End User informed of progress. AppDynamics makes no representations as to when a full resolution of the error may be made.
+
+Error    Initial Response   Manager Escalation  VP Escalation   Email Status Updates
+=====    ================   ==================  =============   ====================
+Urgent   1 Hour             1 Business Day      1 Week          Daily
+High     6 Hours            1 Week              2 Weeks         Weekly
+Normal   1 Business Day     Quarterly Review    None            None
+Low      2 Business Days    Semi-Annual Review  None            None
+
+
+MAINTENANCE AND SUPPORT POLICY: The Maintenance and Support policy is as follows:
+
+AppDynamics provides Maintenance and Support for each version of the Software for a period of 12 months after the generally available release of the next major version of the Software (a major release is a change in the first number to the right of the decimal point). For example, if version 4.1 is released on January 1, 2015, then AppDynamics will provide Maintenance and Support for version 4.0 until January 1, 2016. AppDynamics does not provide Maintenance or Support for any customized software (or components thereof). 
+
+For third party software or technology used by End User with the Software but not included with the Software (a “Platform”, such as Java Virtual Machines), AppDynamics will follow the end-of-life (“EOL”) support timeline announced by the third party vendor of such Platform. AppDynamics will stop providing Maintenance and Support for an EOL’d Platform version when the Platform vendor stops providing maintenance and support for that Platform version. 
+
+
+
+EXHIBIT B
+AVAILABILITY
+
+The terms set forth in this Exhibit B apply only if End User has purchased access to the online software-as-a-service (“SaaS”) version of the Software, as indicated on the Order Form.
+
+AVAILABILITY.
+
+AppDynamics will provide Availability (as defined below) of 99.5% (the “Availability SLA”), excluding situations identified as “Exclusions” below. For purposes of the Availability SLA, the AppDynamics network extends to, includes and terminates at the data center located router that provides the outside interface of each of AppDynamics’ WAN connections to its backbone providers (the “AppDynamics Network”). A report on the actual Availability is located at https://status.appdynamics.com. The “Controller” is the central repository and analytics engine where all performance data is stored, baselined, and analyzed. 
+
+Exclusions” means any outage that results from any of the following:
+a. Any Maintenance performed by AppDynamics during AppDynamics’ standard Maintenance windows. AppDynamics will notify End User within 48 hours of any standard Maintenance and within 24 hours for other non-standard emergency Maintenance (collectively referred to herein as “Scheduled Maintenance”).
+
+b. End User’s information content or application programming, or the acts or omissions of End User or its agents, including, without limitation, the following:
+  1. End User’s use of any programs not supplied by AppDynamics;
+  2. End User’s failure to provide AppDynamics with reasonable prior written notice of any significant deployments of new nodes or change in configurations resulting in greater than 30% change in a one week period or greater than 50% change in a month in the number of key objects collected; or 	 
+  3. End User’s failure to upgrade AppDynamics’ application server and machine software agents (the “Agents”) to a supported version (i.e. that has not been end of life’d by AppDynamics) 
+c. Failures of the Internet backbone itself and the network by which End User connects to the Internet backbone or any other network unavailability outside of the AppDynamics Network, such as misconfigurations, proxies or firewalls.
+d. Any problems resulting from End User combining or merging the Software with any hardware or software not supplied by AppDynamics or not identified by AppDynamics in the Documentation as being compatible with the Software.
+e.End User’s or any third party’s use of the Software in an unauthorized or unlawful manner.
+
+Remedies for Excessive Downtime:
+
+If Availability falls below the Availability SLA in a given calendar quarter, AppDynamics will pay End User a service credit (“Service Credit”) as follows, corresponding to the actual Availability during the applicable calendar quarter (on pro-rated basis): if the Availability is 99.5% or greater, End User is entitled to receive no credits; if the Availability is 97.0% - 99.49%, then End User is entitled to receive Service Credits equal to five percent of the fees for the applicable calendar quarter; if the Availability is 95.0% - 96.9%, then End User is entitled to receive Service Credits equal to ten percent of the fees for the applicable calendar quarter; and if the Availability is less than 95.0%, then End User is entitled to receive Service Credits equal to twenty percent of the fees for the applicable calendar quarter. receive Service Credits, End User must submit a written request to AppDynamics (to legal@appdynamics.com) within 15 days after the end of the quarter in which failure to meet Availability occurred, or End User’s right to receive the relevant Service Credits will be waived. Such Service Credit will be issued as a credit against any fees owed by End User for the calendar quarter of the License Term after the request for a Service Credit, or, if End User does not owe any additional fees, then AppDynamics will pay End User the amount of the applicable Service Credit within 30 days after the end of the calendar month in which End User has requested the Service Credit. The remedies stated in this section are End User’s sole and exclusive remedies and AppDynamics’ sole and exclusive obligations for service interruption or unavailability. 
+
+“Availability” is measured by the following formula: (n - y) *100 / n
+
+(1) “n” is the total number of minutes in the given calendar quarter minus the Exclusions (as defined above); and “y” is the total number of minutes in the given calendar quarter that the Controller is not accessible by End User (as determined by AppDynamics’ tools).
+
+(2) Specifically excluded from “n and “y” in this calculation are the Exclusions.
+
+
+EXHIBIT C
+DATA PROTECTION
+
+This Exhibit shall apply to the ‘processing’ of any ‘personal data’ (each as defined below) by AppDynamics in the course of providing the SaaS (as defined below) version of the Software and/or support to the End User. 
+Data Protection
+
+The terms of this Exhibit apply only if: (i) End User is subject to Data Protection Law (as defined below); and
+(ii) End User has purchased access to the online software-as-a-service (“SaaS”) version of the Software, as indicated on the Order Form,
+
+1. DEFINITIONS.
+
+In this Exhibit, the following terms shall have the following meanings: 
+
+"controller", "processor", "data subject", "personal data" and "processing" (and "process") shall have the meanings given in the Data Protection Law;
+
+"Data Protection Law" shall mean Regulation 2016/679 of the European Parliament and of the Council on the protection of natural persons with regard to the processing of personal data and on the free movement of such data, and repealing Directive 95/46/EC (General Data Protection Regulation); and
+
+“Standard Contractual Clauses” shall mean the terms at https://trust.appdynamics.com/privacy/dataprotectionclauses which form part of this Exhibit pursuant the European Commission Decision C(2010)593 of 5 February 2010.
+
+2. RELATIONSHIP OF THE PARTIES.
+
+End User (the controller) appoints AppDynamics as a processor to process the personal data described in Annex A (the "Data").  Each party shall comply with the obligations that apply to it under Data Protection Law.  
+
+3. PURPOSE LIMITATION.  
+
+AppDynamics shall process the Data as a processor as necessary to perform its obligations under this Agreement and strictly in accordance with the documented instructions of the End User (the "Permitted Purpose"), except where otherwise required by any law. Taking into account the nature of the processing and the Software, AppDynamics shall promptly, after becoming aware, inform End User if in AppDynamics’ opinion an instruction from or on behalf of End User infringes Data Protection Law.  
+
+4. INTERNATIONAL TRANSFERS.
+
+Where End User’s Controller is hosted on AppDynamics’ EU based SaaS platform, AppDynamics shall not transfer the Data (nor permit the Data to be transferred) outside of the European Economic Area ("EEA") unless (i) it has first obtained the End User's prior written consent; and (ii) it takes measures to ensure the transfer is in compliance with Data Protection Law; and (iii) for the purposes of providing Support.  The Standard Contractual Clauses will apply only to personal data that is transferred outside the EEA, either directly or via onward transfer, to any country not recognised by the European Commission as providing an adequate level of protection for personal data (as described in the Data Protection Laws). The Standard Contractual Clauses will not apply if AppDynamics has adopted an alternative recognised compliance standard for the lawful transfer of personal data (as defined in the Data Protection Laws) outside the EEA.
+
+5. CONFIDENTIALITY OF PROCESSING.
+
+AppDynamics shall ensure that any person that it authorises to process the Data (including AppDynamics' staff, agents and subcontractors) (an "Authorised Person") shall be subject to a duty of confidentiality (whether a contractual duty or a statutory duty). 
+
+6. SECURITY.
+
+The processor shall implement appropriate controls, including technical, organisational, and other measures, designed to protect the Data (i) from accidental or unlawful destruction, and (ii) loss, alteration, unauthorised disclosure of, or access to the Data (a "Security Incident").
+
+7. SUBCONTRACTING.
+
+AppDynamics shall not subcontract any processing of the Data to a third-party subcontractor without the prior written consent of the End User.  Notwithstanding this, the End User consents to AppDynamics engaging third-party subcontractors to process the Data provided that: (i) AppDynamics provides at least 7 days' notice prior to the addition or removal of any subcontractor (including details of the processing it performs or will perform and the location of the subcontractor), which may be given by posting details of such addition or removal at the following URL: https://trust.appdynamics.com/privacy/subprocessors; (ii) AppDynamics imposes data protection terms on any subcontractor it appoints that protect the Data to the same standard provided for by this paragraph; and (iii) AppDynamics remains fully liable for any breach of this paragraph that is caused by its subcontractor. A list of approved subcontractors and subcontractor locations as at the date of this Agreement is at https://trust.appdynamics.com/privacy/subprocessors.   If the End User refuses to consent to AppDynamics' appointment of a third-party subcontractor on reasonable grounds relating to the protection of the Data, then End User may terminate this Agreement by giving no less than 30 days’ written notice.
+
+8. DATA SUBJECTS' RIGHTS.
+
+AppDynamics shall provide reasonable assistance to the End User (at the End User's expense) to enable the End User to respond to any request from a data subject to exercise any of its rights under Data Protection Law (including its rights of access, correction, objection, erasure and data portability, as applicable).
+
+9. DATA PROTECTION IMPACT ASSESSMENT.
+
+If the End User reasonably believes that AppDynamics' processing of the Data will result in a high risk to the data protection rights and freedoms of data subjects, it shall promptly inform AppDynamics and AppDynamics shall, if requested by the End User, provide the End User with reasonable information to enable the End User to conduct a data protection impact assessment (taking into account the nature of the processing and the information available to AppDynamics). 
+
+10. SECURITY INCIDENTS.
+
+Upon becoming aware of a confirmed Security Incident, AppDynamics shall inform the End User without undue delay and shall provide all such timely information and cooperation as the End User may reasonably require in order for the End User to fulfil its data breach reporting obligations under (and in accordance with the timescales required by) Data Protection Law.  AppDynamics shall further take such measures and actions as it considers necessary to remedy or mitigate the effects of the Security Incident and shall keep the End User informed in connection with the Security Incident.
+
+11. DELETION OF DATA.
+
+AppDynamics will effectively destroy all relevant Data along with any medium or document containing said Data within 14 days from receiving a written request from End User. Upon termination or expiry of this Agreement, AppDynamics will effectively destroy all Data within the time periods stated in the Licence Entitlements and Restrictions for the relevant version of the Software as set out at https://docs.appdynamics.com/display/PAA/Product+Announcements+and+Alerts+Home. AppDynamics shall send the End User written confirmation thereof on written request.
+
+12. RETURN OF DATA.
+
+AppDynamics provides End User with access to its Data in industry standard formats including CSV, XML, and JSON via REST API. End User may use the AppDynamics APIs to export its Data from the Software at any time. For more information, please see https://docs.appdynamics.com.
+
+13. END USER AUDIT.
+
+AppDynamics engages a qualified and independent third-party auditor to conduct semi-annual SOC 2 Type II audits in order to evaluate the adequacy of AppDynamics’ information security program. Each such audit results in the generation of an audit report (“Report”), which shall be AppDynamics’ Confidential Information. During the Licence Term, AppDynamics shall: (i) maintain SOC 2 Type II certification (or other industry-recognized successor certification); (ii) at End User’s written request, not more than once per calendar year, provide End User with the then-current Report; and (iii) at End User’s expense, promptly (taking into account the nature of the request and to the extent reasonably feasible from a technical perspective) comply with any request of End User for information (including any books and/or records) relating to the Software and/or Services as necessary for End User to enable it to comply with Data Protection Law or any request from a regulator. End User agrees that any audit and inspection rights it may have under Data Protection Law shall be satisfied by the obligations in this paragraph 13.
+
+14. FURTHER SECURITY INFORMATION.
+
+At End User’s expense, AppDynamics shall further provide detailed written responses (on a confidential basis) to all reasonable requests for information made by End User, including responses to information security and audit questionnaires, that are necessary to confirm AppDynamics’ compliance with this Agreement.
+
+15. REGULATOR AUDITS.
+
+If a regulator wishes to carry out any audit or inspection of AppDynamics or its activities under this Agreement, End User shall provide AppDynamics at least 30 days’ advance notice of any audit, except where the regulator has given less notice to End User or AppDynamics. AppDynamics shall provide access for any audit or investigation by regulator(s) or law enforcement agent(s) as they require. 
+
+
+ANNEX A TO EXHIBIT C
+
+SUBJECT MATTER OF PROCESSING
+
+The extraction, collection, storage and analysis of Data generated by, and through, the use of End User’s software applications.  
+
+Further information about what processing of Data each Software product can be used for can be found at www.appdynamics.com/product and in the Documentation.
+
+DURATION OF PROCESSING
+
+For the Licence Term of the SaaS Software licence. 
+
+NATURE AND PURPOSE OF PROCESSING
+
+The Data will be processed by AppDynamics SaaS Software platform in order to improve the efficiency and functioning of monitored website(s), software and/or server(s) of End User.
+ 
+The Software enables the End User to:
+a. Measure and track response time, load, error rate, slow rate, and stalls for application transactions.
+b. Auto-discover and map application tiers and services, and see the relationships between them.
+c. Learn "normal" performance behavior and "normal" code execution paths for application transactions and application services over time so that anomalies can be detected automatically.
+d. Follow the flow of application transactions across tiers and services (even in a highly distributed environment) to allow the identification of bottlenecks.
+e. Identify the root cause of errors in applications.
+f. View reports and obtain visibility into application performance for understanding the service levels of such applications.
+g. View operational dashboards to help information technology teams understand the health and performance of application environments.
+h. View agile release comparisons so that developers understand the business impact of application releases, for the purpose of identifying regression and learning from production deployments.
+ 
+In the course of monitoring End User’s website(s), software and/or server(s), AppDynamics will necessarily ingest and process the Data described above in this Annex A for the purpose of providing the Software and its functions.
+
+TYPE OF PERSONAL DATA AND CATEGORIES OF PERSONAL DATA
+
+Depending on the End User’s configuration of the Software the following types and categories of personal data that might be collected are:
+
+Personal details
+Included in this category are classes of data which identify the data subject and their personal characteristics.  Examples are names, addresses, job title, employer, contact details, age, sex, date of birth, physical descriptions, identifiers issued by public bodies, e.g. NI number.
+
+Family, lifestyle and social circumstances
+Included in this category are any matters relating to the family of the data subject and the data subject’s lifestyle and social circumstances.  Examples are details about current marriage and partnerships and marital history, details of family and other household members, habits, housing, travel details, leisure activities, membership of charitable or voluntary organisations.
+
+Education and training details
+Included in this category are any matters which relate to the education and any professional training of the data subject. Examples are academic records, qualifications, skills, training records, professional expertise, student and pupil records.
+
+Employment details
+Included in this category are any matters relating to the employment of the data subject. Examples are employment and career history, recruitment and termination details, attendance record, health and safety records, performance appraisals, training records, security records.
+
+Financial details
+Included in this category are any matters relating to the financial affairs of the data subject. Examples are income, salary, assets and investments, payments, creditworthiness, loans, benefits, grants, insurance details, pension information.
+
+Goods or services provided
+Included in this category are classes of data relating to goods and services which have been provided.  Examples are details of the goods or services supplied, licences issued, agreements and contracts.
+
+IT information
+Included in this category is any information relating to an individual’s use of technology or software including IP addresses, any information about the computing or mobile device a person is using, location data gathered from such devices, usernames and passwords, social media handles.
+
+CATEGORIES OF DATA SUBJECTS
+
+Customers and/or employees of End User depending on whether End User uses the Software to monitor customer and/or employee facing software applications.
+
+AppDynamics Proprietary and Confidential * Revision 2019.09

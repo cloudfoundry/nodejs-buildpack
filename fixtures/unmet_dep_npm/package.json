@@ -14,7 +14,7 @@
     "grunt-steroids": "0.2.3"
   },
   "engines": {
-    "node": "~>14"
+    "node": "~>16"
   },
   "repository": {
     "type": "git",

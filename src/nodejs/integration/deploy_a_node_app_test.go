@@ -54,7 +54,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 							Eventually(func() string {
 								return app.Stdout.String()
-							}, "30s").Should(MatchRegexp("RUNNING A TASK: v14\\.\\d+\\.\\d+"))
+							}, "30s").Should(MatchRegexp("RUNNING A TASK: v16\\.\\d+\\.\\d+"))
 						})
 					})
 				}

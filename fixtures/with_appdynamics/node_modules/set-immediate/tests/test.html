@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+	<div id="r"></div>
+	<script src="../setImmediate.js"></script>
+	<script>
+function printResult () {
+	var e = document.createElement('div');
+	e.appendChild(document.createTextNode([].slice.call(arguments).join(' ')));
+	document.getElementById('r').appendChild(e);
+}
+
+var start = +new Date;
+
+setImmediate(function (s) {
+	printResult('It worked and took', +new Date - s, 'milliseconds.');
+}, [start]);
+
+var canceling = setImmediate(function () {
+	printResult('ERROR: this should not have appeared.');
+});
+
+printResult('Attempting to cancel immediate with id:', canceling);
+
+clearImmediate(canceling);
+	</script>	
+</body>
+</html>

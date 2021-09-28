@@ -29,7 +29,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			It("resolves to a nodeJS version successfully", func() {
 				PushAppAndConfirm(app)
 
-				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 14\\.\\d+\\.\\d+"))
+				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 16\\.\\d+\\.\\d+"))
 				Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 			})
 		})
@@ -42,7 +42,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			It("resolves to a nodeJS version successfully", func() {
 				PushAppAndConfirm(app)
 
-				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 14\\.\\d+\\.\\d+"))
+				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 16\\.\\d+\\.\\d+"))
 				Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 
 				if ApiHasTask() {
@@ -69,7 +69,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			It("resolves to the stable nodeJS version successfully", func() {
 				PushAppAndConfirm(app)
 
-				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 14\\.\\d+\\.\\d+"))
+				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 16\\.\\d+\\.\\d+"))
 				Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 			})
 		})

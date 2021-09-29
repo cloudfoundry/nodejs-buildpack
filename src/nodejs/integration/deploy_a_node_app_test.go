@@ -1,7 +1,6 @@
 package integration_test
 
 import (
-	"log"
 	"os/exec"
 	"path/filepath"
 	"time"
@@ -151,7 +150,6 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 					Expect(app.Stdout.String()).ToNot(MatchRegexp("PRO TIP:(.*) It is recommended to vendor the application's Node.js dependencies"))
 				})
 
-				log.Printf("*********LOGS\n%s\n*********\n", app.Stdout.String())
 				By("not changing the app directory during staging", func() {
 					Expect(app).To(HaveUnchangedAppDir())
 				})

@@ -19,8 +19,8 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		serviceOffering  string
 	)
 
-	appConfig := func() (string, error) {
-		return app.GetBody("/config")
+	agentLogs := func() (string, error) {
+		return app.GetBody("/logs")
 	}
 
 	BeforeEach(func() {
@@ -62,8 +62,9 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 			Expect(app.GetBody("/name")).To(ContainSubstring(app.Name))
 
-			Expect(app.Stdout.String()).To(ContainSubstring("Appdynamics agent logs"))
-			Eventually(appConfig, 10*time.Second).Should(ContainSubstring(`"controllerHost": "test-ups-host"`))
+			Eventually(agentLogs, 10*time.Second).Should(ContainSubstring("Starting AppDynamics Agent"))
+			Eventually(agentLogs, 10*time.Second).Should(ContainSubstring("controller=test-account@test-ups-host:1234"))
+			Eventually(agentLogs, 10*time.Second).Should(ContainSubstring("Application name: "+app.Name))
 		})
 
 		By("Unbinding and deleting the CUPS appdynamics service", func() {
@@ -87,8 +88,9 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Eventually(func() ([]string, error) { return app.InstanceStates() }, 20*time.Second).Should(Equal([]string{"RUNNING"}))
 
 			Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
-			Expect(app.Stdout.String()).To(ContainSubstring("Appdynamics agent logs"))
-			Eventually(appConfig, 10*time.Second).Should(ContainSubstring(`"controllerHost": "test-ups-2-host"`))
+			Eventually(agentLogs, 10*time.Second).Should(ContainSubstring("Starting AppDynamics Agent"))
+			Eventually(agentLogs, 10*time.Second).Should(ContainSubstring("controller=test-account@test-ups-2-host:1234"))
+			Eventually(agentLogs, 10*time.Second).Should(ContainSubstring("Application name: "+app.Name))
 		})
 
 		By("Unbinding and deleting the CUPS appdynamics service", func() {
@@ -123,8 +125,9 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Eventually(func() ([]string, error) { return app.InstanceStates() }, 20*time.Second).Should(Equal([]string{"RUNNING"}))
 
 			Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
-			Expect(app.Stdout.String()).To(ContainSubstring("Appdynamics agent logs"))
-			Eventually(appConfig, 10*time.Second).Should(ContainSubstring(`"controllerHost": "test-sb-host"`))
+			Eventually(agentLogs, 10*time.Second).Should(ContainSubstring("Starting AppDynamics Agent"))
+			Eventually(agentLogs, 10*time.Second).Should(ContainSubstring("controller=test-account@test-sb-host:1234"))
+			Eventually(agentLogs, 10*time.Second).Should(ContainSubstring("Application name: "+app.Name))
 		})
 	})
 
@@ -152,8 +155,9 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 			Expect(app.GetBody("/name")).To(ContainSubstring("set-name"))
 
-			Expect(app.Stdout.String()).To(ContainSubstring("Appdynamics agent logs"))
-			Eventually(appConfig, 10*time.Second).Should(ContainSubstring(`"controllerHost": "test-ups-host"`))
+			Eventually(agentLogs, 10*time.Second).Should(ContainSubstring("Starting AppDynamics Agent"))
+			Eventually(agentLogs, 10*time.Second).Should(ContainSubstring("controller=test-account@test-ups-host:1234"))
+			Eventually(agentLogs, 10*time.Second).Should(ContainSubstring("Application name: set-name"))
 		})
 
 		By("Unbinding and deleting the CUPS appdynamics service", func() {

@@ -9,9 +9,9 @@
   "author": "",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "appdynamics": "^21.8.0",
     "express": "~4.15.2",
-    "logfmt": "~1.2.0",
-    "appdynamics": "20.5.0"
+    "logfmt": "~1.2.0"
   },
   "engines": {
     "node": "~>16"

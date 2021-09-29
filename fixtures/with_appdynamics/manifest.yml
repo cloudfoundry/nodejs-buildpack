@@ -1,3 +1,0 @@
----
-env:
-  npm_config_appd_include_java_proxy: true

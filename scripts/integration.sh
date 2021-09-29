@@ -70,7 +70,7 @@ function main() {
   )
 
   util::tools::buildpack-packager::install --directory "${ROOTDIR}/.bin"
-  util::tools::cf::install --directory "${ROOTDIR}/.bin"
+#  util::tools::cf::install --directory "${ROOTDIR}/.bin"
 
   for row in "${matrix[@]}"; do
     local cached parallel

@@ -1,6 +1,7 @@
 package integration_test
 
 import (
+	"log"
 	"os/exec"
 	"path/filepath"
 	"time"
@@ -34,15 +35,16 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			})
 		})
 
-		Context("when specifying a version 6 for the nodeJS version in the package.json", func() {
+		Context("when specifying a node version in the package.json that is different from default", func() {
 			BeforeEach(func() {
-				app = cutlass.New(Fixtures("node_version_6"))
+				app = cutlass.New(Fixtures("node_version_non_default"))
 			})
 
 			It("resolves to a nodeJS version successfully", func() {
 				PushAppAndConfirm(app)
 
-				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 16\\.\\d+\\.\\d+"))
+				// Non default current version is 14.x
+				Eventually(app.Stdout.String).Should(MatchRegexp("Installing node 14\\.\\d+\\.\\d+"))
 				Expect(app.GetBody("/")).To(ContainSubstring("Hello, World!"))
 
 				if ApiHasTask() {
@@ -54,7 +56,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 							Eventually(func() string {
 								return app.Stdout.String()
-							}, "30s").Should(MatchRegexp("RUNNING A TASK: v16\\.\\d+\\.\\d+"))
+							}, "30s").Should(MatchRegexp("RUNNING A TASK: v14\\.\\d+\\.\\d+"))
 						})
 					})
 				}
@@ -149,6 +151,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 					Expect(app.Stdout.String()).ToNot(MatchRegexp("PRO TIP:(.*) It is recommended to vendor the application's Node.js dependencies"))
 				})
 
+				log.Printf("*********LOGS\n%s\n*********\n", app.Stdout.String())
 				By("not changing the app directory during staging", func() {
 					Expect(app).To(HaveUnchangedAppDir())
 				})

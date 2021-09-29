@@ -9,8 +9,6 @@ var appdynamics = require("appdynamics").profile({
   applicationName: process.env.APPDYNAMICS_AGENT_APPLICATION_NAME,
   tierName: process.env.APPDYNAMICS_AGENT_TIER_NAME,
   nodeName: process.env.APPDYNAMICS_AGENT_NODE_NAME,
-  debug: true,
-  proxy: true
 });
 var express = require("express");
 var logfmt = require("logfmt");
@@ -26,8 +24,8 @@ app.get('/name', function(req, res) {
  res.send(String(process.env.APPDYNAMICS_AGENT_APPLICATION_NAME));
 });
 
-app.get('/config', function(req, res) {
-  child_process.exec('cat /tmp/appd/*/*.json', {}, function(err, stdout, stderr) {
+app.get('/logs', function(req, res) {
+  child_process.exec('cat /tmp/appd/*/*.log', {}, function(err, stdout, stderr) {
     console.log(err, stdout, stderr);
     if (err) {
       res.send(err);

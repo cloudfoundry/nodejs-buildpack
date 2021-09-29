@@ -65,8 +65,8 @@ dependencies:
   source_sha256: f64559c87faa2f1ce93c3d2cd09723af254ec320a53cbfd1a2ba8fba28e488d0
 - name: node
   version: 14.18.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_14.18.0_linux_x64_cflinuxfs3_82301f98.tgz
-  sha256: 82301f98fd949ac20f9e8536f59198331573b180a5f3845412abc4697c576be4
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_14.18.0_linux_x64_cflinuxfs3_873f5176.tgz
+  sha256: 873f5176b13a42a6a908f17e3caccabe7e0abd7510cc569f2a0a9ecd8c25f844
   cf_stacks:
   - cflinuxfs3
   source: https://nodejs.org/dist/v14.18.0/node-v14.18.0.tar.gz

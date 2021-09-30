@@ -1,3 +1,26 @@
+v1.7.62 Sep 30, 2021
+=====================
+
+* Update default node version to 16.x
+  (https://github.com/cloudfoundry/nodejs-buildpack/issues/374)
+
+* Add yarn 1.22.15, remove yarn 1.22.10
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/179761027)
+  (https://www.pivotaltracker.com/story/show/179753501)
+  (https://www.pivotaltracker.com/story/show/179012448)
+
+* Add node 14.18.0, remove node 14.17.5
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/179736417)
+
+* Add node 16.10.0, remove node 16.7.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/179678847)
+  (https://www.pivotaltracker.com/story/show/179544287)
+  (https://www.pivotaltracker.com/story/show/179491957)
+
+
 v1.7.61 Sep 01, 2021
 =====================
 

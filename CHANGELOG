@@ -1,3 +1,30 @@
+v1.7.63 Oct 18, 2021
+=====================
+
+* Remove support for deprecated version 15.x
+  See https://github.com/cloudfoundry/nodejs-buildpack/issues/386
+  Node 15.x reached End of Line on 2021-06-01.
+  (https://github.com/nodejs/Release)
+
+* Add yarn 1.22.17, remove yarn 1.22.15
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/179962758)
+  (https://www.pivotaltracker.com/story/show/179961794)
+
+* Add node 16.11.1, remove node 16.8.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/179908280)
+  (https://www.pivotaltracker.com/story/show/179869844)
+
+* Add node 12.22.7, remove node 12.22.5
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/179908290)
+
+* Add node 14.18.1, remove node 14.17.6
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/179907722)
+
+
 v1.7.62 Sep 30, 2021
 =====================
 

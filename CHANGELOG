@@ -1,3 +1,44 @@
+v1.7.65 Dec 09, 2021
+=====================
+
+* Add node 16.13.1, remove node 16.11.1
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/180494829)
+
+* Add node 14.18.2, remove node 14.18.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/180480654)
+
+* Update libbuildpack
+
+* Readme: Update packager install instructions
+
+* Bump github.com/onsi/gomega from 1.14.0 to 1.17.0
+  Bumps [github.com/onsi/gomega](https://github.com/onsi/gomega) from 1.14.0 to 1.17.0.
+  - [Release notes](https://github.com/onsi/gomega/releases)
+  - [Changelog](https://github.com/onsi/gomega/blob/master/CHANGELOG.md)
+  - [Commits](https://github.com/onsi/gomega/compare/v1.14.0...v1.17.0)
+  
+  ---
+  updated-dependencies:
+  - dependency-name: github.com/onsi/gomega
+    dependency-type: direct:production
+    update-type: version-update:semver-minor
+  ...
+
+* Bump github.com/Dynatrace/libbuildpack-dynatrace from 1.4.1 to 1.4.2
+  Bumps [github.com/Dynatrace/libbuildpack-dynatrace](https://github.com/Dynatrace/libbuildpack-dynatrace) from 1.4.1 to 1.4.2.
+  - [Release notes](https://github.com/Dynatrace/libbuildpack-dynatrace/releases)
+  - [Commits](https://github.com/Dynatrace/libbuildpack-dynatrace/compare/v1.4.1...v1.4.2)
+  
+  ---
+  updated-dependencies:
+  - dependency-name: github.com/Dynatrace/libbuildpack-dynatrace
+    dependency-type: direct:production
+    update-type: version-update:semver-patch
+  ...
+
+
 v1.7.64 Nov 09, 2021
 =====================
 

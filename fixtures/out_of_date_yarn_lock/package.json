@@ -6,7 +6,7 @@
   "dependencies": {
     "leftpad": "*",
     "logfmt": "~1.1.2",
-    "express": "~4.0.0"
+    "express": "~4.5.0"
   },
   "engines" : { "yarn" : "*" }
 

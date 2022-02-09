@@ -36,13 +36,13 @@ dependency_deprecation_dates:
   link: https://github.com/nodejs/Release
 dependencies:
 - name: node
-  version: 12.22.8
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_12.22.8_linux_x64_cflinuxfs3_d2347d05.tgz
-  sha256: d2347d050cd919348f9fc71af9bbd095dd4f7273b38ed7400fa58cd17d72083d
+  version: 12.22.9
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_12.22.9_linux_x64_cflinuxfs3_81ee6095.tgz
+  sha256: 81ee60952a83efe9d0a1c0f3e6288c3c81e5de3c660a26277e010be113f00428
   cf_stacks:
   - cflinuxfs3
-  source: https://nodejs.org/dist/v12.22.8/node-v12.22.8.tar.gz
-  source_sha256: 387dc25af4064f86ce4d28810c00589279e75c38f7d42eed9c067b2ac66fbe77
+  source: https://nodejs.org/dist/v12.22.9/node-v12.22.9.tar.gz
+  source_sha256: 592ecc53ed8a64dd1a2eb574b4c85d30656e4aee3a02ef997fa8ad92bf025d6a
 - name: node
   version: 12.22.10
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_12.22.10_linux_x64_cflinuxfs3_32d8016a.tgz

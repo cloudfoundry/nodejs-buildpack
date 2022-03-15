@@ -661,9 +661,11 @@ var _ = Describe("Supply", func() {
 			})
 
 			It("installs the requested npm version using packaged npm", func() {
-				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "npm", "install", "--unsafe-perm", "--quiet", "-g", "npm@4.5.6").Return(nil)
-				supplier.NPMVersion = "4.5.6"
+				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(),
+					"npm", "install", "--unsafe-perm", "--quiet", "-g", "npm@4.5.6",
+					"--userconfig", filepath.Join(buildDir, ".npmrc")).Return(nil)
 
+				supplier.NPMVersion = "4.5.6"
 				err = supplier.InstallNPM()
 				Expect(err).To(BeNil())
 

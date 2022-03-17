@@ -72,28 +72,20 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			RunCF("delete-service", "-f", serviceName)
 		})
 
-		Context("marketplace provided service", func() {
-			BeforeEach(func() {
-				app = cutlass.New(Fixtures("with_newrelic"))
-				PushAppAndConfirm(app)
-			})
+		By("Pushing an app with a marketplace provided service", func() {
+			app = cutlass.New(Fixtures("with_newrelic"))
+			PushAppAndConfirm(app)
+			serviceFromBroker := "newrelic-sb-" + cutlass.RandStringRunes(10)
+			RunCF("create-service-broker", serviceBrokerApp.Name, "username", "password", serviceBrokerURL, "--space-scoped")
+			RunCF("create-service", serviceOffering, "public", serviceFromBroker)
 
-			AfterEach(func() {
-				app = DestroyApp(app)
-			})
-			By("Pushing an app with a marketplace provided service", func() {
-				serviceFromBroker := "newrelic-sb-" + cutlass.RandStringRunes(10)
-				RunCF("create-service-broker", serviceBrokerApp.Name, "username", "password", serviceBrokerURL, "--space-scoped")
-				RunCF("create-service", serviceOffering, "public", serviceFromBroker)
+			app.Stdout.Reset()
+			RunCF("bind-service", app.Name, serviceFromBroker)
+			Expect(app.Restart()).To(Succeed())
 
-				app.Stdout.Reset()
-				RunCF("bind-service", app.Name, serviceFromBroker)
-				Expect(app.Restart()).To(Succeed())
-
-				Eventually(app.Stdout.String).Should(ContainSubstring("&license_key=fake_new_relic_key2"))
-				Expect(app.Stdout.String()).ToNot(ContainSubstring("&license_key=fake_new_relic_key1"))
-				Expect(app.Stdout.String()).ToNot(ContainSubstring("&license_key=fake_new_relic_key3"))
-			})
+			Eventually(app.Stdout.String).Should(ContainSubstring("&license_key=fake_new_relic_key2"))
+			Expect(app.Stdout.String()).ToNot(ContainSubstring("&license_key=fake_new_relic_key1"))
+			Expect(app.Stdout.String()).ToNot(ContainSubstring("&license_key=fake_new_relic_key3"))
 		})
 	})
 })

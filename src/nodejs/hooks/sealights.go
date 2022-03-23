@@ -1,8 +1,10 @@
 package hooks
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/cloudfoundry/libbuildpack"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -13,10 +15,14 @@ const EmptyTokenError = "token cannot be empty (env SL_TOKEN | SL_TOKEN_FILE)"
 const EmptyBuildError = "build session id cannot be empty (env SL_BUILD_SESSION_ID | SL_BUILD_SESSION_ID_FILE)"
 const Procfile = "Procfile"
 
+type Command interface {
+	Execute(dir string, stdout io.Writer, stderr io.Writer, program string, args ...string) error
+}
+
 type SealightsHook struct {
 	libbuildpack.DefaultHook
 	Log     *libbuildpack.Logger
-	Command *libbuildpack.Command
+	Command Command
 }
 
 type SealightsOptions struct {
@@ -41,6 +47,10 @@ func init() {
 }
 
 func (sl *SealightsHook) AfterCompile(stager *libbuildpack.Stager) error {
+	if !sl.isSealightsBound() {
+		return nil
+	}
+
 	sl.Log.Info("Inside Sealights hook")
 
 	err := sl.SetApplicationStart(stager)
@@ -155,4 +165,24 @@ func (sl *SealightsHook) validate(o *SealightsOptions) error {
 	}
 
 	return nil
+}
+
+func (h *SealightsHook) isSealightsBound() bool {
+	type Service struct {
+		Name string `json:"name"`
+	}
+	var vcapServices map[string][]Service
+	err := json.Unmarshal([]byte(os.Getenv("VCAP_SERVICES")), &vcapServices)
+	if err != nil {
+		h.Log.Warning("Failed to parse VCAP_SERVICES")
+		return false
+	}
+
+	for key := range vcapServices {
+		if strings.Contains(key, "Sealights") {
+			return true
+		}
+	}
+
+	return false
 }

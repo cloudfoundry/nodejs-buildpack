@@ -6,11 +6,21 @@ import (
 	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/hooks"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+type Command struct {
+	called bool
+}
+
+func (c *Command) Execute(dir string, stdout io.Writer, stderr io.Writer, program string, args ...string) error {
+	c.called = true
+	return nil
+}
 
 var _ = Describe("Sealights hook", func() {
 	var (
@@ -27,6 +37,7 @@ var _ = Describe("Sealights hook", func() {
 		projectRoot       string
 		testStage         string
 		procfile          string
+		command           *Command
 		testProcfile      = "web: node index.js --build 192 --name Good"
 		expected          = strings.ReplaceAll("web: node ./node_modules/.bin/slnodejs run  --useinitialcolor true --token good_token --buildsessionid goodBsid --proxy http://localhost:1886 --labid Roni's --projectroot project/root --teststage \"Unit Tests\" index.js --build 192 --name Good", " ", "")
 		expectedWithFiles = strings.ReplaceAll("web: node ./node_modules/.bin/slnodejs run  --useinitialcolor true --tokenfile application/token/file --buildsessionidfile build/id/file --proxy http://localhost:1886 --labid Roni's --projectroot project/root --teststage \"Unit Tests\" index.js --build 192 --name Good", " ", "")
@@ -47,13 +58,13 @@ var _ = Describe("Sealights hook", func() {
 		labId = os.Getenv("SL_LAB_ID")
 		projectRoot = os.Getenv("SL_PROJECT_ROOT")
 		testStage = os.Getenv("SL_TEST_STAGE")
+		command = &Command{}
 		err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), "Procfile"), []byte(testProcfile), 0755)
 		Expect(err).To(BeNil())
-
 		sealights = &hooks.SealightsHook{
 			libbuildpack.DefaultHook{},
 			logger,
-			&libbuildpack.Command{},
+			command,
 		}
 	})
 
@@ -101,6 +112,16 @@ var _ = Describe("Sealights hook", func() {
 				Expect(err).To(BeNil())
 				err = os.Setenv("SL_PROXY", proxy)
 				Expect(err).To(BeNil())
+			})
+			It("installs agent if bound", func() {
+				os.Setenv("VCAP_SERVICES", `{"Sealights": [{}]}`)
+				sealights.AfterCompile(stager)
+				Expect(command.called).To(BeTrue())
+			})
+			It("not installs agent if not bound", func() {
+				os.Unsetenv("VCAP_SERVICES")
+				sealights.AfterCompile(stager)
+				Expect(command.called).To(BeFalse())
 			})
 			It("test application run cmd creation", func() {
 				err = os.Setenv("SL_LAB_ID", lab)

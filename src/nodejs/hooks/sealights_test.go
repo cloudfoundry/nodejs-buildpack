@@ -124,7 +124,7 @@ var _ = Describe("Sealights hook", func() {
 				Expect(err).To(BeNil())
 			})
 			It("installs agent if bound", func() {
-				os.Setenv("VCAP_SERVICES", `{"Sealights": [{}]}`)
+				os.Setenv("VCAP_SERVICES", `{"sealights": [{}]}`)
 				sealights.AfterCompile(stager)
 				Expect(command.called).To(BeTrue())
 			})

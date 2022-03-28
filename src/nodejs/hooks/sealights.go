@@ -289,7 +289,7 @@ func (h *SealightsHook) isSealightsBound() bool {
 	}
 
 	for key := range vcapServices {
-		if strings.Contains(key, "Sealights") {
+		if strings.Contains(key, "sealights") {
 			return true
 		}
 	}

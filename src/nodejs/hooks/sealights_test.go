@@ -24,23 +24,33 @@ func (c *Command) Execute(dir string, stdout io.Writer, stderr io.Writer, progra
 
 var _ = Describe("Sealights hook", func() {
 	var (
-		err               error
-		buildDir          string
-		logger            *libbuildpack.Logger
-		buffer            *bytes.Buffer
-		stager            *libbuildpack.Stager
-		sealights         *hooks.SealightsHook
-		token             string
-		build             string
-		proxy             string
-		labId             string
-		projectRoot       string
-		testStage         string
-		procfile          string
-		command           *Command
-		testProcfile      = "web: node index.js --build 192 --name Good"
-		expected          = strings.ReplaceAll("web: node ./node_modules/.bin/slnodejs run  --useinitialcolor true --token good_token --buildsessionid goodBsid --proxy http://localhost:1886 --labid Roni's --projectroot project/root --teststage \"Unit Tests\" index.js --build 192 --name Good", " ", "")
-		expectedWithFiles = strings.ReplaceAll("web: node ./node_modules/.bin/slnodejs run  --useinitialcolor true --tokenfile application/token/file --buildsessionidfile build/id/file --proxy http://localhost:1886 --labid Roni's --projectroot project/root --teststage \"Unit Tests\" index.js --build 192 --name Good", " ", "")
+		err                  error
+		buildDir             string
+		logger               *libbuildpack.Logger
+		buffer               *bytes.Buffer
+		stager               *libbuildpack.Stager
+		sealights            *hooks.SealightsHook
+		yamlFile             *libbuildpack.YAML
+		token                string
+		build                string
+		proxy                string
+		labId                string
+		projectRoot          string
+		testStage            string
+		procfile             string
+		command              *Command
+		procfileName         = "Procfile"
+		packageJsonName      = "package.json"
+		manifestName         = "manifest.yml"
+		originalStartCommand = "node index.js --build 192 --name Good"
+		testProcfile         = "web: " + originalStartCommand
+		testPackageJson      = "{\n    \"scripts\": {\n        \"start\": \"" + originalStartCommand + "\"\n    }\n}"
+		testManifest         = "---\n" +
+			"applications:\n" +
+			"  - name: Good\n" +
+			"    command: " + originalStartCommand
+		expected          = strings.ReplaceAll("node ./node_modules/.bin/slnodejs run  --useinitialcolor true --token good_token --buildsessionid goodBsid --proxy http://localhost:1886 --labid Roni's --projectroot project/root --teststage \"Unit Tests\" index.js --build 192 --name Good", " ", "")
+		expectedWithFiles = strings.ReplaceAll("node ./node_modules/.bin/slnodejs run  --useinitialcolor true --tokenfile application/token/file --buildsessionidfile build/id/file --proxy http://localhost:1886 --labid Roni's --projectroot project/root --teststage \"Unit Tests\" index.js --build 192 --name Good", " ", "")
 	)
 
 	BeforeEach(func() {
@@ -59,8 +69,6 @@ var _ = Describe("Sealights hook", func() {
 		projectRoot = os.Getenv("SL_PROJECT_ROOT")
 		testStage = os.Getenv("SL_TEST_STAGE")
 		command = &Command{}
-		err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), "Procfile"), []byte(testProcfile), 0755)
-		Expect(err).To(BeNil())
 		sealights = &hooks.SealightsHook{
 			libbuildpack.DefaultHook{},
 			logger,
@@ -81,10 +89,8 @@ var _ = Describe("Sealights hook", func() {
 		Expect(err).To(BeNil())
 		err = os.Setenv("SL_TEST_STAGE", testStage)
 		Expect(err).To(BeNil())
-
-		err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), "Procfile"), []byte(procfile), 0755)
+		err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(procfile), 0755)
 		Expect(err).To(BeNil())
-
 		err = os.RemoveAll(buildDir)
 		Expect(err).To(BeNil())
 	})
@@ -100,17 +106,21 @@ var _ = Describe("Sealights hook", func() {
 			root      = "project/root"
 			stage     = "Unit Tests"
 		)
-		Context("build new application run command in Procfile", func() {
+		BeforeEach(func() {
+			err = os.Setenv("SL_TOKEN", token)
+			Expect(err).To(BeNil())
+			err = os.Setenv("SL_TOKEN_FILE", tokenFile)
+			Expect(err).To(BeNil())
+			err = os.Setenv("SL_BUILD_SESSION_ID", bsid)
+			Expect(err).To(BeNil())
+			err = os.Setenv("SL_BUILD_SESSION_ID_FILE", bsidFile)
+			Expect(err).To(BeNil())
+			err = os.Setenv("SL_PROXY", proxy)
+			Expect(err).To(BeNil())
+		})
+		Context("Sealights injection", func() {
 			BeforeEach(func() {
-				err = os.Setenv("SL_TOKEN", token)
-				Expect(err).To(BeNil())
-				err = os.Setenv("SL_TOKEN_FILE", tokenFile)
-				Expect(err).To(BeNil())
-				err = os.Setenv("SL_BUILD_SESSION_ID", bsid)
-				Expect(err).To(BeNil())
-				err = os.Setenv("SL_BUILD_SESSION_ID_FILE", bsidFile)
-				Expect(err).To(BeNil())
-				err = os.Setenv("SL_PROXY", proxy)
+				err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(testProcfile), 0755)
 				Expect(err).To(BeNil())
 			})
 			It("installs agent if bound", func() {
@@ -123,6 +133,12 @@ var _ = Describe("Sealights hook", func() {
 				sealights.AfterCompile(stager)
 				Expect(command.called).To(BeFalse())
 			})
+		})
+		Context("build new application run command in Procfile", func() {
+			BeforeEach(func() {
+				err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(testProcfile), 0755)
+				Expect(err).To(BeNil())
+			})
 			It("test application run cmd creation", func() {
 				err = os.Setenv("SL_LAB_ID", lab)
 				Expect(err).To(BeNil())
@@ -130,19 +146,19 @@ var _ = Describe("Sealights hook", func() {
 				Expect(err).To(BeNil())
 				err = os.Setenv("SL_TEST_STAGE", stage)
 				Expect(err).To(BeNil())
-				err = sealights.SetApplicationStart(stager)
+				err = sealights.SetApplicationStartInProcfile(stager)
 				Expect(err).To(BeNil())
-				bytes, err := ioutil.ReadFile(filepath.Join(stager.BuildDir(), "Procfile"))
+				bytes, err := ioutil.ReadFile(filepath.Join(stager.BuildDir(), procfileName))
 				Expect(err).To(BeNil())
 				cleanResult := strings.ReplaceAll(string(bytes), " ", "")
-				Expect(cleanResult).To(Equal(expectedWithFiles))
+				Expect(cleanResult).To(Equal("web:" + expectedWithFiles))
 			})
 			It("hook fails with empty token", func() {
 				err = os.Setenv("SL_TOKEN", "")
 				Expect(err).To(BeNil())
 				err = os.Setenv("SL_TOKEN_FILE", "")
 				Expect(err).To(BeNil())
-				err = sealights.SetApplicationStart(stager)
+				err = sealights.SetApplicationStartInProcfile(stager)
 				Expect(err).To(MatchError(ContainSubstring(hooks.EmptyTokenError)))
 			})
 			It("hook fails with empty build session id", func() {
@@ -150,7 +166,7 @@ var _ = Describe("Sealights hook", func() {
 				Expect(err).NotTo(HaveOccurred())
 				err = os.Setenv("SL_BUILD_SESSION_ID_FILE", "")
 				Expect(err).NotTo(HaveOccurred())
-				err = sealights.SetApplicationStart(stager)
+				err = sealights.SetApplicationStartInProcfile(stager)
 				Expect(err).To(MatchError(ContainSubstring(hooks.EmptyBuildError)))
 			})
 			It("hook fails with empty build session id", func() {
@@ -164,10 +180,120 @@ var _ = Describe("Sealights hook", func() {
 				Expect(err).NotTo(HaveOccurred())
 				err = os.Setenv("SL_TOKEN_FILE", "")
 				Expect(err).To(BeNil())
-				err = sealights.SetApplicationStart(stager)
-				bytes, err := ioutil.ReadFile(filepath.Join(stager.BuildDir(), "Procfile"))
+				err = sealights.SetApplicationStartInProcfile(stager)
+				bytes, err := ioutil.ReadFile(filepath.Join(stager.BuildDir(), procfileName))
 				Expect(err).To(BeNil())
 				cleanResult := strings.ReplaceAll(string(bytes), " ", "")
+				Expect(cleanResult).To(Equal("web:" + expected))
+			})
+		})
+
+		Context("build new application run command in package.json", func() {
+			BeforeEach(func() {
+				err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), packageJsonName), []byte(testPackageJson), 0755)
+				Expect(err).To(BeNil())
+			})
+
+			It("test application run cmd creation", func() {
+				err = os.Setenv("SL_LAB_ID", lab)
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_PROJECT_ROOT", root)
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_TEST_STAGE", stage)
+				Expect(err).To(BeNil())
+				err = sealights.SetApplicationStartInPackageJson(stager)
+				Expect(err).To(BeNil())
+				packageJson, err := sealights.ReadPackageJson(stager)
+				Expect(err).To(BeNil())
+				cleanResult := strings.ReplaceAll(packageJson.Scripts.StartScript, " ", "")
+				Expect(cleanResult).To(Equal(expectedWithFiles))
+			})
+			It("hook fails with empty token", func() {
+				err = os.Setenv("SL_TOKEN", "")
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_TOKEN_FILE", "")
+				Expect(err).To(BeNil())
+				err = sealights.SetApplicationStartInPackageJson(stager)
+				Expect(err).To(MatchError(ContainSubstring(hooks.EmptyTokenError)))
+			})
+			It("hook fails with empty build session id", func() {
+				err = os.Setenv("SL_BUILD_SESSION_ID", "")
+				Expect(err).NotTo(HaveOccurred())
+				err = os.Setenv("SL_BUILD_SESSION_ID_FILE", "")
+				Expect(err).NotTo(HaveOccurred())
+				err = sealights.SetApplicationStartInPackageJson(stager)
+				Expect(err).To(MatchError(ContainSubstring(hooks.EmptyBuildError)))
+			})
+			It("hook fails with empty build session id", func() {
+				err = os.Setenv("SL_LAB_ID", lab)
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_PROJECT_ROOT", root)
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_TEST_STAGE", stage)
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_BUILD_SESSION_ID_FILE", "")
+				Expect(err).NotTo(HaveOccurred())
+				err = os.Setenv("SL_TOKEN_FILE", "")
+				Expect(err).To(BeNil())
+				err = sealights.SetApplicationStartInPackageJson(stager)
+				packageJson, err := sealights.ReadPackageJson(stager)
+				Expect(err).To(BeNil())
+				cleanResult := strings.ReplaceAll(packageJson.Scripts.StartScript, " ", "")
+				Expect(cleanResult).To(Equal(expected))
+			})
+		})
+
+		Context("build new application run command in manifest", func() {
+			BeforeEach(func() {
+				err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), manifestName), []byte(testManifest), 0755)
+				Expect(err).To(BeNil())
+			})
+
+			It("test application run cmd creation", func() {
+				err = os.Setenv("SL_LAB_ID", lab)
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_PROJECT_ROOT", root)
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_TEST_STAGE", stage)
+				Expect(err).To(BeNil())
+				err = sealights.SetApplicationStartInManifest(stager)
+				Expect(err).To(BeNil())
+				err, manifestFile := sealights.ReadManifestFile(stager, yamlFile)
+				Expect(err).To(BeNil())
+				cleanResult := strings.ReplaceAll(manifestFile.Applications[0].Command, " ", "")
+				Expect(cleanResult).To(Equal(expectedWithFiles))
+			})
+			It("hook fails with empty token", func() {
+				err = os.Setenv("SL_TOKEN", "")
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_TOKEN_FILE", "")
+				Expect(err).To(BeNil())
+				err = sealights.SetApplicationStartInManifest(stager)
+				Expect(err).To(MatchError(ContainSubstring(hooks.EmptyTokenError)))
+			})
+			It("hook fails with empty build session id", func() {
+				err = os.Setenv("SL_BUILD_SESSION_ID", "")
+				Expect(err).NotTo(HaveOccurred())
+				err = os.Setenv("SL_BUILD_SESSION_ID_FILE", "")
+				Expect(err).NotTo(HaveOccurred())
+				err = sealights.SetApplicationStartInManifest(stager)
+				Expect(err).To(MatchError(ContainSubstring(hooks.EmptyBuildError)))
+			})
+			It("hook fails with empty build session id", func() {
+				err = os.Setenv("SL_LAB_ID", lab)
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_PROJECT_ROOT", root)
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_TEST_STAGE", stage)
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_BUILD_SESSION_ID_FILE", "")
+				Expect(err).NotTo(HaveOccurred())
+				err = os.Setenv("SL_TOKEN_FILE", "")
+				Expect(err).To(BeNil())
+				err = sealights.SetApplicationStartInManifest(stager)
+				err, manifestFile := sealights.ReadManifestFile(stager, yamlFile)
+				Expect(err).To(BeNil())
+				cleanResult := strings.ReplaceAll(manifestFile.Applications[0].Command, " ", "")
 				Expect(cleanResult).To(Equal(expected))
 			})
 		})

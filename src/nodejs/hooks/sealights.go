@@ -277,23 +277,24 @@ func (sl *SealightsHook) validate(o *SealightsOptions) error {
 	return nil
 }
 
-func (h *SealightsHook) isSealightsBound() bool {
+func (sl *SealightsHook) isSealightsBound() bool {
 	type Service struct {
 		Name string `json:"name"`
 	}
 	var vcapServices map[string][]Service
 	err := json.Unmarshal([]byte(os.Getenv("VCAP_SERVICES")), &vcapServices)
 	if err != nil {
-		h.Log.Warning("Failed to parse VCAP_SERVICES")
+		sl.Log.Warning("Failed to parse VCAP_SERVICES")
 		return false
 	}
 
 	for key := range vcapServices {
 		if strings.Contains(key, "sealights") {
+			sl.Log.Info("Found Sealights bound to VCAP_SERVICES")
 			return true
 		}
 	}
-
+	sl.Log.Info("Sealights not bound")
 	return false
 }
 

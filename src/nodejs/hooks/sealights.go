@@ -65,10 +65,8 @@ func (sl *SealightsHook) AfterCompile(stager *libbuildpack.Stager) error {
 	sl.Log.Info("Inside Sealights hook")
 	err := sl.injectSealights(stager)
 	if err != nil {
-		if err.Error() == SealightsNotBoundError {
-			return nil
-		}
-		return err
+		sl.Log.Error("Error injecting Sealights: %s", err)
+		return nil
 	}
 
 	err = sl.installAgent(stager)

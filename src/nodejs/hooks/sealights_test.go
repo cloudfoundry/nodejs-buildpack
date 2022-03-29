@@ -31,7 +31,6 @@ var _ = Describe("Sealights hook", func() {
 		stager               *libbuildpack.Stager
 		sealights            *hooks.SealightsHook
 		yamlFile             *libbuildpack.YAML
-		token                string
 		build                string
 		proxy                string
 		labId                string
@@ -62,7 +61,6 @@ var _ = Describe("Sealights hook", func() {
 		args := []string{buildDir, ""}
 		stager = libbuildpack.NewStager(args, logger, &libbuildpack.Manifest{})
 
-		token = os.Getenv("SL_TOKEN_FILE")
 		build = os.Getenv("SL_BUILD_SESSION_ID_FILE")
 		proxy = os.Getenv("SL_PROXY")
 		labId = os.Getenv("SL_LAB_ID")
@@ -77,8 +75,6 @@ var _ = Describe("Sealights hook", func() {
 	})
 
 	AfterEach(func() {
-		err = os.Setenv("SL_TOKEN", token)
-		Expect(err).To(BeNil())
 		err = os.Setenv("SL_BUILD_SESSION_ID", build)
 		Expect(err).To(BeNil())
 		err = os.Setenv("SL_PROXY", proxy)
@@ -99,19 +95,15 @@ var _ = Describe("Sealights hook", func() {
 
 	Describe("AfterCompile", func() {
 		var (
-			token     = "good_token"
-			tokenFile = "application/token/file"
-			bsid      = "goodBsid"
-			bsidFile  = "build/id/file"
-			proxy     = "http://localhost:1886"
-			lab       = "Roni's"
-			root      = "project/root"
-			stage     = "Unit Tests"
+			token    = "good_token"
+			bsid     = "goodBsid"
+			bsidFile = "build/id/file"
+			proxy    = "http://localhost:1886"
+			lab      = "Roni's"
+			root     = "project/root"
+			stage    = "Unit Tests"
 		)
 		BeforeEach(func() {
-			err = os.Setenv("SL_TOKEN", token)
-			Expect(err).To(BeNil())
-			err = os.Setenv("SL_TOKEN_FILE", tokenFile)
 			Expect(err).To(BeNil())
 			err = os.Setenv("SL_BUILD_SESSION_ID", bsid)
 			Expect(err).To(BeNil())
@@ -142,7 +134,8 @@ var _ = Describe("Sealights hook", func() {
 
 				Expect(err).To(BeNil())
 				err = sealights.AfterCompile(stager)
-				Expect(err).To(MatchError(ContainSubstring(hooks.EmptyTokenError)))
+				Expect(err).To(BeNil())
+				Expect(command.called).To(BeFalse())
 			})
 		})
 		Context("Sealights injection", func() {
@@ -161,7 +154,7 @@ var _ = Describe("Sealights hook", func() {
 					err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(testProcfile), 0755)
 					Expect(err).To(BeNil())
 				})
-				It("test application run cmd creation", func() {
+				It("test application run cmd creation from bsid file", func() {
 					err = os.Setenv("SL_LAB_ID", lab)
 					Expect(err).To(BeNil())
 					err = os.Setenv("SL_PROJECT_ROOT", root)
@@ -183,7 +176,7 @@ var _ = Describe("Sealights hook", func() {
 					err = sealights.SetApplicationStartInProcfile(stager)
 					Expect(err).To(MatchError(ContainSubstring(hooks.EmptyBuildError)))
 				})
-				It("hook fails with empty build session id", func() {
+				It("test application run cmd creation", func() {
 					err = os.Setenv("SL_LAB_ID", lab)
 					Expect(err).To(BeNil())
 					err = os.Setenv("SL_PROJECT_ROOT", root)
@@ -192,7 +185,6 @@ var _ = Describe("Sealights hook", func() {
 					Expect(err).To(BeNil())
 					err = os.Setenv("SL_BUILD_SESSION_ID_FILE", "")
 					Expect(err).NotTo(HaveOccurred())
-					err = os.Setenv("SL_TOKEN_FILE", "")
 					Expect(err).To(BeNil())
 					err = sealights.SetApplicationStartInProcfile(stager)
 					bytes, err := ioutil.ReadFile(filepath.Join(stager.BuildDir(), procfileName))
@@ -208,7 +200,7 @@ var _ = Describe("Sealights hook", func() {
 					Expect(err).To(BeNil())
 				})
 
-				It("test application run cmd creation", func() {
+				It("test application run cmd creation from bsid file", func() {
 					err = os.Setenv("SL_LAB_ID", lab)
 					Expect(err).To(BeNil())
 					err = os.Setenv("SL_PROJECT_ROOT", root)
@@ -230,7 +222,7 @@ var _ = Describe("Sealights hook", func() {
 					err = sealights.SetApplicationStartInPackageJson(stager)
 					Expect(err).To(MatchError(ContainSubstring(hooks.EmptyBuildError)))
 				})
-				It("hook fails with empty build session id", func() {
+				It("test application run cmd creation", func() {
 					err = os.Setenv("SL_LAB_ID", lab)
 					Expect(err).To(BeNil())
 					err = os.Setenv("SL_PROJECT_ROOT", root)
@@ -239,7 +231,6 @@ var _ = Describe("Sealights hook", func() {
 					Expect(err).To(BeNil())
 					err = os.Setenv("SL_BUILD_SESSION_ID_FILE", "")
 					Expect(err).NotTo(HaveOccurred())
-					err = os.Setenv("SL_TOKEN_FILE", "")
 					Expect(err).To(BeNil())
 					err = sealights.SetApplicationStartInPackageJson(stager)
 					packageJson, err := sealights.ReadPackageJson(stager)
@@ -255,7 +246,7 @@ var _ = Describe("Sealights hook", func() {
 					Expect(err).To(BeNil())
 				})
 
-				It("test application run cmd creation", func() {
+				It("test application run cmd creation from bsid file", func() {
 					err = os.Setenv("SL_LAB_ID", lab)
 					Expect(err).To(BeNil())
 					err = os.Setenv("SL_PROJECT_ROOT", root)
@@ -277,7 +268,7 @@ var _ = Describe("Sealights hook", func() {
 					err = sealights.SetApplicationStartInManifest(stager)
 					Expect(err).To(MatchError(ContainSubstring(hooks.EmptyBuildError)))
 				})
-				It("hook fails with empty build session id", func() {
+				It("test application run cmd creation", func() {
 					err = os.Setenv("SL_LAB_ID", lab)
 					Expect(err).To(BeNil())
 					err = os.Setenv("SL_PROJECT_ROOT", root)
@@ -286,7 +277,6 @@ var _ = Describe("Sealights hook", func() {
 					Expect(err).To(BeNil())
 					err = os.Setenv("SL_BUILD_SESSION_ID_FILE", "")
 					Expect(err).NotTo(HaveOccurred())
-					err = os.Setenv("SL_TOKEN_FILE", "")
 					Expect(err).To(BeNil())
 					err = sealights.SetApplicationStartInManifest(stager)
 					err, manifestFile := sealights.ReadManifestFile(stager, yamlFile)

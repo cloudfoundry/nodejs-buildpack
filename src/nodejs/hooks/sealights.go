@@ -289,6 +289,7 @@ func (sl *SealightsHook) isSealightsBound() bool {
 	}
 
 	for key := range vcapServices {
+		sl.Log.Info("Found service: %s", key)
 		if strings.Contains(key, "sealights") {
 			sl.Log.Info("Found Sealights bound to VCAP_SERVICES")
 			return true

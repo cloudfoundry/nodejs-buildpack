@@ -281,6 +281,7 @@ func (sl *SealightsHook) isSealightsBound() bool {
 	type Service struct {
 		Name string `json:"name"`
 	}
+	sl.GetCredentialsFromEnvironment()
 	var vcapServices map[string][]Service
 	err := json.Unmarshal([]byte(os.Getenv("VCAP_SERVICES")), &vcapServices)
 	if err != nil {
@@ -310,4 +311,86 @@ func (sl *SealightsHook) injectSealights(stager *libbuildpack.Stager) error {
 		sl.Log.Info("Integrating sealights into package.json")
 		return sl.SetApplicationStartInPackageJson(stager)
 	}
+}
+
+func containsSealightsService(key string, services interface{}, query string) bool {
+	var serviceName string
+	//var serviceLabel string
+	//var serviceTags []interface{}
+
+	if strings.Contains(key, query) {
+		return true
+	}
+	val := services.([]interface{})
+	for serviceIndex := range val {
+		service := val[serviceIndex].(map[string]interface{})
+		if v, ok := service["name"]; ok {
+			serviceName = v.(string)
+			fmt.Println("Found service: %s", serviceName)
+			return true
+		}
+		//if v, ok := service["label"]; ok {
+		//	serviceLabel = v.(string)
+		//}
+		//if strings.Contains(serviceName, query) || strings.Contains(serviceLabel, query) {
+		//	return true
+		//}
+		//if v, ok := service["tags"]; ok {
+		//	serviceTags = v.([]interface{})
+		//}
+		//for _, tagValue := range serviceTags {
+		//	if strings.Contains(tagValue.(string), query) {
+		//		return true
+		//	}
+		//}
+	}
+	return false
+}
+
+func (sl *SealightsHook) GetCredentialsFromEnvironment() (bool, ContrastSecurityCredentials) {
+
+	type rawVcapServicesJSONValue map[string]interface{}
+
+	var vcapServices rawVcapServicesJSONValue
+
+	vcapServicesEnvironment := os.Getenv("VCAP_SERVICES")
+
+	if vcapServicesEnvironment == "" {
+		sl.Log.Debug("Sealights could not find VCAP_SERVICES in the environment")
+		return false, ContrastSecurityCredentials{}
+	}
+
+	err := json.Unmarshal([]byte(vcapServicesEnvironment), &vcapServices)
+	if err != nil {
+		sl.Log.Warning("Sealights could not parse VCAP_SERVICES")
+		return false, ContrastSecurityCredentials{}
+	}
+
+	for key, services := range vcapServices {
+		if containsSealightsService(key, services, "sealights") {
+			sl.Log.Debug("Sealights found credentials in VCAP_SERVICES")
+			//val := services.([]interface{})
+			//for serviceIndex := range val {
+			//	service := val[serviceIndex].(map[string]interface{})
+			//	if credentials, exists := service["credentials"].(map[string]interface{}); exists {
+			//		apiKey := getContrastCredentialString(credentials, "api_key")
+			//		orgUuid := getContrastCredentialString(credentials, "org_uuid")
+			//		serviceKey := getContrastCredentialString(credentials, "service_key")
+			//		contrastUrl := getContrastCredentialString(credentials, "teamserver_url")
+			//		username := getContrastCredentialString(credentials, "username")
+			//
+			//		contrastSecurityCredentials := ContrastSecurityCredentials{
+			//			ApiKey:      apiKey,
+			//			OrgUuid:     orgUuid,
+			//			ServiceKey:  serviceKey,
+			//			ContrastUrl: contrastUrl,
+			//			Username:    username,
+			//		}
+			return true, ContrastSecurityCredentials{}
+			//	}
+			//}
+		}
+	}
+
+	return false, ContrastSecurityCredentials{}
 }

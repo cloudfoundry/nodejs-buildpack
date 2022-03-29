@@ -12,6 +12,7 @@ import (
 )
 
 const EmptyTokenError = "token cannot be empty (env SL_TOKEN | SL_TOKEN_FILE)"
+const SealightsNotBoundError = "Sealights service not bound"
 const EmptyBuildError = "build session id cannot be empty (env SL_BUILD_SESSION_ID | SL_BUILD_SESSION_ID_FILE)"
 const Procfile = "Procfile"
 const PackageJsonFile = "package.json"
@@ -61,14 +62,12 @@ func init() {
 }
 
 func (sl *SealightsHook) AfterCompile(stager *libbuildpack.Stager) error {
-	if !sl.isSealightsBound() {
-		return nil
-	}
-
 	sl.Log.Info("Inside Sealights hook")
-
 	err := sl.injectSealights(stager)
 	if err != nil {
+		if err.Error() == SealightsNotBoundError {
+			return nil
+		}
 		return err
 	}
 
@@ -90,10 +89,16 @@ func (sl *SealightsHook) SetApplicationStartInProcfile(stager *libbuildpack.Stag
 	// we suppose that format is "web: node <application>"
 	var newCmd string
 	err, newCmd = sl.updateStartCommand(string(bytes))
-	startCommand := "web: " + newCmd
+
 	if err != nil {
 		return err
 	}
+
+	if newCmd == "" {
+		return nil
+	}
+
+	startCommand := "web: " + newCmd
 
 	err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), Procfile), []byte(startCommand), 0755)
 	if err != nil {
@@ -104,10 +109,9 @@ func (sl *SealightsHook) SetApplicationStartInProcfile(stager *libbuildpack.Stag
 	return nil
 }
 
-func (sl *SealightsHook) getSealightsOptions(app string) *SealightsOptions {
+func (sl *SealightsHook) getSealightsOptions(app string, token string) *SealightsOptions {
 	o := &SealightsOptions{
-		Token:       os.Getenv("SL_TOKEN"),
-		TokenFile:   os.Getenv("SL_TOKEN_FILE"),
+		Token:       token,
 		BsId:        os.Getenv("SL_BUILD_SESSION_ID"),
 		BsIdFile:    os.Getenv("SL_BUILD_SESSION_ID_FILE"),
 		Proxy:       os.Getenv("SL_PROXY"),
@@ -192,9 +196,20 @@ func (sl *SealightsHook) SetApplicationStartInManifest(stager *libbuildpack.Stag
 }
 
 func (sl *SealightsHook) updateStartCommand(originalCommand string) (error, string) {
+	slFound, token := sl.GetTokenFromEnvironment()
+
+	if !slFound {
+		sl.Log.Info("Sealights service not found")
+		return fmt.Errorf(SealightsNotBoundError), ""
+	}
+
+	if token == "" {
+		sl.Log.Error("Sealights token not found")
+		return fmt.Errorf(EmptyTokenError), ""
+	}
 	split := strings.SplitAfter(originalCommand, "node")
 
-	o := sl.getSealightsOptions(split[1])
+	o := sl.getSealightsOptions(split[1], token)
 
 	err := sl.validate(o)
 	if err != nil {
@@ -277,29 +292,6 @@ func (sl *SealightsHook) validate(o *SealightsOptions) error {
 	return nil
 }
 
-func (sl *SealightsHook) isSealightsBound() bool {
-	type Service struct {
-		Name string `json:"name"`
-	}
-	sl.GetCredentialsFromEnvironment()
-	var vcapServices map[string][]Service
-	err := json.Unmarshal([]byte(os.Getenv("VCAP_SERVICES")), &vcapServices)
-	if err != nil {
-		sl.Log.Warning("Failed to parse VCAP_SERVICES")
-		return false
-	}
-
-	for key := range vcapServices {
-		sl.Log.Info("Found service: %s", key)
-		if strings.Contains(key, "sealights") {
-			sl.Log.Info("Found Sealights bound to VCAP_SERVICES")
-			return true
-		}
-	}
-	sl.Log.Info("Sealights not bound")
-	return false
-}
-
 func (sl *SealightsHook) injectSealights(stager *libbuildpack.Stager) error {
 	if _, err := os.Stat(filepath.Join(stager.BuildDir(), Procfile)); err == nil {
 		sl.Log.Info("Integrating sealights into procfile")
@@ -315,8 +307,6 @@ func (sl *SealightsHook) injectSealights(stager *libbuildpack.Stager) error {
 
 func containsSealightsService(key string, services interface{}, query string) bool {
 	var serviceName string
-	//var serviceLabel string
-	//var serviceTags []interface{}
 
 	if strings.Contains(key, query) {
 		return true
@@ -326,28 +316,15 @@ func containsSealightsService(key string, services interface{}, query string) bo
 		service := val[serviceIndex].(map[string]interface{})
 		if v, ok := service["name"]; ok {
 			serviceName = v.(string)
-			fmt.Println("Found service: %s", serviceName)
+		}
+		if strings.Contains(serviceName, query) {
 			return true
 		}
-		//if v, ok := service["label"]; ok {
-		//	serviceLabel = v.(string)
-		//}
-		//if strings.Contains(serviceName, query) || strings.Contains(serviceLabel, query) {
-		//	return true
-		//}
-		//if v, ok := service["tags"]; ok {
-		//	serviceTags = v.([]interface{})
-		//}
-		//for _, tagValue := range serviceTags {
-		//	if strings.Contains(tagValue.(string), query) {
-		//		return true
-		//	}
-		//}
 	}
 	return false
 }
 
-func (sl *SealightsHook) GetCredentialsFromEnvironment() (bool, ContrastSecurityCredentials) {
+func (sl *SealightsHook) GetTokenFromEnvironment() (bool, string) {
 
 	type rawVcapServicesJSONValue map[string]interface{}
 
@@ -357,40 +334,27 @@ func (sl *SealightsHook) GetCredentialsFromEnvironment() (bool, ContrastSecurity
 
 	if vcapServicesEnvironment == "" {
 		sl.Log.Debug("Sealights could not find VCAP_SERVICES in the environment")
-		return false, ContrastSecurityCredentials{}
+		return false, ""
 	}
 
 	err := json.Unmarshal([]byte(vcapServicesEnvironment), &vcapServices)
 	if err != nil {
 		sl.Log.Warning("Sealights could not parse VCAP_SERVICES")
-		return false, ContrastSecurityCredentials{}
+		return false, ""
 	}
 
 	for key, services := range vcapServices {
 		if containsSealightsService(key, services, "sealights") {
 			sl.Log.Debug("Sealights found credentials in VCAP_SERVICES")
-			//val := services.([]interface{})
-			//for serviceIndex := range val {
-			//	service := val[serviceIndex].(map[string]interface{})
-			//	if credentials, exists := service["credentials"].(map[string]interface{}); exists {
-			//		apiKey := getContrastCredentialString(credentials, "api_key")
-			//		orgUuid := getContrastCredentialString(credentials, "org_uuid")
-			//		serviceKey := getContrastCredentialString(credentials, "service_key")
-			//		contrastUrl := getContrastCredentialString(credentials, "teamserver_url")
-			//		username := getContrastCredentialString(credentials, "username")
-			//
-			//		contrastSecurityCredentials := ContrastSecurityCredentials{
-			//			ApiKey:      apiKey,
-			//			OrgUuid:     orgUuid,
-			//			ServiceKey:  serviceKey,
-			//			ContrastUrl: contrastUrl,
-			//			Username:    username,
-			//		}
-			return true, ContrastSecurityCredentials{}
-			//	}
-			//}
+			val := services.([]interface{})
+			for serviceIndex := range val {
+				service := val[serviceIndex].(map[string]interface{})
+				if credentials, exists := service["credentials"].(map[string]interface{}); exists {
+					token := getContrastCredentialString(credentials, "token")
+					return true, token
+				}
+			}
 		}
 	}
-
-	return false, ContrastSecurityCredentials{}
+	return false, ""
 }

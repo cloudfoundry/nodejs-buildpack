@@ -126,8 +126,10 @@ func (sl *SealightsHook) SetApplicationStartInPackageJson(stager *libbuildpack.S
 	if err != nil {
 		return err
 	}
-	originalStartScript := packageJson["scripts"].(map[string]interface{})["start"].(string)
-
+	originalStartScript, ok := packageJson["scripts"].(map[string]interface{})["start"].(string)
+	if !ok {
+		return fmt.Errorf("failed to read start script from %s", PackageJsonFile)
+	}
 	// we suppose that format is "start: node <application>"
 	var newCmd string
 	err, newCmd = sl.updateStartCommand(originalStartScript)

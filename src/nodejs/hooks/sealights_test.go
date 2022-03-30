@@ -48,8 +48,8 @@ var _ = Describe("Sealights hook", func() {
 			"applications:\n" +
 			"  - name: Good\n" +
 			"    command: " + originalStartCommand
-		expected         = strings.ReplaceAll("node ./node_modules/.bin/slnodejs run  --useinitialcolor true --token good_token --buildsessionid goodBsid --proxy http://localhost:1886 --labid Roni's --projectroot project/root --teststage \"Unit Tests\" index.js --build 192 --name Good", " ", "")
-		expectedWithFile = strings.ReplaceAll("node ./node_modules/.bin/slnodejs run  --useinitialcolor true --token good_token --buildsessionidfile build/id/file --proxy http://localhost:1886 --labid Roni's --projectroot project/root --teststage \"Unit Tests\" index.js --build 192 --name Good", " ", "")
+		expected         = strings.ReplaceAll("./node_modules/.bin/slnodejs run  --useinitialcolor true --token good_token --buildsessionid goodBsid --proxy http://localhost:1886 --labid Roni's --projectroot project/root --teststage \"Unit Tests\" index.js --build 192 --name Good", " ", "")
+		expectedWithFile = strings.ReplaceAll("./node_modules/.bin/slnodejs run  --useinitialcolor true --token good_token --buildsessionidfile build/id/file --proxy http://localhost:1886 --labid Roni's --projectroot project/root --teststage \"Unit Tests\" index.js --build 192 --name Good", " ", "")
 	)
 
 	BeforeEach(func() {

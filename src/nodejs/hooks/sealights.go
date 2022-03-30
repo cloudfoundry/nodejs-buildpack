@@ -241,7 +241,7 @@ func (sl *SealightsHook) installAgent(stager *libbuildpack.Stager) error {
 
 func (sl *SealightsHook) createAppStartCommandLine(o *SealightsOptions) string {
 	var sb strings.Builder
-	sb.WriteString("node ./node_modules/.bin/slnodejs run  --useinitialcolor true ")
+	sb.WriteString("./node_modules/.bin/slnodejs run  --useinitialcolor true ")
 
 	if o.TokenFile != "" {
 		sb.WriteString(fmt.Sprintf(" --tokenfile %s", o.TokenFile))

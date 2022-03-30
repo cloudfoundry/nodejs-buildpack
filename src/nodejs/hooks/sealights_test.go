@@ -211,7 +211,7 @@ var _ = Describe("Sealights hook", func() {
 					Expect(err).To(BeNil())
 					packageJson, err := sealights.ReadPackageJson(stager)
 					Expect(err).To(BeNil())
-					cleanResult := strings.ReplaceAll(packageJson.Scripts.StartScript, " ", "")
+					cleanResult := strings.ReplaceAll(packageJson["scripts"].(map[string]interface{})["start"].(string), " ", "")
 					Expect(cleanResult).To(Equal(expectedWithFile))
 				})
 				It("hook fails with empty build session id", func() {
@@ -235,7 +235,7 @@ var _ = Describe("Sealights hook", func() {
 					err = sealights.SetApplicationStartInPackageJson(stager)
 					packageJson, err := sealights.ReadPackageJson(stager)
 					Expect(err).To(BeNil())
-					cleanResult := strings.ReplaceAll(packageJson.Scripts.StartScript, " ", "")
+					cleanResult := strings.ReplaceAll(packageJson["scripts"].(map[string]interface{})["start"].(string), " ", "")
 					Expect(cleanResult).To(Equal(expected))
 				})
 			})

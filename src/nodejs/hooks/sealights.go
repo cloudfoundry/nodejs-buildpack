@@ -126,7 +126,7 @@ func (sl *SealightsHook) SetApplicationStartInPackageJson(stager *libbuildpack.S
 	if err != nil {
 		return err
 	}
-	originalStartScript := packageJson.Scripts.StartScript
+	originalStartScript := packageJson["scripts"].(map[string]interface{})["start"].(string)
 
 	// we suppose that format is "start: node <application>"
 	var newCmd string
@@ -134,7 +134,7 @@ func (sl *SealightsHook) SetApplicationStartInPackageJson(stager *libbuildpack.S
 	if err != nil {
 		return err
 	}
-	packageJson.Scripts.StartScript = newCmd
+	packageJson["scripts"].(map[string]interface{})["start"] = newCmd
 
 	err = libbuildpack.NewJSON().Write(filepath.Join(stager.BuildDir(), PackageJsonFile), packageJson)
 	if err != nil {
@@ -145,24 +145,13 @@ func (sl *SealightsHook) SetApplicationStartInPackageJson(stager *libbuildpack.S
 	return nil
 }
 
-func (sl *SealightsHook) ReadPackageJson(stager *libbuildpack.Stager) (struct {
-	Scripts struct {
-		StartScript string `json:"start"`
-	} `json:"scripts"`
-}, error) {
-	var p struct {
-		Scripts struct {
-			StartScript string `json:"start"`
-		} `json:"scripts"`
-	}
+func (sl *SealightsHook) ReadPackageJson(stager *libbuildpack.Stager) (map[string]interface{}, error) {
+	p := map[string]interface{}{}
+
 	if err := libbuildpack.NewJSON().Load(filepath.Join(stager.BuildDir(), "package.json"), &p); err != nil {
 		if err != nil {
 			sl.Log.Error("failed to read %s error: %s", Procfile, err.Error())
-			return struct {
-				Scripts struct {
-					StartScript string `json:"start"`
-				} `json:"scripts"`
-			}{}, err
+			return nil, err
 		}
 	}
 	return p, nil

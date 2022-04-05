@@ -4,12 +4,13 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"encoding/json"
-	"github.com/cloudfoundry/libbuildpack/cutlass"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/cloudfoundry/libbuildpack/cutlass"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -47,10 +48,10 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(RunCF("create-user-provided-service", serviceNameOne, "-p", `{
 				"token": "token1"
 			}`)).To(Succeed())
-      
-			Expect(app.PushNoStart()).To(Succeed())
+
+			PushAppAndConfirm(app)
 			Expect(RunCF("bind-service", app.Name, serviceNameOne)).To(Succeed())
-			Expect(app.PushNoStart()).To(Succeed())
+			PushAppAndConfirm(app)
 			Expect(app.DownloadDroplet(filepath.Join(app.Path, "droplet.tgz"))).To(Succeed())
 			file, err := os.Open(filepath.Join(app.Path, "droplet.tgz"))
 			Expect(err).ToNot(HaveOccurred())
@@ -72,7 +73,8 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 				p := map[string]interface{}{}
 				json.Unmarshal(b, &p)
 
-				Expect(p["scripts"].(map[string]interface{})["start"].(string)).To(Equal(expected))
+				actual := strings.ReplaceAll(p["scripts"].(map[string]interface{})["start"].(string), " ", "")
+				Expect(actual).To(Equal(expected))
 			}
 		})
 

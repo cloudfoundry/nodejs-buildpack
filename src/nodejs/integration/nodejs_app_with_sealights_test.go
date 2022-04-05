@@ -47,7 +47,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			Expect(RunCF("create-user-provided-service", serviceNameOne, "-p", `{
 				"token": "token1"
 			}`)).To(Succeed())
-
+      
 			Expect(app.PushNoStart()).To(Succeed())
 			Expect(RunCF("bind-service", app.Name, serviceNameOne)).To(Succeed())
 			Expect(app.PushNoStart()).To(Succeed())

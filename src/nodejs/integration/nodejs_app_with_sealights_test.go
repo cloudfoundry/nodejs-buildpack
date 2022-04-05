@@ -48,6 +48,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 				"token": "token1"
 			}`)).To(Succeed())
 
+			Expect(app.PushNoStart()).To(Succeed())
 			Expect(RunCF("bind-service", app.Name, serviceNameOne)).To(Succeed())
 			Expect(app.PushNoStart()).To(Succeed())
 			Expect(app.DownloadDroplet(filepath.Join(app.Path, "droplet.tgz"))).To(Succeed())

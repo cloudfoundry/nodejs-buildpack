@@ -73,6 +73,8 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		})
 
 		By("Pushing an app with a marketplace provided service", func() {
+			app = cutlass.New(Fixtures("with_newrelic"))
+			PushAppAndConfirm(app)
 			serviceFromBroker := "newrelic-sb-" + cutlass.RandStringRunes(10)
 			RunCF("create-service-broker", serviceBrokerApp.Name, "username", "password", serviceBrokerURL, "--space-scoped")
 			RunCF("create-service", serviceOffering, "public", serviceFromBroker)

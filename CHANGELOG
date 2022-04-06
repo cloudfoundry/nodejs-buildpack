@@ -1,3 +1,17 @@
+v1.7.68 Apr 06, 2022
+=====================
+
+* Adding Sealights integration (#433)
+
+* Add node 12.22.12, remove node 12.22.9 for stack(s) cflinuxfs3
+
+* Add node 14.19.1, remove node 14.18.2 for stack(s) cflinuxfs3
+
+* Add node 16.14.2, remove node 16.13.1 for stack(s) cflinuxfs3
+
+* Add yarn 1.22.18, remove yarn 1.22.17 for stack(s) cflinuxfs3
+
+
 v1.7.67 Feb 09, 2022
 =====================
 

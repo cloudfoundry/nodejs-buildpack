@@ -41,10 +41,10 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		Context("with user provided service", func() {
 			It("push a newrelic app with a user provided service", func() {
-				RunCF("create-user-provided-service", serviceName, "-p", `{"licenseKey": "fake_new_relic_key3"}`)
+				Expect(RunCF("create-user-provided-service", serviceName, "-p", `{"licenseKey": "fake_new_relic_key3"}`)).To(Succeed())
+				Expect(app.PushNoStart()).To(Succeed())
+				Expect(RunCF("bind-service", app.Name, serviceName)).To(Succeed())
 				PushAppAndConfirm(app)
-				RunCF("bind-service", app.Name, serviceName)
-				Expect(app.Restart()).To(Succeed())
 
 				Eventually(app.Stdout.String).Should(ContainSubstring("&license_key=fake_new_relic_key3"))
 				Expect(app.Stdout.String()).ToNot(ContainSubstring("&license_key=fake_new_relic_key1"))
@@ -70,14 +70,12 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			})
 
 			It("push a newrelic app with a marketplace provided service", func() {
-				app = cutlass.New(Fixtures("with_newrelic"))
-				PushAppAndConfirm(app)
 				serviceFromBroker := "newrelic-sb-" + cutlass.RandStringRunes(10)
 				RunCF("create-service-broker", serviceBrokerApp.Name, "username", "password", serviceBrokerURL, "--space-scoped")
 				RunCF("create-service", serviceOffering, "public", serviceFromBroker)
 
-				app.Stdout.Reset()
-				RunCF("bind-service", app.Name, serviceFromBroker)
+				Expect(app.PushNoStart()).To(Succeed())
+				Expect(RunCF("bind-service", app.Name, serviceFromBroker)).To(Succeed())
 				Expect(app.Restart()).To(Succeed())
 
 				Eventually(app.Stdout.String).Should(ContainSubstring("&license_key=fake_new_relic_key2"))

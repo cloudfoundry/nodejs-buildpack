@@ -1,0 +1,17 @@
+{
+  "name": "node_web_app",
+  "version": "0.0.0",
+  "description": "hello, world",
+  "scripts": {
+    "start": "node ./dist/server.js"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "express": "~4.15.2",
+    "logfmt": "~1.2.0"
+  },
+  "engines": {
+    "node": "~>16"
+  }
+}

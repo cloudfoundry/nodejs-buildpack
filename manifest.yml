@@ -68,14 +68,6 @@ dependencies:
   source: https://nodejs.org/dist/v14.19.1/node-v14.19.1.tar.gz
   source_sha256: cb5b094df5a59374014b131994314ccc5e390013f4e813a75491325f6eb7e1a2
 - name: node
-  version: 16.14.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_16.14.0_linux_x64_cflinuxfs3_ec30e9b5.tgz
-  sha256: ec30e9b58bb91c3e87b848c9fcd49ab2f5d064dd84b5e09cc49d65a1f88fe8da
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v16.14.0/node-v16.14.0.tar.gz
-  source_sha256: 29dfce13650f063ff009d18349636333fa4305468b6a8965d442c2e88b1dd60f
-- name: node
   version: 16.14.2
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_16.14.2_linux_x64_cflinuxfs3_fb3f87c7.tgz
   sha256: fb3f87c7c986792359e8c47bb95d7724b6e11be1693ed10d90254f1249e9a242
@@ -83,6 +75,14 @@ dependencies:
   - cflinuxfs3
   source: https://nodejs.org/dist/v16.14.2/node-v16.14.2.tar.gz
   source_sha256: '082170f362c4da0e97f3a1899e3f5e4c998bbc245b803c77c6ab113a2b5cbd5f'
+- name: node
+  version: 16.15.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_16.15.0_linux_x64_cflinuxfs3_cae3a27b.tgz
+  sha256: cae3a27b9ff4605c91f69958e9e81885d5aa3ee66e68aba7e6d4f53e5b9a8fc2
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v16.15.0/node-v16.15.0.tar.gz
+  source_sha256: 38e041b7249afb331663613f860b84b51852efa02b4ebff852f9610bef680d7d
 - name: yarn
   version: 1.22.18
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.18_linux_noarch_any-stack_4fc4a734.tgz

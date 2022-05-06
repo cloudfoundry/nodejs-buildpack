@@ -3,15 +3,19 @@ package hooks
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/cloudfoundry/libbuildpack"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
+
+	"github.com/cloudfoundry/libbuildpack"
 )
 
 const EmptyTokenError = "token cannot be empty (env SL_TOKEN | SL_TOKEN_FILE)"
+const CommandStringError = "Cannot find command begin term"
+const NpmCommandStringError = "NPM command without package.json file is not supported"
 const SealightsNotBoundError = "Sealights service not bound"
 const EmptyBuildError = "build session id cannot be empty (env SL_BUILD_SESSION_ID | SL_BUILD_SESSION_ID_FILE)"
 const Procfile = "Procfile"
@@ -84,12 +88,8 @@ func (sl *SealightsHook) AfterCompile(stager *libbuildpack.Stager) error {
 }
 
 func (sl *SealightsHook) RunWithSealights() bool {
-	_, token := sl.GetTokenFromEnvironment()
-	if token == "" {
-		return false
-	} else {
-		return true
-	}
+	isTokenFound, _, _ := sl.GetTokenFromEnvironment()
+	return isTokenFound
 }
 
 func (sl *SealightsHook) SetApplicationStartInProcfile(stager *libbuildpack.Stager) error {
@@ -99,9 +99,16 @@ func (sl *SealightsHook) SetApplicationStartInProcfile(stager *libbuildpack.Stag
 		return err
 	}
 
+	originalStartCommand := string(bytes)
+	_, usePackageJson := sl.usePackageJson(originalStartCommand, stager)
+	if usePackageJson {
+		// move to package json scenario
+		return sl.SetApplicationStartInPackageJson(stager)
+	}
+
 	// we suppose that format is "web: node <application>"
 	var newCmd string
-	err, newCmd = sl.updateStartCommand(string(bytes))
+	err, newCmd = sl.updateStartCommand(originalStartCommand)
 
 	if err != nil {
 		return err
@@ -122,9 +129,31 @@ func (sl *SealightsHook) SetApplicationStartInProcfile(stager *libbuildpack.Stag
 	return nil
 }
 
-func (sl *SealightsHook) getSealightsOptions(app string, token string) *SealightsOptions {
+func (sl *SealightsHook) usePackageJson(originalStartCommand string, stager *libbuildpack.Stager) (error, bool) {
+
+	isNpmCommand, err := regexp.MatchString(`(^(web:\s)?cd[^&]*\s&&\snpm)|(^(web:\s)?npm)`, originalStartCommand)
+	if err != nil {
+		return err, false
+	}
+
+	isPackageExists := fileExists(filepath.Join(stager.BuildDir(), PackageJsonFile))
+	if !isNpmCommand {
+		return err, false
+	}
+
+	if isNpmCommand && isPackageExists {
+		// move to package json scenario
+		return nil, true
+	}
+
+	// case with npm command without package.json is not supported
+	return fmt.Errorf(NpmCommandStringError), false
+}
+
+func (sl *SealightsHook) getSealightsOptions(app string, token string, tokenFile string) *SealightsOptions {
 	o := &SealightsOptions{
 		Token:       token,
+		TokenFile:   tokenFile,
 		BsId:        os.Getenv("SL_BUILD_SESSION_ID"),
 		BsIdFile:    os.Getenv("SL_BUILD_SESSION_ID_FILE"),
 		Proxy:       os.Getenv("SL_PROXY"),
@@ -184,11 +213,17 @@ func (sl *SealightsHook) SetApplicationStartInManifest(stager *libbuildpack.Stag
 	if err != nil {
 		return err
 	}
-	originalCommand := m.Applications[0].Command
+	originalStartCommand := m.Applications[0].Command
+
+	_, usePackageJson := sl.usePackageJson(originalStartCommand, stager)
+	if usePackageJson {
+		// move to package json scenario
+		return sl.SetApplicationStartInPackageJson(stager)
+	}
 
 	// we suppose that format is "start: node <application>"
 	var newCmd string
-	err, newCmd = sl.updateStartCommand(originalCommand)
+	err, newCmd = sl.updateStartCommand(originalStartCommand)
 	if err != nil {
 		return err
 	}
@@ -204,20 +239,19 @@ func (sl *SealightsHook) SetApplicationStartInManifest(stager *libbuildpack.Stag
 }
 
 func (sl *SealightsHook) updateStartCommand(originalCommand string) (error, string) {
-	slFound, token := sl.GetTokenFromEnvironment()
+	slTokenFound, token, tokenFile := sl.GetTokenFromEnvironment()
 
-	if !slFound {
+	if !slTokenFound {
 		sl.Log.Info("Sealights service not found")
 		return fmt.Errorf(SealightsNotBoundError), ""
 	}
 
-	if token == "" {
-		sl.Log.Info("Sealights token not found")
-		return fmt.Errorf(EmptyTokenError), ""
-	}
-	split := strings.SplitAfter(originalCommand, "node")
+	split := strings.SplitAfterN(originalCommand, "node", 2)
 
-	o := sl.getSealightsOptions(split[1], token)
+	if len(split) < 2 {
+		return fmt.Errorf(CommandStringError), ""
+	}
+	o := sl.getSealightsOptions(split[1], token, tokenFile)
 
 	err := sl.validate(o)
 	if err != nil {
@@ -332,7 +366,7 @@ func containsSealightsService(key string, services interface{}, query string) bo
 	return false
 }
 
-func (sl *SealightsHook) GetTokenFromEnvironment() (bool, string) {
+func (sl *SealightsHook) GetTokenFromEnvironment() (bool, string, string) {
 
 	type rawVcapServicesJSONValue map[string]interface{}
 
@@ -342,13 +376,13 @@ func (sl *SealightsHook) GetTokenFromEnvironment() (bool, string) {
 
 	if vcapServicesEnvironment == "" {
 		sl.Log.Debug("Sealights could not find VCAP_SERVICES in the environment")
-		return false, ""
+		return false, "", ""
 	}
 
 	err := json.Unmarshal([]byte(vcapServicesEnvironment), &vcapServices)
 	if err != nil {
 		sl.Log.Warning("Sealights could not parse VCAP_SERVICES")
-		return false, ""
+		return false, "", ""
 	}
 
 	for key, services := range vcapServices {
@@ -359,10 +393,19 @@ func (sl *SealightsHook) GetTokenFromEnvironment() (bool, string) {
 				service := val[serviceIndex].(map[string]interface{})
 				if credentials, exists := service["credentials"].(map[string]interface{}); exists {
 					token := getContrastCredentialString(credentials, "token")
-					return true, token
+					tokenFile := getContrastCredentialString(credentials, "tokenFile")
+					if token == "" && tokenFile == "" {
+						return false, "", ""
+					}
+					return true, token, tokenFile
 				}
 			}
 		}
 	}
-	return false, ""
+	return false, "", ""
+}
+
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
 }

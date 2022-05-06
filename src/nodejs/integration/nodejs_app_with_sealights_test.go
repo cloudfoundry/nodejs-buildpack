@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -21,6 +22,7 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		app              *cutlass.App
 		serviceBrokerApp *cutlass.App
 		serviceNameOne   string
+		files            []string
 		expected         = strings.ReplaceAll("./node_modules/.bin/slnodejs run  --useinitialcolor true --token token1 --buildsessionid bs1  ./dist/server.js", " ", "")
 	)
 
@@ -34,6 +36,11 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 		_ = RunCF("delete-service", "-f", serviceNameOne)
 
 		serviceBrokerApp = DestroyApp(serviceBrokerApp)
+
+		for _, file := range files {
+			err := os.Remove(file)
+			Expect(err).NotTo(HaveOccurred())
+		}
 	})
 
 	It("deploying a NodeJS app with sealights", func() {
@@ -49,11 +56,14 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 				"token": "token1"
 			}`)).To(Succeed())
 
-			PushAppAndConfirm(app)
+			Expect(app.PushNoStart()).To(Succeed())
 			Expect(RunCF("bind-service", app.Name, serviceNameOne)).To(Succeed())
-			PushAppAndConfirm(app)
-			Expect(app.DownloadDroplet(filepath.Join(app.Path, "droplet.tgz"))).To(Succeed())
-			file, err := os.Open(filepath.Join(app.Path, "droplet.tgz"))
+			Expect(app.Restart()).To(Succeed())
+
+			tmpDropletFile := filepath.Join(os.TempDir(), fmt.Sprintf("droplet-%s.tgz", cutlass.RandStringRunes(10)))
+			files = append(files, tmpDropletFile)
+			Expect(app.DownloadDroplet(tmpDropletFile)).To(Succeed())
+			file, err := os.Open(tmpDropletFile)
 			Expect(err).ToNot(HaveOccurred())
 			defer file.Close()
 			gz, err := gzip.NewReader(file)

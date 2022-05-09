@@ -1,3 +1,18 @@
+v1.7.70 May 09, 2022
+=====================
+
+* Add node 14.19.2, remove node 14.19.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/182076907)
+
+* Add node 16.15.0, remove node 16.14.0
+  for stack(s) cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/182006894)
+
+* Add support for SeaLights Node.js agent integration.
+  (https://github.com/cloudfoundry/nodejs-buildpack/pull/443)
+
+
 v1.7.69 Apr 07, 2022
 =====================
 

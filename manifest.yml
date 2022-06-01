@@ -22,10 +22,6 @@ include_files:
 - profile/newrelic-setup.sh
 - profile/nodejs.sh
 dependency_deprecation_dates:
-- version_line: 12.x.x
-  name: node
-  date: 2022-04-01
-  link: https://github.com/nodejs/Release
 - version_line: 14.x.x
   name: node
   date: 2023-04-30
@@ -39,22 +35,6 @@ dependency_deprecation_dates:
   date: 2025-04-30
   link: https://github.com/nodejs/Release
 dependencies:
-- name: node
-  version: 12.22.10
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_12.22.10_linux_x64_cflinuxfs3_32d8016a.tgz
-  sha256: 32d8016a198f4c86fcedf7afa749a968d238eca3d91975fe77e76d165c1a04a0
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v12.22.10/node-v12.22.10.tar.gz
-  source_sha256: 1eeec68b530da4aced730e2af9e07a1ced8148337708f37fc8b4eddc3b6dc9e9
-- name: node
-  version: 12.22.12
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_12.22.12_linux_x64_cflinuxfs3_966630ff.tgz
-  sha256: 966630fff803dc6d892763c322b33aab58a4ca2480349f4b7946066693154a3e
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v12.22.12/node-v12.22.12.tar.gz
-  source_sha256: 1a5c52c50185f7c23318e7e8001cc58054736acb98cb8c523d33b136da9e54be
 - name: node
   version: 14.19.2
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_14.19.2_linux_x64_cflinuxfs3_f83287e6.tgz

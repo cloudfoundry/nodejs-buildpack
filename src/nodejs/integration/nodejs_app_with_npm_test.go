@@ -23,9 +23,8 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 
 		It("installs npm", func() {
 			PushAppAndConfirm(app)
+			Expect(app.Stdout.String()).To(ContainSubstring("engines.npm (package.json): ^7"))
 			Expect(app.Stdout.String()).To(ContainSubstring("Downloading and installing npm ^7"))
-			// Make sure "npm install npm" logs
-			Expect(app.Stdout.String()).To(ContainSubstring("npm notice"))
 		})
 	})
 })

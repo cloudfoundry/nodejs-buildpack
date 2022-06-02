@@ -1,7 +1,7 @@
 module github.com/cloudfoundry/nodejs-buildpack
 
 require (
-	github.com/Dynatrace/libbuildpack-dynatrace v1.4.2
+	github.com/Dynatrace/libbuildpack-dynatrace v1.5.0
 	github.com/Masterminds/semver v1.5.0
 	github.com/cloudfoundry/libbuildpack v0.0.0-20220509111721-05ef1d6ca1f1
 	github.com/fsnotify/fsnotify v1.5.1 // indirect

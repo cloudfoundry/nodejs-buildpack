@@ -34,6 +34,10 @@ dependency_deprecation_dates:
   name: node
   date: 2024-04-30
   link: https://github.com/nodejs/Release
+- version_line: 18.x.x
+  name: node
+  date: 2025-04-30
+  link: https://github.com/nodejs/Release
 dependencies:
 - name: node
   version: 12.22.10
@@ -83,6 +87,14 @@ dependencies:
   - cflinuxfs3
   source: https://nodejs.org/dist/v16.15.0/node-v16.15.0.tar.gz
   source_sha256: 38e041b7249afb331663613f860b84b51852efa02b4ebff852f9610bef680d7d
+- name: node
+  version: 18.2.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.2.0_linux_x64_cflinuxfs3_ec58fbf4.tgz
+  sha256: ec58fbf45e03cce9550f633bd597e8976af4c1022a8694260b77f6ad40bf77bd
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v18.2.0/node-v18.2.0.tar.gz
+  source_sha256: bb9c117814341676edbfd7c79cfaaac2d809e760a65fe9afe050245d55bb7ca7
 - name: yarn
   version: 1.22.19
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.19_linux_noarch_any-stack_b005c5ea.tgz

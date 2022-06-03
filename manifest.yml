@@ -68,6 +68,14 @@ dependencies:
   source: https://nodejs.org/dist/v16.15.1/node-v16.15.1.tar.gz
   source_sha256: 308aee7149c4092a53c87c28ef49e23a8d1606119e79ae68333062e2a1f94208
 - name: node
+  version: 18.2.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.2.0_linux_x64_cflinuxfs3_ec58fbf4.tgz
+  sha256: ec58fbf45e03cce9550f633bd597e8976af4c1022a8694260b77f6ad40bf77bd
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v18.2.0/node-v18.2.0.tar.gz
+  source_sha256: bb9c117814341676edbfd7c79cfaaac2d809e760a65fe9afe050245d55bb7ca7
+- name: node
   version: 18.3.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.3.0_linux_x64_cflinuxfs3_e75ee99a.tgz
   sha256: e75ee99a00619219c825578e82f47195556a4a7d9686ee8cc0a918e872ed9235

@@ -1,3 +1,15 @@
+v1.7.71 Jun 08, 2022
+=====================
+
+* Deprecate NodeJS 12.X.X (EOL reached) (#453)
+
+* Add node 14.19.3, remove node 14.19.1 for stack(s) cflinuxfs3
+
+* Add node 16.15.1, remove node 16.14.2 for stack(s) cflinuxfs3
+
+* Add yarn 1.22.19, remove yarn 1.22.18 for stack(s) cflinuxfs3
+
+
 v1.7.70 May 09, 2022
 =====================
 

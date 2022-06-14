@@ -1,4 +1,0 @@
----
-applications:
-- name: logenv
-  memory: 359M

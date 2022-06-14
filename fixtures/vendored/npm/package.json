@@ -1,0 +1,16 @@
+{
+  "name": "node_web_app",
+  "version": "0.0.0",
+  "description": "hello, world",
+  "main": "server.js",
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "leftpad": "~0.0.1",
+    "hashish": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/cloudfoundry/nodejs-buildpack.git"
+  }
+}

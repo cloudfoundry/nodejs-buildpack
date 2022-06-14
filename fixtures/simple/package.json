@@ -1,0 +1,12 @@
+{
+  "name": "simple_app",
+  "version": "0.0.0",
+  "description": "hello, world",
+  "main": "server.js",
+  "license": "Apache 2.0",
+  "repository" :
+  {
+    "type" : "git",
+    "url" : "http://github.com/cloudfoundry/nodejs-buildpack.git"
+  }
+}

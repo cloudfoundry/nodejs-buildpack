@@ -264,9 +264,9 @@ func (h SnykHook) getCredentialsFromService() (bool, SnykCredentials) {
 		return false, SnykCredentials{}
 	}
 
-	for key, services := range vcapServices {
-		if strings.Contains(key, "snyk") {
-			for _, service := range services {
+	for _, services := range vcapServices {
+		for _, service := range services {
+			if strings.Contains(service.Name, "snyk") {
 				apiToken := getCredentialString(service.Credentials, "apiToken")
 				if apiToken != "" {
 					apiUrl := getCredentialString(service.Credentials, "apiUrl")

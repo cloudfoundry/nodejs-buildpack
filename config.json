@@ -4,11 +4,10 @@
     "linux"
   ],
   "integration": {
-    "harness": "ginkgo",
+    "harness": "switchblade",
     "matrix": [
       { "cached": false, "parallel": true },
       { "cached": true, "parallel": true }
     ]
   }
-
 }

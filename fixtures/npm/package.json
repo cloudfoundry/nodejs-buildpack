@@ -1,0 +1,19 @@
+{
+  "name": "node_web_app",
+  "version": "0.0.0",
+  "description": "hello, world",
+  "main": "server.js",
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "logfmt": "~1.1.2",
+    "express": "~4.0.0",
+    "figlet-cli": "^0.1.0",
+    "mysql": "^0.9.1"
+  },
+  "scripts": {
+    "heroku-prebuild": "echo Hello Buildpacks Team > text_1.txt",
+    "heroku-postbuild": "echo Goodbye Buildpacks Team > text_2.txt",
+    "postinstall": "echo \"Current dir: $PWD\""
+  }
+}

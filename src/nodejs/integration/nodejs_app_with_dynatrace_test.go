@@ -280,6 +280,10 @@ var _ = Describe("CF NodeJS Buildpack", func() {
 			_, err = command.CombinedOutput()
 			Expect(err).To(BeNil())
 
+			command = exec.Command("cf", "restage", app.Name)
+			_, err = command.Output()
+			Expect(err).To(BeNil())
+
 			Expect(app.ConfirmBuildpack(buildpackVersion)).To(Succeed())
 			Expect(app.Stdout.String()).To(ContainSubstring("Fetching updated OneAgent configuration from tenant..."))
 			Expect(app.Stdout.String()).To(ContainSubstring("Finished writing updated OneAgent config back to"))

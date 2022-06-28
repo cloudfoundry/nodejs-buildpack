@@ -633,6 +633,11 @@ func (s *Supplier) InstallNode() error {
 		Version: s.NodeVersion,
 	}
 
+	err := setupSSLCertDirectories(s.NodeVersion)
+	if err != nil {
+		return err
+	}
+
 	nodeInstallDir := filepath.Join(s.Stager.DepDir(), "node")
 	if err := s.Installer.InstallDependency(dep, nodeInstallDir); err != nil {
 		return err
@@ -643,6 +648,23 @@ func (s *Supplier) InstallNode() error {
 	}
 
 	return os.Setenv("PATH", fmt.Sprintf("%s:%s", os.Getenv("PATH"), filepath.Join(s.Stager.DepDir(), "bin")))
+}
+
+func setupSSLCertDirectories(version string) error {
+	// NOTE: ensures OpenSSL CA store works with Node v18 and higher. Waiting
+	// for resolution on https://github.com/nodejs/node/issues/43560 to decide
+	// how to properly fix this.
+
+	nodeVersion, err := semver.NewVersion(version)
+	if err != nil {
+		return err
+	}
+
+	if !nodeVersion.LessThan(semver.MustParse("18.0.0")) {
+		os.Setenv("SSL_CERT_DIR", "/etc/ssl/certs")
+	}
+
+	return nil
 }
 
 func (s *Supplier) InstallNPM() error {

@@ -546,6 +546,47 @@ var _ = Describe("Supply", func() {
 				Expect(err).To(BeNil())
 			})
 		})
+
+		Context("Installing Node >=18", func() {
+			It("SSL_CERT_DIR env variable is set", func() {
+				dep := libbuildpack.Dependency{Name: "node", Version: "18.0.0"}
+				mockManifest.EXPECT().DefaultVersion("node").Return(dep, nil)
+				mockManifest.EXPECT().AllDependencyVersions(gomock.Any())
+				mockInstaller.EXPECT().InstallDependency(dep, nodeDir).Do(installNode).Return(nil)
+
+				supplier.NodeVersion = ""
+
+				err = supplier.ChooseNodeVersion()
+				Expect(err).To(BeNil())
+
+				err = supplier.InstallNode()
+				Expect(err).To(BeNil())
+
+				_, SSLEnvironmentVariable := os.LookupEnv("SSL_CERT_DIR")
+				Expect(SSLEnvironmentVariable).To(BeTrue())
+				os.Unsetenv("SSL_CERT_DIR")
+			})
+		})
+
+		Context("Installing Node <18", func() {
+			It("SSL_CERT_DIR env variable is not set", func() {
+				dep := libbuildpack.Dependency{Name: "node", Version: "16.0.0"}
+				mockManifest.EXPECT().DefaultVersion("node").Return(dep, nil)
+				mockManifest.EXPECT().AllDependencyVersions(gomock.Any())
+				mockInstaller.EXPECT().InstallDependency(dep, nodeDir).Do(installNode).Return(nil)
+
+				supplier.NodeVersion = ""
+
+				err = supplier.ChooseNodeVersion()
+				Expect(err).To(BeNil())
+
+				err = supplier.InstallNode()
+				Expect(err).To(BeNil())
+
+				_, SSLEnvironmentVariable := os.LookupEnv("SSL_CERT_DIR")
+				Expect(SSLEnvironmentVariable).To(BeFalse())
+			})
+		})
 	})
 
 	Describe("InstallYarn", func() {

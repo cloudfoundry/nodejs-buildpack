@@ -1348,7 +1348,11 @@ var _ = Describe("Supply", func() {
 		})
 	})
 
-	Describe("CreateDefaultEnv", func() {
+	Describe("CreateDefaultEnv for Node <18", func() {
+		BeforeEach(func() {
+			supplier.NodeVersion = "16.0.0"
+		})
+
 		It("writes an env file for NODE_HOME", func() {
 			err = supplier.CreateDefaultEnv()
 			Expect(err).To(BeNil())
@@ -1417,6 +1421,84 @@ fi
 export PATH=$PATH:"$HOME/bin":$NODE_PATH/.bin
 `
 			Expect(string(contents)).To(ContainSubstring(nodePathString))
+			Expect(string(contents)).To(Not(ContainSubstring("export SSL_CERT_DIR=${SSL_CERT_DIR:-/etc/ssl/certs}")))
+		})
+	})
+
+	Describe("CreateDefaultEnv for Node >=18", func() {
+		BeforeEach(func() {
+			supplier.NodeVersion = "18.0.0"
+		})
+
+		It("writes an env file for NODE_HOME", func() {
+			err = supplier.CreateDefaultEnv()
+			Expect(err).To(BeNil())
+
+			contents, err := ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "env", "NODE_HOME"))
+			Expect(err).To(BeNil())
+
+			Expect(string(contents)).To(Equal(filepath.Join(depsDir, depsIdx, "node")))
+		})
+
+		DescribeTable("environment with default has a value",
+			func(key string, value string) {
+				oldValue := os.Getenv(key)
+				defer os.Setenv(key, oldValue)
+
+				Expect(os.Setenv(key, value)).To(BeNil())
+				Expect(supplier.CreateDefaultEnv()).To(BeNil())
+				Expect(filepath.Join(depsDir, depsIdx, "env", key)).NotTo(BeAnExistingFile())
+			},
+			Entry("NODE_ENV", "NODE_ENV", "anything"),
+			Entry("NPM_CONFIG_PRODUCTION", "NPM_CONFIG_PRODUCTION", "some value"),
+			Entry("NPM_CONFIG_LOGLEVEL", "NPM_CONFIG_LOGLEVEL", "everything"),
+			Entry("NODE_MODULES_CACHE", "NODE_MODULES_CACHE", "false"),
+			Entry("NODE_VERBOSE", "NODE_VERBOSE", "many words"),
+			Entry("WEB_MEMORY", "WEB_MEMORY", "a value"),
+			Entry("WEB_CONCURRENCY", "WEB_CONCURRENCY", "another value"),
+		)
+
+		DescribeTable("environment with default was not set",
+			func(key string, expected string) {
+				oldValue := os.Getenv(key)
+				defer os.Setenv(key, oldValue)
+				Expect(os.Unsetenv(key)).To(BeNil())
+
+				Expect(supplier.CreateDefaultEnv()).To(BeNil())
+				contents, err := ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "env", key))
+				Expect(err).To(BeNil())
+
+				Expect(string(contents)).To(Equal(expected))
+			},
+			Entry("NODE_ENV", "NODE_ENV", "production"),
+			Entry("NPM_CONFIG_PRODUCTION", "NPM_CONFIG_PRODUCTION", "true"),
+			Entry("NPM_CONFIG_LOGLEVEL", "NPM_CONFIG_LOGLEVEL", "error"),
+			Entry("NODE_MODULES_CACHE", "NODE_MODULES_CACHE", "true"),
+			Entry("NODE_VERBOSE", "NODE_VERBOSE", "false"),
+			Entry("WEB_MEMORY", "WEB_MEMORY", "512"),
+			Entry("WEB_CONCURRENCY", "WEB_CONCURRENCY", "1"),
+		)
+
+		It("writes profile.d script for runtime", func() {
+			err = supplier.CreateDefaultEnv()
+			Expect(err).To(BeNil())
+
+			contents, err := ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "node.sh"))
+			Expect(err).To(BeNil())
+
+			Expect(string(contents)).To(ContainSubstring("export NODE_HOME=" + filepath.Join("$DEPS_DIR", depsIdx, "node")))
+			Expect(string(contents)).To(ContainSubstring("export NODE_ENV=${NODE_ENV:-production}"))
+			nodePathString := `
+if [ ! -d "$HOME/node_modules" ]; then
+	export NODE_PATH=${NODE_PATH:-"$DEPS_DIR/14/node_modules"}
+	ln -s "$DEPS_DIR/14/node_modules" "$HOME/node_modules"
+else
+	export NODE_PATH=${NODE_PATH:-"$HOME/node_modules"}
+fi
+export PATH=$PATH:"$HOME/bin":$NODE_PATH/.bin
+`
+			Expect(string(contents)).To(ContainSubstring(nodePathString))
+			Expect(string(contents)).To(ContainSubstring("export SSL_CERT_DIR=${SSL_CERT_DIR:-/etc/ssl/certs}"))
 		})
 	})
 })

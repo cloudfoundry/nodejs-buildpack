@@ -633,9 +633,13 @@ func (s *Supplier) InstallNode() error {
 		Version: s.NodeVersion,
 	}
 
-	err := setupSSLCertDirectories(s.NodeVersion)
+	requiresSSLEnvVars, err := nodeVersionRequiresSSLEnvVars(s.NodeVersion)
 	if err != nil {
 		return err
+	}
+
+	if requiresSSLEnvVars {
+		os.Setenv("SSL_CERT_DIR", "/etc/ssl/certs")
 	}
 
 	nodeInstallDir := filepath.Join(s.Stager.DepDir(), "node")
@@ -650,21 +654,17 @@ func (s *Supplier) InstallNode() error {
 	return os.Setenv("PATH", fmt.Sprintf("%s:%s", os.Getenv("PATH"), filepath.Join(s.Stager.DepDir(), "bin")))
 }
 
-func setupSSLCertDirectories(version string) error {
+func nodeVersionRequiresSSLEnvVars(version string) (bool, error) {
 	// NOTE: ensures OpenSSL CA store works with Node v18 and higher. Waiting
 	// for resolution on https://github.com/nodejs/node/issues/43560 to decide
 	// how to properly fix this.
 
 	nodeVersion, err := semver.NewVersion(version)
 	if err != nil {
-		return err
+		return false, err
 	}
 
-	if !nodeVersion.LessThan(semver.MustParse("18.0.0")) {
-		os.Setenv("SSL_CERT_DIR", "/etc/ssl/certs")
-	}
-
-	return nil
+	return nodeVersion.Major() >= 18, nil
 }
 
 func (s *Supplier) InstallNPM() error {
@@ -764,6 +764,16 @@ else
 fi
 export PATH=$PATH:"$HOME/bin":$NODE_PATH/.bin
 `
+
+	requiresSSLEnvVars, err := nodeVersionRequiresSSLEnvVars(s.NodeVersion)
+	if err != nil {
+		return err
+	}
+
+	if requiresSSLEnvVars {
+		scriptContents += `export SSL_CERT_DIR=${SSL_CERT_DIR:-/etc/ssl/certs}
+`
+	}
 	return s.Stager.WriteProfileD("node.sh",
 		fmt.Sprintf(scriptContents,
 			filepath.Join("$DEPS_DIR", s.Stager.DepsIdx(), "node"),

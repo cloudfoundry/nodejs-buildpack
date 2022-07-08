@@ -1,3 +1,15 @@
+v1.7.72 Jul 08, 2022
+=====================
+
+* Add node 14.20.0, remove node 14.19.2 for stack(s) cflinuxfs3
+
+* Add node 16.16.0, remove node 16.15.0 for stack(s) cflinuxfs3
+
+* Add node 18.5.0 for stack(s) cflinuxfs3
+
+* Setup SSL_CERT_DIR env var inside the app container for Node 18.x (#466)
+
+
 v1.7.71 Jun 08, 2022
 =====================
 

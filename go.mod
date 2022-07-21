@@ -7,8 +7,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/golang/mock v1.6.0
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.19.0
-	golang.org/x/sys v0.0.0-20220329152356-43be30ef3008 // indirect
+	github.com/onsi/gomega v1.20.0
 	gopkg.in/jarcoal/httpmock.v1 v1.0.0-20181117152235-275e9df93516
 )
 

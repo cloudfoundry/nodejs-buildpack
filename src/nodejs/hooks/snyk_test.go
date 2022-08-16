@@ -263,7 +263,7 @@ var _ = Describe("snykHook", func() {
 			BeforeEach(func() {
 				os.Setenv("VCAP_SERVICES", `{
 						"0": [{"name":"mysql"}],
-						"1": [{"name":"snyk","credentials":{"apiToken":"SECRET_TOKEN"}}],
+						"1": [{"name":"something","credentials":{"apiToken":"SECRET_TOKEN"}}],
 						"2": [{"name":"redis"}]
 					}`)
 				os.Setenv("SNYK_TOKEN", "")

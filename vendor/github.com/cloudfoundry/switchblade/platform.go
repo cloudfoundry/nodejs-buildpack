@@ -27,6 +27,7 @@ type Platform struct {
 
 type DeployProcess interface {
 	WithBuildpacks(buildpacks ...string) DeployProcess
+	WithStack(stack string) DeployProcess
 	WithEnv(env map[string]string) DeployProcess
 	WithoutInternetAccess() DeployProcess
 	WithServices(map[string]Service) DeployProcess
@@ -47,7 +48,7 @@ const (
 	Docker       = "docker"
 )
 
-func NewPlatform(platformType, token string) (Platform, error) {
+func NewPlatform(platformType, token, stack string) (Platform, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return Platform{}, err
@@ -58,7 +59,7 @@ func NewPlatform(platformType, token string) (Platform, error) {
 		cli := pexec.NewExecutable("cf")
 
 		initialize := cloudfoundry.NewInitialize(cli)
-		setup := cloudfoundry.NewSetup(cli, filepath.Join(home, ".cf"))
+		setup := cloudfoundry.NewSetup(cli, filepath.Join(home, ".cf"), stack)
 		stage := cloudfoundry.NewStage(cli)
 		teardown := cloudfoundry.NewTeardown(cli)
 
@@ -80,9 +81,9 @@ func NewPlatform(platformType, token string) (Platform, error) {
 		networkManager := docker.NewNetworkManager(client)
 
 		initialize := docker.NewInitialize(buildpacksRegistry)
-		setup := docker.NewSetup(client, lifecycleManager, buildpacksManager, archiver, networkManager, workspace)
+		setup := docker.NewSetup(client, lifecycleManager, buildpacksManager, archiver, networkManager, workspace, stack)
 		stage := docker.NewStage(client, archiver, workspace)
-		start := docker.NewStart(client, networkManager, workspace)
+		start := docker.NewStart(client, networkManager, workspace, stack)
 		teardown := docker.NewTeardown(client, networkManager, workspace)
 
 		return NewDocker(initialize, setup, stage, start, teardown), nil

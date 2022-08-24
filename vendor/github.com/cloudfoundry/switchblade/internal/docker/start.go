@@ -18,6 +18,7 @@ import (
 
 type StartPhase interface {
 	Run(ctx context.Context, logs io.Writer, name, command string) (externalURL, internalURL string, err error)
+	WithStack(stack string) StartPhase
 	WithEnv(env map[string]string) StartPhase
 	WithServices(services map[string]map[string]interface{}) StartPhase
 }
@@ -39,15 +40,17 @@ type Start struct {
 	client    StartClient
 	networks  StartNetworkManager
 	workspace string
+	stack     string
 	env       map[string]string
 	services  map[string]map[string]interface{}
 }
 
-func NewStart(client StartClient, networks StartNetworkManager, workspace string) Start {
+func NewStart(client StartClient, networks StartNetworkManager, workspace, stack string) Start {
 	return Start{
 		client:    client,
 		networks:  networks,
 		workspace: workspace,
+		stack:     stack,
 	}
 }
 
@@ -91,7 +94,7 @@ func (s Start) Run(ctx context.Context, logs io.Writer, name, command string) (s
 	}
 
 	containerConfig := container.Config{
-		Image: CFLinuxFS3DockerImage,
+		Image: fmt.Sprintf("cloudfoundry/%s:latest", s.stack),
 		Cmd: []string{
 			"/tmp/lifecycle/launcher",
 			"app",
@@ -168,6 +171,11 @@ func (s Start) Run(ctx context.Context, logs io.Writer, name, command string) (s
 	}
 
 	return externalURL, internalURL, nil
+}
+
+func (s Start) WithStack(stack string) StartPhase {
+	s.stack = stack
+	return s
 }
 
 func (s Start) WithEnv(env map[string]string) StartPhase {

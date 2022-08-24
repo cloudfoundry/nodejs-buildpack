@@ -20,6 +20,7 @@ type SetupPhase interface {
 	Run(logs io.Writer, home, name, source string) (url string, err error)
 
 	WithBuildpacks(buildpacks ...string) SetupPhase
+	WithStack(stack string) SetupPhase
 	WithEnv(env map[string]string) SetupPhase
 	WithoutInternetAccess() SetupPhase
 	WithServices(services map[string]map[string]interface{}) SetupPhase
@@ -31,22 +32,29 @@ type Setup struct {
 
 	internetAccess bool
 	buildpacks     []string
+	stack          string
 	env            map[string]string
 	services       map[string]map[string]interface{}
 	lookupHost     func(string) ([]string, error)
 }
 
-func NewSetup(cli Executable, home string) Setup {
+func NewSetup(cli Executable, home, stack string) Setup {
 	return Setup{
 		cli:            cli,
 		home:           home,
 		internetAccess: true,
 		lookupHost:     net.LookupHost,
+		stack:          stack,
 	}
 }
 
 func (s Setup) WithBuildpacks(buildpacks ...string) SetupPhase {
 	s.buildpacks = buildpacks
+	return s
+}
+
+func (s Setup) WithStack(stack string) SetupPhase {
+	s.stack = stack
 	return s
 }
 
@@ -309,7 +317,7 @@ func (s Setup) Run(log io.Writer, home, name, source string) (string, error) {
 		}
 	}
 
-	args := []string{"push", name, "-p", source, "--no-start"}
+	args := []string{"push", name, "-p", source, "--no-start", "-s", s.stack}
 	for _, buildpack := range s.buildpacks {
 		args = append(args, "-b", buildpack)
 	}

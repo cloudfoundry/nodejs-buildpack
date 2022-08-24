@@ -48,6 +48,11 @@ func (p cloudFoundryDeployProcess) WithBuildpacks(buildpacks ...string) DeployPr
 	return p
 }
 
+func (p cloudFoundryDeployProcess) WithStack(stack string) DeployProcess {
+	p.setup = p.setup.WithStack(stack)
+	return p
+}
+
 func (p cloudFoundryDeployProcess) WithEnv(env map[string]string) DeployProcess {
 	p.setup = p.setup.WithEnv(env)
 	return p

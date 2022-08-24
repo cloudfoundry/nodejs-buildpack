@@ -52,7 +52,7 @@ func TestIntegration(t *testing.T) {
 
 	fixtures := filepath.Join(root, "fixtures")
 
-	platform, err := switchblade.NewPlatform(settings.Platform, settings.GitHubToken)
+	platform, err := switchblade.NewPlatform(settings.Platform, settings.GitHubToken, settings.Stack)
 	Expect(err).NotTo(HaveOccurred())
 
 	err = platform.Initialize(

@@ -18,16 +18,15 @@ import (
 )
 
 const (
-	CFLinuxFS3DockerImage        = "cloudfoundry/cflinuxfs3:latest"
 	BuildpackAppLifecycleRepoURL = "https://github.com/cloudfoundry/buildpackapplifecycle/archive/refs/heads/master.zip"
-
-	InternalNetworkName = "switchblade-internal"
-	BridgeNetworkName   = "bridge"
+	InternalNetworkName          = "switchblade-internal"
+	BridgeNetworkName            = "bridge"
 )
 
 type SetupPhase interface {
 	Run(ctx context.Context, logs io.Writer, name, path string) (containerID string, err error)
 	WithBuildpacks(buildpacks ...string) SetupPhase
+	WithStack(stack string) SetupPhase
 	WithEnv(env map[string]string) SetupPhase
 	WithoutInternetAccess() SetupPhase
 	WithServices(services map[string]map[string]interface{}) SetupPhase
@@ -71,6 +70,7 @@ type Setup struct {
 	lifecycle          LifecycleBuilder
 	archiver           Archiver
 	buildpacks         BuildpacksBuilder
+	stack              string
 	networks           SetupNetworkManager
 	workspace          string
 	env                map[string]string
@@ -78,10 +78,11 @@ type Setup struct {
 	services           map[string]map[string]interface{}
 }
 
-func NewSetup(client SetupClient, lifecycle LifecycleBuilder, buildpacks BuildpacksBuilder, archiver Archiver, networks SetupNetworkManager, workspace string) Setup {
+func NewSetup(client SetupClient, lifecycle LifecycleBuilder, buildpacks BuildpacksBuilder, archiver Archiver, networks SetupNetworkManager, workspace, stack string) Setup {
 	return Setup{
 		client:     client,
 		lifecycle:  lifecycle,
+		stack:      stack,
 		buildpacks: buildpacks,
 		archiver:   archiver,
 		networks:   networks,
@@ -106,7 +107,7 @@ func (s Setup) Run(ctx context.Context, logs io.Writer, name, path string) (stri
 		return "", fmt.Errorf("failed to archive source code: %w", err)
 	}
 
-	pullLogs, err := s.client.ImagePull(ctx, CFLinuxFS3DockerImage, types.ImagePullOptions{})
+	pullLogs, err := s.client.ImagePull(ctx, fmt.Sprintf("cloudfoundry/%s:latest", s.stack), types.ImagePullOptions{})
 	if err != nil {
 		return "", fmt.Errorf("failed to pull base image: %w", err)
 	}
@@ -122,7 +123,7 @@ func (s Setup) Run(ctx context.Context, logs io.Writer, name, path string) (stri
 		return "", fmt.Errorf("failed to create network: %w", err)
 	}
 
-	env := []string{"CF_STACK=cflinuxfs3"}
+	env := []string{fmt.Sprintf("CF_STACK=%s", s.stack)}
 	for key, value := range s.env {
 		env = append(env, fmt.Sprintf("%s=%s", key, value))
 	}
@@ -171,7 +172,7 @@ func (s Setup) Run(ctx context.Context, logs io.Writer, name, path string) (stri
 	}
 
 	containerConfig := container.Config{
-		Image: CFLinuxFS3DockerImage,
+		Image: fmt.Sprintf("cloudfoundry/%s:latest", s.stack),
 		Cmd: []string{
 			"/tmp/lifecycle/builder",
 			"--buildArtifactsCacheDir=/tmp/cache",
@@ -234,6 +235,11 @@ func (s Setup) Run(ctx context.Context, logs io.Writer, name, path string) (stri
 
 func (s Setup) WithBuildpacks(buildpacks ...string) SetupPhase {
 	s.buildpacks = s.buildpacks.WithBuildpacks(buildpacks...)
+	return s
+}
+
+func (s Setup) WithStack(stack string) SetupPhase {
+	s.stack = stack
 	return s
 }
 

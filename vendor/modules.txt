@@ -18,7 +18,7 @@ github.com/cloudfoundry/libbuildpack/cutlass
 github.com/cloudfoundry/libbuildpack/cutlass/docker
 github.com/cloudfoundry/libbuildpack/cutlass/glow
 github.com/cloudfoundry/libbuildpack/packager
-# github.com/cloudfoundry/switchblade v0.0.6
+# github.com/cloudfoundry/switchblade v0.1.0
 github.com/cloudfoundry/switchblade
 github.com/cloudfoundry/switchblade/internal/cloudfoundry
 github.com/cloudfoundry/switchblade/internal/docker
@@ -56,7 +56,7 @@ github.com/docker/go-units
 github.com/elazarl/goproxy
 # github.com/fsnotify/fsnotify v1.5.4
 github.com/fsnotify/fsnotify
-# github.com/gabriel-vasile/mimetype v1.4.0
+# github.com/gabriel-vasile/mimetype v1.4.1
 github.com/gabriel-vasile/mimetype
 github.com/gabriel-vasile/mimetype/internal/charset
 github.com/gabriel-vasile/mimetype/internal/json
@@ -117,7 +117,7 @@ github.com/opencontainers/image-spec/specs-go
 github.com/opencontainers/image-spec/specs-go/v1
 # github.com/paketo-buildpacks/packit v1.3.1
 github.com/paketo-buildpacks/packit/pexec
-# github.com/paketo-buildpacks/packit/v2 v2.3.1
+# github.com/paketo-buildpacks/packit/v2 v2.4.1
 github.com/paketo-buildpacks/packit/v2/fs
 github.com/paketo-buildpacks/packit/v2/pexec
 github.com/paketo-buildpacks/packit/v2/vacation
@@ -141,13 +141,13 @@ github.com/ulikunitz/xz
 github.com/ulikunitz/xz/internal/hash
 github.com/ulikunitz/xz/internal/xlog
 github.com/ulikunitz/xz/lzma
-# golang.org/x/net v0.0.0-20220621193019-9d032be2e588
+# golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
 golang.org/x/net/internal/socks
 golang.org/x/net/proxy
-# golang.org/x/sys v0.0.0-20220622161953-175b2fd9d664
+# golang.org/x/sys v0.0.0-20220624220833-87e55d714810
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows

@@ -51,6 +51,12 @@ func (p dockerDeployProcess) WithBuildpacks(buildpacks ...string) DeployProcess 
 	return p
 }
 
+func (p dockerDeployProcess) WithStack(stack string) DeployProcess {
+	p.setup = p.setup.WithStack(stack)
+	p.start = p.start.WithStack(stack)
+	return p
+}
+
 func (p dockerDeployProcess) WithEnv(env map[string]string) DeployProcess {
 	p.setup = p.setup.WithEnv(env)
 	p.start = p.start.WithEnv(env)

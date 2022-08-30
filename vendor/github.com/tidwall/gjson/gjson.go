@@ -2,7 +2,6 @@
 package gjson
 
 import (
-	"encoding/json"
 	"strconv"
 	"strings"
 	"time"
@@ -214,6 +213,11 @@ func (t Result) IsArray() bool {
 	return t.Type == JSON && len(t.Raw) > 0 && t.Raw[0] == '['
 }
 
+// IsBool returns true if the result value is a JSON boolean.
+func (t Result) IsBool() bool {
+	return t.Type == True || t.Type == False
+}
+
 // ForEach iterates through values.
 // If the result represents a non-existent value, then no values will be
 // iterated. If the result is an Object, the iterator will pass the key and
@@ -229,17 +233,19 @@ func (t Result) ForEach(iterator func(key, value Result) bool) {
 		return
 	}
 	json := t.Raw
-	var keys bool
+	var obj bool
 	var i int
 	var key, value Result
 	for ; i < len(json); i++ {
 		if json[i] == '{' {
 			i++
 			key.Type = String
-			keys = true
+			obj = true
 			break
 		} else if json[i] == '[' {
 			i++
+			key.Type = Number
+			key.Num = -1
 			break
 		}
 		if json[i] > ' ' {
@@ -251,7 +257,7 @@ func (t Result) ForEach(iterator func(key, value Result) bool) {
 	var ok bool
 	var idx int
 	for ; i < len(json); i++ {
-		if keys {
+		if obj {
 			if json[i] != '"' {
 				continue
 			}
@@ -267,6 +273,8 @@ func (t Result) ForEach(iterator func(key, value Result) bool) {
 			}
 			key.Raw = str
 			key.Index = s + t.Index
+		} else {
+			key.Num += 1
 		}
 		for ; i < len(json); i++ {
 			if json[i] <= ' ' || json[i] == ',' || json[i] == ':' {
@@ -767,7 +775,7 @@ func parseArrayPath(path string) (r arrayPathResult) {
 		}
 		if path[i] == '.' {
 			r.part = path[:i]
-			if !r.arrch && i < len(path)-1 && isDotPiperChar(path[i+1]) {
+			if !r.arrch && i < len(path)-1 && isDotPiperChar(path[i+1:]) {
 				r.pipe = path[i+1:]
 				r.piped = true
 			} else {
@@ -928,8 +936,23 @@ right:
 }
 
 // peek at the next byte and see if it's a '@', '[', or '{'.
-func isDotPiperChar(c byte) bool {
-	return !DisableModifiers && (c == '@' || c == '[' || c == '{')
+func isDotPiperChar(s string) bool {
+	if DisableModifiers {
+		return false
+	}
+	c := s[0]
+	if c == '@' {
+		// check that the next component is *not* a modifier.
+		i := 1
+		for ; i < len(s); i++ {
+			if s[i] == '.' || s[i] == '|' || s[i] == ':' {
+				break
+			}
+		}
+		_, ok := modifiers[s[1:i]]
+		return ok
+	}
+	return c == '[' || c == '{'
 }
 
 type objectPathResult struct {
@@ -951,7 +974,7 @@ func parseObjectPath(path string) (r objectPathResult) {
 		}
 		if path[i] == '.' {
 			r.part = path[:i]
-			if i < len(path)-1 && isDotPiperChar(path[i+1]) {
+			if i < len(path)-1 && isDotPiperChar(path[i+1:]) {
 				r.pipe = path[i+1:]
 				r.piped = true
 			} else {
@@ -981,7 +1004,7 @@ func parseObjectPath(path string) (r objectPathResult) {
 						continue
 					} else if path[i] == '.' {
 						r.part = string(epart)
-						if i < len(path)-1 && isDotPiperChar(path[i+1]) {
+						if i < len(path)-1 && isDotPiperChar(path[i+1:]) {
 							r.pipe = path[i+1:]
 							r.piped = true
 						} else {
@@ -1815,17 +1838,64 @@ func isSimpleName(component string) bool {
 	return true
 }
 
-func appendJSONString(dst []byte, s string) []byte {
+var hexchars = [...]byte{
+	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+	'a', 'b', 'c', 'd', 'e', 'f',
+}
+
+func appendHex16(dst []byte, x uint16) []byte {
+	return append(dst,
+		hexchars[x>>12&0xF], hexchars[x>>8&0xF],
+		hexchars[x>>4&0xF], hexchars[x>>0&0xF],
+	)
+}
+
+// AppendJSONString is a convenience function that converts the provided string
+// to a valid JSON string and appends it to dst.
+func AppendJSONString(dst []byte, s string) []byte {
+	dst = append(dst, make([]byte, len(s)+2)...)
+	dst = append(dst[:len(dst)-len(s)-2], '"')
 	for i := 0; i < len(s); i++ {
-		if s[i] < ' ' || s[i] == '\\' || s[i] == '"' || s[i] > 126 {
-			d, _ := json.Marshal(s)
-			return append(dst, string(d)...)
+		if s[i] < ' ' {
+			dst = append(dst, '\\')
+			switch s[i] {
+			case '\n':
+				dst = append(dst, 'n')
+			case '\r':
+				dst = append(dst, 'r')
+			case '\t':
+				dst = append(dst, 't')
+			default:
+				dst = append(dst, 'u')
+				dst = appendHex16(dst, uint16(s[i]))
+			}
+		} else if s[i] == '>' || s[i] == '<' || s[i] == '&' {
+			dst = append(dst, '\\', 'u')
+			dst = appendHex16(dst, uint16(s[i]))
+		} else if s[i] == '\\' {
+			dst = append(dst, '\\', '\\')
+		} else if s[i] == '"' {
+			dst = append(dst, '\\', '"')
+		} else if s[i] > 127 {
+			// read utf8 character
+			r, n := utf8.DecodeRuneInString(s[i:])
+			if n == 0 {
+				break
+			}
+			if r == utf8.RuneError && n == 1 {
+				dst = append(dst, `\ufffd`...)
+			} else if r == '\u2028' || r == '\u2029' {
+				dst = append(dst, `\u202`...)
+				dst = append(dst, hexchars[r&0xF])
+			} else {
+				dst = append(dst, s[i:i+n]...)
+			}
+			i = i + n - 1
+		} else {
+			dst = append(dst, s[i])
 		}
 	}
-	dst = append(dst, '"')
-	dst = append(dst, s...)
-	dst = append(dst, '"')
-	return dst
+	return append(dst, '"')
 }
 
 type parseContext struct {
@@ -1915,14 +1985,14 @@ func Get(json, path string) Result {
 									if sub.name[0] == '"' && Valid(sub.name) {
 										b = append(b, sub.name...)
 									} else {
-										b = appendJSONString(b, sub.name)
+										b = AppendJSONString(b, sub.name)
 									}
 								} else {
 									last := nameOfLast(sub.path)
 									if isSimpleName(last) {
-										b = appendJSONString(b, last)
+										b = AppendJSONString(b, last)
 									} else {
-										b = appendJSONString(b, "_")
+										b = AppendJSONString(b, "_")
 									}
 								}
 								b = append(b, ':')
@@ -2665,6 +2735,9 @@ var modifiers = map[string]func(json, arg string) string{
 	"valid":   modValid,
 	"keys":    modKeys,
 	"values":  modValues,
+	"tostr":   modToStr,
+	"fromstr": modFromStr,
+	"group":   modGroup,
 }
 
 // AddModifier binds a custom modifier command to the GJSON syntax.
@@ -2950,6 +3023,56 @@ func modValid(json, arg string) string {
 	return json
 }
 
+// @fromstr converts a string to json
+//   "{\"id\":1023,\"name\":\"alert\"}" -> {"id":1023,"name":"alert"}
+func modFromStr(json, arg string) string {
+	if !Valid(json) {
+		return ""
+	}
+	return Parse(json).String()
+}
+
+// @tostr converts a string to json
+//   {"id":1023,"name":"alert"} -> "{\"id\":1023,\"name\":\"alert\"}"
+func modToStr(str, arg string) string {
+	return string(AppendJSONString(nil, str))
+}
+
+func modGroup(json, arg string) string {
+	res := Parse(json)
+	if !res.IsObject() {
+		return ""
+	}
+	var all [][]byte
+	res.ForEach(func(key, value Result) bool {
+		if !value.IsArray() {
+			return true
+		}
+		var idx int
+		value.ForEach(func(_, value Result) bool {
+			if idx == len(all) {
+				all = append(all, []byte{})
+			}
+			all[idx] = append(all[idx], ("," + key.Raw + ":" + value.Raw)...)
+			idx++
+			return true
+		})
+		return true
+	})
+	var data []byte
+	data = append(data, '[')
+	for i, item := range all {
+		if i > 0 {
+			data = append(data, ',')
+		}
+		data = append(data, '{')
+		data = append(data, item[1:]...)
+		data = append(data, '}')
+	}
+	data = append(data, ']')
+	return string(data)
+}
+
 // stringHeader instead of reflect.StringHeader
 type stringHeader struct {
 	data unsafe.Pointer
@@ -3084,6 +3207,20 @@ func revSquash(json string) string {
 	return json
 }
 
+// Paths returns the original GJSON paths for a Result where the Result came
+// from a simple query path that returns an array, like:
+//
+//    gjson.Get(json, "friends.#.first")
+//
+// The returned value will be in the form of a JSON array:
+//
+//    ["friends.0.first","friends.1.first","friends.2.first"]
+//
+// The param 'json' must be the original JSON used when calling Get.
+//
+// Returns an empty string if the paths cannot be determined, which can happen
+// when the Result came from a path that contained a multipath, modifier,
+// or a nested query.
 func (t Result) Paths(json string) []string {
 	if t.Indexes == nil {
 		return nil
@@ -3099,8 +3236,20 @@ func (t Result) Paths(json string) []string {
 	return paths
 }
 
-// Path returns the original GJSON path for Result.
-// The json param must be the original JSON used when calling Get.
+// Path returns the original GJSON path for a Result where the Result came
+// from a simple path that returns a single value, like:
+//
+//    gjson.Get(json, "friends.#(last=Murphy)")
+//
+// The returned value will be in the form of a JSON string:
+//
+//    "friends.0"
+//
+// The param 'json' must be the original JSON used when calling Get.
+//
+// Returns an empty string if the paths cannot be determined, which can happen
+// when the Result came from a path that contained a multipath, modifier,
+// or a nested query.
 func (t Result) Path(json string) string {
 	var path []byte
 	var comps []string // raw components

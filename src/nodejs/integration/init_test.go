@@ -70,16 +70,29 @@ func TestIntegration(t *testing.T) {
 	proxyName, err := switchblade.RandomName()
 	Expect(err).NotTo(HaveOccurred())
 
-	proxyDeployment, _, err := platform.Deploy.
-		WithBuildpacks("go_buildpack").
+	proxyDeploymentProcess := platform.Deploy.WithBuildpacks("go_buildpack")
+
+	// TODO: remove this once go-buildpack runs on cflinuxfs4
+	// This is done to have the proxy app written in go up and running
+	if settings.Stack == "cflinuxfs4" {
+		proxyDeploymentProcess = proxyDeploymentProcess.WithStack("cflinuxfs3")
+	}
+
+	proxyDeployment, _, err := proxyDeploymentProcess.
 		Execute(proxyName, filepath.Join(fixtures, "util", "proxy"))
 	Expect(err).NotTo(HaveOccurred())
 
 	dynatraceName, err := switchblade.RandomName()
 	Expect(err).NotTo(HaveOccurred())
 
-	dynatraceDeployment, _, err := platform.Deploy.
-		WithBuildpacks("go_buildpack").
+	dynatraceDeploymentProcess := platform.Deploy.WithBuildpacks("go_buildpack")
+
+	// TODO: remove this once go-buildpack runs on cflinuxfs4
+	// This is done to have the dynatrace broker app app written in go up and running
+	if settings.Stack == "cflinuxfs4" {
+		dynatraceDeploymentProcess = dynatraceDeploymentProcess.WithStack("cflinuxfs3")
+	}
+	dynatraceDeployment, _, err := dynatraceDeploymentProcess.
 		Execute(dynatraceName, filepath.Join(fixtures, "util", "dynatrace"))
 	Expect(err).NotTo(HaveOccurred())
 

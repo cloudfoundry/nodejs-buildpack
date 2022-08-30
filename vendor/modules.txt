@@ -1,15 +1,18 @@
 # code.cloudfoundry.org/lager v2.0.0+incompatible
 code.cloudfoundry.org/lager
 # github.com/Dynatrace/libbuildpack-dynatrace v1.5.0
+## explicit
 github.com/Dynatrace/libbuildpack-dynatrace
 # github.com/Masterminds/semver v1.5.0
+## explicit
 github.com/Masterminds/semver
 # github.com/Microsoft/go-winio v0.5.2
 github.com/Microsoft/go-winio
 github.com/Microsoft/go-winio/pkg/guid
 # github.com/blang/semver v3.5.1+incompatible
 github.com/blang/semver
-# github.com/cloudfoundry/libbuildpack v0.0.0-20220804222252-e1c63184ec31
+# github.com/cloudfoundry/libbuildpack v0.0.0-20220829111556-28a205221ec0
+## explicit
 github.com/cloudfoundry/libbuildpack
 github.com/cloudfoundry/libbuildpack/ansicleaner
 github.com/cloudfoundry/libbuildpack/bratshelper
@@ -19,6 +22,7 @@ github.com/cloudfoundry/libbuildpack/cutlass/docker
 github.com/cloudfoundry/libbuildpack/cutlass/glow
 github.com/cloudfoundry/libbuildpack/packager
 # github.com/cloudfoundry/switchblade v0.1.0
+## explicit
 github.com/cloudfoundry/switchblade
 github.com/cloudfoundry/switchblade/internal/cloudfoundry
 github.com/cloudfoundry/switchblade/internal/docker
@@ -52,7 +56,8 @@ github.com/docker/go-connections/sockets
 github.com/docker/go-connections/tlsconfig
 # github.com/docker/go-units v0.4.0
 github.com/docker/go-units
-# github.com/elazarl/goproxy v0.0.0-20190911111923-ecfe977594f1
+# github.com/elazarl/goproxy v0.0.0-20220529153421-8ea89ba92021
+## explicit
 github.com/elazarl/goproxy
 # github.com/fsnotify/fsnotify v1.5.4
 github.com/fsnotify/fsnotify
@@ -64,6 +69,7 @@ github.com/gabriel-vasile/mimetype/internal/magic
 # github.com/gogo/protobuf v1.3.2
 github.com/gogo/protobuf/proto
 # github.com/golang/mock v1.6.0
+## explicit
 github.com/golang/mock/gomock
 # github.com/google/go-cmp v0.5.8
 github.com/google/go-cmp/cmp
@@ -78,6 +84,7 @@ github.com/nxadm/tail/util
 github.com/nxadm/tail/watch
 github.com/nxadm/tail/winfile
 # github.com/onsi/ginkgo v1.16.5
+## explicit
 github.com/onsi/ginkgo
 github.com/onsi/ginkgo/config
 github.com/onsi/ginkgo/extensions/table
@@ -100,6 +107,7 @@ github.com/onsi/ginkgo/reporters/stenographer/support/go-colorable
 github.com/onsi/ginkgo/reporters/stenographer/support/go-isatty
 github.com/onsi/ginkgo/types
 # github.com/onsi/gomega v1.20.1
+## explicit
 github.com/onsi/gomega
 github.com/onsi/gomega/format
 github.com/onsi/gomega/internal
@@ -117,20 +125,25 @@ github.com/opencontainers/image-spec/specs-go
 github.com/opencontainers/image-spec/specs-go/v1
 # github.com/paketo-buildpacks/packit v1.3.1
 github.com/paketo-buildpacks/packit/pexec
-# github.com/paketo-buildpacks/packit/v2 v2.4.1
+# github.com/paketo-buildpacks/packit/v2 v2.4.2
+## explicit
 github.com/paketo-buildpacks/packit/v2/fs
 github.com/paketo-buildpacks/packit/v2/pexec
 github.com/paketo-buildpacks/packit/v2/vacation
 # github.com/pkg/errors v0.9.1
 github.com/pkg/errors
 # github.com/sclevine/spec v1.4.0
+## explicit
 github.com/sclevine/spec
 github.com/sclevine/spec/report
-# github.com/sirupsen/logrus v1.8.1
+# github.com/sirupsen/logrus v1.9.0
+## explicit
 github.com/sirupsen/logrus
 # github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
+## explicit
 github.com/teris-io/shortid
-# github.com/tidwall/gjson v1.12.0
+# github.com/tidwall/gjson v1.14.3
+## explicit
 github.com/tidwall/gjson
 # github.com/tidwall/match v1.1.1
 github.com/tidwall/match
@@ -141,13 +154,15 @@ github.com/ulikunitz/xz
 github.com/ulikunitz/xz/internal/hash
 github.com/ulikunitz/xz/internal/xlog
 github.com/ulikunitz/xz/lzma
-# golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e
+# golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b
+## explicit
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
 golang.org/x/net/internal/socks
 golang.org/x/net/proxy
-# golang.org/x/sys v0.0.0-20220624220833-87e55d714810
+# golang.org/x/sys v0.0.0-20220825204002-c680a09ffe64
+## explicit
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
@@ -170,6 +185,7 @@ golang.org/x/text/language
 golang.org/x/text/runes
 golang.org/x/text/transform
 # gopkg.in/jarcoal/httpmock.v1 v1.0.0-20181117152235-275e9df93516
+## explicit
 gopkg.in/jarcoal/httpmock.v1
 # gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7
 gopkg.in/tomb.v1

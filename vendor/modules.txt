@@ -21,7 +21,7 @@ github.com/cloudfoundry/libbuildpack/cutlass
 github.com/cloudfoundry/libbuildpack/cutlass/docker
 github.com/cloudfoundry/libbuildpack/cutlass/glow
 github.com/cloudfoundry/libbuildpack/packager
-# github.com/cloudfoundry/switchblade v0.1.0
+# github.com/cloudfoundry/switchblade v0.1.1
 ## explicit
 github.com/cloudfoundry/switchblade
 github.com/cloudfoundry/switchblade/internal/cloudfoundry
@@ -126,7 +126,6 @@ github.com/opencontainers/image-spec/specs-go/v1
 # github.com/paketo-buildpacks/packit v1.3.1
 github.com/paketo-buildpacks/packit/pexec
 # github.com/paketo-buildpacks/packit/v2 v2.4.2
-## explicit
 github.com/paketo-buildpacks/packit/v2/fs
 github.com/paketo-buildpacks/packit/v2/pexec
 github.com/paketo-buildpacks/packit/v2/vacation

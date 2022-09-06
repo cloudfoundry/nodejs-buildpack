@@ -4,12 +4,11 @@ require (
 	github.com/Dynatrace/libbuildpack-dynatrace v1.5.0
 	github.com/Masterminds/semver v1.5.0
 	github.com/cloudfoundry/libbuildpack v0.0.0-20220829111556-28a205221ec0
-	github.com/cloudfoundry/switchblade v0.1.0
+	github.com/cloudfoundry/switchblade v0.1.1
 	github.com/elazarl/goproxy v0.0.0-20220529153421-8ea89ba92021 // indirect
 	github.com/golang/mock v1.6.0
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.20.2
-	github.com/paketo-buildpacks/packit/v2 v2.4.2 // indirect
 	github.com/sclevine/spec v1.4.0
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569 // indirect

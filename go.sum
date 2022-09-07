@@ -478,8 +478,8 @@ github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDk
 github.com/cloudfoundry/libbuildpack v0.0.0-20181224210246-78d931650f60/go.mod h1:KeoPc96Iq+nQVhfgjoVN3tNHT0P2NjGCYzCezJi5OW4=
 github.com/cloudfoundry/libbuildpack v0.0.0-20220829111556-28a205221ec0 h1:DLADCOKXxHePyvtAe8KILJVpyI5+5UlQ09hGSFCFH0E=
 github.com/cloudfoundry/libbuildpack v0.0.0-20220829111556-28a205221ec0/go.mod h1:atnYa7VnaYD4OGMwM/XU6Th3LPHGo6nWC/G3oHARTUA=
-github.com/cloudfoundry/switchblade v0.1.0 h1:SrrU6II7jIL1ruNvc4zXT7E5gQgSh895+3rInEuuc9k=
-github.com/cloudfoundry/switchblade v0.1.0/go.mod h1:0WZkWevMt+A/UzaTVufq/TyjPywu1ZmLdY2fq1kOEtg=
+github.com/cloudfoundry/switchblade v0.1.1 h1:YfEMZ/BvOPaYEe32mE99GMoS19sXbTG8OqT3iGbB8o4=
+github.com/cloudfoundry/switchblade v0.1.1/go.mod h1:AFMiiCIrEVa+bHPH5N/mSHQgbNAwN0F8cAH7ZshYyfI=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
 github.com/cncf/udpa/go v0.0.0-20200629203442-efcf912fb354/go.mod h1:WmhPx2Nbnhtbo57+VJT5O0JRkEi1Wbu0z5j0R8u5Hbk=
 github.com/cncf/udpa/go v0.0.0-20201120205902-5459f2c99403/go.mod h1:WmhPx2Nbnhtbo57+VJT5O0JRkEi1Wbu0z5j0R8u5Hbk=
@@ -1842,7 +1842,6 @@ github.com/otiai10/mint v1.3.1/go.mod h1:/yxELlJQ0ufhjUwhshSj+wFjZ78CnZ48/1wtmBH
 github.com/pact-foundation/pact-go v1.0.4/go.mod h1:uExwJY4kCzNPcHRj+hCR/HBbOOIwwtUjcrb0b5/5kLM=
 github.com/paketo-buildpacks/packit v1.3.1 h1:DJAfqsDadRllr/OPYDONxJEOHbYUMWE1NIPPArq4b7w=
 github.com/paketo-buildpacks/packit v1.3.1/go.mod h1:v0jVFr3GNcM9JDwwuIAzYNV4Le1L728uMSNhjUybXVA=
-github.com/paketo-buildpacks/packit/v2 v2.4.1/go.mod h1:S3hEv6hkgHker/agOOAsnCFWljfriAdExzEyadgsOFw=
 github.com/paketo-buildpacks/packit/v2 v2.4.2 h1:5RihMUOYdFB7ejQl02/SY9Co6I3Ll9Z2oDwom5Ws2zw=
 github.com/paketo-buildpacks/packit/v2 v2.4.2/go.mod h1:S3hEv6hkgHker/agOOAsnCFWljfriAdExzEyadgsOFw=
 github.com/pascaldekloe/goe v0.0.0-20180627143212-57f6aae5913c/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=

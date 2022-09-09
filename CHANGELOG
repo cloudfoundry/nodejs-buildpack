@@ -1,3 +1,17 @@
+v1.7.74 Sep 09, 2022
+=====================
+
+* Add node 14.20.0 for stack(s) cflinuxfs4
+
+* Add node 16.17.0, remove node 16.15.1 for stack(s) cflinuxfs3
+
+* Add node 16.17.0 for stack(s) cflinuxfs4
+
+* Add node 18.9.0, remove node 18.6.0 for stack(s) cflinuxfs3
+
+* Add node 18.9.0 for stack(s) cflinuxfs4
+
+
 v1.7.73 Aug 08, 2022
 =====================
 

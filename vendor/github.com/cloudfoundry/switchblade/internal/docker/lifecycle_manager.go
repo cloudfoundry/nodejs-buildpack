@@ -4,14 +4,18 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sync"
 
 	"github.com/paketo-buildpacks/packit/v2/pexec"
 	"github.com/paketo-buildpacks/packit/v2/vacation"
 )
+
+var goVersionRegexp = regexp.MustCompile(`go(\d+\.\d+)`)
 
 //go:generate faux --interface Executable --output fakes/executable.go
 type Executable interface {
@@ -90,8 +94,26 @@ func (b LifecycleManager) Build(sourceURI, workspace string) (string, error) {
 		return "", fmt.Errorf("failed to stat go.mod: %w", err)
 	}
 
+	versionBuffer := bytes.NewBuffer(nil)
 	err = b.golang.Execute(pexec.Execution{
-		Args:   []string{"mod", "tidy"},
+		Args:   []string{"version"},
+		Env:    env,
+		Dir:    filepath.Join(workspace, "repo"),
+		Stdout: io.MultiWriter(versionBuffer, buffer),
+		Stderr: buffer,
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to identify go version: %w\n\n%s", err, buffer)
+	}
+
+	args := []string{"mod", "tidy"}
+	matches := goVersionRegexp.FindStringSubmatch(versionBuffer.String())
+	if len(matches) == 2 {
+		args = append(args, "-compat", matches[1])
+	}
+
+	err = b.golang.Execute(pexec.Execution{
+		Args:   args,
 		Env:    env,
 		Dir:    filepath.Join(workspace, "repo"),
 		Stdout: buffer,

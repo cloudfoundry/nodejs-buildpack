@@ -47,14 +47,14 @@ jobs:
               -H "X-TrackerToken: ${{ secrets.TRACKER_API_TOKEN }}" \
               -H "Content-Type: application/json" \
               -d "{\"text\": \"Merged in [PR](https://www.github.com/${GITHUB_REPOSITORY}/pull/${NUMBER})\"}" \
-              "https://www.pivotaltracker.com/services/v5/projects/$TRACKER_PROJECT_ID/stories/$story_id/comments"
+              "https://www.pivotaltracker.com/services/v5/projects/${{ secrets.TRACKER_PROJECT_ID }}/stories/$story_id/comments"
 
             ## Accept story
             curl -X PUT \
               -H "X-TrackerToken: ${{ secrets.TRACKER_API_TOKEN }}" \
               -H "Content-Type: application/json" \
               -d '{"current_state":"accepted"}' \
-              "https://www.pivotaltracker.com/services/v5/projects/${TRACKER_PROJECT_ID}/stories/$story_id"
+              "https://www.pivotaltracker.com/services/v5/projects/${{ secrets.TRACKER_PROJECT_ID }}/stories/$story_id"
           fi
 
       - name: Rebase

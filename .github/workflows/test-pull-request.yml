@@ -77,7 +77,7 @@ jobs:
         if: steps.human-commits.outputs.human_commits == 'false' && steps.unverified-commits.outputs.unverified_commits == 'false'
         id: story-id
         run: |
-          story_id=$(echo ${{ github.event.head_commit.message }} | grep -oE "#[0-9]+" | grep -oE "[0-9]+"))
+          story_id=$(echo ${{ github.event.head_commit.message }} | grep -oE "#[0-9]+" | grep -oE "[0-9]+")
           if [ -z "$story_id" ]; then
             echo "::set-output name=story_id::-1"
           else

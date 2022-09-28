@@ -72,12 +72,15 @@ jobs:
       - name: Checkout
         if: steps.human-commits.outputs.human_commits == 'false' && steps.unverified-commits.outputs.unverified_commits == 'false'
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Get Tracker Story ID
         if: steps.human-commits.outputs.human_commits == 'false' && steps.unverified-commits.outputs.unverified_commits == 'false'
         id: story-id
         run: |
-          story_id=$(echo ${{ github.event.commit[0].message }} | grep -oE "#[0-9]+" | grep -oE "[0-9]+")
+          message=$(git log -1 --pretty=%B)
+          story_id=$(echo $message | grep -oE "#[0-9]+" | grep -oE "[0-9]+")
           if [ -z "$story_id" ]; then
             echo "::set-output name=story_id::-1"
           else

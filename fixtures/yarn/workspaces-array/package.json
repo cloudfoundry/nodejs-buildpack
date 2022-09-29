@@ -10,8 +10,7 @@
   "engines": {
     "yarn": "1.x"
   },
-  "workspaces": {
-    "packages": ["packages/*"],
-    "nohoist": ["**/react-native", "**/react-native/**"]
-  }
+  "workspaces": [
+    "packages/*"
+  ]
 }

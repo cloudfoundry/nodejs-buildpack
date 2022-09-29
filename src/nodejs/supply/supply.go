@@ -330,7 +330,23 @@ func (s *Supplier) MoveDependencyArtifacts() error {
 
 func (s *Supplier) ReadPackageJSON() error {
 	var err error
-	var p struct {
+
+	type YarnWorkspace struct {
+		Packages []string `json:"packages"`
+		Nohoist  []string `json:"nohoist"`
+	}
+
+	type yarnStructObject struct {
+		Scripts struct {
+			PreBuild    string `json:"heroku-prebuild"`
+			PostBuild   string `json:"heroku-postbuild"`
+			StartScript string `json:"start"`
+		} `json:"scripts"`
+		DevDependencies map[string]string `json:"devDependencies"`
+		Workspaces      YarnWorkspace     `json:"workspaces"`
+	}
+
+	type normalStruct struct {
 		Scripts struct {
 			PreBuild    string `json:"heroku-prebuild"`
 			PostBuild   string `json:"heroku-postbuild"`
@@ -348,20 +364,36 @@ func (s *Supplier) ReadPackageJSON() error {
 		return err
 	}
 
-	if err := libbuildpack.NewJSON().Load(filepath.Join(s.Stager.BuildDir(), "package.json"), &p); err != nil {
-		if os.IsNotExist(err) {
-			s.Log.Warning("No package.json found")
-			return nil
-		} else {
-			return err
-		}
+	var p normalStruct
+
+	err = libbuildpack.NewJSON().Load(filepath.Join(s.Stager.BuildDir(), "package.json"), &p)
+	if os.IsNotExist(err) {
+		s.Log.Warning("No package.json found")
+		return nil
 	}
 
-	s.UsesYarnWorkspaces = (len(p.Workspaces) > 0)
-	s.HasDevDependencies = (len(p.DevDependencies) > 0)
-	s.PreBuild = p.Scripts.PreBuild
-	s.PostBuild = p.Scripts.PostBuild
-	s.StartScript = p.Scripts.StartScript
+	if err != nil {
+		if s.UseYarn && strings.Contains(err.Error(), "cannot unmarshal object into Go struct field normalStruct.workspaces of type []string") {
+			var p yarnStructObject
+			err = libbuildpack.NewJSON().Load(filepath.Join(s.Stager.BuildDir(), "package.json"), &p)
+			if err != nil {
+				return err
+			}
+			s.UsesYarnWorkspaces = len(p.Workspaces.Packages) > 0 || len(p.Workspaces.Nohoist) > 0
+			s.HasDevDependencies = len(p.DevDependencies) > 0
+			s.PreBuild = p.Scripts.PreBuild
+			s.PostBuild = p.Scripts.PostBuild
+			s.StartScript = p.Scripts.StartScript
+			return nil
+		}
+		return err
+	} else {
+		s.UsesYarnWorkspaces = len(p.Workspaces) > 0
+		s.HasDevDependencies = len(p.DevDependencies) > 0
+		s.PreBuild = p.Scripts.PreBuild
+		s.PostBuild = p.Scripts.PostBuild
+		s.StartScript = p.Scripts.StartScript
+	}
 
 	return nil
 }

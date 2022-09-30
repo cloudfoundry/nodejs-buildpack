@@ -1,3 +1,15 @@
+v1.8.1 Sep 29, 2022
+====================
+
+* Add node 18.10.0, remove node 18.7.0 for stack(s) cflinuxfs3, cflinuxfs4
+
+* Add node 16.17.1, remove node 16.16.0 for stack(s) cflinuxfs4, cflinuxfs3
+
+* Add node 14.20.1, remove node 14.19.3 for stack(s) cflinuxfs4, cflinuxfs3
+
+* Fix error with Yarn Workspaces (#511)
+
+
 v1.8.0 Sep 13, 2022
 =====================
 

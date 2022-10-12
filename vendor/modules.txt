@@ -15,7 +15,7 @@ github.com/Microsoft/go-winio/pkg/guid
 # github.com/blang/semver v3.5.1+incompatible
 ## explicit
 github.com/blang/semver
-# github.com/cloudfoundry/libbuildpack v0.0.0-20220901111341-9026a345fd26
+# github.com/cloudfoundry/libbuildpack v0.0.0-20221007111339-12da67d8a8c4
 ## explicit; go 1.13
 github.com/cloudfoundry/libbuildpack
 github.com/cloudfoundry/libbuildpack/ansicleaner

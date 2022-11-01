@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/Dynatrace/libbuildpack-dynatrace v1.5.0
 	github.com/Masterminds/semver v1.5.0
-	github.com/cloudfoundry/libbuildpack v0.0.0-20221007111339-12da67d8a8c4
+	github.com/cloudfoundry/libbuildpack v0.0.0-20221031220135-8f5ee8c4444a
 	github.com/cloudfoundry/switchblade v0.1.2
 	github.com/golang/mock v1.6.0
 	github.com/onsi/ginkgo v1.16.5

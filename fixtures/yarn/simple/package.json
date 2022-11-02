@@ -4,7 +4,7 @@
   "main": "server.js",
   "author": "CF Buildpacks Team",
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.1.0",
     "logfmt": "~1.1.2",
     "express": "~4.0.0"
   },

@@ -1,3 +1,19 @@
+v1.8.3 Nov 06, 2022
+====================
+
+* Add node 18.12.1, remove node 18.19.0
+  for stack(s) cflinuxfs3, cflinuxfs4
+
+* Add node 14.21.1, remove node 14.20.0
+  for stack(s) cflinuxfs3, cflinuxfs4
+
+* Add node 16.18.1, remove node 16.17.1
+  for stack(s) cflinuxfs3, cflinuxfs4
+  (https://www.pivotaltracker.com/story/show/183724805)
+
+* Bumps go.mod go version to 1.19
+
+
 v1.8.2 Oct 13, 2022
 ====================
 

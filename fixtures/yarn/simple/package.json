@@ -6,7 +6,7 @@
   "dependencies": {
     "bcrypt": "^3.0.6",
     "logfmt": "~1.1.2",
-    "express": "~4.0.0"
+    "express": "~4.17.3"
   },
   "engines" : { "yarn" : "*" }
 }

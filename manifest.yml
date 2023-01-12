@@ -100,22 +100,6 @@ dependencies:
   source: https://nodejs.org/dist/v16.19.0/node-v16.19.0.tar.gz
   source_sha256: 8b8a2939fa5f654ff61cae29b12118c24109273458ecbe6162ad8a8858309e0d
 - name: node
-  version: 18.10.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.10.0_linux_x64_cflinuxfs3_5d530541.tgz
-  sha256: 5d530541995618c106ef8d49f4767345817857614d5bfa064295e760d33ac6cd
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v18.10.0/node-v18.10.0.tar.gz
-  source_sha256: eab3109a6d3deafe049c8f0c461af8de5c6cad535b79c19fa84f0ea496c4ffb6
-- name: node
-  version: 18.10.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.10.0_linux_x64_cflinuxfs4_6b722408.tgz
-  sha256: 6b7224089b58c0ca67381734062615c16bd44e50baf437de0870e827e5e88da6
-  cf_stacks:
-  - cflinuxfs4
-  source: https://nodejs.org/dist/v18.10.0/node-v18.10.0.tar.gz
-  source_sha256: eab3109a6d3deafe049c8f0c461af8de5c6cad535b79c19fa84f0ea496c4ffb6
-- name: node
   version: 18.12.1
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.12.1_linux_x64_cflinuxfs3_62ff5890.tgz
   sha256: 62ff589072cba7e2094a7616fee353162a46fbc028a882fac5d0feb79aaab989
@@ -131,6 +115,22 @@ dependencies:
   - cflinuxfs4
   source: https://nodejs.org/dist/v18.12.1/node-v18.12.1.tar.gz
   source_sha256: ba8174dda00d5b90943f37c6a180a1d37c861d91e04a4cb38dc1c0c74981c186
+- name: node
+  version: 18.13.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.13.0_linux_x64_cflinuxfs3_7f0ae48f.tgz
+  sha256: 7f0ae48f246d7625dae2d4c5c67c5059c59cbd523a863c6905d153cf4fc3f855
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v18.13.0/node-v18.13.0.tar.gz
+  source_sha256: 61ae68446438c2479e466d551b6e8c898097d56722957b1a8466ec8476a590d2
+- name: node
+  version: 18.13.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.13.0_linux_x64_cflinuxfs4_f644eda2.tgz
+  sha256: f644eda24842b98a45aeff5ce323f735405e5a8e0ca259b23006c5909ef44bcb
+  cf_stacks:
+  - cflinuxfs4
+  source: https://nodejs.org/dist/v18.13.0/node-v18.13.0.tar.gz
+  source_sha256: 61ae68446438c2479e466d551b6e8c898097d56722957b1a8466ec8476a590d2
 - name: yarn
   version: 1.22.19
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.19_linux_noarch_any-stack_32d0e82e.tgz

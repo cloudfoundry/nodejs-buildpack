@@ -507,8 +507,8 @@ github.com/clbanning/mxj/v2 v2.5.6/go.mod h1:hNiWqW14h+kc+MdF9C6/YoRfjEJoR3ou6tn
 github.com/clbanning/x2j v0.0.0-20191024224557-825249438eec/go.mod h1:jMjuTZXRI4dUb/I5gc9Hdhagfvm9+RyrPryS/auMzxE=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cloudflare/circl v1.1.0/go.mod h1:prBCrKB9DV4poKZY1l9zBXg2QJY7mvgRvtMxxK7fi4I=
-github.com/cloudfoundry/libbuildpack v0.0.0-20221115221325-f9d1b0cc562f h1:z5swN43NOZNrqI4GKAwQ4v3LFpZ+73VcmdQDc8Jid18=
-github.com/cloudfoundry/libbuildpack v0.0.0-20221115221325-f9d1b0cc562f/go.mod h1:Pw3P7uRWL0GrU2qWd5yylqMMqq/l39hUqiFohA2jry0=
+github.com/cloudfoundry/libbuildpack v0.0.0-20221216180909-3fd083482e26 h1:PMzw8RgYxAJeib8s/CUmR2XNw76+JUoJgQ0lPUSLS8M=
+github.com/cloudfoundry/libbuildpack v0.0.0-20221216180909-3fd083482e26/go.mod h1:pBTNHPaZ66dlLv1iev94BOBKSZye7OmnkyE0OY+rlJ4=
 github.com/cloudfoundry/switchblade v0.1.2 h1:t0kniDoDnK0pU3T9EfD5uJVO3f2xpSUdy/UZyE0mEGQ=
 github.com/cloudfoundry/switchblade v0.1.2/go.mod h1:2QnCOTm+pf2ctn8kMuOZo5UdIti7MIs4bSxD9miajvM=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=

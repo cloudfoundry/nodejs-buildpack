@@ -507,8 +507,8 @@ github.com/clbanning/mxj/v2 v2.5.6/go.mod h1:hNiWqW14h+kc+MdF9C6/YoRfjEJoR3ou6tn
 github.com/clbanning/x2j v0.0.0-20191024224557-825249438eec/go.mod h1:jMjuTZXRI4dUb/I5gc9Hdhagfvm9+RyrPryS/auMzxE=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cloudflare/circl v1.1.0/go.mod h1:prBCrKB9DV4poKZY1l9zBXg2QJY7mvgRvtMxxK7fi4I=
-github.com/cloudfoundry/libbuildpack v0.0.0-20230125143612-7c0e60008921 h1:lYxkeAx9zeHWb1EzQJPjqbZZm2bC3DChSWo+q5nwOAE=
-github.com/cloudfoundry/libbuildpack v0.0.0-20230125143612-7c0e60008921/go.mod h1:VndMDXFnUZKvKSgZ2V5nO8fxvGQ2NSWCFfgYr0R4qLA=
+github.com/cloudfoundry/libbuildpack v0.0.0-20230209225346-0e58f7be61d4 h1:Z1BUvEdjl5mFb3fQgZcWpbwOp/9JZyAx5RpRHfzE3Ms=
+github.com/cloudfoundry/libbuildpack v0.0.0-20230209225346-0e58f7be61d4/go.mod h1:N2yHDHieH8S+EHM2jbhdcKRVASZSL5jEP7hMVHNrQAw=
 github.com/cloudfoundry/switchblade v0.1.2 h1:t0kniDoDnK0pU3T9EfD5uJVO3f2xpSUdy/UZyE0mEGQ=
 github.com/cloudfoundry/switchblade v0.1.2/go.mod h1:2QnCOTm+pf2ctn8kMuOZo5UdIti7MIs4bSxD9miajvM=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
@@ -1374,7 +1374,7 @@ github.com/jackc/puddle v0.0.0-20190413234325-e4ced69a3a2b/go.mod h1:m4B5Dj62Y0f
 github.com/jackc/puddle v0.0.0-20190608224051-11cab39313c9/go.mod h1:m4B5Dj62Y0fbyuIc15OsIqK0+JU8nkqQjsgx7dvjSWk=
 github.com/jackc/puddle v1.1.0/go.mod h1:m4B5Dj62Y0fbyuIc15OsIqK0+JU8nkqQjsgx7dvjSWk=
 github.com/jarcoal/httpmock v1.0.5/go.mod h1:ATjnClrvW/3tijVmpL/va5Z3aAyGvqU3gCT8nX0Txik=
-github.com/jarcoal/httpmock v1.2.0 h1:gSvTxxFR/MEMfsGrvRbdfpRUMBStovlSRLw0Ep1bwwc=
+github.com/jarcoal/httpmock v1.3.0 h1:2RJ8GP0IIaWwcC9Fp2BmVi8Kog3v2Hn7VXM3fTd+nuc=
 github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99/go.mod h1:1lJo3i6rXxKeerYnT8Nvf0QmHCRC1n8sfWVwXF2Frvo=
 github.com/jedisct1/go-minisign v0.0.0-20211028175153-1c139d1cc84b/go.mod h1:hQmNrgofl+IY/8L+n20H6E6PWBBTokdsv+q49j0QhsU=
 github.com/jellydator/ttlcache/v2 v2.11.1/go.mod h1:RtE5Snf0/57e+2cLWFYWCCsLas2Hy3c5Z4n14XmSvTI=

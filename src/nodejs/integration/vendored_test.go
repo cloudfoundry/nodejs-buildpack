@@ -44,7 +44,7 @@ func testVendored(platform switchblade.Platform, fixtures string) func(*testing.
 
 			checksumLines := ChecksumRegexp.FindAllStringSubmatch(logs.String(), -1)
 			Expect(checksumLines).To(HaveLen(2))
-			Expect(checksumLines[0][2]).To(Equal(checksumLines[1][2]))
+			Expect(checksumLines[0][2]).To(Equal(checksumLines[1][2]), logs.String)
 
 			Eventually(deployment).Should(Serve(ContainSubstring("0000000005")).WithEndpoint("/leftpad"))
 		})

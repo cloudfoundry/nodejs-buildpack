@@ -35,7 +35,7 @@ type SetupPhase interface {
 //go:generate faux --interface SetupClient --output fakes/setup_client.go
 type SetupClient interface {
 	ImagePull(ctx context.Context, ref string, options types.ImagePullOptions) (io.ReadCloser, error)
-	ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *specs.Platform, containerName string) (container.ContainerCreateCreatedBody, error)
+	ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *specs.Platform, containerName string) (container.CreateResponse, error)
 	CopyToContainer(ctx context.Context, containerID, dstPath string, content io.Reader, options types.CopyToContainerOptions) error
 	ContainerInspect(ctx context.Context, containerID string) (types.ContainerJSON, error)
 	ContainerRemove(ctx context.Context, containerID string, options types.ContainerRemoveOptions) error

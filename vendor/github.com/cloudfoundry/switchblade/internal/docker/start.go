@@ -25,7 +25,7 @@ type StartPhase interface {
 
 //go:generate faux --interface StartClient --output fakes/start_client.go
 type StartClient interface {
-	ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *specs.Platform, containerName string) (container.ContainerCreateCreatedBody, error)
+	ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *specs.Platform, containerName string) (container.CreateResponse, error)
 	CopyToContainer(ctx context.Context, containerID, dstPath string, content io.Reader, options types.CopyToContainerOptions) error
 	ContainerStart(ctx context.Context, containerID string, options types.ContainerStartOptions) error
 	ContainerInspect(ctx context.Context, containerID string) (types.ContainerJSON, error)

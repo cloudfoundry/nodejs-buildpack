@@ -22,7 +22,7 @@ type StagePhase interface {
 //go:generate faux --interface StageClient --output fakes/stage_client.go
 type StageClient interface {
 	ContainerStart(ctx context.Context, containerID string, options types.ContainerStartOptions) error
-	ContainerWait(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.ContainerWaitOKBody, <-chan error)
+	ContainerWait(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error)
 	ContainerLogs(ctx context.Context, container string, options types.ContainerLogsOptions) (io.ReadCloser, error)
 	CopyFromContainer(ctx context.Context, containerID, srcPath string) (io.ReadCloser, types.ContainerPathStat, error)
 	ContainerRemove(ctx context.Context, containerID string, options types.ContainerRemoveOptions) error
@@ -48,7 +48,7 @@ func (s Stage) Run(ctx context.Context, logs io.Writer, containerID, name string
 		return "", fmt.Errorf("failed to start container: %w", err)
 	}
 
-	var status container.ContainerWaitOKBody
+	var status container.WaitResponse
 	onExit, onErr := s.client.ContainerWait(ctx, containerID, container.WaitConditionNotRunning)
 	select {
 	case err := <-onErr:

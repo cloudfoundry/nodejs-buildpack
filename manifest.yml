@@ -28,7 +28,7 @@ dependency_deprecation_dates:
   link: https://github.com/nodejs/Release
 - version_line: 16.x.x
   name: node
-  date: 2024-04-30
+  date: 2023-09-11
   link: https://github.com/nodejs/Release
 - version_line: 18.x.x
   name: node

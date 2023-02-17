@@ -31,6 +31,9 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     needs: unit
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Set Matrix
         id: set-matrix
         run: |

@@ -39,7 +39,7 @@ jobs:
         run: |
           matrix="$(jq -r -c '.integration.matrix' ./config.json)"
           printf "Output: matrix=%s\n" "${matrix}"
-          printf "matrix=%s\n" "${matrix}"
+          printf "matrix=%s\n" "${matrix}" >> "$GITHUB_OUTPUT"
 
   integration:
     name: Integration Test

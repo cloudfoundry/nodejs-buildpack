@@ -416,8 +416,8 @@ github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym
 github.com/CycloneDX/cyclonedx-go v0.7.1-0.20221222100750-41a1ac565cce/go.mod h1:XURd0m8zvnLE5aIRqg6JOVRl7qZ/pWBtuFa9EHjQwFc=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
 github.com/DataDog/zstd v1.4.5/go.mod h1:1jcaCB/ufaK+sKp1NBhlGmpz41jOoPQ35bpF36t7BBo=
-github.com/Dynatrace/libbuildpack-dynatrace v1.5.1 h1:t9HX2uNILKdLsU0D8qCTcVjnQiX6xnQfVOCo5BO38JY=
-github.com/Dynatrace/libbuildpack-dynatrace v1.5.1/go.mod h1:YsiN8yLiXmv0PzBe+Fo17gWxrA2HF6vMUTv49WuoY6o=
+github.com/Dynatrace/libbuildpack-dynatrace v1.5.2 h1:yiF8yuJ4762ocmZEM+/K8auciKFQ3XfQb/0Qt7VL+rU=
+github.com/Dynatrace/libbuildpack-dynatrace v1.5.2/go.mod h1:Uu9aa5UFAk1Ua+zZXnvzo+avDXuEi+GtegeOyja9xg4=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible/go.mod h1:BB1eHdMLYEFuFdBlRMb0N7YGVdM5s6Pt0njxgvfbGGs=
 github.com/Masterminds/goutils v1.1.1/go.mod h1:8cTjp+g8YejhMuvIA5y2vz3BpJxksy863GQaJW2MFNU=
 github.com/Masterminds/semver v1.5.0 h1:H65muMkzWKEuNDnfl9d70GUjFniHKHRbFPGBuZ3QEww=

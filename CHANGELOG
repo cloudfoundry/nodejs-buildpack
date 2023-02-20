@@ -1,3 +1,15 @@
+v1.8.6 Feb 20, 2023
+====================
+
+* Add node 18.14.1, remove node 18.12.1 for stack(s) cflinuxfs4, cflinuxfs3
+
+* Add node 16.19.1, remove node 16.18.1 for stack(s) cflinuxfs3, cflinuxfs4
+
+* Add node 14.21.3, remove node 14.21.1 for stack(s) cflinuxfs3, cflinuxfs4
+
+* Update Node 16.x deprecation date (Nodejs update on SSL deprecation) [ref](https://nodejs.org/en/blog/vulnerability/february-2023-security-releases/)
+
+
 v1.8.5 Jan 13, 2023
 ====================
 

@@ -3,7 +3,7 @@ module github.com/cloudfoundry/nodejs-buildpack
 go 1.19
 
 require (
-	github.com/Dynatrace/libbuildpack-dynatrace v1.5.1
+	github.com/Dynatrace/libbuildpack-dynatrace v1.5.2
 	github.com/Masterminds/semver v1.5.0
 	github.com/cloudfoundry/libbuildpack v0.0.0-20230209225346-0e58f7be61d4
 	github.com/cloudfoundry/switchblade v0.1.3

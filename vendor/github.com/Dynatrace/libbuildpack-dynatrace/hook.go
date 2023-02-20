@@ -1,6 +1,7 @@
 package dynatrace
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,10 +11,9 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
-	"regexp"
-	"bufio"
 
 	"github.com/cloudfoundry/libbuildpack"
 )
@@ -26,13 +26,13 @@ type Command interface {
 
 // credentials represent the user settings extracted from the environment.
 type credentials struct {
-	ServiceName   string
-	EnvironmentID string
-	CustomOneAgentURL   string
-	APIToken      string
-	APIURL        string
-	SkipErrors    bool
-	NetworkZone   string
+	ServiceName       string
+	EnvironmentID     string
+	CustomOneAgentURL string
+	APIToken          string
+	APIURL            string
+	SkipErrors        bool
+	NetworkZone       string
 }
 
 // Hook implements libbuildpack.Hook. It downloads and install the Dynatrace OneAgent.
@@ -224,13 +224,13 @@ func (h *Hook) getCredentials() *credentials {
 			}
 
 			creds := &credentials{
-				ServiceName:   service.Name,
-				EnvironmentID: queryString("environmentid"),
-				APIToken:      queryString("apitoken"),
-				APIURL:        queryString("apiurl"),
-				CustomOneAgentURL:   queryString("customoneagenturl"),
-				SkipErrors:    queryString("skiperrors") == "true",
-				NetworkZone:   queryString("networkzone"),
+				ServiceName:       service.Name,
+				EnvironmentID:     queryString("environmentid"),
+				APIToken:          queryString("apitoken"),
+				APIURL:            queryString("apiurl"),
+				CustomOneAgentURL: queryString("customoneagenturl"),
+				SkipErrors:        queryString("skiperrors") == "true",
+				NetworkZone:       queryString("networkzone"),
 			}
 
 			if (creds.EnvironmentID != "" && creds.APIToken != "") || creds.CustomOneAgentURL != "" {
@@ -413,12 +413,12 @@ func (h *Hook) findAgentPath(installDir string) (string, error) {
 
 // Downloads most recent agent config from configuration API of the tenant
 // and merges it with the local version the standalone installer package brings along.
-func (h* Hook) updateAgentConfig(creds *credentials, installDir , buildPackLanguage, buildPackVersion string)  error {
+func (h *Hook) updateAgentConfig(creds *credentials, installDir, buildPackLanguage, buildPackVersion string) error {
 	// agentConfigProperty represents a line of raw data we get from the config api
 	type agentConfigProperty struct {
 		Section string
-		Key string
-		Value string
+		Key     string
+		Value   string
 	}
 
 	// Container type for agentConfigProperty.
@@ -428,35 +428,42 @@ func (h* Hook) updateAgentConfig(creds *credentials, installDir , buildPackLangu
 	}
 
 	// Fetch most recent OneAgent config from API, which we get back in JSON format
+	// According to the API spec it always returns at least some sort of Header Info.
+	// So, we do not need to handle the case that the request succeeds and the content is empty.
 	client := &http.Client{Timeout: 3 * time.Second}
 	apiURL, err := h.ensureApiURL(creds)
 	if err != nil {
 		return err
 	}
 	agentConfigUrl := apiURL + "/v1/deployment/installer/agent/processmoduleconfig"
+
+	h.Log.Debug("Downloading updated OneAgent config from %s", agentConfigUrl)
 	req, _ := http.NewRequest("GET", agentConfigUrl, nil)
 	req.Header.Set("User-Agent", fmt.Sprintf("cf-%s-buildpack/%s", buildPackLanguage, buildPackVersion))
 	req.Header.Set("Authorization", fmt.Sprintf("Api-Token %s", creds.APIToken))
 	client.Do(req)
 	resp, err := client.Do(req)
-	if err != nil {
-		h.Log.Error("Failed to fetch OneAgent config from API: %s", err)
-		return err
-	}
-	h.Log.Debug("Successfully fetched OneAgent config from API")
 
-	var jsonConfig properties
-	json.NewDecoder(resp.Body).Decode(&jsonConfig)
-
+	configComment := ""
 	configFromAPI := make(map[string]map[string]string)
-	for _, v := range jsonConfig.Properties {
-		// you gotta check if the required map is already there
-		// if not: initialize it with a nice make :-)
-		_, ok := configFromAPI[v.Section]
-		if !ok {
-			configFromAPI[v.Section] = make(map[string]string)
+	if err != nil || resp.StatusCode != 200 {
+		h.Log.Warning("Failed to fetch updated OneAgent config from the API")
+		configComment = "# Warning: Failed to fetch updated OneAgent config from the API. This config only includes settings provided by the installer.\n"
+	} else {
+		h.Log.Debug("Successfully fetched updated OneAgent config from the API")
+		configComment = "# This config is a merge between the installer and the Cluster config\n"
+		var jsonConfig properties
+		json.NewDecoder(resp.Body).Decode(&jsonConfig)
+
+		for _, v := range jsonConfig.Properties {
+			// you gotta check if the required map is already there
+			// if not: initialize it with a nice make :-)
+			_, ok := configFromAPI[v.Section]
+			if !ok {
+				configFromAPI[v.Section] = make(map[string]string)
+			}
+			configFromAPI[v.Section][v.Key] = v.Value
 		}
-		configFromAPI[v.Section][v.Key] = v.Value
 	}
 
 	// read data from ruxitagentproc.conf file
@@ -476,7 +483,7 @@ func (h* Hook) updateAgentConfig(creds *credentials, installDir , buildPackLangu
 	configScanner := bufio.NewScanner(agentConfigFile)
 
 	h.Log.Debug("Starting to parse OneAgent config...")
-	for configScanner.Scan(){
+	for configScanner.Scan() {
 		// This parses the data we retrieved from ruxitagentproc.conf and stores
 		// it into the configFromAgent map of maps that was created above, for easy
 		// merging with configFromAPI later on.
@@ -536,15 +543,20 @@ func (h* Hook) updateAgentConfig(creds *credentials, installDir , buildPackLangu
 	h.Log.Debug("Successfully opened OneAgent config file %s for writing", agentConfigPath)
 	defer overwriteAgentConfigFile.Close()
 
+	// Write additional comments to the config
+	fmt.Fprintf(overwriteAgentConfigFile, configComment)
+
 	// write merged data to ruxitagentproc.conf
 	for section := range configFromAgent {
 		fmt.Fprintf(overwriteAgentConfigFile, "[%s]\n", section)
 		for k, v := range configFromAgent[section] {
 			fmt.Fprintf(overwriteAgentConfigFile, "%s %s\n", k, v)
 		}
+
 		// Trailing empty newline at the end of each section for better human readability
 		fmt.Fprintf(overwriteAgentConfigFile, "\n")
 	}
+
 	h.Log.Debug("Finished writing updated OneAgent config back to %s", agentConfigPath)
 
 	return nil

@@ -3,7 +3,6 @@ package brats_test
 import (
 	"encoding/json"
 	"flag"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -62,7 +61,7 @@ func CopyBrats(nodejsVersion string) *cutlass.App {
 	if nodejsVersion != "" {
 		bcryptVersion := "*"
 
-		file, err := ioutil.ReadFile(filepath.Join(dir, "package.json"))
+		file, err := os.ReadFile(filepath.Join(dir, "package.json"))
 		Expect(err).ToNot(HaveOccurred())
 		obj := make(map[string]interface{})
 		Expect(json.Unmarshal(file, &obj)).To(Succeed())
@@ -77,7 +76,7 @@ func CopyBrats(nodejsVersion string) *cutlass.App {
 
 		file, err = json.Marshal(obj)
 		Expect(err).ToNot(HaveOccurred())
-		Expect(ioutil.WriteFile(filepath.Join(dir, "package.json"), file, 0644)).To(Succeed())
+		Expect(os.WriteFile(filepath.Join(dir, "package.json"), file, 0600)).To(Succeed())
 	}
 
 	return cutlass.New(dir)

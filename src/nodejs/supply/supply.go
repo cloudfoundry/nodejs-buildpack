@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -219,10 +218,8 @@ func (s *Supplier) WarnUnmetDependencies(deps string) {
 func (s *Supplier) ListDependencies() (string, error) {
 	var result string
 	var buf bytes.Buffer
-	var err error
 
-	err = s.Command.Execute(s.Stager.BuildDir(), &buf, ioutil.Discard, "npm", "ls", "--depth=0")
-
+	err := s.Command.Execute(s.Stager.BuildDir(), &buf, io.Discard, "npm", "ls", "--depth=0")
 	if err != nil && !isExitError(err) {
 		return "", err
 	}
@@ -265,11 +262,9 @@ func (s *Supplier) runPrebuild(tool string) error {
 }
 
 func (s *Supplier) BuildDependencies() error {
-	var tool string
+	tool := "npm"
 	if s.UseYarn {
 		tool = "yarn"
-	} else {
-		tool = "npm"
 	}
 
 	s.Log.BeginStep("Building dependencies")
@@ -278,16 +273,19 @@ func (s *Supplier) BuildDependencies() error {
 		return err
 	}
 
-	if s.UseYarn {
+	switch {
+	case s.UseYarn:
 		if err := s.Yarn.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
 			return err
 		}
-	} else if s.IsVendored {
+
+	case s.IsVendored:
 		s.Log.Info("Prebuild detected (node_modules already exists)")
 		if err := s.NPM.Rebuild(s.Stager.BuildDir()); err != nil {
 			return err
 		}
-	} else {
+
+	default:
 		if err := s.NPM.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
 			return err
 		}
@@ -399,26 +397,26 @@ func (s *Supplier) ReadPackageJSON() error {
 }
 
 func (s *Supplier) NoPackageLockTip() error {
-	var lockFiles []string
+	lockFiles := []string{"package-lock.json", "npm-shrinkwrap.json"}
 	if s.UseYarn {
-		lockFiles = append(lockFiles, "yarn.lock")
-	} else {
-		lockFiles = append(lockFiles, "package-lock.json", "npm-shrinkwrap.json")
+		lockFiles = []string{"yarn.lock"}
 	}
 
 	for _, lockFile := range lockFiles {
-		if lockFileExists, err := libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), lockFile)); err != nil {
+		lockFileExists, err := libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), lockFile))
+		if err != nil {
 			return err
-		} else if lockFileExists {
+		}
+
+		if lockFileExists {
 			return nil
 		}
 
 		if s.IsVendored {
 			s.Log.Protip("Warning: package-lock.json not found. The buildpack may reach out to the internet to download module updates, even if they are vendored.", "https://docs.cloudfoundry.org/buildpacks/node/index.html#offline_environments")
 		}
-
-		return nil
 	}
+
 	return nil
 }
 
@@ -436,7 +434,7 @@ func (s *Supplier) TipVendorDependencies() error {
 }
 
 func hasSubdirs(path string) (bool, error) {
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return false, nil
@@ -583,7 +581,7 @@ func (s *Supplier) LoadNvmrc() error {
 		return nil
 	}
 
-	nvmrcContents, err := ioutil.ReadFile(filepath.Join(s.Stager.BuildDir(), ".nvmrc"))
+	nvmrcContents, err := os.ReadFile(filepath.Join(s.Stager.BuildDir(), ".nvmrc"))
 	if err != nil {
 		return err
 	}

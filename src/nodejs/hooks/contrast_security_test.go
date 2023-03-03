@@ -3,7 +3,6 @@ package hooks_test
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -37,7 +36,7 @@ var _ = Describe("contrastSecurityHook", func() {
 	Describe("AfterCompile", func() {
 
 		JustBeforeEach(func() {
-			tmpDir, _ := ioutil.TempDir("", "contrast_security_test")
+			tmpDir, _ := os.MkdirTemp("", "contrast_security_test")
 			args := []string{tmpDir, "", ".", ""}
 			stager = libbuildpack.NewStager(args, logger, &libbuildpack.Manifest{})
 		})
@@ -71,7 +70,7 @@ var _ = Describe("contrastSecurityHook", func() {
 				Expect(err).To(BeNil())
 
 				profileDir := filepath.Join(stager.DepDir(), "profile.d")
-				files, err := ioutil.ReadDir(profileDir)
+				files, err := os.ReadDir(profileDir)
 				Expect(err).To(BeNil())
 				//Expect(len(files)).To(Equal(1))
 
@@ -86,7 +85,7 @@ var _ = Describe("contrastSecurityHook", func() {
 				}
 				Expect(fileExists).To(Equal(true))
 
-				fileBytes, err := ioutil.ReadFile(filepath.Join(profileDir, files[fileIndex].Name()))
+				fileBytes, err := os.ReadFile(filepath.Join(profileDir, files[fileIndex].Name()))
 
 				if err != nil {
 					Fail(err.Error())
@@ -128,7 +127,7 @@ var _ = Describe("contrastSecurityHook", func() {
 				Expect(err).To(BeNil())
 
 				profileDir := filepath.Join(stager.DepDir(), "profile.d")
-				files, err := ioutil.ReadDir(profileDir)
+				files, err := os.ReadDir(profileDir)
 				Expect(err).To(BeNil())
 				//Expect(len(files)).To(Equal(1))
 
@@ -143,7 +142,7 @@ var _ = Describe("contrastSecurityHook", func() {
 				}
 				Expect(fileExists).To(Equal(true))
 
-				fileBytes, err := ioutil.ReadFile(filepath.Join(profileDir, files[fileIndex].Name()))
+				fileBytes, err := os.ReadFile(filepath.Join(profileDir, files[fileIndex].Name()))
 
 				if err != nil {
 					Fail(err.Error())
@@ -168,7 +167,7 @@ var _ = Describe("contrastSecurityHook", func() {
 				err := contrast.AfterCompile(stager)
 				Expect(err).To(BeNil())
 
-				files, err := ioutil.ReadDir(path.Join(stager.BuildDir()))
+				files, err := os.ReadDir(path.Join(stager.BuildDir()))
 				Expect(err).To(BeNil())
 				Expect(len(files)).To(Equal(0))
 			})

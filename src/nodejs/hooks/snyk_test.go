@@ -3,7 +3,6 @@ package hooks_test
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -37,9 +36,9 @@ var _ = Describe("snykHook", func() {
 	const snykAgentMain = "index.js"
 
 	BeforeEach(func() {
-		buildDir, err = ioutil.TempDir("", "nodejs-buildpack.build.")
+		buildDir, err = os.MkdirTemp("", "nodejs-buildpack.build.")
 		Expect(err).To(BeNil())
-		depsDir, err = ioutil.TempDir("", "nodejs-buildpack.deps.")
+		depsDir, err = os.MkdirTemp("", "nodejs-buildpack.deps.")
 		Expect(err).To(BeNil())
 
 		err = os.MkdirAll(filepath.Join(buildDir, snykAgentPath), 0755)
@@ -129,7 +128,7 @@ var _ = Describe("snykHook", func() {
 			It("Snyk token was found", func() {
 				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d")
 
-				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
+				err = os.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
 				err = snyk.AfterCompile(stager)
 				Expect(err).To(BeNil())
@@ -139,7 +138,7 @@ var _ = Describe("snykHook", func() {
 			It("Snyk agent exists", func() {
 				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d")
 
-				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
+				err = os.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
 
 				err = snyk.AfterCompile(stager)
@@ -174,7 +173,7 @@ var _ = Describe("snykHook", func() {
 			It("Snyk test no vulnerabilties found", func() {
 				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d")
 
-				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
+				err = os.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
 
 				err = snyk.AfterCompile(stager)
@@ -187,7 +186,7 @@ var _ = Describe("snykHook", func() {
 			It("Snyk test find vulnerabilties and failed", func() {
 				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d").Return("dependencies for known", errors.New("vulns found"))
 
-				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
+				err = os.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
 
 				err = snyk.AfterCompile(stager)
@@ -201,7 +200,7 @@ var _ = Describe("snykHook", func() {
 				os.Setenv("SNYK_DONT_BREAK_BUILD", "true")
 				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d").Return("dependencies for known", errors.New("vulns found"))
 
-				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
+				err = os.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
 
 				err = snyk.AfterCompile(stager)
@@ -246,7 +245,7 @@ var _ = Describe("snykHook", func() {
 			It("Snyk token was found", func() {
 				mockSnykCommand.EXPECT().Output(buildDir, "node", filepath.Join(buildDir, snykAgentPath, snykAgentMain), "test", "-d")
 
-				err = ioutil.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
+				err = os.WriteFile(filepath.Join(buildDir, snykAgentPath, snykAgentMain), []byte("snyk cli"), 0644)
 				Expect(err).To(BeNil())
 
 				err = snyk.AfterCompile(stager)

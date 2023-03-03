@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -33,7 +32,7 @@ func main() {
 			}
 
 		case "/dynatrace-env.sh", "/liboneagentproc.so", "/ruxitagentproc.conf":
-			contents, err := ioutil.ReadFile(strings.TrimPrefix(req.URL.Path, "/"))
+			contents, err := os.ReadFile(strings.TrimPrefix(req.URL.Path, "/"))
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprint(w, err.Error())
@@ -69,7 +68,7 @@ func main() {
 			json.NewEncoder(w).Encode(payload)
 
 		case "/v1/deployment/installer/agent/processmoduleconfig":
-			fakeConfig, err := ioutil.ReadFile("fake_config.json")
+			fakeConfig, err := os.ReadFile("fake_config.json")
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte(err.Error()))

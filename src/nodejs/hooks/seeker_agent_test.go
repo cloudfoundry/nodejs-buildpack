@@ -2,13 +2,13 @@ package hooks_test
 
 import (
 	"bytes"
+	"os"
+	"path/filepath"
+
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/hooks"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 )
 
 var _ = Describe("seekerHook", func() {
@@ -25,10 +25,10 @@ var _ = Describe("seekerHook", func() {
 	)
 
 	BeforeEach(func() {
-		buildDir, err = ioutil.TempDir("", "nodejs-buildpack.build.")
+		buildDir, err = os.MkdirTemp("", "nodejs-buildpack.build.")
 		Expect(err).NotTo(HaveOccurred())
 
-		depsDir, err = ioutil.TempDir("", "nodejs-buildpack.deps.")
+		depsDir, err = os.MkdirTemp("", "nodejs-buildpack.deps.")
 		Expect(err).NotTo(HaveOccurred())
 
 		depsIdx = "07"
@@ -95,29 +95,37 @@ var _ = Describe("seekerHook", func() {
 				  ]
 				 }`)
 			})
+
 			It("prepends "+seekerRequire+" to the server.js file", func() {
 				entryPointPath := filepath.Join(buildDir, "server.js")
 				Expect(entryPointPath).ToNot(BeAnExistingFile())
+
 				const mockedCode = "some mock javascript code"
-				Expect(ioutil.WriteFile(entryPointPath, []byte(mockedCode), 0755)).To(Succeed())
+				Expect(os.WriteFile(entryPointPath, []byte(mockedCode), 0755)).To(Succeed())
+
 				seeker.PrependRequire(stager)
-				contents, err := ioutil.ReadFile(entryPointPath)
+				contents, err := os.ReadFile(entryPointPath)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(string(contents)).To(Equal(hooks.SeekerRequire + mockedCode))
 			})
+
 			It("does not prepend "+seekerRequire+" to the server.js file if require already exist", func() {
 				entryPointPath := filepath.Join(buildDir, "server.js")
 				Expect(entryPointPath).ToNot(BeAnExistingFile())
+
 				const mockedCode = hooks.SeekerRequire + "some mock javascript code"
-				Expect(ioutil.WriteFile(entryPointPath, []byte(mockedCode), 0755)).To(Succeed())
+				Expect(os.WriteFile(entryPointPath, []byte(mockedCode), 0755)).To(Succeed())
+
 				seeker.PrependRequire(stager)
-				contents, err := ioutil.ReadFile(entryPointPath)
+				contents, err := os.ReadFile(entryPointPath)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(string(contents)).To(Equal(mockedCode))
 			})
+
 			It("fails to prepend the "+seekerRequire+" to the server.js file in case the file does not exist", func() {
 				entryPointPath := filepath.Join(buildDir, "server.js")
 				Expect(entryPointPath).ToNot(BeAnExistingFile())
+
 				err = seeker.AfterCompile(stager)
 				Expect(err).To(MatchError(ContainSubstring("no such file or directory")))
 			})

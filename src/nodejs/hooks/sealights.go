@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -93,7 +92,7 @@ func (sl *SealightsHook) RunWithSealights() bool {
 }
 
 func (sl *SealightsHook) SetApplicationStartInProcfile(stager *libbuildpack.Stager) error {
-	bytes, err := ioutil.ReadFile(filepath.Join(stager.BuildDir(), Procfile))
+	bytes, err := os.ReadFile(filepath.Join(stager.BuildDir(), Procfile))
 	if err != nil {
 		sl.Log.Error("failed to read %s", Procfile)
 		return err
@@ -120,7 +119,7 @@ func (sl *SealightsHook) SetApplicationStartInProcfile(stager *libbuildpack.Stag
 
 	startCommand := "web: " + newCmd
 
-	err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), Procfile), []byte(startCommand), 0755)
+	err = os.WriteFile(filepath.Join(stager.BuildDir(), Procfile), []byte(startCommand), 0755)
 	if err != nil {
 		sl.Log.Error("failed to update %s, error: %s", Procfile, err.Error())
 		return err

@@ -1,7 +1,6 @@
 package finalize
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -62,9 +61,9 @@ func (f *Finalizer) ReadPackageJSON() error {
 		if os.IsNotExist(err) {
 			f.Log.Warning("No package.json found")
 			return nil
-		} else {
-			return err
 		}
+
+		return err
 	}
 
 	f.StartScript = p.Scripts.StartScript
@@ -84,7 +83,7 @@ func (f *Finalizer) CopyProfileScripts() error {
 	}
 
 	path := filepath.Join(f.Manifest.RootDir(), "profile")
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		return err
 	}
@@ -94,7 +93,7 @@ func (f *Finalizer) CopyProfileScripts() error {
 			if err := libbuildpack.CopyFile(filepath.Join(path, fi.Name()), filepath.Join(scriptsDir, fi.Name())); err != nil {
 				return err
 			}
-			if err := ioutil.WriteFile(filepath.Join(profiledDir, fi.Name()+".sh"), []byte("eval $(ruby $DEPS_DIR/"+f.Stager.DepsIdx()+"/scripts/"+fi.Name()+")\n"), 0755); err != nil {
+			if err := os.WriteFile(filepath.Join(profiledDir, fi.Name()+".sh"), []byte("eval $(ruby $DEPS_DIR/"+f.Stager.DepsIdx()+"/scripts/"+fi.Name()+")\n"), 0755); err != nil {
 				return err
 			}
 		} else {

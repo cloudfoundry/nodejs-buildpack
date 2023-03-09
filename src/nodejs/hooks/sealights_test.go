@@ -2,15 +2,15 @@ package hooks_test
 
 import (
 	"bytes"
+	"io"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/hooks"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"io"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 type Command struct {
@@ -55,7 +55,7 @@ var _ = Describe("Sealights hook", func() {
 	)
 
 	BeforeEach(func() {
-		buildDir, err = ioutil.TempDir("", "nodejs-buildpack.build.")
+		buildDir, err = os.MkdirTemp("", "nodejs-buildpack.build.")
 		Expect(err).To(BeNil())
 
 		buffer = new(bytes.Buffer)
@@ -89,7 +89,7 @@ var _ = Describe("Sealights hook", func() {
 		Expect(err).To(BeNil())
 		err = os.Unsetenv("VCAP_SERVICES")
 		Expect(err).To(BeNil())
-		err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(procfile), 0755)
+		err = os.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(procfile), 0755)
 		Expect(err).To(BeNil())
 		err = os.RemoveAll(buildDir)
 		Expect(err).To(BeNil())
@@ -116,7 +116,7 @@ var _ = Describe("Sealights hook", func() {
 		})
 		Context("Sealigts not injected well", func() {
 			BeforeEach(func() {
-				err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(testProcfile), 0755)
+				err = os.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(testProcfile), 0755)
 				Expect(err).To(BeNil())
 			})
 			It("Not found in VCAP_Services", func() {
@@ -155,7 +155,7 @@ var _ = Describe("Sealights hook", func() {
 			})
 			Context("build new application run command in Procfile", func() {
 				BeforeEach(func() {
-					err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(testProcfile), 0755)
+					err = os.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(testProcfile), 0755)
 					Expect(err).To(BeNil())
 				})
 				It("test application run cmd creation from bsid file", func() {
@@ -167,7 +167,7 @@ var _ = Describe("Sealights hook", func() {
 					Expect(err).To(BeNil())
 					err = sealights.SetApplicationStartInProcfile(stager)
 					Expect(err).To(BeNil())
-					bytes, err := ioutil.ReadFile(filepath.Join(stager.BuildDir(), procfileName))
+					bytes, err := os.ReadFile(filepath.Join(stager.BuildDir(), procfileName))
 					Expect(err).To(BeNil())
 					cleanResult := strings.ReplaceAll(string(bytes), " ", "")
 					Expect(cleanResult).To(Equal("web:" + expectedWithFile))
@@ -191,7 +191,7 @@ var _ = Describe("Sealights hook", func() {
 					Expect(err).NotTo(HaveOccurred())
 					Expect(err).To(BeNil())
 					err = sealights.SetApplicationStartInProcfile(stager)
-					bytes, err := ioutil.ReadFile(filepath.Join(stager.BuildDir(), procfileName))
+					bytes, err := os.ReadFile(filepath.Join(stager.BuildDir(), procfileName))
 					Expect(err).To(BeNil())
 					cleanResult := strings.ReplaceAll(string(bytes), " ", "")
 					Expect(cleanResult).To(Equal("web:" + expected))
@@ -200,7 +200,7 @@ var _ = Describe("Sealights hook", func() {
 
 			Context("fail to update package.json scripts", func() {
 				BeforeEach(func() {
-					err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), packageJsonName), []byte(testPackageJsonWithoutScripts), 0755)
+					err = os.WriteFile(filepath.Join(stager.BuildDir(), packageJsonName), []byte(testPackageJsonWithoutScripts), 0755)
 					Expect(err).To(BeNil())
 				})
 
@@ -216,7 +216,7 @@ var _ = Describe("Sealights hook", func() {
 
 			Context("fail to update package.json start", func() {
 				BeforeEach(func() {
-					err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), packageJsonName), []byte(testPackageJsonWithoutStart), 0755)
+					err = os.WriteFile(filepath.Join(stager.BuildDir(), packageJsonName), []byte(testPackageJsonWithoutStart), 0755)
 					Expect(err).To(BeNil())
 				})
 
@@ -232,7 +232,7 @@ var _ = Describe("Sealights hook", func() {
 
 			Context("build new application run command in package.json", func() {
 				BeforeEach(func() {
-					err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), packageJsonName), []byte(testPackageJson), 0755)
+					err = os.WriteFile(filepath.Join(stager.BuildDir(), packageJsonName), []byte(testPackageJson), 0755)
 					Expect(err).To(BeNil())
 				})
 
@@ -278,7 +278,7 @@ var _ = Describe("Sealights hook", func() {
 
 			Context("build new application run command in manifest", func() {
 				BeforeEach(func() {
-					err = ioutil.WriteFile(filepath.Join(stager.BuildDir(), manifestName), []byte(testManifest), 0755)
+					err = os.WriteFile(filepath.Join(stager.BuildDir(), manifestName), []byte(testManifest), 0755)
 					Expect(err).To(BeNil())
 				})
 

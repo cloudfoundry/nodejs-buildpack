@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -41,12 +40,12 @@ var _ = Describe("Supply", func() {
 	)
 
 	BeforeEach(func() {
-		depsDir, err = ioutil.TempDir("", "nodejs-buildpack.deps.")
+		depsDir, err = os.MkdirTemp("", "nodejs-buildpack.deps.")
 		Expect(err).To(BeNil())
-		cacheDir, err = ioutil.TempDir("", "nodejs-buildpack.cache.")
+		cacheDir, err = os.MkdirTemp("", "nodejs-buildpack.cache.")
 		Expect(err).To(BeNil())
 
-		buildDir, err = ioutil.TempDir("", "nodejs-buildpack.build.")
+		buildDir, err = os.MkdirTemp("", "nodejs-buildpack.build.")
 		Expect(err).To(BeNil())
 
 		depsIdx = "14"
@@ -70,10 +69,10 @@ var _ = Describe("Supply", func() {
 			err := os.MkdirAll(filepath.Join(nodeDir, "bin"), 0755)
 			Expect(err).To(BeNil())
 
-			err = ioutil.WriteFile(filepath.Join(nodeDir, "bin", "node"), []byte("node exe"), 0644)
+			err = os.WriteFile(filepath.Join(nodeDir, "bin", "node"), []byte("node exe"), 0644)
 			Expect(err).To(BeNil())
 
-			err = ioutil.WriteFile(filepath.Join(nodeDir, "bin", "npm"), []byte("npm exe"), 0644)
+			err = os.WriteFile(filepath.Join(nodeDir, "bin", "npm"), []byte("npm exe"), 0644)
 			Expect(err).To(BeNil())
 		}
 
@@ -81,10 +80,10 @@ var _ = Describe("Supply", func() {
 			err := os.MkdirAll(filepath.Join(yarnDir, "bin"), 0755)
 			Expect(err).To(BeNil())
 
-			err = ioutil.WriteFile(filepath.Join(yarnDir, "bin", "yarn"), []byte("yarn exe"), 0644)
+			err = os.WriteFile(filepath.Join(yarnDir, "bin", "yarn"), []byte("yarn exe"), 0644)
 			Expect(err).To(BeNil())
 
-			err = ioutil.WriteFile(filepath.Join(yarnDir, "bin", "yarnpkg"), []byte("yarnpkg exe"), 0644)
+			err = os.WriteFile(filepath.Join(yarnDir, "bin", "yarnpkg"), []byte("yarnpkg exe"), 0644)
 			Expect(err).To(BeNil())
 		}
 
@@ -117,7 +116,7 @@ var _ = Describe("Supply", func() {
 
 		JustBeforeEach(func() {
 			if packageJSON != "" {
-				ioutil.WriteFile(filepath.Join(buildDir, "package.json"), []byte(packageJSON), 0644)
+				os.WriteFile(filepath.Join(buildDir, "package.json"), []byte(packageJSON), 0644)
 			}
 		})
 
@@ -267,7 +266,7 @@ var _ = Describe("Supply", func() {
 				}
 
 				for _, testCase := range testCases {
-					Expect(ioutil.WriteFile(nvmrcFile, []byte(testCase[0]), 0777)).To(Succeed())
+					Expect(os.WriteFile(nvmrcFile, []byte(testCase[0]), 0777)).To(Succeed())
 					Expect(supplier.LoadNvmrc()).To(Succeed())
 					Expect(supplier.NvmrcNodeVersion).To(Equal(testCase[1]), fmt.Sprintf("failed for test case %s : %s", testCase[0], testCase[1]))
 				}
@@ -288,7 +287,7 @@ var _ = Describe("Supply", func() {
 				}
 
 				for _, testCase := range testCases {
-					Expect(ioutil.WriteFile(nvmrcFile, []byte(testCase[0]), 0777)).To(Succeed())
+					Expect(os.WriteFile(nvmrcFile, []byte(testCase[0]), 0777)).To(Succeed())
 					Expect(supplier.LoadNvmrc()).To(Succeed())
 					Expect(supplier.NvmrcNodeVersion).To(Equal(testCase[1]), fmt.Sprintf("failed for test case %s : %s", testCase[0], testCase[1]))
 				}
@@ -299,7 +298,7 @@ var _ = Describe("Supply", func() {
 			It("should read and trim lts versions", func() {
 				nvmrcFile := filepath.Join(buildDir, ".nvmrc")
 				defer os.Remove(nvmrcFile)
-				Expect(ioutil.WriteFile(nvmrcFile, []byte("node"), 0777)).To(Succeed())
+				Expect(os.WriteFile(nvmrcFile, []byte("node"), 0777)).To(Succeed())
 				Expect(supplier.LoadNvmrc()).To(Succeed())
 				Expect(supplier.NvmrcNodeVersion).To(Equal("*"), fmt.Sprintf("failed for test case %s : %s", "node", "*"))
 			})
@@ -441,7 +440,7 @@ var _ = Describe("Supply", func() {
 			It("validate should succeed", func() {
 				validVersions := []string{"11.4", "node", "lts/*", "lts/carbon", "10", "10.1.1"}
 				for _, version := range validVersions {
-					Expect(ioutil.WriteFile(filepath.Join(buildDir, ".nvmrc"), []byte(version), 0777)).To(Succeed())
+					Expect(os.WriteFile(filepath.Join(buildDir, ".nvmrc"), []byte(version), 0777)).To(Succeed())
 					Expect(supplier.LoadNvmrc()).To(Succeed())
 				}
 			})
@@ -451,7 +450,7 @@ var _ = Describe("Supply", func() {
 			It("validate should be fail", func() {
 				invalidVersions := []string{"11.4.x", "invalid", "~1.1.2", ">11.0", "< 11.4.2", "^1.2.3", "11.*.*", "10.1.x", "10.1.X", "lts/invalidname"}
 				for _, version := range invalidVersions {
-					Expect(ioutil.WriteFile(filepath.Join(buildDir, ".nvmrc"), []byte(version), 0777)).To(Succeed())
+					Expect(os.WriteFile(filepath.Join(buildDir, ".nvmrc"), []byte(version), 0777)).To(Succeed())
 					Expect(supplier.LoadNvmrc()).ToNot(Succeed())
 				}
 			})
@@ -728,7 +727,7 @@ var _ = Describe("Supply", func() {
 	}
 }
 `
-				Expect(ioutil.WriteFile(filepath.Join(buildDir, "package.json"), []byte(packageJSON), 0644)).To(Succeed())
+				Expect(os.WriteFile(filepath.Join(buildDir, "package.json"), []byte(packageJSON), 0644)).To(Succeed())
 			})
 
 			It("sets PreBuild", func() {
@@ -748,7 +747,7 @@ var _ = Describe("Supply", func() {
 	}
 }
 `
-				Expect(ioutil.WriteFile(filepath.Join(buildDir, "package.json"), []byte(packageJSON), 0644)).To(Succeed())
+				Expect(os.WriteFile(filepath.Join(buildDir, "package.json"), []byte(packageJSON), 0644)).To(Succeed())
 			})
 
 			It("sets PostBuild", func() {
@@ -768,7 +767,7 @@ var _ = Describe("Supply", func() {
 	}
 }
 `
-				Expect(ioutil.WriteFile(filepath.Join(buildDir, "package.json"), []byte(packageJSON), 0644)).To(Succeed())
+				Expect(os.WriteFile(filepath.Join(buildDir, "package.json"), []byte(packageJSON), 0644)).To(Succeed())
 			})
 
 			It("sets StartScript", func() {
@@ -786,7 +785,7 @@ var _ = Describe("Supply", func() {
 
 		Context("yarn.lock exists", func() {
 			BeforeEach(func() {
-				Expect(ioutil.WriteFile(filepath.Join(buildDir, "yarn.lock"), []byte("{}"), 0644)).To(Succeed())
+				Expect(os.WriteFile(filepath.Join(buildDir, "yarn.lock"), []byte("{}"), 0644)).To(Succeed())
 			})
 			It("sets UseYarn to true", func() {
 				Expect(supplier.ReadPackageJSON()).To(Succeed())
@@ -827,7 +826,7 @@ var _ = Describe("Supply", func() {
   }
 }
 `
-				Expect(ioutil.WriteFile(filepath.Join(buildDir, "package.json"), []byte(packageJSON), 0644)).To(Succeed())
+				Expect(os.WriteFile(filepath.Join(buildDir, "package.json"), []byte(packageJSON), 0644)).To(Succeed())
 			})
 			It("sets HasDevDependencies to true", func() {
 				Expect(supplier.ReadPackageJSON()).To(Succeed())
@@ -858,7 +857,7 @@ var _ = Describe("Supply", func() {
 		Context("node_modules exists and has NO subdirectories", func() {
 			BeforeEach(func() {
 				Expect(os.MkdirAll(filepath.Join(buildDir, "node_modules"), 0755)).To(BeNil())
-				Expect(ioutil.WriteFile(filepath.Join(buildDir, "node_modules", "a_file"), []byte("content"), 0644)).To(BeNil())
+				Expect(os.WriteFile(filepath.Join(buildDir, "node_modules", "a_file"), []byte("content"), 0644)).To(BeNil())
 			})
 
 			It("logs a pro tip", func() {
@@ -904,7 +903,7 @@ var _ = Describe("Supply", func() {
 		)
 
 		JustBeforeEach(func() {
-			logfile, err = ioutil.TempFile("", "nodejs-buildpack.log")
+			logfile, err = os.CreateTemp("", "nodejs-buildpack.log")
 			Expect(err).To(BeNil())
 
 			_, err = logfile.Write([]byte(contents))
@@ -990,7 +989,7 @@ var _ = Describe("Supply", func() {
 		)
 
 		JustBeforeEach(func() {
-			logfile, err = ioutil.TempFile("", "nodejs-buildpack.log")
+			logfile, err = os.CreateTemp("", "nodejs-buildpack.log")
 			Expect(err).To(BeNil())
 
 			_, err = logfile.Write([]byte(contents))
@@ -1202,7 +1201,7 @@ var _ = Describe("Supply", func() {
 			})
 
 			It("sets NODE_PATH environment file", func() {
-				Expect(ioutil.ReadFile(filepath.Join(depDir, "env", "NODE_PATH"))).To(Equal([]byte(filepath.Join(depDir, "node_modules"))))
+				Expect(os.ReadFile(filepath.Join(depDir, "env", "NODE_PATH"))).To(Equal([]byte(filepath.Join(depDir, "node_modules"))))
 			})
 
 			It("sets NODE_PATH environment variable", func() {
@@ -1241,7 +1240,7 @@ var _ = Describe("Supply", func() {
 				})
 
 				It("lists the installed packages", func() {
-					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), ioutil.Discard, "npm", "ls", "--depth=0").Return(nil).Do(func(_ string, outBuf io.Writer, _ io.Writer, _ string, _ ...string) {
+					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), io.Discard, "npm", "ls", "--depth=0").Return(nil).Do(func(_ string, outBuf io.Writer, _ io.Writer, _ string, _ ...string) {
 						_, err := outBuf.Write([]byte("some-dep" + supply.UnmetDependency))
 						Expect(err).NotTo(HaveOccurred())
 					})
@@ -1255,7 +1254,7 @@ var _ = Describe("Supply", func() {
 
 			Context("NODE_VERBOSE is not true", func() {
 				It("does not list the installed packages", func() {
-					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), ioutil.Discard, "npm", "ls", "--depth=0").Return(nil).Do(func(_ string, outBuf io.Writer, _ io.Writer, _ string, _ ...string) {
+					mockCommand.EXPECT().Execute(buildDir, gomock.Any(), io.Discard, "npm", "ls", "--depth=0").Return(nil).Do(func(_ string, outBuf io.Writer, _ io.Writer, _ string, _ ...string) {
 						_, err := outBuf.Write([]byte("some-dep" + supply.UnmetDependency))
 						buffer.WriteString("some-dep")
 						Expect(err).NotTo(HaveOccurred())
@@ -1357,7 +1356,7 @@ var _ = Describe("Supply", func() {
 			err = supplier.CreateDefaultEnv()
 			Expect(err).To(BeNil())
 
-			contents, err := ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "env", "NODE_HOME"))
+			contents, err := os.ReadFile(filepath.Join(depsDir, depsIdx, "env", "NODE_HOME"))
 			Expect(err).To(BeNil())
 
 			Expect(string(contents)).To(Equal(filepath.Join(depsDir, depsIdx, "node")))
@@ -1388,7 +1387,7 @@ var _ = Describe("Supply", func() {
 				Expect(os.Unsetenv(key)).To(BeNil())
 
 				Expect(supplier.CreateDefaultEnv()).To(BeNil())
-				contents, err := ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "env", key))
+				contents, err := os.ReadFile(filepath.Join(depsDir, depsIdx, "env", key))
 				Expect(err).To(BeNil())
 
 				Expect(string(contents)).To(Equal(expected))
@@ -1406,7 +1405,7 @@ var _ = Describe("Supply", func() {
 			err = supplier.CreateDefaultEnv()
 			Expect(err).To(BeNil())
 
-			contents, err := ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "node.sh"))
+			contents, err := os.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "node.sh"))
 			Expect(err).To(BeNil())
 
 			Expect(string(contents)).To(ContainSubstring("export NODE_HOME=" + filepath.Join("$DEPS_DIR", depsIdx, "node")))
@@ -1434,7 +1433,7 @@ export PATH=$PATH:"$HOME/bin":$NODE_PATH/.bin
 			err = supplier.CreateDefaultEnv()
 			Expect(err).To(BeNil())
 
-			contents, err := ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "env", "NODE_HOME"))
+			contents, err := os.ReadFile(filepath.Join(depsDir, depsIdx, "env", "NODE_HOME"))
 			Expect(err).To(BeNil())
 
 			Expect(string(contents)).To(Equal(filepath.Join(depsDir, depsIdx, "node")))
@@ -1465,7 +1464,7 @@ export PATH=$PATH:"$HOME/bin":$NODE_PATH/.bin
 				Expect(os.Unsetenv(key)).To(BeNil())
 
 				Expect(supplier.CreateDefaultEnv()).To(BeNil())
-				contents, err := ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "env", key))
+				contents, err := os.ReadFile(filepath.Join(depsDir, depsIdx, "env", key))
 				Expect(err).To(BeNil())
 
 				Expect(string(contents)).To(Equal(expected))
@@ -1483,7 +1482,7 @@ export PATH=$PATH:"$HOME/bin":$NODE_PATH/.bin
 			err = supplier.CreateDefaultEnv()
 			Expect(err).To(BeNil())
 
-			contents, err := ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "node.sh"))
+			contents, err := os.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "node.sh"))
 			Expect(err).To(BeNil())
 
 			Expect(string(contents)).To(ContainSubstring("export NODE_HOME=" + filepath.Join("$DEPS_DIR", depsIdx, "node")))

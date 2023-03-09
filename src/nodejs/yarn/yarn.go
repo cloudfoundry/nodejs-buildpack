@@ -2,7 +2,6 @@ package yarn
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -53,7 +52,7 @@ func (y *Yarn) Build(buildDir, cacheDir string) error {
 	for k, v := range yarnConfig {
 		cmd := exec.Command("yarn", "config", "set", k, v)
 		cmd.Dir = buildDir
-		cmd.Stdout = ioutil.Discard
+		cmd.Stdout = io.Discard
 		cmd.Stderr = os.Stderr
 		if err := y.Command.Run(cmd); err != nil {
 			return err
@@ -69,7 +68,7 @@ func (y *Yarn) Build(buildDir, cacheDir string) error {
 		return err
 	}
 
-	if err := y.Command.Execute(buildDir, ioutil.Discard, os.Stderr, "yarn", checkArgs...); err != nil {
+	if err := y.Command.Execute(buildDir, io.Discard, os.Stderr, "yarn", checkArgs...); err != nil {
 		if _, ok := err.(*exec.ExitError); !ok {
 			return err
 		}

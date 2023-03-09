@@ -2,10 +2,10 @@ package finalize_test
 
 import (
 	"bytes"
-	"io/ioutil"
-	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/finalize"
 	"os"
 	"path/filepath"
+
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/finalize"
 
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/cloudfoundry/libbuildpack/ansicleaner"
@@ -30,10 +30,10 @@ var _ = Describe("Finalize", func() {
 	)
 
 	BeforeEach(func() {
-		buildDir, err = ioutil.TempDir("", "nodejs-buildpack.build.")
+		buildDir, err = os.MkdirTemp("", "nodejs-buildpack.build.")
 		Expect(err).To(BeNil())
 
-		depsDir, err = ioutil.TempDir("", "nodejs-buildpack.deps.")
+		depsDir, err = os.MkdirTemp("", "nodejs-buildpack.deps.")
 		Expect(err).To(BeNil())
 
 		depsIdx = "9"
@@ -78,7 +78,7 @@ var _ = Describe("Finalize", func() {
 	}
 }
 `
-				Expect(ioutil.WriteFile(filepath.Join(buildDir, "package.json"), []byte(packageJSON), 0644)).To(Succeed())
+				Expect(os.WriteFile(filepath.Join(buildDir, "package.json"), []byte(packageJSON), 0644)).To(Succeed())
 			})
 
 			It("sets StartScript", func() {
@@ -92,12 +92,12 @@ var _ = Describe("Finalize", func() {
 		var buildpackDir string
 
 		BeforeEach(func() {
-			buildpackDir, err = ioutil.TempDir("", "nodejs-buildpack.buildpack.")
+			buildpackDir, err = os.MkdirTemp("", "nodejs-buildpack.buildpack.")
 			Expect(err).To(BeNil())
 			Expect(os.MkdirAll(filepath.Join(buildpackDir, "profile"), 0755)).To(Succeed())
-			Expect(ioutil.WriteFile(filepath.Join(buildpackDir, "profile", "test.sh"), []byte("Random Text"), 0755)).To(Succeed())
-			Expect(ioutil.WriteFile(filepath.Join(buildpackDir, "profile", "other.sh"), []byte("more Text"), 0755)).To(Succeed())
-			Expect(ioutil.WriteFile(filepath.Join(buildpackDir, "profile", "test.rb"), []byte("Ruby Text"), 0755)).To(Succeed())
+			Expect(os.WriteFile(filepath.Join(buildpackDir, "profile", "test.sh"), []byte("Random Text"), 0755)).To(Succeed())
+			Expect(os.WriteFile(filepath.Join(buildpackDir, "profile", "other.sh"), []byte("more Text"), 0755)).To(Succeed())
+			Expect(os.WriteFile(filepath.Join(buildpackDir, "profile", "test.rb"), []byte("Ruby Text"), 0755)).To(Succeed())
 			mockManifest.EXPECT().RootDir().Return(buildpackDir)
 		})
 
@@ -107,20 +107,20 @@ var _ = Describe("Finalize", func() {
 
 		It("Copies scripts from <buildpack_dir>/profile to <dep_dir>/profile.d", func() {
 			Expect(finalizer.CopyProfileScripts()).To(Succeed())
-			Expect(ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "test.sh"))).To(Equal([]byte("Random Text")))
-			Expect(ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "other.sh"))).To(Equal([]byte("more Text")))
+			Expect(os.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "test.sh"))).To(Equal([]byte("Random Text")))
+			Expect(os.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "other.sh"))).To(Equal([]byte("more Text")))
 		})
 
 		It("Copies ruby scripts from <buildpack_dir>/profile to <dep_dir>/scripts", func() {
 			Expect(finalizer.CopyProfileScripts()).To(Succeed())
-			Expect(ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "scripts", "test.rb"))).To(Equal([]byte("Ruby Text")))
+			Expect(os.ReadFile(filepath.Join(depsDir, depsIdx, "scripts", "test.rb"))).To(Equal([]byte("Ruby Text")))
 			Expect(filepath.Join(depsDir, depsIdx, "profile.d", "test.rb")).ToNot(BeAnExistingFile())
 		})
 
 		It("Creates a profile.d file to source the ruby script", func() {
 			Expect(finalizer.CopyProfileScripts()).To(Succeed())
 			expected := "eval $(ruby $DEPS_DIR/9/scripts/test.rb)\n"
-			actual, err := ioutil.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "test.rb.sh"))
+			actual, err := os.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "test.rb.sh"))
 			Expect(err).ToNot(HaveOccurred())
 			Expect(string(actual)).To(Equal(expected))
 		})
@@ -129,7 +129,7 @@ var _ = Describe("Finalize", func() {
 	Describe("WarnNoStart", func() {
 		Context("Procfile exists", func() {
 			BeforeEach(func() {
-				Expect(ioutil.WriteFile(filepath.Join(buildDir, "Procfile"), []byte("xxx"), 0644)).To(Succeed())
+				Expect(os.WriteFile(filepath.Join(buildDir, "Procfile"), []byte("xxx"), 0644)).To(Succeed())
 			})
 
 			It("Doesn't log a warning", func() {
@@ -151,7 +151,7 @@ var _ = Describe("Finalize", func() {
 
 		Context("server.js exists", func() {
 			BeforeEach(func() {
-				Expect(ioutil.WriteFile(filepath.Join(buildDir, "server.js"), []byte("xxx"), 0644)).To(Succeed())
+				Expect(os.WriteFile(filepath.Join(buildDir, "server.js"), []byte("xxx"), 0644)).To(Succeed())
 			})
 
 			It("Doesn't log a warning", func() {

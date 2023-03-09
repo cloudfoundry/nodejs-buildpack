@@ -2,7 +2,7 @@ package yarn_test
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -32,9 +32,11 @@ var _ = Describe("Yarn", func() {
 	)
 
 	BeforeEach(func() {
-		buildDir, err = ioutil.TempDir("", "nodejs-buildpack.build.")
-		cacheDir, err = ioutil.TempDir("", "nodejs-buildpack.cache.")
-		Expect(err).To(BeNil())
+		buildDir, err = os.MkdirTemp("", "nodejs-buildpack.build.")
+		Expect(err).NotTo(HaveOccurred())
+
+		cacheDir, err = os.MkdirTemp("", "nodejs-buildpack.cache.")
+		Expect(err).NotTo(HaveOccurred())
 
 		buffer = new(bytes.Buffer)
 
@@ -87,7 +89,7 @@ var _ = Describe("Yarn", func() {
 			JustBeforeEach(func() {
 				Expect(os.MkdirAll(filepath.Join(buildDir, "npm-packages-offline-cache"), 0755)).To(Succeed())
 
-				mockCommand.EXPECT().Execute(buildDir, ioutil.Discard, gomock.Any(), "yarn", []string{"check", "--offline"}).Return(yarnCheck)
+				mockCommand.EXPECT().Execute(buildDir, io.Discard, gomock.Any(), "yarn", []string{"check", "--offline"}).Return(yarnCheck)
 			})
 
 			It("tells the user it is running in offline mode", func() {
@@ -135,7 +137,7 @@ var _ = Describe("Yarn", func() {
 
 		Context("NO npm-packages-offline-cache directory", func() {
 			JustBeforeEach(func() {
-				mockCommand.EXPECT().Execute(buildDir, ioutil.Discard, gomock.Any(), "yarn", []string{"check"}).Return(yarnCheck)
+				mockCommand.EXPECT().Execute(buildDir, io.Discard, gomock.Any(), "yarn", []string{"check"}).Return(yarnCheck)
 			})
 
 			It("tells the user it is running in online mode", func() {

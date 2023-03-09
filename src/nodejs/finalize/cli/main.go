@@ -2,23 +2,23 @@ package main
 
 import (
 	"io"
-	"io/ioutil"
-	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/finalize"
-	_ "github.com/cloudfoundry/nodejs-buildpack/src/nodejs/hooks"
 	"os"
 	"time"
+
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/finalize"
+	_ "github.com/cloudfoundry/nodejs-buildpack/src/nodejs/hooks"
 
 	"github.com/cloudfoundry/libbuildpack"
 )
 
 func main() {
-	logfile, err := ioutil.TempFile("", "cloudfoundry.nodejs-buildpack.finalize")
-	defer logfile.Close()
+	logfile, err := os.CreateTemp("", "cloudfoundry.nodejs-buildpack.finalize")
 	if err != nil {
 		logger := libbuildpack.NewLogger(os.Stdout)
 		logger.Error("Unable to create log file: %s", err.Error())
 		os.Exit(8)
 	}
+	defer logfile.Close()
 
 	stdout := io.MultiWriter(os.Stdout, logfile)
 	logger := libbuildpack.NewLogger(stdout)

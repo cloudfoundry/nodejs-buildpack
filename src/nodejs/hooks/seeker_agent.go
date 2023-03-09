@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/cloudfoundry/libbuildpack"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -15,6 +13,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/cloudfoundry/libbuildpack"
 )
 
 const (
@@ -74,7 +74,7 @@ func (h *SeekerAfterCompileHook) AfterCompile(compiler *libbuildpack.Stager) err
 	if err = h.PrependRequire(compiler); err != nil {
 		return err
 	}
-	seekerTempFolder, err := ioutil.TempDir(os.TempDir(), "seeker_tmp")
+	seekerTempFolder, err := os.MkdirTemp(os.TempDir(), "seeker_tmp")
 	if err != nil {
 		h.Log.Error("Failed to create temp dir")
 		return err
@@ -107,7 +107,7 @@ func (h *SeekerAfterCompileHook) PrependRequire(compiler *libbuildpack.Stager) e
 		return nil
 	}
 	absolutePathToEntryPoint := filepath.Join(compiler.BuildDir(), entryPointPath)
-	c, err := ioutil.ReadFile(absolutePathToEntryPoint)
+	c, err := os.ReadFile(absolutePathToEntryPoint)
 	if err != nil {
 		h.Log.Error("Failed to read entry point module: %s, Seeker agent will not be enabled", absolutePathToEntryPoint)
 		return err
@@ -118,7 +118,7 @@ func (h *SeekerAfterCompileHook) PrependRequire(compiler *libbuildpack.Stager) e
 		return nil
 	}
 	h.Log.Debug("Trying to prepend %s to %s", SeekerRequire, absolutePathToEntryPoint)
-	return ioutil.WriteFile(absolutePathToEntryPoint, append([]byte(SeekerRequire), c...), 0644)
+	return os.WriteFile(absolutePathToEntryPoint, append([]byte(SeekerRequire), c...), 0644)
 }
 
 func (h *SeekerAfterCompileHook) downloadAgent(serviceCredentials SeekerCredentials, seekerTempFolder string) (string, error) {
@@ -155,7 +155,7 @@ func (h *SeekerAfterCompileHook) updateNodeModules(tgzPath string, appRoot strin
 	if os.Getenv("BP_DEBUG") != "" {
 		err = h.Command.Execute(appRoot, os.Stdout, os.Stderr, "npm", "install", "--save", tgzPath, "--prefix", seekerModule)
 	} else {
-		err = h.Command.Execute(appRoot, ioutil.Discard, ioutil.Discard, "npm", "install", "--save", tgzPath, "--prefix", seekerModule)
+		err = h.Command.Execute(appRoot, io.Discard, io.Discard, "npm", "install", "--save", tgzPath, "--prefix", seekerModule)
 	}
 	if err != nil {
 		h.Log.Error("npm install --save " + tgzPath + " --prefix seeker Error: " + err.Error())
@@ -166,7 +166,7 @@ func (h *SeekerAfterCompileHook) updateNodeModules(tgzPath string, appRoot strin
 }
 
 func (h *SeekerAfterCompileHook) listContents(dir string) error {
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return err
 	}

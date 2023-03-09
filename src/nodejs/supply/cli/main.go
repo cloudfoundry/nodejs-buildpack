@@ -2,7 +2,6 @@ package main
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 	"time"
 
@@ -15,13 +14,13 @@ import (
 )
 
 func main() {
-	logfile, err := ioutil.TempFile("", "cloudfoundry.nodejs-buildpack.supply")
-	defer logfile.Close()
+	logfile, err := os.CreateTemp("", "cloudfoundry.nodejs-buildpack.supply")
 	if err != nil {
 		logger := libbuildpack.NewLogger(os.Stdout)
 		logger.Error("Unable to create log file: %s", err.Error())
 		os.Exit(8)
 	}
+	defer logfile.Close()
 
 	stdout := io.MultiWriter(os.Stdout, logfile)
 	logger := libbuildpack.NewLogger(stdout)

@@ -1,3 +1,9 @@
+v1.8.7 Mar 14, 2023
+====================
+
+* Add node 18.15.0, remove node 18.13.0 for stack(s) cflinuxfs4, cflinuxfs3
+
+
 v1.8.6 Feb 20, 2023
 ====================
 

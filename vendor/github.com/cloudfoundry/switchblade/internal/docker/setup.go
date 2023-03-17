@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	BuildpackAppLifecycleRepoURL = "https://github.com/cloudfoundry/buildpackapplifecycle/archive/refs/heads/master.zip"
+	BuildpackAppLifecycleRepoURL = "https://github.com/cloudfoundry/buildpackapplifecycle/archive/refs/heads/main.zip"
 	InternalNetworkName          = "switchblade-internal"
 	BridgeNetworkName            = "bridge"
 )

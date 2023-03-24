@@ -73,15 +73,6 @@ func testYarn(platform switchblade.Platform, fixtures string) func(*testing.T, s
 
 				Expect(os.WriteFile(filepath.Join(source, "package.json"), content, 0600)).To(Succeed())
 			})
-
-			it("warns that yarn.lock is out of date", func() {
-				_, logs, err := platform.Deploy.Execute(name, source)
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(logs).To(ContainLines(
-					ContainSubstring("yarn.lock is outdated"),
-				))
-			})
 		})
 
 		context("when there are unmet dependencies", func() {

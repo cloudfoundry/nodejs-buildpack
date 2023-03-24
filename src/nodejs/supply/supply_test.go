@@ -279,11 +279,10 @@ var _ = Describe("Supply", func() {
 				defer os.Remove(nvmrcFile)
 
 				testCases := [][]string{
-					{"lts/*", "10.*.*"},
-					{"lts/argon", "4.*.*"},
-					{"lts/boron", "6.*.*"},
-					{"lts/carbon", "8.*.*"},
-					{"lts/dubnium", "10.*.*"},
+					{"lts/fermium", "14.*.*"},
+					{"lts/gallium", "16.*.*"},
+					{"lts/hydrogen", "18.*.*"},
+					{"lts/*", "18.*.*"},
 				}
 
 				for _, testCase := range testCases {
@@ -438,7 +437,7 @@ var _ = Describe("Supply", func() {
 
 		Context("given valid .nvmrc", func() {
 			It("validate should succeed", func() {
-				validVersions := []string{"11.4", "node", "lts/*", "lts/carbon", "10", "10.1.1"}
+				validVersions := []string{"11.4", "node", "lts/*", "lts/hydrogen", "10", "10.1.1"}
 				for _, version := range validVersions {
 					Expect(os.WriteFile(filepath.Join(buildDir, ".nvmrc"), []byte(version), 0777)).To(Succeed())
 					Expect(supplier.LoadNvmrc()).To(Succeed())

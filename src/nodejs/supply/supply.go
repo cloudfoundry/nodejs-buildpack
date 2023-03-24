@@ -83,10 +83,9 @@ type Supplier struct {
 }
 
 var LTS = map[string]int{
-	"argon":   4,
-	"boron":   6,
-	"carbon":  8,
-	"dubnium": 10,
+	"fermium":  14,
+	"gallium":  16,
+	"hydrogen": 18,
 }
 
 func Run(s *Supplier) error {

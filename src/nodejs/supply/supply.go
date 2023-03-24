@@ -91,6 +91,12 @@ var LTS = map[string]int{
 
 func Run(s *Supplier) error {
 	return checksum.Do(s.Stager.BuildDir(), s.Log.Debug, func() error {
+		s.Log.BeginStep("Bootstrapping python")
+		if err := s.BootstrapPython(); err != nil {
+			s.Log.Error("Unable to bootstrap python: %s", err.Error())
+			return err
+		}
+
 		s.Log.BeginStep("Installing binaries")
 
 		if err := s.LoadPackageJSON(); err != nil {
@@ -190,6 +196,44 @@ func Run(s *Supplier) error {
 
 		return nil
 	})
+}
+
+func (s *Supplier) BootstrapPython() error {
+	dep, err := s.Manifest.DefaultVersion("python")
+	if err != nil {
+		return err
+	}
+
+	err = s.Installer.InstallDependency(dep, "/tmp/python")
+	if err != nil {
+		return err
+	}
+
+	path := "/tmp/python/bin"
+	if p, ok := os.LookupEnv("PATH"); ok {
+		path = fmt.Sprintf("%s:%s", p, path)
+	}
+	os.Setenv("PATH", path)
+
+	libraryPath := "/tmp/python/lib"
+	if lp, ok := os.LookupEnv("LIBRARY_PATH"); ok {
+		libraryPath = fmt.Sprintf("%s:%s", lp, libraryPath)
+	}
+	os.Setenv("LIBRARY_PATH", libraryPath)
+
+	ldLibraryPath := "/tmp/python/lib"
+	if lp, ok := os.LookupEnv("LD_LIBRARY_PATH"); ok {
+		ldLibraryPath = fmt.Sprintf("%s:%s", lp, ldLibraryPath)
+	}
+	os.Setenv("LD_LIBRARY_PATH", ldLibraryPath)
+
+	cpath := "/tmp/python/include"
+	if cp, ok := os.LookupEnv("CPATH"); ok {
+		cpath = fmt.Sprintf("%s:%s", cp, cpath)
+	}
+	os.Setenv("CPATH", cpath)
+
+	return nil
 }
 
 func (s *Supplier) WarnUnmetDependencies(deps string) {

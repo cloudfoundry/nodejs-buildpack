@@ -1,6 +1,7 @@
 const fs = require('fs');
 const express = require("express");
 const logfmt = require("logfmt");
+const features = require('cpu-features')();
 
 const app = express();
 app.use(logfmt.requestLogger());

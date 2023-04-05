@@ -562,8 +562,8 @@ github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6D
 github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cloudflare/circl v1.1.0/go.mod h1:prBCrKB9DV4poKZY1l9zBXg2QJY7mvgRvtMxxK7fi4I=
-github.com/cloudfoundry/libbuildpack v0.0.0-20230317183522-0a9b987be6a7 h1:1omqqLN64yt+oJVN3ZiOjkVUFux+Jnsp1ICmi9HUJbo=
-github.com/cloudfoundry/libbuildpack v0.0.0-20230317183522-0a9b987be6a7/go.mod h1:XRhoi47AeOKXqejMx6cazvsq9KwzkTo1OBOXEjeBo3Q=
+github.com/cloudfoundry/libbuildpack v0.0.0-20230331144814-0b11b8e0551a h1:vU9Bj3W4ntmpBRztkCHdhsnL6rMJ2MBBfFWkQjEH3Mo=
+github.com/cloudfoundry/libbuildpack v0.0.0-20230331144814-0b11b8e0551a/go.mod h1:87NOsNrnPfix9hs688HCJmUraAMG3U4kIGlUekNQtuI=
 github.com/cloudfoundry/switchblade v0.2.0 h1:00qSzq5we72Lp24AVMP2wUcUiuN0r07kr/f3ooYYrEs=
 github.com/cloudfoundry/switchblade v0.2.0/go.mod h1:jz0DwA79z5j2uQDgTQAqiP6BeZTu00cLmiOLQlXAuBU=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=

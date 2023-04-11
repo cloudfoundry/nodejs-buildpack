@@ -163,6 +163,18 @@ deployment, logs, err := platform.Deploy.
   Execute("my-app", "/path/to/my/app/source")
 ```
 
+### Specifying a start command: `WithStartCommand`
+
+```go
+// Deploy an application called "my-app" with source code located at
+// /path/to/my/app/source. This is similar to running the following `cf`
+// commands:
+//   cf push my-app -c "start my-app"
+deployment, logs, err := platform.Deploy.
+  WithStartCommand("start my-app").
+  Execute("my-app", "/path/to/my/app/source")
+```
+
 ## Other utilities
 
 ### Random name generation: `RandomName`

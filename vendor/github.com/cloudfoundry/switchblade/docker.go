@@ -79,6 +79,11 @@ func (p dockerDeployProcess) WithServices(services map[string]Service) DeployPro
 	return p
 }
 
+func (p dockerDeployProcess) WithStartCommand(command string) DeployProcess {
+	p.start = p.start.WithStartCommand(command)
+	return p
+}
+
 func (p dockerDeployProcess) Execute(name, path string) (Deployment, fmt.Stringer, error) {
 	ctx := context.Background()
 	logs := bytes.NewBuffer(nil)

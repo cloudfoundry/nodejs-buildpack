@@ -73,6 +73,11 @@ func (p cloudFoundryDeployProcess) WithServices(services map[string]Service) Dep
 	return p
 }
 
+func (p cloudFoundryDeployProcess) WithStartCommand(command string) DeployProcess {
+	p.setup = p.setup.WithStartCommand(command)
+	return p
+}
+
 func (p cloudFoundryDeployProcess) Execute(name, source string) (Deployment, fmt.Stringer, error) {
 	logs := bytes.NewBuffer(nil)
 	home := filepath.Join(p.workspace, name)

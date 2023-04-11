@@ -24,6 +24,7 @@ type SetupPhase interface {
 	WithEnv(env map[string]string) SetupPhase
 	WithoutInternetAccess() SetupPhase
 	WithServices(services map[string]map[string]interface{}) SetupPhase
+	WithStartCommand(command string) SetupPhase
 }
 
 type Setup struct {
@@ -36,6 +37,7 @@ type Setup struct {
 	env            map[string]string
 	services       map[string]map[string]interface{}
 	lookupHost     func(string) ([]string, error)
+	startCommand   string
 }
 
 func NewSetup(cli Executable, home, stack string) Setup {
@@ -75,6 +77,11 @@ func (s Setup) WithServices(services map[string]map[string]interface{}) SetupPha
 
 func (s Setup) WithCustomHostLookup(lookupHost func(string) ([]string, error)) Setup {
 	s.lookupHost = lookupHost
+	return s
+}
+
+func (s Setup) WithStartCommand(command string) SetupPhase {
+	s.startCommand = command
 	return s
 }
 
@@ -320,6 +327,10 @@ func (s Setup) Run(log io.Writer, home, name, source string) (string, error) {
 	args := []string{"push", name, "-p", source, "--no-start", "-s", s.stack}
 	for _, buildpack := range s.buildpacks {
 		args = append(args, "-b", buildpack)
+	}
+
+	if s.startCommand != "" {
+		args = append(args, "-c", s.startCommand)
 	}
 
 	err = s.cli.Execute(pexec.Execution{

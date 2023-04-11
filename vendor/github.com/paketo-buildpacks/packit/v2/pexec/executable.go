@@ -57,6 +57,7 @@ func (e Executable) Execute(execution Execution) error {
 
 	cmd.Stdout = execution.Stdout
 	cmd.Stderr = execution.Stderr
+	cmd.Stdin = execution.Stdin
 
 	return cmd.Run()
 }
@@ -81,4 +82,7 @@ type Execution struct {
 
 	// Stderr is where the output of stderr will be written during the execution.
 	Stderr io.Writer
+
+	// Stdin is where the input of stdin will be read during the execution.
+	Stdin io.Reader
 }

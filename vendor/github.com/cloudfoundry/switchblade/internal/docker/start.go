@@ -4,16 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
-	"os"
-	"path/filepath"
-	"sort"
-
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
 	specs "github.com/opencontainers/image-spec/specs-go/v1"
+	"io"
+	"os"
+	"path/filepath"
+	"sort"
 )
 
 type StartPhase interface {
@@ -21,6 +20,7 @@ type StartPhase interface {
 	WithStack(stack string) StartPhase
 	WithEnv(env map[string]string) StartPhase
 	WithServices(services map[string]map[string]interface{}) StartPhase
+	WithStartCommand(command string) StartPhase
 }
 
 //go:generate faux --interface StartClient --output fakes/start_client.go
@@ -37,12 +37,13 @@ type StartNetworkManager interface {
 }
 
 type Start struct {
-	client    StartClient
-	networks  StartNetworkManager
-	workspace string
-	stack     string
-	env       map[string]string
-	services  map[string]map[string]interface{}
+	client       StartClient
+	networks     StartNetworkManager
+	workspace    string
+	stack        string
+	env          map[string]string
+	services     map[string]map[string]interface{}
+	startCommand string
 }
 
 func NewStart(client StartClient, networks StartNetworkManager, workspace, stack string) Start {
@@ -62,6 +63,7 @@ func (s Start) Run(ctx context.Context, logs io.Writer, name, command string) (s
 		fmt.Sprintf(`VCAP_APPLICATION={"application_name":%[1]q,"name":%[1]q,"process_type":"web","limits":{"mem":1024}}`, name),
 		"VCAP_PLATFORM_OPTIONS={}",
 	}
+
 	for key, value := range s.env {
 		env = append(env, fmt.Sprintf("%s=%s", key, value))
 	}
@@ -91,6 +93,14 @@ func (s Start) Run(ctx context.Context, logs io.Writer, name, command string) (s
 		env = append(env, fmt.Sprintf("VCAP_SERVICES=%s", content))
 	} else {
 		env = append(env, "VCAP_SERVICES={}")
+	}
+
+	if s.startCommand != "" {
+		command = s.startCommand
+	}
+
+	if command == "" {
+		return "", "", fmt.Errorf("error: Start command not specified")
 	}
 
 	containerConfig := container.Config{
@@ -185,5 +195,10 @@ func (s Start) WithEnv(env map[string]string) StartPhase {
 
 func (s Start) WithServices(services map[string]map[string]interface{}) StartPhase {
 	s.services = services
+	return s
+}
+
+func (s Start) WithStartCommand(command string) StartPhase {
+	s.startCommand = command
 	return s
 }

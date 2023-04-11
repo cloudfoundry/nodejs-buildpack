@@ -31,6 +31,7 @@ type DeployProcess interface {
 	WithEnv(env map[string]string) DeployProcess
 	WithoutInternetAccess() DeployProcess
 	WithServices(map[string]Service) DeployProcess
+	WithStartCommand(command string) DeployProcess
 
 	Execute(name, path string) (Deployment, fmt.Stringer, error)
 }

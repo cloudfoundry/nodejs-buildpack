@@ -203,30 +203,30 @@ func (s *Supplier) BootstrapPython() error {
 		return err
 	}
 
-	err = s.Installer.InstallDependency(dep, "/tmp/python")
+	err = s.Installer.InstallDependency(dep, "/tmp/nodejs-buildpack/python")
 	if err != nil {
 		return err
 	}
 
-	path := "/tmp/python/bin"
+	path := "/tmp/nodejs-buildpack/python/bin"
 	if p, ok := os.LookupEnv("PATH"); ok {
 		path = fmt.Sprintf("%s:%s", p, path)
 	}
 	os.Setenv("PATH", path)
 
-	libraryPath := "/tmp/python/lib"
+	libraryPath := "/tmp/nodejs-buildpack/python/lib"
 	if lp, ok := os.LookupEnv("LIBRARY_PATH"); ok {
 		libraryPath = fmt.Sprintf("%s:%s", lp, libraryPath)
 	}
 	os.Setenv("LIBRARY_PATH", libraryPath)
 
-	ldLibraryPath := "/tmp/python/lib"
+	ldLibraryPath := "/tmp/nodejs-buildpack/python/lib"
 	if lp, ok := os.LookupEnv("LD_LIBRARY_PATH"); ok {
 		ldLibraryPath = fmt.Sprintf("%s:%s", lp, ldLibraryPath)
 	}
 	os.Setenv("LD_LIBRARY_PATH", ldLibraryPath)
 
-	cpath := "/tmp/python/include"
+	cpath := "/tmp/nodejs-buildpack/python/include"
 	if cp, ok := os.LookupEnv("CPATH"); ok {
 		cpath = fmt.Sprintf("%s:%s", cp, cpath)
 	}

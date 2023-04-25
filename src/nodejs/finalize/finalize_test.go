@@ -110,20 +110,6 @@ var _ = Describe("Finalize", func() {
 			Expect(os.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "test.sh"))).To(Equal([]byte("Random Text")))
 			Expect(os.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "other.sh"))).To(Equal([]byte("more Text")))
 		})
-
-		It("Copies ruby scripts from <buildpack_dir>/profile to <dep_dir>/scripts", func() {
-			Expect(finalizer.CopyProfileScripts()).To(Succeed())
-			Expect(os.ReadFile(filepath.Join(depsDir, depsIdx, "scripts", "test.rb"))).To(Equal([]byte("Ruby Text")))
-			Expect(filepath.Join(depsDir, depsIdx, "profile.d", "test.rb")).ToNot(BeAnExistingFile())
-		})
-
-		It("Creates a profile.d file to source the ruby script", func() {
-			Expect(finalizer.CopyProfileScripts()).To(Succeed())
-			expected := "eval $(ruby $DEPS_DIR/9/scripts/test.rb)\n"
-			actual, err := os.ReadFile(filepath.Join(depsDir, depsIdx, "profile.d", "test.rb.sh"))
-			Expect(err).ToNot(HaveOccurred())
-			Expect(string(actual)).To(Equal(expected))
-		})
 	})
 
 	Describe("WarnNoStart", func() {

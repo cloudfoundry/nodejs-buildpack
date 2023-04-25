@@ -3,7 +3,6 @@ package finalize
 import (
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/cloudfoundry/libbuildpack"
 )
@@ -89,17 +88,8 @@ func (f *Finalizer) CopyProfileScripts() error {
 	}
 
 	for _, fi := range files {
-		if strings.HasSuffix(fi.Name(), ".rb") {
-			if err := libbuildpack.CopyFile(filepath.Join(path, fi.Name()), filepath.Join(scriptsDir, fi.Name())); err != nil {
-				return err
-			}
-			if err := os.WriteFile(filepath.Join(profiledDir, fi.Name()+".sh"), []byte("eval $(ruby $DEPS_DIR/"+f.Stager.DepsIdx()+"/scripts/"+fi.Name()+")\n"), 0755); err != nil {
-				return err
-			}
-		} else {
-			if err := libbuildpack.CopyFile(filepath.Join(path, fi.Name()), filepath.Join(profiledDir, fi.Name())); err != nil {
-				return err
-			}
+		if err := libbuildpack.CopyFile(filepath.Join(path, fi.Name()), filepath.Join(profiledDir, fi.Name())); err != nil {
+			return err
 		}
 	}
 	return nil

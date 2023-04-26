@@ -20,11 +20,12 @@ type InitializePhase interface {
 }
 
 type Initialize struct {
-	cli Executable
+	cli   Executable
+	stack string
 }
 
-func NewInitialize(cli Executable) Initialize {
-	return Initialize{cli: cli}
+func NewInitialize(cli Executable, stack string) Initialize {
+	return Initialize{cli: cli, stack: stack}
 }
 
 func (i Initialize) Run(buildpacks []Buildpack) error {
@@ -55,7 +56,7 @@ func (i Initialize) Run(buildpacks []Buildpack) error {
 			}
 
 			err = i.cli.Execute(pexec.Execution{
-				Args:   []string{"delete-buildpack", "-f", buildpack.Name},
+				Args:   []string{"delete-buildpack", "-f", buildpack.Name, "-s", i.stack},
 				Stdout: logs,
 				Stderr: logs,
 			})

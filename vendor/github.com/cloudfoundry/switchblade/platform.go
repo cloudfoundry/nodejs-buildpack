@@ -59,7 +59,7 @@ func NewPlatform(platformType, token, stack string) (Platform, error) {
 	case CloudFoundry:
 		cli := pexec.NewExecutable("cf")
 
-		initialize := cloudfoundry.NewInitialize(cli)
+		initialize := cloudfoundry.NewInitialize(cli, stack)
 		setup := cloudfoundry.NewSetup(cli, filepath.Join(home, ".cf"), stack)
 		stage := cloudfoundry.NewStage(cli)
 		teardown := cloudfoundry.NewTeardown(cli)

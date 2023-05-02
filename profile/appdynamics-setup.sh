@@ -1,10 +1,9 @@
 #!/bin/sh
 
-exec 1>> /tmp/appdynamics-setup-profile.out.log
-exec 2>> /tmp/appdynamics-setup-profile.err.log
+logfile="/tmp/appdynamics-setup-profile.out.log"
 
 if [ -n "${APPD_AGENT}" ]; then
-  echo "Exiting. APPD_AGENT variable not set"
+  echo "Exiting. APPD_AGENT variable not set" >> "${logfile}"
   exit 0
 fi
 
@@ -12,7 +11,7 @@ service="$(echo "${VCAP_SERVICES}" | jq -r '[.[][] | select(.name | match("app(-
 credentials=$(echo "${service}" | jq -r '.[0].credentials')
 
 if [ -z "${credentials}" ]; then
-  echo "Exiting. credentials not found in VCAP_SERVICES"
+  echo "Exiting. credentials not found in VCAP_SERVICES" >> "${logfile}"
   exit 0
 fi
 

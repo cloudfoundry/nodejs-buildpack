@@ -279,6 +279,7 @@ var _ = Describe("Supply", func() {
 				defer os.Remove(nvmrcFile)
 
 				testCases := [][]string{
+					{"lts/gallium", "16.*.*"},
 					{"lts/hydrogen", "18.*.*"},
 					{"lts/*", "18.*.*"},
 				}

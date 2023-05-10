@@ -1,3 +1,21 @@
+v1.8.10 May 10, 2023
+=====================
+
+* Deprecate Nodejs v14.x (EOL)
+
+* profile script: do not overwrite std files. This is a follow-up to #605 .profile.d scripts are "sourced" by the lifecycle one after the other, so make sure stdout/err for subsequent scripts are unaffected.
+
+* appdynamics: remove dependency on ruby provided by stack
+  - cflinuxfs4 1.x does not come with ruby. Therefore rewrite profile
+  script from rb to sh.
+  - reactivate appdynamics test suite that was marked as pending
+  in PR #586
+
+* Add node 18.16.0, remove node 18.14.1 for stack(s) cflinuxfs3, cflinuxfs4
+
+* Install bootstrapped Python into nodejs-buildpack specific location (#598)
+
+
 v1.8.9 Apr 11, 2023
 ====================
 

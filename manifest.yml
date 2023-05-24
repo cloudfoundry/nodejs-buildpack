@@ -32,6 +32,10 @@ dependency_deprecation_dates:
   name: node
   date: 2025-04-30
   link: https://github.com/nodejs/Release
+- version_line: 20.x.x
+  name: node
+  date: 2026-04-30
+  link: https://github.com/nodejs/Release
 dependencies:
 - name: node
   version: 16.19.1
@@ -97,6 +101,22 @@ dependencies:
   - cflinuxfs4
   source: https://nodejs.org/dist/v18.16.0/node-v18.16.0.tar.gz
   source_sha256: 6a4f5c5d76e5c50cef673099e56f19bc3266ae363f56ca0ab77dd2f3c5088c6d
+- name: node
+  version: 20.2.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.2.0_linux_x64_cflinuxfs3_f83ab43d.tgz
+  sha256: f83ab43df3db4041614077d3e17bba03418a7513514573f29d0afc2346c71eba
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v20.2.0/node-v20.2.0.tar.gz
+  source_sha256: cd1b0eb67fffe83112034fbdc64b363287e017f835251702f041982633e4b6aa
+- name: node
+  version: 20.2.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.2.0_linux_x64_cflinuxfs4_63d0cbdc.tgz
+  sha256: 63d0cbdc63cc424ea07624b0c506a5248957dbd9f15986e620b6dd62df3e28c9
+  cf_stacks:
+  - cflinuxfs4
+  source: https://nodejs.org/dist/v20.2.0/node-v20.2.0.tar.gz
+  source_sha256: cd1b0eb67fffe83112034fbdc64b363287e017f835251702f041982633e4b6aa
 - name: python
   version: 3.10.10
   uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.10.10_linux_x64_cflinuxfs3_73c718f0.tgz

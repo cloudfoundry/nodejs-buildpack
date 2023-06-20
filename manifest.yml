@@ -117,6 +117,22 @@ dependencies:
   - cflinuxfs4
   source: https://nodejs.org/dist/v20.2.0/node-v20.2.0.tar.gz
   source_sha256: cd1b0eb67fffe83112034fbdc64b363287e017f835251702f041982633e4b6aa
+- name: node
+  version: 20.3.1
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.3.1_linux_x64_cflinuxfs3_32a9a2d2.tgz
+  sha256: 32a9a2d2114fb6fdc4c0ac04a9fb8e9e9f4b2427e6bcdf7a87e204a16b9501ad
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v20.3.1/node-v20.3.1.tar.gz
+  source_sha256: 785cfbf77998a96949d626f7bc63bc0b8e4737eb5dd2054b2e58d876904f5443
+- name: node
+  version: 20.3.1
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.3.1_linux_x64_cflinuxfs4_e1627f36.tgz
+  sha256: e1627f36e26e7b267d678cc2081e8e84d5a883a4b5f76de5565241bc2a1438ff
+  cf_stacks:
+  - cflinuxfs4
+  source: https://nodejs.org/dist/v20.3.1/node-v20.3.1.tar.gz
+  source_sha256: 785cfbf77998a96949d626f7bc63bc0b8e4737eb5dd2054b2e58d876904f5443
 - name: python
   version: 3.10.10
   uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.10.10_linux_x64_cflinuxfs3_73c718f0.tgz

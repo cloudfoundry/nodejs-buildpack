@@ -71,16 +71,16 @@ dependencies:
   source_sha256: 58c10af148bce26f17417f58ab8f71b91003cae87df17cc48e9f09c94edd908f
 - name: node
   version: 18.16.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.16.0_linux_x64_cflinuxfs3_7e821ed0.tgz
-  sha256: 7e821ed080873a51d2db3c126a7f78bd31efc7a040aae03e4b832c6deff24574
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.16.0_linux_x64_cflinuxfs3_f8d46ff3.tgz
+  sha256: f8d46ff393c6faaf1fb8799f1872b9d3071b15f597fe643c4d9a5f26eaf3c45c
   cf_stacks:
   - cflinuxfs3
   source: https://nodejs.org/dist/v18.16.0/node-v18.16.0.tar.gz
   source_sha256: 6a4f5c5d76e5c50cef673099e56f19bc3266ae363f56ca0ab77dd2f3c5088c6d
 - name: node
   version: 18.16.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.16.0_linux_x64_cflinuxfs4_615f6f68.tgz
-  sha256: 615f6f688b9723bd4e13fb64bfe327e5c7b9e9a0b7bcb55f898719eae7a76c3c
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.16.0_linux_x64_cflinuxfs4_29eae750.tgz
+  sha256: 29eae750778cf1f15490c71152f7bbd7a249b1d929033ce1a3bb39f40bcaf0b7
   cf_stacks:
   - cflinuxfs4
   source: https://nodejs.org/dist/v18.16.0/node-v18.16.0.tar.gz

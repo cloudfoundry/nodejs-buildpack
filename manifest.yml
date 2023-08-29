@@ -4,7 +4,7 @@ default_versions:
 - name: node
   version: 18.x
 - name: python
-  version: 3.10.x
+  version: 3.11.x
 include_files:
 - CHANGELOG
 - CONTRIBUTING.md
@@ -36,10 +36,10 @@ dependency_deprecation_dates:
   name: node
   date: 2026-04-30
   link: https://github.com/nodejs/Release
-- version_line: 3.10.x
+- version_line: 3.11.x
   name: python
-  date: 2026-10-04
-  link: https://www.python.org/dev/peps/pep-0619/
+  date: 2027-10-24
+  link: https://www.python.org/dev/peps/pep-0664/
 dependencies:
 - name: node
   version: 16.20.1
@@ -138,21 +138,21 @@ dependencies:
   source: https://nodejs.org/dist/v20.5.1/node-v20.5.1.tar.gz
   source_sha256: 7e07a56c414a8cbb5ab788e7fe8828902af9e61aaaf7c53beff0688b59c75f83
 - name: python
-  version: 3.10.12
-  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.10.12_linux_x64_cflinuxfs3_d2aff6f1.tgz
-  sha256: d2aff6f1777784a859244c910c6cd69f9ce3cb0e57c919210a3f3992b857c9ea
+  version: 3.11.5
+  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.5_linux_x64_cflinuxfs3_5908f935.tgz
+  sha256: 5908f9351693501ed27f4bcd262d07e32e12c589e648382097c888aabff4fd7f
   cf_stacks:
   - cflinuxfs3
-  source: https://www.python.org/ftp/python/3.10.12/Python-3.10.12.tgz
-  source_sha256: a43cd383f3999a6f4a7db2062b2fc9594fefa73e175b3aedafa295a51a7bb65c
+  source: https://www.python.org/ftp/python/3.11.5/Python-3.11.5.tgz
+  source_sha256: a12a0a013a30b846c786c010f2c19dd36b7298d888f7c4bd1581d90ce18b5e58
 - name: python
-  version: 3.10.12
-  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.10.12_linux_x64_cflinuxfs4_94744ec2.tgz
-  sha256: 94744ec26a845b4ff580528ea47d90c777bc3792d56aebf99a7f89245fec78db
+  version: 3.11.5
+  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.5_linux_x64_cflinuxfs4_b4517479.tgz
+  sha256: b4517479416e9a32fc6abc0f834e915a86e79ae6d293b82e780177c9d610025e
   cf_stacks:
   - cflinuxfs4
-  source: https://www.python.org/ftp/python/3.10.12/Python-3.10.12.tgz
-  source_sha256: a43cd383f3999a6f4a7db2062b2fc9594fefa73e175b3aedafa295a51a7bb65c
+  source: https://www.python.org/ftp/python/3.11.5/Python-3.11.5.tgz
+  source_sha256: a12a0a013a30b846c786c010f2c19dd36b7298d888f7c4bd1581d90ce18b5e58
 - name: yarn
   version: 1.22.19
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.19_linux_noarch_any-stack_32d0e82e.tgz

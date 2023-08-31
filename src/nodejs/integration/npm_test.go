@@ -71,7 +71,7 @@ func testNPM(platform switchblade.Platform, fixtures string) func(*testing.T, sp
 				Expect(json.NewDecoder(file).Decode(&pkg)).To(Succeed())
 				Expect(file.Close()).To(Succeed())
 
-				pkg["engines"] = map[string]string{"npm": "^7"}
+				pkg["engines"] = map[string]string{"npm": "^8"}
 				content, err := json.Marshal(pkg)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(os.WriteFile(filepath.Join(source, "package.json"), content, 0600)).To(Succeed())
@@ -89,8 +89,8 @@ func testNPM(platform switchblade.Platform, fixtures string) func(*testing.T, sp
 				Eventually(deployment).Should(Serve("Hello, World!"))
 
 				Expect(logs.String()).To(SatisfyAll(
-					ContainSubstring("engines.npm (package.json): ^7"),
-					ContainSubstring("Downloading and installing npm ^7"),
+					ContainSubstring("engines.npm (package.json): ^8"),
+					ContainSubstring("Downloading and installing npm ^8"),
 				))
 			})
 		})

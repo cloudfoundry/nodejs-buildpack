@@ -41,7 +41,7 @@ func testVersions(platform switchblade.Platform, fixtures string) func(*testing.
 
 		context("when there is a .nvmrc file", func() {
 			it.Before(func() {
-				Expect(os.WriteFile(filepath.Join(source, ".nvmrc"), []byte("16"), 0600)).To(Succeed())
+				Expect(os.WriteFile(filepath.Join(source, ".nvmrc"), []byte("18"), 0600)).To(Succeed())
 			})
 
 			it("uses the Node version specified in the .nvmrc file", func() {
@@ -49,7 +49,7 @@ func testVersions(platform switchblade.Platform, fixtures string) func(*testing.
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(logs).To(ContainLines(
-					MatchRegexp("Installing node 16\\.\\d+\\.\\d+"),
+					MatchRegexp("Installing node 18\\.\\d+\\.\\d+"),
 				))
 
 				Eventually(deployment).Should(Serve("Hello world!"))
@@ -63,7 +63,7 @@ func testVersions(platform switchblade.Platform, fixtures string) func(*testing.
 				}
 				Expect(json.NewDecoder(response.Body).Decode(&process)).To(Succeed())
 
-				Expect(process.Version).To(MatchRegexp(`v16\.\d+\.\d+`))
+				Expect(process.Version).To(MatchRegexp(`v18\.\d+\.\d+`))
 			})
 		})
 
@@ -76,7 +76,7 @@ func testVersions(platform switchblade.Platform, fixtures string) func(*testing.
 				Expect(json.NewDecoder(file).Decode(&pkg)).To(Succeed())
 				Expect(file.Close()).To(Succeed())
 
-				pkg["engines"] = map[string]string{"node": "~>16"}
+				pkg["engines"] = map[string]string{"node": "~>18"}
 				content, err := json.Marshal(pkg)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(os.WriteFile(filepath.Join(source, "package.json"), content, 0600)).To(Succeed())
@@ -87,7 +87,7 @@ func testVersions(platform switchblade.Platform, fixtures string) func(*testing.
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(logs).To(ContainLines(
-					MatchRegexp("Installing node 16\\.\\d+\\.\\d+"),
+					MatchRegexp("Installing node 18\\.\\d+\\.\\d+"),
 				))
 
 				Eventually(deployment).Should(Serve("Hello world!"))
@@ -101,7 +101,7 @@ func testVersions(platform switchblade.Platform, fixtures string) func(*testing.
 				}
 				Expect(json.NewDecoder(response.Body).Decode(&process)).To(Succeed())
 
-				Expect(process.Version).To(MatchRegexp(`v16\.\d+\.\d+`))
+				Expect(process.Version).To(MatchRegexp(`v18\.\d+\.\d+`))
 			})
 
 			context("when that version is unsupported", func() {

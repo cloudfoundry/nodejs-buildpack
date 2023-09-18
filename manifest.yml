@@ -86,21 +86,21 @@ dependencies:
   source: https://nodejs.org/dist/v20.6.0/node-v20.6.0.tar.gz
   source_sha256: 407ec4bb44fb297662878a0976980624dcd010a481425c5af5da9d507cdcfe5e
 - name: node
-  version: 20.6.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.6.1_linux_x64_cflinuxfs3_c72841ca.tgz
-  sha256: c72841ca8cfafbeb720f2f1f471cb08ba3469385aec22552bb901e96a9961754
+  version: 20.7.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.7.0_linux_x64_cflinuxfs3_2e3ff6b6.tgz
+  sha256: 2e3ff6b629653a5bf6bcb17d72707f9ea0e89be602b7f82242a83db5103b6f85
   cf_stacks:
   - cflinuxfs3
-  source: https://nodejs.org/dist/v20.6.1/node-v20.6.1.tar.gz
-  source_sha256: 0053c09a01b1b355bca5af82927cae376124c13d74fa53567f08f4cfb085e6aa
+  source: https://nodejs.org/dist/v20.7.0/node-v20.7.0.tar.gz
+  source_sha256: 07b85b65f844dc29ac5038c11b6e34a0997f1744d1487de0ab9a94743e5c12ad
 - name: node
-  version: 20.6.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.6.1_linux_x64_cflinuxfs4_88e597bb.tgz
-  sha256: 88e597bbbcfd1c8bf71b0b9c7d9d24435e45ed525a076cd5a381b7715daf6ad4
+  version: 20.7.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.7.0_linux_x64_cflinuxfs4_f6b08f05.tgz
+  sha256: f6b08f05f186e0ef94e57a9aeffff67bc9185f7732f10622787ddb238f021aca
   cf_stacks:
   - cflinuxfs4
-  source: https://nodejs.org/dist/v20.6.1/node-v20.6.1.tar.gz
-  source_sha256: 0053c09a01b1b355bca5af82927cae376124c13d74fa53567f08f4cfb085e6aa
+  source: https://nodejs.org/dist/v20.7.0/node-v20.7.0.tar.gz
+  source_sha256: 07b85b65f844dc29ac5038c11b6e34a0997f1744d1487de0ab9a94743e5c12ad
 - name: python
   version: 3.11.5
   uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.5_linux_x64_cflinuxfs3_5908f935.tgz

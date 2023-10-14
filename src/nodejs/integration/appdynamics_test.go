@@ -101,5 +101,27 @@ func testAppdynamics(platform switchblade.Platform, fixtures string) func(*testi
 				Expect(deployment).To(Serve("set-name").WithEndpoint("/name"))
 			})
 		})
+
+		// A user sets $APPD_AGENT to instruct that a separate "appdynamics" buildpack is in charge of setting up appd.
+		// See PR by appd staff https://github.com/cloudfoundry/nodejs-buildpack/pull/214
+		context("when APPD_AGENT is set", func() {
+			it("this buildpack does not setup appdynamics", func() {
+				deployment, _, err := platform.Deploy.
+					WithEnv(map[string]string{
+						"APPD_AGENT": "nodejs",
+					}).
+					Execute(name, filepath.Join(fixtures, "services", "appdynamics"))
+				Expect(err).NotTo(HaveOccurred())
+				Eventually(deployment).Should(Serve("Hello, World!"))
+
+				response, err := http.Get(fmt.Sprintf("%s/logs", deployment.ExternalURL))
+				Expect(err).NotTo(HaveOccurred())
+				defer response.Body.Close()
+
+				logs, err := io.ReadAll(response.Body)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(string(logs)).NotTo(ContainSubstring("Starting AppDynamics Agent"))
+			})
+		})
 	}
 }

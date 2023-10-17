@@ -1,3 +1,14 @@
+v1.8.18 Oct 17, 2023
+=====================
+
+* Add node 20.8.1, remove node 20.6.0
+  for stack(s) cflinuxfs3, cflinuxfs4
+  (https://www.pivotaltracker.com/story/show/186252512)
+
+* profile: remove last exit
+  (https://github.com/cloudfoundry/nodejs-buildpack/pull/662)
+
+
 v1.8.17 Oct 17, 2023
 =====================
 

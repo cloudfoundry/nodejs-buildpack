@@ -32,18 +32,16 @@ if [ -z "${APPD_AGENT}" ]; then
     fi
 
     application_name=$(echo "${VCAP_APPLICATION}" | jq -r '.application_name')
-    if [ -z "${application_name}" ]; then
-      exit 0
-    fi
-
-    if [ -z "${APPDYNAMICS_AGENT_APPLICATION_NAME}" ]; then
-      export APPDYNAMICS_AGENT_APPLICATION_NAME="${application_name}"
-    fi
-    if [ -z "${APPDYNAMICS_AGENT_TIER_NAME}" ]; then
-      export APPDYNAMICS_AGENT_TIER_NAME="${application_name}"
-    fi
-    if [ -z "${APPDYNAMICS_AGENT_NODE_NAME}" ]; then
-      export APPDYNAMICS_AGENT_NODE_NAME="${application_name}:${CF_INSTANCE_INDEX}"
+    if [ -n "${application_name}" ]; then
+      if [ -z "${APPDYNAMICS_AGENT_APPLICATION_NAME}" ]; then
+        export APPDYNAMICS_AGENT_APPLICATION_NAME="${application_name}"
+      fi
+      if [ -z "${APPDYNAMICS_AGENT_TIER_NAME}" ]; then
+        export APPDYNAMICS_AGENT_TIER_NAME="${application_name}"
+      fi
+      if [ -z "${APPDYNAMICS_AGENT_NODE_NAME}" ]; then
+        export APPDYNAMICS_AGENT_NODE_NAME="${application_name}:${CF_INSTANCE_INDEX}"
+      fi
     fi
   fi
 fi

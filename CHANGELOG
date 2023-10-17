@@ -1,3 +1,14 @@
+v1.8.17 Oct 17, 2023
+=====================
+
+* Fix issue that causes app start to exit when $APPD_AGENT is set.
+  (https://github.com/cloudfoundry/nodejs-buildpack/pull/659)
+
+* Add node 18.18.2, remove node 18.17.1, 18.18.0
+  for stack(s) cflinuxfs3, cflinuxfs4
+  (https://www.pivotaltracker.com/story/show/186252633)
+
+
 v1.8.16 Oct 09, 2023
 =====================
 

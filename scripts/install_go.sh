@@ -29,6 +29,7 @@ function main() {
       --silent \
       --location \
       --retry 15 \
+      --retry-all-errors \
       --retry-delay 2 \
       --output "/tmp/go.tgz"
 

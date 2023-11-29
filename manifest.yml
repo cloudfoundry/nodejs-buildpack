@@ -70,22 +70,6 @@ dependencies:
   source: https://nodejs.org/dist/v18.18.2/node-v18.18.2.tar.gz
   source_sha256: 509cd2cfc3a515bf2257ed3886b9fac64aeaac2a70ea59c0a6e02e2dbb722132
 - name: node
-  version: 20.8.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.8.1_linux_x64_cflinuxfs3_4f968ba9.tgz
-  sha256: 4f968ba9cf73fee68782863f7d89b774ad332ef7e1bd394d506054d3d19d3c2d
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v20.8.1/node-v20.8.1.tar.gz
-  source_sha256: 18aed385341bc16c7802e9d03189d1d0ad17b87923b2cdf11714d36534783b6a
-- name: node
-  version: 20.8.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.8.1_linux_x64_cflinuxfs4_5763ea41.tgz
-  sha256: 5763ea41ca8539abad7d6adce91916ccc74563c2a018f4335d92d028a5764d3d
-  cf_stacks:
-  - cflinuxfs4
-  source: https://nodejs.org/dist/v20.8.1/node-v20.8.1.tar.gz
-  source_sha256: 18aed385341bc16c7802e9d03189d1d0ad17b87923b2cdf11714d36534783b6a
-- name: node
   version: 20.9.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.9.0_linux_x64_cflinuxfs3_6d91c7bf.tgz
   sha256: 6d91c7bf09ee2b89dddd824de2b6897d48c298ba5d7ff8f51eb54180c4e3de0b
@@ -101,6 +85,22 @@ dependencies:
   - cflinuxfs4
   source: https://nodejs.org/dist/v20.9.0/node-v20.9.0.tar.gz
   source_sha256: a7e6547a951406e4e546a74160ed27b26f9abd4baf7c44dd5a0fa992852d0cfa
+- name: node
+  version: 20.10.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.10.0_linux_x64_cflinuxfs3_82ae1ed2.tgz
+  sha256: 82ae1ed2a432f7df14e8902c9a9b550ac1cc68adfffc313f54939322a7425fa0
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v20.10.0/node-v20.10.0.tar.gz
+  source_sha256: 89680f4ebbf36e0a199be4ed416701fa167aad8f86111c87a3db9207b5d56baa
+- name: node
+  version: 20.10.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.10.0_linux_x64_cflinuxfs4_7fabbb45.tgz
+  sha256: 7fabbb457fa572c5ba0e005ce0c80a16ec1cfb5a950f38d748ff4c1208b54634
+  cf_stacks:
+  - cflinuxfs4
+  source: https://nodejs.org/dist/v20.10.0/node-v20.10.0.tar.gz
+  source_sha256: 89680f4ebbf36e0a199be4ed416701fa167aad8f86111c87a3db9207b5d56baa
 - name: python
   version: 3.11.6
   uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.6_linux_x64_cflinuxfs3_14db25e0.tgz

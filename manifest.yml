@@ -38,22 +38,6 @@ dependency_deprecation_dates:
   link: https://www.python.org/dev/peps/pep-0664/
 dependencies:
 - name: node
-  version: 18.18.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.18.0_linux_x64_cflinuxfs3_3d302e4a.tgz
-  sha256: 3d302e4a3105d65e37c8edf1a4ef24ca64853fa1128585e135eaf80dfbceb042
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v18.18.0/node-v18.18.0.tar.gz
-  source_sha256: 5c5f4d7ee0b65f6e31788570d939a688ac7c9e47b007f14592e899b51cdca47c
-- name: node
-  version: 18.18.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.18.0_linux_x64_cflinuxfs4_f2e623d7.tgz
-  sha256: f2e623d7621b58d45ce2288ced7528d2985bab2cff5ecc8d16e321baeb8cf958
-  cf_stacks:
-  - cflinuxfs4
-  source: https://nodejs.org/dist/v18.18.0/node-v18.18.0.tar.gz
-  source_sha256: 5c5f4d7ee0b65f6e31788570d939a688ac7c9e47b007f14592e899b51cdca47c
-- name: node
   version: 18.18.2
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.18.2_linux_x64_cflinuxfs3_f9dad7cf.tgz
   sha256: f9dad7cf6f7e2e5446137081695a545179dbfb6e876b8634100717a16b7408ce
@@ -69,6 +53,22 @@ dependencies:
   - cflinuxfs4
   source: https://nodejs.org/dist/v18.18.2/node-v18.18.2.tar.gz
   source_sha256: 509cd2cfc3a515bf2257ed3886b9fac64aeaac2a70ea59c0a6e02e2dbb722132
+- name: node
+  version: 18.19.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.19.0_linux_x64_cflinuxfs3_453a9bdc.tgz
+  sha256: 453a9bdcc0b29c2341e0a4fea1541e04ecd71fb0ae4fca5af44db2986a117e53
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v18.19.0/node-v18.19.0.tar.gz
+  source_sha256: dd4c1dc1cb94e1e29f65a3a592247edeb8ceb23483123b0e1847d75c5f0b0c17
+- name: node
+  version: 18.19.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.19.0_linux_x64_cflinuxfs4_0c6e50e7.tgz
+  sha256: 0c6e50e7368f6e940e8b8e329a80879f188e8eb938035697cf42ccf3b65edeb0
+  cf_stacks:
+  - cflinuxfs4
+  source: https://nodejs.org/dist/v18.19.0/node-v18.19.0.tar.gz
+  source_sha256: dd4c1dc1cb94e1e29f65a3a592247edeb8ceb23483123b0e1847d75c5f0b0c17
 - name: node
   version: 20.9.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.9.0_linux_x64_cflinuxfs3_6d91c7bf.tgz
@@ -102,21 +102,21 @@ dependencies:
   source: https://nodejs.org/dist/v20.10.0/node-v20.10.0.tar.gz
   source_sha256: 89680f4ebbf36e0a199be4ed416701fa167aad8f86111c87a3db9207b5d56baa
 - name: python
-  version: 3.11.6
-  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.6_linux_x64_cflinuxfs3_14db25e0.tgz
-  sha256: 14db25e03dfb03cce0f883672d4883721a4ca94df646a1c49d7cbd6ab958996c
+  version: 3.11.7
+  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.7_linux_x64_cflinuxfs3_6024f2da.tgz
+  sha256: 6024f2dab8aa2d84180b7a265f76db779272379fc55d78ca11904eda600d57e8
   cf_stacks:
   - cflinuxfs3
-  source: https://www.python.org/ftp/python/3.11.6/Python-3.11.6.tgz
-  source_sha256: c049bf317e877cbf9fce8c3af902436774ecef5249a29d10984ca3a37f7f4736
+  source: https://www.python.org/ftp/python/3.11.7/Python-3.11.7.tgz
+  source_sha256: '068c05f82262e57641bd93458dfa883128858f5f4997aad7a36fd25b13b29209'
 - name: python
-  version: 3.11.6
-  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.6_linux_x64_cflinuxfs4_9aa19c6d.tgz
-  sha256: 9aa19c6d63e39a61554b3b72a8e4d829051d09862bc8abfbf93e89368858ba2a
+  version: 3.11.7
+  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.7_linux_x64_cflinuxfs4_782cc8f5.tgz
+  sha256: 782cc8f520d1ed9524d34e1ff4b0fb872e92aeb0b5ef9c49bce40a34e4f036a3
   cf_stacks:
   - cflinuxfs4
-  source: https://www.python.org/ftp/python/3.11.6/Python-3.11.6.tgz
-  source_sha256: c049bf317e877cbf9fce8c3af902436774ecef5249a29d10984ca3a37f7f4736
+  source: https://www.python.org/ftp/python/3.11.7/Python-3.11.7.tgz
+  source_sha256: '068c05f82262e57641bd93458dfa883128858f5f4997aad7a36fd25b13b29209'
 - name: yarn
   version: 1.22.19
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.19_linux_noarch_any-stack_32d0e82e.tgz

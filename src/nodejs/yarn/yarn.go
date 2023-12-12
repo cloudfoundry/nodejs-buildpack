@@ -60,8 +60,6 @@ func (y *Yarn) doBuild(buildDir, cacheDir string) error {
 func (y *Yarn) getYarnVersion(buildDir string) (string, error) {
 	cmd := exec.Command("yarn", "--version")
 	cmd.Dir = buildDir
-	//cmd.Stdout = y.Log.Output()
-	//cmd.Stderr = y.Log.Output()
 	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
 
 	versionOutput, err := cmd.Output()
@@ -72,11 +70,9 @@ func (y *Yarn) getYarnVersion(buildDir string) (string, error) {
 	return yarnVersion, nil
 }
 
-func (y *Yarn) isYarnLocalCacheEnabled(buildDir string) (bool, error) {
+func (y *Yarn) isYarnGlobalCacheEnabled(buildDir string) (bool, error) {
 	cmd := exec.Command("yarn", "config", "get", "enableGlobalCache")
 	cmd.Dir = buildDir
-	//cmd.Stdout = y.Log.Output()
-	//cmd.Stderr = y.Log.Output()
 	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
 
 	cacheStrategyOutput, err := cmd.Output()
@@ -86,7 +82,7 @@ func (y *Yarn) isYarnLocalCacheEnabled(buildDir string) (bool, error) {
 
 	yarnCacheStrategy := strings.TrimSpace(string(cacheStrategyOutput))
 
-	if yarnCacheStrategy == "false" {
+	if yarnCacheStrategy == "true" {
 		return true, nil
 	}
 
@@ -134,8 +130,8 @@ func (y *Yarn) doBuildClassic(buildDir, cacheDir string) error {
 
 	cmd := exec.Command("yarn", installArgs...)
 	cmd.Dir = buildDir
-	//cmd.Stdout = y.Log.Output()
-	//cmd.Stderr = y.Log.Output()
+	cmd.Stdout = y.Log.Output()
+	cmd.Stderr = y.Log.Output()
 	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
 	if err := y.Command.Run(cmd); err != nil {
 		return err
@@ -150,21 +146,25 @@ func (y *Yarn) doBuildClassic(buildDir, cacheDir string) error {
 }
 
 func (y *Yarn) doBuildBerry(buildDir string) error {
-	usesLocalCache, err := y.isYarnLocalCacheEnabled(buildDir)
+	useGlobalCache, err := y.isYarnGlobalCacheEnabled(buildDir)
 	if err != nil {
 		return err
 	}
 
 	installArgs := []string{"install", "--immutable"}
 
-	if usesLocalCache {
+	if useGlobalCache {
+		y.Log.Info("Yarn using global cache, cache is allowed to be mutable")
+		y.Log.Info("To run yarn with local cache, see: https://yarnpkg.com/configuration/yarnrc#enableGlobalCache")
+	} else {
 		installArgs = append(installArgs, "--immutable-cache")
+		y.Log.Info("Yarn local cache was configured, enabling immutable cache")
 	}
 
 	cmd := exec.Command("yarn", installArgs...)
 	cmd.Dir = buildDir
-	//cmd.Stdout = y.Log.Output()
-	//cmd.Stderr = y.Log.Output()
+	cmd.Stdout = y.Log.Output()
+	cmd.Stderr = y.Log.Output()
 	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
 	if err := y.Command.Run(cmd); err != nil {
 		return err

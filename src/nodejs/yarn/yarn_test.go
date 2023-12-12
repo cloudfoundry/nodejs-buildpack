@@ -196,6 +196,26 @@ var _ = Describe("Yarn", func() {
 			})
 
 			Context("NO local cache enabled", func() {
+				JustBeforeEach(func() {
+					// Disables global cache
+					yarnRcFilePath := buildDir + "/.yarnrc.yml"
+
+					file, err := os.OpenFile(yarnRcFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+					if err != nil {
+						log.Fatalf("Failed to open "+yarnRcFilePath+": %s", err)
+					}
+					defer func(file *os.File) {
+						err := file.Close()
+						if err != nil {
+							log.Fatalf("Failed to close "+yarnRcFilePath+": %s", err)
+						}
+					}(file)
+
+					if _, err := file.WriteString("\nenableGlobalCache: true\n"); err != nil {
+						log.Fatalf("Failed to write to "+yarnRcFilePath+": %s", err)
+					}
+				})
+
 				It("tells the user it is running with global cache", func() {
 					Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 					Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))

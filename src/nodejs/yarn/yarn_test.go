@@ -19,21 +19,21 @@ import (
 
 var _ = Describe("Yarn", func() {
 	var (
-		err          error
-		buildDirYarn string
-		cacheDirYarn string
-		y            *yarn.Yarn
-		logger       *libbuildpack.Logger
-		buffer       *bytes.Buffer
-		mockCtrl     *gomock.Controller
-		mockCommand  *MockCommand
+		err         error
+		buildDir    string
+		cacheDir    string
+		y           *yarn.Yarn
+		logger      *libbuildpack.Logger
+		buffer      *bytes.Buffer
+		mockCtrl    *gomock.Controller
+		mockCommand *MockCommand
 	)
 
 	BeforeEach(func() {
-		buildDirYarn, err = os.MkdirTemp("", "nodejs-buildpack.build.")
+		buildDir, err = os.MkdirTemp("", "nodejs-buildpack.build.")
 		Expect(err).NotTo(HaveOccurred())
 
-		cacheDirYarn, err = os.MkdirTemp("", "nodejs-buildpack.cache.")
+		cacheDir, err = os.MkdirTemp("", "nodejs-buildpack.cache.")
 		Expect(err).NotTo(HaveOccurred())
 
 		buffer = new(bytes.Buffer)
@@ -52,7 +52,7 @@ var _ = Describe("Yarn", func() {
 	AfterEach(func() {
 		mockCtrl.Finish()
 
-		err = os.RemoveAll(buildDirYarn)
+		err = os.RemoveAll(buildDir)
 		Expect(err).To(BeNil())
 	})
 
@@ -78,38 +78,38 @@ var _ = Describe("Yarn", func() {
 					yarnInstallArgs = cmd.Args
 					Expect(cmd.Env).To(ContainElement("npm_config_nodedir=test_node_home"))
 				}
-				Expect(cmd.Dir).To(Equal(buildDirYarn))
+				Expect(cmd.Dir).To(Equal(buildDir))
 				return nil
 			}).AnyTimes()
 		})
 
 		Context("has npm-packages-offline-cache", func() {
 			JustBeforeEach(func() {
-				Expect(os.MkdirAll(filepath.Join(buildDirYarn, "npm-packages-offline-cache"), 0755)).To(Succeed())
+				Expect(os.MkdirAll(filepath.Join(buildDir, "npm-packages-offline-cache"), 0755)).To(Succeed())
 			})
 
 			It("tells the user it is running in offline mode", func() {
-				Expect(y.Build(buildDirYarn, cacheDirYarn)).To(Succeed())
+				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 				Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
-				Expect(buffer.String()).To(ContainSubstring("Found yarn mirror directory " + filepath.Join(buildDirYarn, "npm-packages-offline-cache")))
+				Expect(buffer.String()).To(ContainSubstring("Found yarn mirror directory " + filepath.Join(buildDir, "npm-packages-offline-cache")))
 				Expect(buffer.String()).To(ContainSubstring("Running yarn in offline mode"))
 			})
 
 			It("runs yarn config", func() {
-				Expect(y.Build(buildDirYarn, cacheDirYarn)).To(Succeed())
+				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 				Expect(yarnConfig).To(Equal(map[string]string{
-					"yarn-offline-mirror":         filepath.Join(buildDirYarn, "npm-packages-offline-cache"),
+					"yarn-offline-mirror":         filepath.Join(buildDir, "npm-packages-offline-cache"),
 					"yarn-offline-mirror-pruning": "false",
 				}))
 			})
 
 			It("runs yarn install with offline arguments and npm_config_nodedir", func() {
-				Expect(y.Build(buildDirYarn, cacheDirYarn)).To(Succeed())
+				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 				Expect(yarnInstallArgs).To(Equal([]string{
 					"yarn", "install",
 					"--pure-lockfile",
 					"--ignore-engines",
-					"--cache-folder", filepath.Join(cacheDirYarn, ".cache/yarn"),
+					"--cache-folder", filepath.Join(cacheDir, ".cache/yarn"),
 					"--check-files",
 					"--offline",
 				}))
@@ -118,27 +118,27 @@ var _ = Describe("Yarn", func() {
 
 		Context("NO npm-packages-offline-cache directory", func() {
 			It("tells the user it is running in online mode", func() {
-				Expect(y.Build(buildDirYarn, cacheDirYarn)).To(Succeed())
+				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 				Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
 				Expect(buffer.String()).To(ContainSubstring("Running yarn in online mode"))
 				Expect(buffer.String()).To(ContainSubstring("To run yarn in offline mode, see: https://classic.yarnpkg.com/blog/2016/11/24/offline-mirror/"))
 			})
 
 			It("runs yarn config", func() {
-				Expect(y.Build(buildDirYarn, cacheDirYarn)).To(Succeed())
+				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 				Expect(yarnConfig).To(Equal(map[string]string{
-					"yarn-offline-mirror":         filepath.Join(cacheDirYarn, "npm-packages-offline-cache"),
+					"yarn-offline-mirror":         filepath.Join(cacheDir, "npm-packages-offline-cache"),
 					"yarn-offline-mirror-pruning": "true",
 				}))
 			})
 
 			It("runs yarn install", func() {
-				Expect(y.Build(buildDirYarn, cacheDirYarn)).To(Succeed())
+				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 				Expect(yarnInstallArgs).To(Equal([]string{
 					"yarn", "install",
 					"--pure-lockfile",
 					"--ignore-engines",
-					"--cache-folder", filepath.Join(cacheDirYarn, ".cache/yarn"),
+					"--cache-folder", filepath.Join(cacheDir, ".cache/yarn"),
 					"--check-files",
 				}))
 			})
@@ -148,7 +148,7 @@ var _ = Describe("Yarn", func() {
 			BeforeEach(func() {
 				// Sets the yarn version to yarn berry regardless of the version installed by the user globally
 				cmd := exec.Command("yarn", "set", "version", "berry")
-				cmd.Dir = buildDirYarn
+				cmd.Dir = buildDir
 
 				err := cmd.Run()
 				if err != nil {
@@ -160,7 +160,7 @@ var _ = Describe("Yarn", func() {
 				JustBeforeEach(func() {
 					// Disables global cache
 					cmd := exec.Command("yarn", "config", "set", "enableGlobalCache", "false")
-					cmd.Dir = buildDirYarn
+					cmd.Dir = buildDir
 
 					err := cmd.Run()
 					if err != nil {
@@ -169,13 +169,13 @@ var _ = Describe("Yarn", func() {
 				})
 
 				It("tells the user it is running with local cache", func() {
-					Expect(y.Build(buildDirYarn, cacheDirYarn)).To(Succeed())
+					Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 					Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
 					Expect(buffer.String()).To(ContainSubstring("Yarn local cache was configured, enabling immutable cache"))
 				})
 
 				It("runs yarn install", func() {
-					Expect(y.Build(buildDirYarn, cacheDirYarn)).To(Succeed())
+					Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 					Expect(yarnInstallArgs).To(Equal([]string{
 						"yarn", "install",
 						"--immutable",
@@ -186,14 +186,14 @@ var _ = Describe("Yarn", func() {
 
 			Context("NO local cache enabled", func() {
 				It("tells the user it is running with global cache", func() {
-					Expect(y.Build(buildDirYarn, cacheDirYarn)).To(Succeed())
+					Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 					Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
 					Expect(buffer.String()).To(ContainSubstring("Yarn using global cache, cache is allowed to be mutable"))
 					Expect(buffer.String()).To(ContainSubstring("To run yarn with local cache, see: https://yarnpkg.com/configuration/yarnrc#enableGlobalCache"))
 				})
 
 				It("runs yarn install", func() {
-					Expect(y.Build(buildDirYarn, cacheDirYarn)).To(Succeed())
+					Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 					Expect(yarnInstallArgs).To(Equal([]string{
 						"yarn", "install",
 						"--immutable",

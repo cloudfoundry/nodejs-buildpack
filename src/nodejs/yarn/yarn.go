@@ -154,11 +154,11 @@ func (y *Yarn) doBuildBerry(buildDir string) error {
 	installArgs := []string{"install", "--immutable"}
 
 	if useGlobalCache {
-		y.Log.Info("Yarn using global cache, cache is allowed to be mutable")
+		y.Log.Info("Yarn is using global cache, cache is allowed to be mutable")
 		y.Log.Info("To run yarn with local cache, see: https://yarnpkg.com/configuration/yarnrc#enableGlobalCache")
 	} else {
 		installArgs = append(installArgs, "--immutable-cache")
-		y.Log.Info("Yarn local cache was configured, enabling immutable cache")
+		y.Log.Info("Yarn is using local cache, enabling immutable cache")
 	}
 
 	cmd := exec.Command("yarn", installArgs...)

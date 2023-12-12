@@ -76,19 +76,41 @@ func (y *Yarn) isYarnGlobalCacheEnabled(buildDir string) (bool, error) {
 	cmd.Dir = buildDir
 	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
 
-	cacheStrategyOutput, err := cmd.Output()
+	output, err := cmd.Output()
 	if err != nil {
-		return false, err
+		println("In the err != nil branch")
+		return true, err
 	}
 
-	yarnCacheStrategy := strings.TrimSpace(string(cacheStrategyOutput))
-	println("resolved yarnCacheStrategy: " + yarnCacheStrategy)
+	result := strings.TrimSpace(string(output))
 
-	if yarnCacheStrategy == "true" {
+	println(fmt.Sprintf("resolved result: %v", result))
+
+	if result == "true" {
+		println("In the result == true branch")
 		return true, nil
+	} else if result == "false" {
+		println("In the result == false branch")
+		return false, nil
 	}
 
-	return false, nil
+	println("In the result == neither branch, an error should get formatted below")
+
+	return true, fmt.Errorf("unexpected output from yarn config get enableGlobalCache: %s", result)
+}
+
+func (y *Yarn) getYarnCacheFolder(buildDir string) string {
+	cmd := exec.Command("yarn", "config", "get", "cacheFolder")
+	cmd.Dir = buildDir
+	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
+
+	output, err := cmd.Output()
+	if err != nil {
+		return ".yarn/cache"
+	}
+
+	result := strings.TrimSpace(string(output))
+	return result
 }
 
 func (y *Yarn) doBuildClassic(buildDir, cacheDir string) error {
@@ -174,9 +196,16 @@ func (y *Yarn) doBuildBerry(buildDir string) error {
 		return err
 	}
 
-	err = os.RemoveAll(filepath.Join(buildDir, ".yarn/cache"))
-	if err != nil {
-		panic(err)
+	if !useGlobalCache {
+		yarnLocalCacheFolder := y.getYarnCacheFolder(buildDir)
+		if err != nil {
+			return err
+		}
+
+		err = os.RemoveAll(filepath.Join(buildDir, yarnLocalCacheFolder))
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	return nil

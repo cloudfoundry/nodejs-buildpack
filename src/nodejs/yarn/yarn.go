@@ -1,6 +1,7 @@
 package yarn
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -81,6 +82,7 @@ func (y *Yarn) isYarnGlobalCacheEnabled(buildDir string) (bool, error) {
 	}
 
 	yarnCacheStrategy := strings.TrimSpace(string(cacheStrategyOutput))
+	println("resolved yarnCacheStrategy: " + yarnCacheStrategy)
 
 	if yarnCacheStrategy == "true" {
 		return true, nil
@@ -152,6 +154,8 @@ func (y *Yarn) doBuildBerry(buildDir string) error {
 	}
 
 	installArgs := []string{"install", "--immutable"}
+
+	println(fmt.Sprintf("resolved useGlobalCache: %v", useGlobalCache))
 
 	if useGlobalCache {
 		y.Log.Info("Yarn is using global cache, cache is allowed to be mutable")

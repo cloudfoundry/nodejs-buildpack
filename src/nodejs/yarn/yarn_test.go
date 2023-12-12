@@ -214,6 +214,9 @@ var _ = Describe("Yarn", func() {
 					if _, err := file.WriteString("\nenableGlobalCache: true\n"); err != nil {
 						log.Fatalf("Failed to write to "+yarnRcFilePath+": %s", err)
 					}
+
+					content, err := os.ReadFile(yarnRcFilePath)
+					println("yarnrc file content: " + string(content))
 				})
 
 				It("tells the user it is running with global cache", func() {

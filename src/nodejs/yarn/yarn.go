@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/cloudfoundry/libbuildpack"
@@ -66,6 +67,12 @@ func (y *Yarn) executeCommandAndGetStdout(buildDir string, args ...string) ([]by
 	return cmd.Output()
 }
 
+func (y *Yarn) parseStdoutResponse(stdoutResponse []byte) string {
+	result := strings.TrimSpace(string(stdoutResponse))
+	re := regexp.MustCompile(`(?i)(?:\\x9B|\\x1B\[)[0-?]*[ -/]*[@-~]`)
+	return re.ReplaceAllString(result, "")
+}
+
 func (y *Yarn) getYarnVersion(buildDir string) (string, error) {
 	output, err := y.executeCommandAndGetStdout(buildDir, "--version")
 
@@ -73,7 +80,7 @@ func (y *Yarn) getYarnVersion(buildDir string) (string, error) {
 		return "", err
 	}
 
-	yarnVersion := strings.TrimSpace(string(output))
+	yarnVersion := y.parseStdoutResponse(output)
 	return yarnVersion, nil
 }
 
@@ -84,7 +91,7 @@ func (y *Yarn) isYarnGlobalCacheEnabled(buildDir string) (bool, error) {
 		return true, err
 	}
 
-	result := strings.TrimSpace(string(output))
+	result := y.parseStdoutResponse(output)
 
 	println(fmt.Sprintf("resolved result: %v", result))
 
@@ -107,7 +114,7 @@ func (y *Yarn) getYarnCacheFolder(buildDir string) string {
 		return ".yarn/cache"
 	}
 
-	result := strings.TrimSpace(string(output))
+	result := y.parseStdoutResponse(output)
 	return result
 }
 

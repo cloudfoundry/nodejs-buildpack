@@ -2,11 +2,12 @@ package yarn_test
 
 import (
 	"bytes"
-	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/yarn"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/yarn"
 
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/cloudfoundry/libbuildpack/ansicleaner"

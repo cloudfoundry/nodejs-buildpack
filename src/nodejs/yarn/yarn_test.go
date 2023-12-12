@@ -2,11 +2,11 @@ package yarn_test
 
 import (
 	"bytes"
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/yarn"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
-
-	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/yarn"
 
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/cloudfoundry/libbuildpack/ansicleaner"
@@ -157,21 +157,31 @@ var _ = Describe("Yarn", func() {
 			})
 
 			Context("local cache enabled", func() {
+				// Disables global cache
 				JustBeforeEach(func() {
-					// Disables global cache
-					cmd := exec.Command("yarn", "config", "set", "enableGlobalCache", "false")
-					cmd.Dir = buildDir
+					yarnRcFilePath := buildDir + "/.yarnrc.yml"
 
-					err := cmd.Run()
+					file, err := os.OpenFile(yarnRcFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 					if err != nil {
-						return
+						log.Fatalf("Failed to open "+yarnRcFilePath+": %s", err)
+					}
+
+					defer func(file *os.File) {
+						err := file.Close()
+						if err != nil {
+							log.Fatalf("Failed to close "+yarnRcFilePath+": %s", err)
+						}
+					}(file)
+
+					if _, err := file.WriteString("\nenableGlobalCache: false\n"); err != nil {
+						log.Fatalf("Failed to write to "+yarnRcFilePath+": %s", err)
 					}
 				})
 
 				It("tells the user it is running with local cache", func() {
 					Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 					Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
-					Expect(buffer.String()).To(ContainSubstring("Yarn local cache was configured, enabling immutable cache"))
+					Expect(buffer.String()).To(ContainSubstring("Yarn is using local cache, enabling immutable cache"))
 				})
 
 				It("runs yarn install", func() {
@@ -188,7 +198,7 @@ var _ = Describe("Yarn", func() {
 				It("tells the user it is running with global cache", func() {
 					Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 					Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
-					Expect(buffer.String()).To(ContainSubstring("Yarn using global cache, cache is allowed to be mutable"))
+					Expect(buffer.String()).To(ContainSubstring("Yarn is using global cache, cache is allowed to be mutable"))
 					Expect(buffer.String()).To(ContainSubstring("To run yarn with local cache, see: https://yarnpkg.com/configuration/yarnrc#enableGlobalCache"))
 				})
 

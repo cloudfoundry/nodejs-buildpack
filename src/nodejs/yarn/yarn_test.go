@@ -121,7 +121,7 @@ var _ = Describe("Yarn", func() {
 				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
 				Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
 				Expect(buffer.String()).To(ContainSubstring("Running yarn in online mode"))
-				Expect(buffer.String()).To(ContainSubstring("To run yarn in offline mode, see: https://yarnpkg.com/blog/2016/11/24/offline-mirror"))
+				Expect(buffer.String()).To(ContainSubstring("To run yarn in offline mode, see: https://classic.yarnpkg.com/blog/2016/11/24/offline-mirror/"))
 			})
 
 			It("runs yarn config", func() {

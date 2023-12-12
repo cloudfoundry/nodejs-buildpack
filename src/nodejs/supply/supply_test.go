@@ -1089,18 +1089,28 @@ var _ = Describe("Supply", func() {
 		Context("using yarn", func() {
 			BeforeEach(func() {
 				supplier.UseYarn = true
+			})
+
+			It("runs yarn build when node_modules does not exist", func() {
 				mockYarn.EXPECT().Build(buildDir, cacheDir).DoAndReturn(func(string, string) error {
 					Expect(os.MkdirAll(filepath.Join(buildDir, "node_modules"), 0755)).To(Succeed())
 					return nil
 				})
+				Expect(supplier.BuildDependencies()).To(Succeed())
 			})
 
-			It("runs yarn build", func() {
+			It("runs yarn rebuild, when node_modules exists", func() {
+				supplier.IsVendored = true
+				mockYarn.EXPECT().Rebuild(buildDir, cacheDir).Return(nil)
 				Expect(supplier.BuildDependencies()).To(Succeed())
 			})
 
 			It("runs the prebuild script, when prebuild is specified", func() {
 				supplier.PreBuild = "prescriptive"
+				mockYarn.EXPECT().Build(buildDir, cacheDir).DoAndReturn(func(string, string) error {
+					Expect(os.MkdirAll(filepath.Join(buildDir, "node_modules"), 0755)).To(Succeed())
+					return nil
+				})
 				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "run", "heroku-prebuild")
 				Expect(supplier.BuildDependencies()).To(Succeed())
 				Expect(buffer.String()).To(ContainSubstring("Running heroku-prebuild (yarn)"))
@@ -1108,6 +1118,10 @@ var _ = Describe("Supply", func() {
 
 			It("runs the postbuild script, when postbuild is specified", func() {
 				supplier.PostBuild = "descriptive"
+				mockYarn.EXPECT().Build(buildDir, cacheDir).DoAndReturn(func(string, string) error {
+					Expect(os.MkdirAll(filepath.Join(buildDir, "node_modules"), 0755)).To(Succeed())
+					return nil
+				})
 				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "run", "heroku-postbuild")
 				Expect(supplier.BuildDependencies()).To(Succeed())
 				Expect(buffer.String()).To(ContainSubstring("Running heroku-postbuild (yarn)"))

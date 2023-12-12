@@ -316,21 +316,22 @@ func (s *Supplier) BuildDependencies() error {
 		return err
 	}
 
-	if (s.IsVendored) {
+	switch {
+
+	case s.IsVendored:
 		s.Log.Info("Prebuild detected (node_modules already exists)")
 		switch {
+
 		case s.UseYarn:
 			if err := s.Yarn.Rebuild(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
-				return err;
+				return err
 			}
 		default:
 			if err := s.NPM.Rebuild(s.Stager.BuildDir()); err != nil {
 				return err
 			}
 		}
-	}
 
-	switch {
 	case s.UseYarn:
 		if err := s.Yarn.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
 			return err

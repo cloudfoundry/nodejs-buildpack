@@ -23,25 +23,25 @@ type Yarn struct {
 func (y *Yarn) Build(buildDir, cacheDir string) error {
 	y.Log.Info("Installing node modules (yarn.lock)")
 
-	err := y.doBuild(buildDir, cacheDir);
+	err := y.doBuild(buildDir, cacheDir)
 
 	if err != nil {
 		return err
 	}
 
-	return nil;
+	return nil
 }
 
 func (y *Yarn) Rebuild(buildDir, cacheDir string) error {
 	y.Log.Info("Rebuilding native dependencies")
 
-	err := y.doBuild(buildDir, cacheDir);
+	err := y.doBuild(buildDir, cacheDir)
 
 	if err != nil {
 		return err
 	}
 
-	return nil;
+	return nil
 }
 
 func (y *Yarn) doBuild(buildDir, cacheDir string) error {
@@ -60,8 +60,8 @@ func (y *Yarn) doBuild(buildDir, cacheDir string) error {
 func (y *Yarn) getYarnVersion(buildDir string) (string, error) {
 	cmd := exec.Command("yarn", "--version")
 	cmd.Dir = buildDir
-	cmd.Stdout = y.Log.Output()
-	cmd.Stderr = y.Log.Output()
+	//cmd.Stdout = y.Log.Output()
+	//cmd.Stderr = y.Log.Output()
 	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
 
 	versionOutput, err := cmd.Output()
@@ -75,8 +75,8 @@ func (y *Yarn) getYarnVersion(buildDir string) (string, error) {
 func (y *Yarn) isYarnLocalCacheEnabled(buildDir string) (bool, error) {
 	cmd := exec.Command("yarn", "config", "get", "enableGlobalCache")
 	cmd.Dir = buildDir
-	cmd.Stdout = y.Log.Output()
-	cmd.Stderr = y.Log.Output()
+	//cmd.Stdout = y.Log.Output()
+	//cmd.Stderr = y.Log.Output()
 	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
 
 	cacheStrategyOutput, err := cmd.Output()
@@ -134,8 +134,8 @@ func (y *Yarn) doBuildClassic(buildDir, cacheDir string) error {
 
 	cmd := exec.Command("yarn", installArgs...)
 	cmd.Dir = buildDir
-	cmd.Stdout = y.Log.Output()
-	cmd.Stderr = y.Log.Output()
+	//cmd.Stdout = y.Log.Output()
+	//cmd.Stderr = y.Log.Output()
 	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
 	if err := y.Command.Run(cmd); err != nil {
 		return err
@@ -163,8 +163,8 @@ func (y *Yarn) doBuildBerry(buildDir string) error {
 
 	cmd := exec.Command("yarn", installArgs...)
 	cmd.Dir = buildDir
-	cmd.Stdout = y.Log.Output()
-	cmd.Stderr = y.Log.Output()
+	//cmd.Stdout = y.Log.Output()
+	//cmd.Stderr = y.Log.Output()
 	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
 	if err := y.Command.Run(cmd); err != nil {
 		return err

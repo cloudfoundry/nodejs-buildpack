@@ -58,25 +58,27 @@ func (y *Yarn) doBuild(buildDir, cacheDir string) error {
 	return y.doBuildBerry(buildDir)
 }
 
-func (y *Yarn) getYarnVersion(buildDir string) (string, error) {
-	cmd := exec.Command("yarn", "--version")
+func (y *Yarn) executeCommandAndGetStdout(buildDir string, args ...string) ([]byte, error) {
+	cmd := exec.Command("yarn", args...)
 	cmd.Dir = buildDir
-	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
+	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"), "TERM=dumb")
 
-	versionOutput, err := cmd.Output()
+	return cmd.Output()
+}
+
+func (y *Yarn) getYarnVersion(buildDir string) (string, error) {
+	output, err := y.executeCommandAndGetStdout(buildDir, "--version")
+
 	if err != nil {
 		return "", err
 	}
-	yarnVersion := strings.TrimSpace(string(versionOutput))
+
+	yarnVersion := strings.TrimSpace(string(output))
 	return yarnVersion, nil
 }
 
 func (y *Yarn) isYarnGlobalCacheEnabled(buildDir string) (bool, error) {
-	cmd := exec.Command("yarn", "config", "get", "enableGlobalCache")
-	cmd.Dir = buildDir
-	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
-
-	output, err := cmd.Output()
+	output, err := y.executeCommandAndGetStdout(buildDir, "config", "get", "enableGlobalCache")
 	if err != nil {
 		println("In the err != nil branch")
 		return true, err
@@ -100,11 +102,7 @@ func (y *Yarn) isYarnGlobalCacheEnabled(buildDir string) (bool, error) {
 }
 
 func (y *Yarn) getYarnCacheFolder(buildDir string) string {
-	cmd := exec.Command("yarn", "config", "get", "cacheFolder")
-	cmd.Dir = buildDir
-	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
-
-	output, err := cmd.Output()
+	output, err := y.executeCommandAndGetStdout(buildDir, "config", "get", "cacheFolder")
 	if err != nil {
 		return ".yarn/cache"
 	}

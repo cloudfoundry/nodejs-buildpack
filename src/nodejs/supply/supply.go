@@ -46,6 +46,7 @@ type NPM interface {
 
 type Yarn interface {
 	Build(string, string) error
+	Rebuild(string, string) error
 }
 
 type Stager interface {
@@ -315,15 +316,23 @@ func (s *Supplier) BuildDependencies() error {
 		return err
 	}
 
+	if (s.IsVendored) {
+		s.Log.Info("Prebuild detected (node_modules already exists)")
+		switch {
+		case s.UseYarn:
+			if err := s.Yarn.Rebuild(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
+				return err;
+			}
+		default:
+			if err := s.NPM.Rebuild(s.Stager.BuildDir()); err != nil {
+				return err
+			}
+		}
+	}
+
 	switch {
 	case s.UseYarn:
 		if err := s.Yarn.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
-			return err
-		}
-
-	case s.IsVendored:
-		s.Log.Info("Prebuild detected (node_modules already exists)")
-		if err := s.NPM.Rebuild(s.Stager.BuildDir()); err != nil {
 			return err
 		}
 

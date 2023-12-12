@@ -245,6 +245,20 @@ func (mr *MockYarnMockRecorder) Build(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockYarn)(nil).Build), arg0, arg1)
 }
 
+// Rebuild mocks base method.
+func (m *MockYarn) Rebuild(arg0, arg1 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Rebuild", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Rebuild indicates an expected call of Rebuild.
+func (mr *MockYarnMockRecorder) Rebuild(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rebuild", reflect.TypeOf((*MockNPM)(nil).Rebuild), arg0)
+}
+
 // MockStager is a mock of Stager interface.
 type MockStager struct {
 	ctrl     *gomock.Controller

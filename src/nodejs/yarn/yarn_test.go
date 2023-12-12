@@ -2,7 +2,6 @@ package yarn_test
 
 import (
 	"bytes"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -158,24 +157,14 @@ var _ = Describe("Yarn", func() {
 			})
 
 			Context("local cache enabled", func() {
-				// Disables global cache
 				JustBeforeEach(func() {
-					yarnRcFilePath := buildDir + "/.yarnrc.yml"
+					// Disabled global cache
+					cmd := exec.Command("yarn", "config", "set", "enableGlobalCache", "false")
+					cmd.Dir = buildDir
 
-					file, err := os.OpenFile(yarnRcFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+					err := cmd.Run()
 					if err != nil {
-						log.Fatalf("Failed to open "+yarnRcFilePath+": %s", err)
-					}
-
-					defer func(file *os.File) {
-						err := file.Close()
-						if err != nil {
-							log.Fatalf("Failed to close "+yarnRcFilePath+": %s", err)
-						}
-					}(file)
-
-					if _, err := file.WriteString("\nenableGlobalCache: false\n"); err != nil {
-						log.Fatalf("Failed to write to "+yarnRcFilePath+": %s", err)
+						return
 					}
 				})
 
@@ -197,26 +186,14 @@ var _ = Describe("Yarn", func() {
 
 			Context("NO local cache enabled", func() {
 				JustBeforeEach(func() {
-					// Disables global cache
-					yarnRcFilePath := buildDir + "/.yarnrc.yml"
+					// Enables global cache
+					cmd := exec.Command("yarn", "config", "set", "enableGlobalCache", "true")
+					cmd.Dir = buildDir
 
-					file, err := os.OpenFile(yarnRcFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+					err := cmd.Run()
 					if err != nil {
-						log.Fatalf("Failed to open "+yarnRcFilePath+": %s", err)
+						return
 					}
-					defer func(file *os.File) {
-						err := file.Close()
-						if err != nil {
-							log.Fatalf("Failed to close "+yarnRcFilePath+": %s", err)
-						}
-					}(file)
-
-					if _, err := file.WriteString("\nenableGlobalCache: true\n"); err != nil {
-						log.Fatalf("Failed to write to "+yarnRcFilePath+": %s", err)
-					}
-
-					content, err := os.ReadFile(yarnRcFilePath)
-					println("yarnrc file content: " + string(content))
 				})
 
 				It("tells the user it is running with global cache", func() {

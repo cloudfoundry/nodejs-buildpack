@@ -1,12 +1,10 @@
 package yarn
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/cloudfoundry/libbuildpack"
@@ -67,12 +65,6 @@ func (y *Yarn) executeCommandAndGetStdout(buildDir string, args ...string) ([]by
 	return cmd.Output()
 }
 
-func (y *Yarn) parseStdoutResponse(stdoutResponse []byte) string {
-	result := strings.TrimSpace(string(stdoutResponse))
-	re := regexp.MustCompile(`(?i)(?:\\x9B|\\x1B\[)[0-?]*[ -/]*[@-~]`)
-	return re.ReplaceAllString(result, "")
-}
-
 func (y *Yarn) getYarnVersion(buildDir string) (string, error) {
 	output, err := y.executeCommandAndGetStdout(buildDir, "--version")
 
@@ -80,32 +72,23 @@ func (y *Yarn) getYarnVersion(buildDir string) (string, error) {
 		return "", err
 	}
 
-	yarnVersion := y.parseStdoutResponse(output)
+	yarnVersion := strings.TrimSpace(string(output))
 	return yarnVersion, nil
 }
 
 func (y *Yarn) isYarnGlobalCacheEnabled(buildDir string) (bool, error) {
 	output, err := y.executeCommandAndGetStdout(buildDir, "config", "get", "enableGlobalCache")
 	if err != nil {
-		println("In the err != nil branch")
 		return true, err
 	}
 
-	result := y.parseStdoutResponse(output)
+	result := strings.TrimSpace(string(output))
 
-	println(fmt.Sprintf("resolved result: %v", result))
-
-	if result == "true" {
-		println("In the result == true branch")
+	if strings.Contains(result, "true") {
 		return true, nil
-	} else if result == "false" {
-		println("In the result == false branch")
-		return false, nil
 	}
 
-	println("In the result == neither branch, an error should get formatted below")
-
-	return true, fmt.Errorf("unexpected output from yarn config get enableGlobalCache: %s", result)
+	return false, nil
 }
 
 func (y *Yarn) getYarnCacheFolder(buildDir string) string {
@@ -114,7 +97,7 @@ func (y *Yarn) getYarnCacheFolder(buildDir string) string {
 		return ".yarn/cache"
 	}
 
-	result := y.parseStdoutResponse(output)
+	result := strings.TrimSpace(string(output))
 	return result
 }
 
@@ -181,8 +164,6 @@ func (y *Yarn) doBuildBerry(buildDir string) error {
 	}
 
 	installArgs := []string{"install", "--immutable"}
-
-	println(fmt.Sprintf("resolved useGlobalCache: %v", useGlobalCache))
 
 	if useGlobalCache {
 		y.Log.Info("Yarn is using global cache, cache is allowed to be mutable")

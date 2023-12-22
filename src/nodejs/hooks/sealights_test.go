@@ -69,10 +69,12 @@ var _ = Describe("Sealights hook", func() {
 		projectRoot = os.Getenv("SL_PROJECT_ROOT")
 		testStage = os.Getenv("SL_TEST_STAGE")
 		command = &Command{}
+		parameters := &hooks.SealightsParameters{}
 		sealights = &hooks.SealightsHook{
 			libbuildpack.DefaultHook{},
 			logger,
 			command,
+			parameters,
 		}
 	})
 

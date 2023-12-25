@@ -310,13 +310,14 @@ func (sl *SealightsHook) ReadManifestFile(stager *libbuildpack.Stager, y *libbui
 }
 
 func (sl *SealightsHook) installAgent(stager *libbuildpack.Stager) error {
-	packageName := sl.getPackageName()
+	packageName, source := sl.getPackageName()
+	sl.Log.Info("npm install %s\nversion source: %s", packageName, source)
 	err := sl.Command.Execute(stager.BuildDir(), os.Stdout, os.Stderr, "npm", "install", packageName)
 	if err != nil {
-		sl.Log.Error("npm install slnodejs failed with error: " + err.Error())
+		sl.Log.Error("npm install %s failed with error: %s", packageName, err.Error())
 		return err
 	}
-	sl.Log.Info("npm install slnodejs finished successfully")
+	sl.Log.Info("npm install %s finished successfully", packageName)
 	return nil
 }
 
@@ -431,24 +432,27 @@ func (sl *SealightsHook) parseVcapServices() {
 
 }
 
-func (sl *SealightsHook) getPackageName() string {
+func (sl *SealightsHook) getPackageName() (string, string) {
 	if sl.Parameters.CustomAgentUrl != "" {
-		return sl.Parameters.CustomAgentUrl
+		return sl.Parameters.CustomAgentUrl, "customAgentUrl parameter"
 	}
 
+	source := "DefaultVersion"
 	version := DefaultVersion
 	if sl.Parameters.Version != "" {
 		version = sl.Parameters.Version
+		source = "version parameter"
 	}
 
 	recomendedVersion, err := sl.getRecomendedAgentVersionFromServer()
 	if err != nil {
-		sl.Log.Error(err.Error())
+		sl.Log.Warning(err.Error())
 	} else {
 		version = recomendedVersion
+		source = "recomended version from server"
 	}
 
-	return fmt.Sprintf(AgentPackageVersionFormat, DefaultPackage, version)
+	return fmt.Sprintf(AgentPackageVersionFormat, DefaultPackage, version), source
 }
 
 func (sl *SealightsHook) getRecomendedAgentVersionFromServer() (string, error) {

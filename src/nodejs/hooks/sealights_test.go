@@ -2,7 +2,10 @@ package hooks_test
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,11 +18,29 @@ import (
 
 type Command struct {
 	called bool
+	args   []string
 }
 
 func (c *Command) Execute(dir string, stdout io.Writer, stderr io.Writer, program string, args ...string) error {
 	c.called = true
+	c.args = args
 	return nil
+}
+
+// MockHttpClient is a mock implementation of the HTTPClient interface for testing.
+type MockHttpClient struct {
+	Response string
+	Error    string
+}
+
+func (m *MockHttpClient) Get(url string) (*http.Response, error) {
+	if m.Error == "" {
+		reader := strings.NewReader(m.Response)
+		return &http.Response{Body: io.NopCloser(reader)}, nil
+	} else {
+		return nil, errors.New(m.Error)
+	}
+
 }
 
 var _ = Describe("Sealights hook", func() {
@@ -38,6 +59,7 @@ var _ = Describe("Sealights hook", func() {
 		testStage                     string
 		procfile                      string
 		command                       *Command
+		httpClient                    *MockHttpClient
 		procfileName                  = "Procfile"
 		packageJsonName               = "package.json"
 		manifestName                  = "manifest.yml"
@@ -69,13 +91,11 @@ var _ = Describe("Sealights hook", func() {
 		projectRoot = os.Getenv("SL_PROJECT_ROOT")
 		testStage = os.Getenv("SL_TEST_STAGE")
 		command = &Command{}
-		parameters := &hooks.SealightsParameters{}
-		sealights = &hooks.SealightsHook{
-			libbuildpack.DefaultHook{},
-			logger,
-			command,
-			parameters,
+		httpClient = &MockHttpClient{
+			Response: "",
+			Error:    "",
 		}
+		sealights = hooks.NewSealightsHook(logger, command, httpClient)
 	})
 
 	AfterEach(func() {
@@ -147,10 +167,11 @@ var _ = Describe("Sealights hook", func() {
 		Context("Sealights injection", func() {
 			BeforeEach(func() {
 				os.Setenv("VCAP_SERVICES", `{"user-provided":[
-														{ "label": "user-provided",
+														{ 
+															"label": "user-provided",
 															"name": "sealights",
 															"credentials": {
-															"token": "`+token+`"
+																"token": "`+token+`"
 															}
 															}
 													    ]}`)
@@ -324,6 +345,99 @@ var _ = Describe("Sealights hook", func() {
 				})
 			})
 		})
+		Context("Sealights agent installation", func() {
+			customUrl := "customUrl"
+			customVersion := "customVersion"
+			recommendedVersion := "goodVersion"
 
+			setVcap := func(version string, customAgentUrl string) {
+				vcapTemplate := `{
+					"user-provided":[{
+						"label": "user-provided",
+						"name": "sealights",
+						"credentials": {
+							"token": "%s",
+							"version": "%s",
+							"customAgentUrl": "%s"
+						}
+					}]
+				}`
+
+				os.Setenv("VCAP_SERVICES", fmt.Sprintf(vcapTemplate, token, version, customAgentUrl))
+			}
+
+			BeforeEach(func() {
+				err = os.Setenv("SL_DOMAIN", "my-domain")
+				Expect(err).To(BeNil())
+				err = os.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(testProcfile), 0755)
+				Expect(err).To(BeNil())
+			})
+
+			It("get recomended version from server", func() {
+				setVcap("", "")
+				httpClient.Response = `{"agent":{"version": "` + recommendedVersion + `"}}`
+
+				err = sealights.AfterCompile(stager)
+
+				Expect(err).To(BeNil())
+				Expect(command.called).To(Equal(true))
+				Expect(command.args[1]).To(Equal("slnodejs@" + recommendedVersion))
+			})
+			It("shouldn't get recomended version from server if SL_DOMAIN not set", func() {
+				err = os.Setenv("SL_DOMAIN", "")
+				Expect(err).To(BeNil())
+				setVcap("", "")
+				httpClient.Response = `{"agent":{"version": "` + recommendedVersion + `"}}`
+
+				err = sealights.AfterCompile(stager)
+
+				Expect(err).To(BeNil())
+				Expect(command.called).To(Equal(true))
+				Expect(command.args[1]).To(Equal("slnodejs@latest"))
+			})
+			It("install default version if no other provided and get recomended version failed", func() {
+				setVcap("", "")
+				httpClient.Error = "some error"
+
+				err = sealights.AfterCompile(stager)
+
+				Expect(err).To(BeNil())
+				Expect(command.args[1]).To(Equal("slnodejs@latest"))
+			})
+			It("use custom url if provided", func() {
+				setVcap("", customUrl)
+
+				err = sealights.AfterCompile(stager)
+
+				Expect(err).To(BeNil())
+				Expect(command.args[1]).To(Equal(customUrl))
+			})
+			It("should not get custom version if customUrl provided", func() {
+				setVcap(customVersion, customUrl)
+
+				err = sealights.AfterCompile(stager)
+
+				Expect(err).To(BeNil())
+				Expect(command.args[1]).To(Equal(customUrl))
+			})
+			It("use version parameter if provided", func() {
+				setVcap(customVersion, "")
+
+				err = sealights.AfterCompile(stager)
+
+				Expect(err).To(BeNil())
+				Expect(command.args[1]).To(Equal("slnodejs@" + customVersion))
+			})
+			It("should not get recomended version from server if customVersion provided", func() {
+				setVcap(customVersion, "")
+
+				httpClient.Response = `{"agent":{"version": "` + recommendedVersion + `"}}`
+
+				err = sealights.AfterCompile(stager)
+
+				Expect(err).To(BeNil())
+				Expect(command.args[1]).To(Equal("slnodejs@" + customVersion))
+			})
+		})
 	})
 })

@@ -32,11 +32,19 @@ type Command interface {
 	Execute(dir string, stdout io.Writer, stderr io.Writer, program string, args ...string) error
 }
 
+// HTTPClient interface represents the basic HTTP client operations.
+type HttpClient interface {
+	Get(url string) (*http.Response, error)
+}
+
 type SealightsHook struct {
 	libbuildpack.DefaultHook
 	Log        *libbuildpack.Logger
 	Command    Command
-	Parameters *SealightsParameters
+	HttpClient HttpClient
+	parameters *SealightsParameters
+
+	initialized bool
 }
 
 type SealightsParameters struct {
@@ -87,12 +95,19 @@ type PackageJson struct {
 func init() {
 	logger := libbuildpack.NewLogger(os.Stdout)
 	command := &libbuildpack.Command{}
-	parameters := &SealightsParameters{}
-	libbuildpack.AddHook(&SealightsHook{
-		Log:        logger,
-		Command:    command,
-		Parameters: parameters,
-	})
+	hook := NewSealightsHook(logger, command, nil)
+	libbuildpack.AddHook(hook)
+}
+
+func NewSealightsHook(logger *libbuildpack.Logger, command Command, httpClient HttpClient) *SealightsHook {
+	return &SealightsHook{
+		DefaultHook: libbuildpack.DefaultHook{},
+		Log:         logger,
+		Command:     command,
+		HttpClient:  httpClient,
+		parameters:  &SealightsParameters{},
+		initialized: false,
+	}
 }
 
 func (sl *SealightsHook) AfterCompile(stager *libbuildpack.Stager) error {
@@ -113,6 +128,7 @@ func (sl *SealightsHook) AfterCompile(stager *libbuildpack.Stager) error {
 
 	err = sl.installAgent(stager)
 	if err != nil {
+		sl.Log.Error("error injecting Sealights: %s", err)
 		return err
 	}
 
@@ -120,7 +136,8 @@ func (sl *SealightsHook) AfterCompile(stager *libbuildpack.Stager) error {
 }
 
 func (sl *SealightsHook) RunWithSealights() bool {
-	return sl.Parameters.Token != "" || sl.Parameters.TokenFile != ""
+	sl.parseVcapServices()
+	return sl.parameters.Token != "" || sl.parameters.TokenFile != ""
 }
 
 func (sl *SealightsHook) SetApplicationStartInProcfile(stager *libbuildpack.Stager) error {
@@ -184,13 +201,13 @@ func (sl *SealightsHook) usePackageJson(originalStartCommand string, stager *lib
 func (sl *SealightsHook) getSealightsOptions(app string) *SealightsRunOptions {
 
 	proxy := os.Getenv("SL_PROXY")
-	if sl.Parameters.Proxy != "" {
-		proxy = sl.Parameters.Proxy
+	if sl.parameters.Proxy != "" {
+		proxy = sl.parameters.Proxy
 	}
 
 	o := &SealightsRunOptions{
-		Token:       sl.Parameters.Token,
-		TokenFile:   sl.Parameters.TokenFile,
+		Token:       sl.parameters.Token,
+		TokenFile:   sl.parameters.TokenFile,
 		BsId:        os.Getenv("SL_BUILD_SESSION_ID"),
 		BsIdFile:    os.Getenv("SL_BUILD_SESSION_ID_FILE"),
 		Proxy:       proxy,
@@ -387,6 +404,13 @@ func (sl *SealightsHook) injectSealights(stager *libbuildpack.Stager) error {
 
 func (sl *SealightsHook) parseVcapServices() {
 
+	if sl.initialized {
+		sl.Log.Debug("already initialized. config won`t be parsed")
+		return
+	} else {
+		sl.initialized = true
+	}
+
 	var vcapServices map[string][]struct {
 		Name        string                 `json:"name"`
 		Credentials map[string]interface{} `json:"credentials"`
@@ -420,12 +444,12 @@ func (sl *SealightsHook) parseVcapServices() {
 				ProxyPassword:  queryString("proxyPassword"),
 			}
 
-			// write warning in case token or session is not provided
+			// write warning in case token is not provided
 			if options.Token != "" && options.TokenFile != "" {
 				sl.Log.Warning("Sealights access token isn't provided")
 			}
 
-			sl.Parameters = options
+			sl.parameters = options
 			return
 		}
 	}
@@ -433,15 +457,16 @@ func (sl *SealightsHook) parseVcapServices() {
 }
 
 func (sl *SealightsHook) getPackageName() (string, string) {
-	if sl.Parameters.CustomAgentUrl != "" {
-		return sl.Parameters.CustomAgentUrl, "customAgentUrl parameter"
+	if sl.parameters.CustomAgentUrl != "" {
+		return sl.parameters.CustomAgentUrl, "customAgentUrl parameter"
 	}
 
 	source := "DefaultVersion"
 	version := DefaultVersion
-	if sl.Parameters.Version != "" {
-		version = sl.Parameters.Version
+	if sl.parameters.Version != "" {
+		version = sl.parameters.Version
 		source = "version parameter"
+		return fmt.Sprintf(AgentPackageVersionFormat, DefaultPackage, version), source
 	}
 
 	recomendedVersion, err := sl.getRecomendedAgentVersionFromServer()
@@ -489,21 +514,27 @@ func (sl *SealightsHook) getRecomendedAgentVersionFromServer() (string, error) {
 }
 
 // Create simple http client or http client with proxy, based on the settings
-func (sl *SealightsHook) createHttpClient() *http.Client {
-	if sl.Parameters.Proxy != "" {
-		proxyUrl, _ := url.Parse(sl.Parameters.Proxy)
+func (sl *SealightsHook) createHttpClient() HttpClient {
+	if sl.HttpClient != nil {
+		return sl.HttpClient
+	}
 
-		return &http.Client{
+	if sl.parameters.Proxy != "" {
+		proxyUrl, _ := url.Parse(sl.parameters.Proxy)
+
+		sl.HttpClient = &http.Client{
 			Transport: &http.Transport{
 				Proxy: http.ProxyURL(&url.URL{
 					Scheme: proxyUrl.Scheme,
-					User:   url.UserPassword(sl.Parameters.ProxyUsername, sl.Parameters.ProxyPassword),
+					User:   url.UserPassword(sl.parameters.ProxyUsername, sl.parameters.ProxyPassword),
 					Host:   proxyUrl.Host,
 				}),
 			},
 		}
+		return sl.HttpClient
 	} else {
-		return &http.Client{}
+		sl.HttpClient = &http.Client{}
+		return sl.HttpClient
 	}
 }
 

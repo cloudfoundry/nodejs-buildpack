@@ -45,19 +45,19 @@ func (m *MockHttpClient) Get(url string) (*http.Response, error) {
 
 var _ = Describe("Sealights hook", func() {
 	var (
-		err                           error
-		buildDir                      string
-		logger                        *libbuildpack.Logger
-		buffer                        *bytes.Buffer
-		stager                        *libbuildpack.Stager
-		sealights                     *hooks.SealightsHook
-		yamlFile                      *libbuildpack.YAML
-		build                         string
-		proxy                         string
-		labId                         string
-		projectRoot                   string
-		testStage                     string
-		procfile                      string
+		err         error
+		buildDir    string
+		logger      *libbuildpack.Logger
+		buffer      *bytes.Buffer
+		stager      *libbuildpack.Stager
+		sealights   *hooks.SealightsHook
+		yamlFile    *libbuildpack.YAML
+		build       string
+		proxy       string
+		labId       string
+		projectRoot string
+		testStage   string
+		// procfile                      string
 		command                       *Command
 		httpClient                    *MockHttpClient
 		procfileName                  = "Procfile"
@@ -111,8 +111,8 @@ var _ = Describe("Sealights hook", func() {
 		Expect(err).To(BeNil())
 		err = os.Unsetenv("VCAP_SERVICES")
 		Expect(err).To(BeNil())
-		err = os.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(procfile), 0755)
-		Expect(err).To(BeNil())
+		// err = os.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(procfile), 0755)
+		// Expect(err).To(BeNil())
 		err = os.RemoveAll(buildDir)
 		Expect(err).To(BeNil())
 	})
@@ -164,6 +164,133 @@ var _ = Describe("Sealights hook", func() {
 				Expect(command.called).To(BeFalse())
 			})
 		})
+
+		Context("Configure sealight with VCAP_SERVICES only", func() {
+			BeforeEach(func() {
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_BUILD_SESSION_ID", "")
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_BUILD_SESSION_ID_FILE", "")
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_PROXY", "")
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_LAB_ID", "")
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_PROJECT_ROOT", "")
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_TEST_STAGE", "")
+
+				err = os.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte(testProcfile), 0755)
+				Expect(err).To(BeNil())
+			})
+
+			It("hook fails with empty token and tokenFile", func() {
+				vcapTemplate := `{
+					"user-provided":[{
+						"label": "user-provided",
+						"name": "sealights",
+						"credentials": {
+							"token": "",
+							"tokenFile": "",
+							"buildSessionId": "` + bsid + `"
+						}
+					}]
+				}`
+				err = os.Setenv("VCAP_SERVICES", vcapTemplate)
+				Expect(err).To(BeNil())
+
+				err = sealights.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				Expect(command.called).To(BeFalse())
+				bytes, err := os.ReadFile(filepath.Join(stager.BuildDir(), procfileName))
+				Expect(err).To(BeNil())
+				cleanResult := strings.ReplaceAll(string(bytes), " ", "")
+				expectedCommand := strings.ReplaceAll("node index.js --build 192 --name Good", " ", "")
+				Expect(cleanResult).To(Equal("web:" + expectedCommand))
+			})
+
+			It("hook fails with empty buildSessionId and buildSessionIdFile", func() {
+				vcapTemplate := `{
+					"user-provided":[{
+						"label": "user-provided",
+						"name": "sealights",
+						"credentials": {
+							"token": "` + token + `",
+							"buildSessionId": "",
+							"buildSessionIdFile": ""
+						}
+					}]
+				}`
+				err = os.Setenv("VCAP_SERVICES", vcapTemplate)
+				Expect(err).To(BeNil())
+
+				err = sealights.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				Expect(command.called).To(BeFalse())
+				bytes, err := os.ReadFile(filepath.Join(stager.BuildDir(), procfileName))
+				Expect(err).To(BeNil())
+				cleanResult := strings.ReplaceAll(string(bytes), " ", "")
+				expectedCommand := strings.ReplaceAll("node index.js --build 192 --name Good", " ", "")
+				Expect(cleanResult).To(Equal("web:" + expectedCommand))
+			})
+
+			It("hook doesn't fail with token or tokenFile and buildSessionId or buildSessionIdFile", func() {
+				vcapTemplate := `{
+					"user-provided":[{
+						"label": "user-provided",
+						"name": "sealights",
+						"credentials": {
+							"token": "` + token + `",
+							"buildSessionId": "` + bsid + `"
+						}
+					}]
+				}`
+				err = os.Setenv("VCAP_SERVICES", vcapTemplate)
+				Expect(err).To(BeNil())
+
+				err = sealights.AfterCompile(stager)
+				Expect(err).To(BeNil())
+				Expect(command.called).To(BeTrue())
+				bytes, err := os.ReadFile(filepath.Join(stager.BuildDir(), procfileName))
+				Expect(err).To(BeNil())
+				cleanResult := strings.ReplaceAll(string(bytes), " ", "")
+				expectedCommand := strings.ReplaceAll("./node_modules/.bin/slnodejs run --useinitialcolor true --token good_token --buildsessionid goodBsid index.js --build 192 --name Good", " ", "")
+				Expect(cleanResult).To(Equal("web:" + expectedCommand))
+			})
+
+			It("hook pass all params to updated cli command", func() {
+				vcapTemplate := `{
+					"user-provided":[{
+						"label": "user-provided",
+						"name": "sealights",
+						"credentials": {
+							"token": "` + token + `",
+							"buildSessionId": "` + bsid + `",
+							"labId": "goodLab",
+							"projectRoot": "./",
+							"testStage": "Good tests",
+							"proxy": "goodProxy",
+							"proxyUsername": "goodName",
+							"proxyPassword": "goodPassword"
+						}
+					}]
+				}`
+				err = os.Setenv("VCAP_SERVICES", vcapTemplate)
+				Expect(err).To(BeNil())
+
+				err = sealights.AfterCompile(stager)
+				Expect(err).To(BeNil())
+				Expect(command.called).To(BeTrue())
+				bytes, err := os.ReadFile(filepath.Join(stager.BuildDir(), procfileName))
+				Expect(err).To(BeNil())
+				cleanResult := strings.ReplaceAll(string(bytes), " ", "")
+				expectedCommand := strings.ReplaceAll("./node_modules/.bin/slnodejs run --useinitialcolor true --token good_token --buildsessionid goodBsid --proxy goodProxy --proxyUsername goodName --proxyPassword goodPassword --labid goodLab --projectroot ./ --teststage \"Good tests\" index.js --build 192 --name Good", " ", "")
+				Expect(cleanResult).To(Equal("web:" + expectedCommand))
+			})
+		})
+
 		Context("Sealights injection", func() {
 			BeforeEach(func() {
 				os.Setenv("VCAP_SERVICES", `{"user-provided":[
@@ -183,6 +310,8 @@ var _ = Describe("Sealights hook", func() {
 				})
 				It("test application run cmd creation from bsid file", func() {
 					err = os.Setenv("SL_LAB_ID", lab)
+					Expect(err).To(BeNil())
+					err = os.Setenv("SL_PROXY", proxy)
 					Expect(err).To(BeNil())
 					err = os.Setenv("SL_PROJECT_ROOT", root)
 					Expect(err).To(BeNil())
@@ -205,6 +334,8 @@ var _ = Describe("Sealights hook", func() {
 				})
 				It("test application run cmd creation", func() {
 					err = os.Setenv("SL_LAB_ID", lab)
+					Expect(err).To(BeNil())
+					err = os.Setenv("SL_PROXY", proxy)
 					Expect(err).To(BeNil())
 					err = os.Setenv("SL_PROJECT_ROOT", root)
 					Expect(err).To(BeNil())
@@ -345,6 +476,7 @@ var _ = Describe("Sealights hook", func() {
 				})
 			})
 		})
+
 		Context("Sealights agent installation", func() {
 			customUrl := "customUrl"
 			customVersion := "customVersion"

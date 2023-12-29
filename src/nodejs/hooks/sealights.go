@@ -42,31 +42,38 @@ type SealightsHook struct {
 	Log        *libbuildpack.Logger
 	Command    Command
 	HttpClient HttpClient
-	parameters *SealightsParameters
 
+	parameters  *SealightsParameters
 	initialized bool
 }
 
 type SealightsParameters struct {
-	Token          string
-	TokenFile      string
-	CustomAgentUrl string
-	Version        string
-	Proxy          string
-	ProxyUsername  string
-	ProxyPassword  string
+	Token              string
+	TokenFile          string
+	BuildSessionId     string
+	BuildSessionIdFile string
+	LabId              string
+	CustomAgentUrl     string
+	Version            string
+	Proxy              string
+	ProxyUsername      string
+	ProxyPassword      string
+	ProjectRoot        string
+	TestStage          string
 }
 
 type SealightsRunOptions struct {
-	Token       string
-	TokenFile   string
-	BsId        string
-	BsIdFile    string
-	Proxy       string
-	LabId       string
-	ProjectRoot string
-	TestStage   string
-	App         string
+	Token              string
+	TokenFile          string
+	BuildSessionId     string
+	BuildSessionIdFile string
+	Proxy              string
+	ProxyUsername      string
+	ProxyPassword      string
+	LabId              string
+	ProjectRoot        string
+	TestStage          string // depracated
+	App                string
 }
 
 type RecomendedVersionResponse struct {
@@ -111,8 +118,6 @@ func NewSealightsHook(logger *libbuildpack.Logger, command Command, httpClient H
 }
 
 func (sl *SealightsHook) AfterCompile(stager *libbuildpack.Stager) error {
-	sl.Log.Debug("inside Sealights hook")
-
 	sl.parseVcapServices()
 
 	if !sl.RunWithSealights() {
@@ -200,21 +205,48 @@ func (sl *SealightsHook) usePackageJson(originalStartCommand string, stager *lib
 
 func (sl *SealightsHook) getSealightsOptions(app string) *SealightsRunOptions {
 
+	buildSessionId := os.Getenv("SL_BUILD_SESSION_ID")
+	if sl.parameters.BuildSessionId != "" {
+		buildSessionId = sl.parameters.BuildSessionId
+	}
+
+	buildSessionIdFile := os.Getenv("SL_BUILD_SESSION_ID_FILE")
+	if sl.parameters.BuildSessionIdFile != "" {
+		buildSessionIdFile = sl.parameters.BuildSessionIdFile
+	}
+
 	proxy := os.Getenv("SL_PROXY")
 	if sl.parameters.Proxy != "" {
 		proxy = sl.parameters.Proxy
 	}
 
+	labId := os.Getenv("SL_LAB_ID")
+	if sl.parameters.LabId != "" {
+		labId = sl.parameters.LabId
+	}
+
+	projectRoot := os.Getenv("SL_PROJECT_ROOT")
+	if sl.parameters.ProjectRoot != "" {
+		projectRoot = sl.parameters.ProjectRoot
+	}
+
+	testStage := os.Getenv("SL_TEST_STAGE")
+	if sl.parameters.ProjectRoot != "" {
+		testStage = sl.parameters.TestStage
+	}
+
 	o := &SealightsRunOptions{
-		Token:       sl.parameters.Token,
-		TokenFile:   sl.parameters.TokenFile,
-		BsId:        os.Getenv("SL_BUILD_SESSION_ID"),
-		BsIdFile:    os.Getenv("SL_BUILD_SESSION_ID_FILE"),
-		Proxy:       proxy,
-		LabId:       os.Getenv("SL_LAB_ID"),
-		ProjectRoot: os.Getenv("SL_PROJECT_ROOT"),
-		TestStage:   os.Getenv("SL_TEST_STAGE"),
-		App:         app,
+		Token:              sl.parameters.Token,
+		TokenFile:          sl.parameters.TokenFile,
+		BuildSessionId:     buildSessionId,
+		BuildSessionIdFile: buildSessionIdFile,
+		Proxy:              proxy,
+		ProxyUsername:      sl.parameters.ProxyUsername,
+		ProxyPassword:      sl.parameters.ProxyPassword,
+		LabId:              labId,
+		ProjectRoot:        projectRoot,
+		TestStage:          testStage,
+		App:                app,
 	}
 	return o
 }
@@ -348,14 +380,22 @@ func (sl *SealightsHook) createAppStartCommandLine(o *SealightsRunOptions) strin
 		sb.WriteString(fmt.Sprintf(" --token %s", o.Token))
 	}
 
-	if o.BsIdFile != "" {
-		sb.WriteString(fmt.Sprintf(" --buildsessionidfile %s", o.BsIdFile))
+	if o.BuildSessionIdFile != "" {
+		sb.WriteString(fmt.Sprintf(" --buildsessionidfile %s", o.BuildSessionIdFile))
 	} else {
-		sb.WriteString(fmt.Sprintf(" --buildsessionid %s", o.BsId))
+		sb.WriteString(fmt.Sprintf(" --buildsessionid %s", o.BuildSessionId))
 	}
 
 	if o.Proxy != "" {
 		sb.WriteString(fmt.Sprintf(" --proxy %s ", o.Proxy))
+	}
+
+	if o.ProxyUsername != "" {
+		sb.WriteString(fmt.Sprintf(" --proxyUsername %s ", o.ProxyUsername))
+	}
+
+	if o.ProxyPassword != "" {
+		sb.WriteString(fmt.Sprintf(" --proxyPassword %s ", o.ProxyPassword))
 	}
 
 	if o.LabId != "" {
@@ -381,7 +421,7 @@ func (sl *SealightsHook) validate(o *SealightsRunOptions) error {
 		return fmt.Errorf(EmptyTokenError)
 	}
 
-	if o.BsId == "" && o.BsIdFile == "" {
+	if o.BuildSessionId == "" && o.BuildSessionIdFile == "" {
 		sl.Log.Error(EmptyBuildError)
 		return fmt.Errorf(EmptyBuildError)
 	}
@@ -435,13 +475,18 @@ func (sl *SealightsHook) parseVcapServices() {
 			}
 
 			options := &SealightsParameters{
-				Token:          queryString("token"),
-				TokenFile:      queryString("tokenFile"),
-				Version:        queryString("version"),
-				CustomAgentUrl: queryString("customAgentUrl"),
-				Proxy:          queryString("proxy"),
-				ProxyUsername:  queryString("proxyUsername"),
-				ProxyPassword:  queryString("proxyPassword"),
+				Token:              queryString("token"),
+				TokenFile:          queryString("tokenFile"),
+				BuildSessionId:     queryString("buildSessionId"),
+				BuildSessionIdFile: queryString("buildSessionIdFile"),
+				LabId:              queryString("labId"),
+				Version:            queryString("version"),
+				CustomAgentUrl:     queryString("customAgentUrl"),
+				Proxy:              queryString("proxy"),
+				ProxyUsername:      queryString("proxyUsername"),
+				ProxyPassword:      queryString("proxyPassword"),
+				ProjectRoot:        queryString("projectRoot"),
+				TestStage:          queryString("testStage"),
 			}
 
 			// write warning in case token is not provided

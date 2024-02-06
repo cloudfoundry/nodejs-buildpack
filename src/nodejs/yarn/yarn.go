@@ -1,10 +1,12 @@
 package yarn
 
 import (
+	"bytes"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/cloudfoundry/libbuildpack"
 )
@@ -27,33 +29,49 @@ func (y *Yarn) Build(buildDir, cacheDir string) error {
 		return err
 	}
 
-	installArgs := []string{"install", "--pure-lockfile", "--ignore-engines", "--cache-folder", filepath.Join(cacheDir, ".cache/yarn"), "--check-files"}
-
-	yarnConfig := map[string]string{}
-	if offline {
-		yarnOfflineMirror := filepath.Join(buildDir, "npm-packages-offline-cache")
-		y.Log.Info("Found yarn mirror directory %s", yarnOfflineMirror)
-		y.Log.Info("Running yarn in offline mode")
-
-		installArgs = append(installArgs, "--offline")
-
-		yarnConfig["yarn-offline-mirror"] = yarnOfflineMirror
-		yarnConfig["yarn-offline-mirror-pruning"] = "false"
-	} else {
-		y.Log.Info("Running yarn in online mode")
-		y.Log.Info("To run yarn in offline mode, see: https://yarnpkg.com/blog/2016/11/24/offline-mirror")
-
-		yarnConfig["yarn-offline-mirror"] = filepath.Join(cacheDir, "npm-packages-offline-cache")
-		yarnConfig["yarn-offline-mirror-pruning"] = "true"
+	buffer := new(bytes.Buffer)
+	if err := y.Command.Execute(buildDir, buffer, buffer, "yarn", "--version"); err != nil {
+		return err
 	}
 
-	for k, v := range yarnConfig {
-		cmd := exec.Command("yarn", "config", "set", k, v)
-		cmd.Dir = buildDir
-		cmd.Stdout = io.Discard
-		cmd.Stderr = os.Stderr
-		if err := y.Command.Run(cmd); err != nil {
-			return err
+	yarnVersion := strings.TrimSpace(buffer.String())
+	y.Log.Info("Current yarn version %s", yarnVersion)
+
+	y.Command.Execute(buildDir, buffer, buffer, "yarn", "--version")
+
+	var installArgs []string
+
+	if strings.HasPrefix(yarnVersion, "3") {
+		installArgs = []string{"workspaces", "focus", "--all", "--production"}
+	} else {
+		installArgs = []string{"install", "--pure-lockfile", "--ignore-engines", "--cache-folder", filepath.Join(cacheDir, ".cache/yarn"), "--check-files"}
+
+		yarnConfig := map[string]string{}
+		if offline {
+			yarnOfflineMirror := filepath.Join(buildDir, "npm-packages-offline-cache")
+			y.Log.Info("Found yarn mirror directory %s", yarnOfflineMirror)
+			y.Log.Info("Running yarn in offline mode")
+
+			installArgs = append(installArgs, "--offline")
+
+			yarnConfig["yarn-offline-mirror"] = yarnOfflineMirror
+			yarnConfig["yarn-offline-mirror-pruning"] = "false"
+		} else {
+			y.Log.Info("Running yarn in online mode")
+			y.Log.Info("To run yarn in offline mode, see: https://yarnpkg.com/blog/2016/11/24/offline-mirror")
+
+			yarnConfig["yarn-offline-mirror"] = filepath.Join(cacheDir, "npm-packages-offline-cache")
+			yarnConfig["yarn-offline-mirror-pruning"] = "true"
+		}
+
+		for k, v := range yarnConfig {
+			cmd := exec.Command("yarn", "config", "set", k, v)
+			cmd.Dir = buildDir
+			cmd.Stdout = io.Discard
+			cmd.Stderr = os.Stderr
+			if err := y.Command.Run(cmd); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -66,9 +84,11 @@ func (y *Yarn) Build(buildDir, cacheDir string) error {
 		return err
 	}
 
-	err = os.RemoveAll(filepath.Join(buildDir, "npm-packages-offline-cache"))
-	if err != nil {
-		panic(err)
+	if !strings.HasPrefix(yarnVersion, "3") {
+		err = os.RemoveAll(filepath.Join(buildDir, "npm-packages-offline-cache"))
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	return nil

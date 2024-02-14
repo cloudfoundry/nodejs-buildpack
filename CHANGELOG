@@ -1,3 +1,13 @@
+v1.8.22 Feb 14, 2024
+=====================
+
+* Add python 3.11.8, remove python 3.11.7 for stack(s) cflinuxfs4, cflinuxfs3
+
+* Add node 20.11.0, remove node 20.9.0 for stack(s) cflinuxfs4, cflinuxfs3
+
+* Add new parameters for sealights hook (#688)
+
+
 v1.8.21 Dec 13, 2023
 =====================
 

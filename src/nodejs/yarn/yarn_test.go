@@ -90,7 +90,7 @@ var _ = Describe("Yarn", func() {
 
 			It("tells the user it is running in offline mode", func() {
 				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
-				Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
+				Expect(buffer.String()).To(ContainSubstring("Installing dependencies (yarn)"))
 				Expect(buffer.String()).To(ContainSubstring("Found yarn mirror directory " + filepath.Join(buildDir, "npm-packages-offline-cache")))
 				Expect(buffer.String()).To(ContainSubstring("Running yarn in offline mode"))
 			})
@@ -119,7 +119,7 @@ var _ = Describe("Yarn", func() {
 		Context("NO npm-packages-offline-cache directory", func() {
 			It("tells the user it is running in online mode", func() {
 				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
-				Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
+				Expect(buffer.String()).To(ContainSubstring("Installing dependencies (yarn)"))
 				Expect(buffer.String()).To(ContainSubstring("Running yarn in online mode"))
 				Expect(buffer.String()).To(ContainSubstring("To run yarn in offline mode, see: https://classic.yarnpkg.com/blog/2016/11/24/offline-mirror/"))
 			})
@@ -170,7 +170,7 @@ var _ = Describe("Yarn", func() {
 
 				It("tells the user it is running with local cache", func() {
 					Expect(y.Build(buildDir, cacheDir)).To(Succeed())
-					Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
+					Expect(buffer.String()).To(ContainSubstring("Installing dependencies (yarn)"))
 					Expect(buffer.String()).To(ContainSubstring("Yarn is using local cache, enabling immutable cache"))
 				})
 
@@ -198,7 +198,7 @@ var _ = Describe("Yarn", func() {
 
 				It("tells the user it is running with global cache", func() {
 					Expect(y.Build(buildDir, cacheDir)).To(Succeed())
-					Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
+					Expect(buffer.String()).To(ContainSubstring("Installing dependencies (yarn)"))
 					Expect(buffer.String()).To(ContainSubstring("Yarn is using global cache, cache is allowed to be mutable"))
 					Expect(buffer.String()).To(ContainSubstring("To run yarn with local cache, see: https://yarnpkg.com/configuration/yarnrc#enableGlobalCache"))
 				})

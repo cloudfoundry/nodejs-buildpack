@@ -21,7 +21,7 @@ type Yarn struct {
 }
 
 func (y *Yarn) Build(buildDir, cacheDir string) error {
-	y.Log.Info("Installing node modules (yarn.lock)")
+	y.Log.Info("Installing dependencies (yarn)")
 
 	err := y.doBuild(buildDir, cacheDir)
 

@@ -783,14 +783,42 @@ var _ = Describe("Supply", func() {
 		Context("yarn.lock exists", func() {
 			BeforeEach(func() {
 				Expect(os.WriteFile(filepath.Join(buildDir, "yarn.lock"), []byte("{}"), 0644)).To(Succeed())
+				mockYarn.EXPECT().GetYarnCacheFolder(gomock.Any()).Return(".yarn/cache")
+				mockYarn.EXPECT().GetYarnVersion(gomock.Any()).Return("4.1.0")
+				mockYarn.EXPECT().GetYarnNodeLinker(gomock.Any()).Return("pnp")
 			})
+
+			It("sets UseYarn to true", func() {
+				Expect(supplier.ReadPackageJSON()).To(Succeed())
+				Expect(supplier.UseYarn).To(BeTrue())
+				Expect(supplier.IsVendored).To(BeFalse())
+			})
+
+			It("sets IsVendored to true", func() {
+				Expect(os.MkdirAll(filepath.Join(buildDir, ".yarn"), 0755)).To(Succeed())
+				Expect(os.MkdirAll(filepath.Join(buildDir, ".yarn", "cache"), 0755)).To(Succeed())
+
+				Expect(supplier.ReadPackageJSON()).To(Succeed())
+				Expect(supplier.UseYarn).To(BeTrue())
+				Expect(supplier.IsVendored).To(BeTrue())
+			})
+		})
+
+		Context(".yarn folder exists", func() {
+			BeforeEach(func() {
+				Expect(os.MkdirAll(filepath.Join(buildDir, ".yarn"), 0755)).To(Succeed())
+				mockYarn.EXPECT().GetYarnCacheFolder(gomock.Any()).Return(".yarn/cache")
+				mockYarn.EXPECT().GetYarnVersion(gomock.Any()).Return("4.1.0")
+				mockYarn.EXPECT().GetYarnNodeLinker(gomock.Any()).Return("pnp")
+			})
+
 			It("sets UseYarn to true", func() {
 				Expect(supplier.ReadPackageJSON()).To(Succeed())
 				Expect(supplier.UseYarn).To(BeTrue())
 			})
 		})
 
-		Context("yarn.lock does not exist", func() {
+		Context("yarn.lock nor .yarn folder exists", func() {
 			It("sets UseYarn to false", func() {
 				Expect(supplier.ReadPackageJSON()).To(Succeed())
 				Expect(supplier.UseYarn).To(BeFalse())

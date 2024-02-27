@@ -45,10 +45,9 @@ func (y *Yarn) Rebuild(buildDir, cacheDir string) error {
 }
 
 func (y *Yarn) doBuild(buildDir, cacheDir string) error {
-	yarnVersion, err := y.getYarnVersion(buildDir)
-	if err != nil {
-		return err
-	}
+	yarnVersion := y.GetYarnVersion(buildDir)
+
+	println("yarnVersion: ", yarnVersion)
 
 	if strings.HasPrefix(yarnVersion, "1") {
 		return y.doBuildClassic(buildDir, cacheDir)
@@ -65,15 +64,15 @@ func (y *Yarn) executeCommandAndGetStdout(buildDir string, args ...string) ([]by
 	return cmd.Output()
 }
 
-func (y *Yarn) getYarnVersion(buildDir string) (string, error) {
+func (y *Yarn) GetYarnVersion(buildDir string) string {
 	output, err := y.executeCommandAndGetStdout(buildDir, "--version")
 
 	if err != nil {
-		return "", err
+		return "1.x"
 	}
 
 	yarnVersion := strings.TrimSpace(string(output))
-	return yarnVersion, nil
+	return yarnVersion
 }
 
 func (y *Yarn) isYarnGlobalCacheEnabled(buildDir string) (bool, error) {
@@ -91,10 +90,20 @@ func (y *Yarn) isYarnGlobalCacheEnabled(buildDir string) (bool, error) {
 	return false, nil
 }
 
-func (y *Yarn) getYarnCacheFolder(buildDir string) string {
+func (y *Yarn) GetYarnCacheFolder(buildDir string) string {
 	output, err := y.executeCommandAndGetStdout(buildDir, "config", "get", "cacheFolder")
 	if err != nil {
 		return ".yarn/cache"
+	}
+
+	result := strings.TrimSpace(string(output))
+	return result
+}
+
+func (y *Yarn) GetYarnNodeLinker(buildDir string) string {
+	output, err := y.executeCommandAndGetStdout(buildDir, "config", "get", "nodeLinker")
+	if err != nil {
+		return "node-modules"
 	}
 
 	result := strings.TrimSpace(string(output))
@@ -183,7 +192,7 @@ func (y *Yarn) doBuildBerry(buildDir string) error {
 	}
 
 	if !useGlobalCache {
-		yarnLocalCacheFolder := y.getYarnCacheFolder(buildDir)
+		yarnLocalCacheFolder := y.GetYarnCacheFolder(buildDir)
 		if err != nil {
 			return err
 		}

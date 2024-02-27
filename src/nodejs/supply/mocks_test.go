@@ -245,6 +245,48 @@ func (mr *MockYarnMockRecorder) Build(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockYarn)(nil).Build), arg0, arg1)
 }
 
+// GetYarnCacheFolder mocks base method.
+func (m *MockYarn) GetYarnCacheFolder(arg0 string) string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetYarnCacheFolder", arg0)
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetYarnCacheFolder indicates an expected call of GetYarnCacheFolder.
+func (mr *MockYarnMockRecorder) GetYarnCacheFolder(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetYarnCacheFolder", reflect.TypeOf((*MockYarn)(nil).GetYarnCacheFolder), arg0)
+}
+
+// GetYarnNodeLinker mocks base method.
+func (m *MockYarn) GetYarnNodeLinker(arg0 string) string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetYarnNodeLinker", arg0)
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetYarnNodeLinker indicates an expected call of GetYarnNodeLinker.
+func (mr *MockYarnMockRecorder) GetYarnNodeLinker(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetYarnNodeLinker", reflect.TypeOf((*MockYarn)(nil).GetYarnNodeLinker), arg0)
+}
+
+// GetYarnVersion mocks base method.
+func (m *MockYarn) GetYarnVersion(arg0 string) string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetYarnVersion", arg0)
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetYarnVersion indicates an expected call of GetYarnVersion.
+func (mr *MockYarnMockRecorder) GetYarnVersion(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetYarnVersion", reflect.TypeOf((*MockYarn)(nil).GetYarnVersion), arg0)
+}
+
 // Rebuild mocks base method.
 func (m *MockYarn) Rebuild(arg0, arg1 string) error {
 	m.ctrl.T.Helper()

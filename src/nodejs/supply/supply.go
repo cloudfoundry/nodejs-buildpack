@@ -47,6 +47,9 @@ type NPM interface {
 type Yarn interface {
 	Build(string, string) error
 	Rebuild(string, string) error
+	GetYarnCacheFolder(string) string
+	GetYarnNodeLinker(string) string
+	GetYarnVersion(string) string
 }
 
 type Stager interface {
@@ -406,12 +409,40 @@ func (s *Supplier) ReadPackageJSON() error {
 		Workspaces      []string          `json:"workspaces"`
 	}
 
+	// First try to find yarn.lock, if we found it set UseYarn to true
 	if s.UseYarn, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "yarn.lock")); err != nil {
 		return err
 	}
 
-	if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "node_modules")); err != nil {
-		return err
+	// If we didn't find yarn.lock, check if we have a .yarn folder and set UseYarn to true if we do
+	if !s.UseYarn {
+		if s.UseYarn, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), ".yarn")); err != nil {
+			return err
+		}
+	}
+
+	// If we are using Yarn then we need to check if the cache folder exists for Yarn berry Zero Installs
+	if s.UseYarn {
+		s.Log.Info("Detected Yarn, checking your configured nodeLinker...")
+		yarnCacheFolder := s.Yarn.GetYarnCacheFolder(s.Stager.BuildDir())
+		yarnVersion := s.Yarn.GetYarnVersion(s.Stager.BuildDir())
+		yarnNodeLinker := s.Yarn.GetYarnNodeLinker(s.Stager.BuildDir())
+
+		isYarnV1 := strings.HasPrefix(yarnVersion, "1")
+
+		if !isYarnV1 && yarnNodeLinker == "pnp" {
+			s.Log.Protip("Yarn Berry is using Plug'n'Play (PnP) mode, detecting if Zero Installs is enabled by checking if the Yarn cache folder exists.", "https://yarnpkg.com/features/pnp")
+			if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), yarnCacheFolder)); err != nil {
+				return err
+			}
+		}
+	}
+
+	// If IsVendored was not set to true then we're either using Yarn without Zero Installs, or we're using NPM
+	if !s.IsVendored {
+		if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "node_modules")); err != nil {
+			return err
+		}
 	}
 
 	var p normalStruct

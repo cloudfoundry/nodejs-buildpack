@@ -47,8 +47,6 @@ func (y *Yarn) Rebuild(buildDir, cacheDir string) error {
 func (y *Yarn) doBuild(buildDir, cacheDir string) error {
 	yarnVersion := y.GetYarnVersion(buildDir)
 
-	println("yarnVersion: ", yarnVersion)
-
 	if strings.HasPrefix(yarnVersion, "1") {
 		return y.doBuildClassic(buildDir, cacheDir)
 	}

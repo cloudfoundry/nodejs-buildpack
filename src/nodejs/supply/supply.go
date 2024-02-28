@@ -504,13 +504,15 @@ func (s *Supplier) NoPackageLockTip() error {
 }
 
 func (s *Supplier) TipVendorDependencies() error {
-	subdirs, err := hasSubdirs(filepath.Join(s.Stager.BuildDir(), "node_modules"))
-	if err != nil {
-		return err
-	}
-	if !subdirs {
-		s.Log.Protip("It is recommended to vendor the application's Node.js dependencies",
-			"http://docs.cloudfoundry.org/buildpacks/node/index.html#vendoring")
+	if !s.IsVendored {
+		subdirs, err := hasSubdirs(filepath.Join(s.Stager.BuildDir(), "node_modules"))
+		if err != nil {
+			return err
+		}
+		if !subdirs {
+			s.Log.Protip("It is recommended to vendor the application's Node.js dependencies",
+				"http://docs.cloudfoundry.org/buildpacks/node/index.html#vendoring")
+		}
 	}
 
 	return nil

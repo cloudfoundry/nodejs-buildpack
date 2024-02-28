@@ -320,7 +320,7 @@ func (s *Supplier) BuildDependencies() error {
 	}
 
 	if s.IsVendored {
-		s.Log.Info("Prebuild detected (node_modules already exists)")
+		s.Log.Info("Prebuild detected (vendored dependencies exist)")
 		switch {
 		case s.UseYarn:
 			if err := s.Yarn.Rebuild(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {

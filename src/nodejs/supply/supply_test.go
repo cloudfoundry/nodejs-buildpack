@@ -783,7 +783,7 @@ var _ = Describe("Supply", func() {
 		Context("yarn.lock exists", func() {
 			BeforeEach(func() {
 				Expect(os.WriteFile(filepath.Join(buildDir, "yarn.lock"), []byte("{}"), 0644)).To(Succeed())
-				mockYarn.EXPECT().GetYarnCacheFolder(gomock.Any()).Return(".yarn/cache")
+				mockYarn.EXPECT().GetYarnCacheFolder(gomock.Any()).Return(buildDir + "/.yarn/cache")
 				mockYarn.EXPECT().GetYarnVersion(gomock.Any()).Return("4.1.0")
 				mockYarn.EXPECT().GetYarnNodeLinker(gomock.Any()).Return("pnp")
 			})

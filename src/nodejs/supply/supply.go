@@ -431,8 +431,8 @@ func (s *Supplier) ReadPackageJSON() error {
 		isYarnV1 := strings.HasPrefix(yarnVersion, "1")
 
 		if !isYarnV1 && yarnNodeLinker == "pnp" {
-			s.Log.Protip("Yarn Berry is using Plug'n'Play (PnP) mode, detecting if Zero Installs is enabled by checking if the Yarn cache folder exists.", "https://yarnpkg.com/features/pnp")
-			if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), yarnCacheFolder)); err != nil {
+			s.Log.Info("Yarn Berry is using Plug'n'Play (PnP) mode, detecting if Zero Installs is enabled by checking if the Yarn cache folder exists. For more info visit https://yarnpkg.com/features/caching#zero-installs")
+			if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(yarnCacheFolder)); err != nil {
 				return err
 			}
 		}

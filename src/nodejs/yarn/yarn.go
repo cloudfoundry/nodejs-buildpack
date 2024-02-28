@@ -23,7 +23,7 @@ type Yarn struct {
 func (y *Yarn) Build(buildDir, cacheDir string) error {
 	y.Log.Info("Installing dependencies (yarn)")
 
-	err := y.doBuild(buildDir, cacheDir)
+	err := y.doBuild(buildDir, cacheDir, false)
 
 	if err != nil {
 		return err
@@ -35,7 +35,7 @@ func (y *Yarn) Build(buildDir, cacheDir string) error {
 func (y *Yarn) Rebuild(buildDir, cacheDir string) error {
 	y.Log.Info("Rebuilding native dependencies")
 
-	err := y.doBuild(buildDir, cacheDir)
+	err := y.doBuild(buildDir, cacheDir, true)
 
 	if err != nil {
 		return err
@@ -44,11 +44,15 @@ func (y *Yarn) Rebuild(buildDir, cacheDir string) error {
 	return nil
 }
 
-func (y *Yarn) doBuild(buildDir, cacheDir string) error {
+func (y *Yarn) doBuild(buildDir, cacheDir string, isRebuild bool) error {
 	yarnVersion := y.GetYarnVersion(buildDir)
 
 	if strings.HasPrefix(yarnVersion, "1") {
 		return y.doBuildClassic(buildDir, cacheDir)
+	}
+
+	if isRebuild {
+		return y.doBuildRebuildBerry(buildDir)
 	}
 
 	return y.doBuildBerry(buildDir)
@@ -159,6 +163,21 @@ func (y *Yarn) doBuildClassic(buildDir, cacheDir string) error {
 	err = os.RemoveAll(filepath.Join(buildDir, "npm-packages-offline-cache"))
 	if err != nil {
 		panic(err)
+	}
+
+	return nil
+}
+
+func (y *Yarn) doBuildRebuildBerry(buildDir string) error {
+	installArgs := []string{"rebuild"}
+
+	cmd := exec.Command("yarn", installArgs...)
+	cmd.Dir = buildDir
+	cmd.Stdout = y.Log.Output()
+	cmd.Stderr = y.Log.Output()
+	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
+	if err := y.Command.Run(cmd); err != nil {
+		return err
 	}
 
 	return nil

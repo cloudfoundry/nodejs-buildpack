@@ -211,6 +211,15 @@ var _ = Describe("Yarn", func() {
 					}))
 				})
 			})
+
+			Context("Rebuilds when vendored modules are present", func() {
+
+				It("Tells user that native dependencies are being rebuilt", func() {
+					Expect(y.Rebuild(buildDir, cacheDir)).To(Succeed())
+					Expect(buffer.String()).NotTo(ContainSubstring("Installing dependencies (yarn)"))
+					Expect(buffer.String()).To(ContainSubstring("Rebuilding native dependencies"))
+				})
+			})
 		})
 	})
 })

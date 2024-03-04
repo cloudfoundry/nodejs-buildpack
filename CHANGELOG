@@ -1,3 +1,11 @@
+v1.8.23 Mar 04, 2024
+=====================
+
+* Add node 20.11.1, remove node 20.10.0 for stack(s) cflinuxfs4, cflinuxfs3 (#699)
+
+* Add node 18.19.1, remove node 18.18.2 for stack(s) cflinuxfs3, cflinuxfs4 (#697)
+  
+
 v1.8.22 Feb 14, 2024
 =====================
 

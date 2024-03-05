@@ -46,6 +46,10 @@ type NPM interface {
 
 type Yarn interface {
 	Build(string, string) error
+	Rebuild(string, string) error
+	GetYarnCacheFolder(string) string
+	GetYarnNodeLinker(string) string
+	GetYarnVersion(string) string
 }
 
 type Stager interface {
@@ -315,21 +319,30 @@ func (s *Supplier) BuildDependencies() error {
 		return err
 	}
 
-	switch {
-	case s.UseYarn:
-		if err := s.Yarn.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
-			return err
+	if s.IsVendored {
+		s.Log.Info("Prebuild detected (vendored dependencies exist)")
+		switch {
+		case s.UseYarn:
+			if err := s.Yarn.Rebuild(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
+				return err
+			}
+		default:
+			if err := s.NPM.Rebuild(s.Stager.BuildDir()); err != nil {
+				return err
+			}
 		}
+	} else {
+		switch {
 
-	case s.IsVendored:
-		s.Log.Info("Prebuild detected (node_modules already exists)")
-		if err := s.NPM.Rebuild(s.Stager.BuildDir()); err != nil {
-			return err
-		}
+		case s.UseYarn:
+			if err := s.Yarn.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
+				return err
+			}
 
-	default:
-		if err := s.NPM.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
-			return err
+		default:
+			if err := s.NPM.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -396,12 +409,40 @@ func (s *Supplier) ReadPackageJSON() error {
 		Workspaces      []string          `json:"workspaces"`
 	}
 
+	// First try to find yarn.lock, if we found it set UseYarn to true
 	if s.UseYarn, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "yarn.lock")); err != nil {
 		return err
 	}
 
-	if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "node_modules")); err != nil {
-		return err
+	// If we didn't find yarn.lock, check if we have a .yarn folder and set UseYarn to true if we do
+	if !s.UseYarn {
+		if s.UseYarn, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), ".yarn")); err != nil {
+			return err
+		}
+	}
+
+	// If we are using Yarn then we need to check if the cache folder exists for Yarn berry Zero Installs
+	if s.UseYarn {
+		s.Log.Info("Detected Yarn, checking your configured nodeLinker...")
+		yarnCacheFolder := s.Yarn.GetYarnCacheFolder(s.Stager.BuildDir())
+		yarnVersion := s.Yarn.GetYarnVersion(s.Stager.BuildDir())
+		yarnNodeLinker := s.Yarn.GetYarnNodeLinker(s.Stager.BuildDir())
+
+		isYarnV1 := strings.HasPrefix(yarnVersion, "1")
+
+		if !isYarnV1 && yarnNodeLinker == "pnp" {
+			s.Log.Info("Yarn Berry is using Plug'n'Play (PnP) mode, detecting if Zero Installs is enabled by checking if the Yarn cache folder exists. For more info visit https://yarnpkg.com/features/caching#zero-installs")
+			if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(yarnCacheFolder)); err != nil {
+				return err
+			}
+		}
+	}
+
+	// If IsVendored was not set to true then we're either using Yarn without Zero Installs, or we're using NPM
+	if !s.IsVendored {
+		if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "node_modules")); err != nil {
+			return err
+		}
 	}
 
 	var p normalStruct
@@ -463,13 +504,15 @@ func (s *Supplier) NoPackageLockTip() error {
 }
 
 func (s *Supplier) TipVendorDependencies() error {
-	subdirs, err := hasSubdirs(filepath.Join(s.Stager.BuildDir(), "node_modules"))
-	if err != nil {
-		return err
-	}
-	if !subdirs {
-		s.Log.Protip("It is recommended to vendor the application's Node.js dependencies",
-			"http://docs.cloudfoundry.org/buildpacks/node/index.html#vendoring")
+	if !s.IsVendored {
+		subdirs, err := hasSubdirs(filepath.Join(s.Stager.BuildDir(), "node_modules"))
+		if err != nil {
+			return err
+		}
+		if !subdirs {
+			s.Log.Protip("It is recommended to vendor the application's Node.js dependencies",
+				"http://docs.cloudfoundry.org/buildpacks/node/index.html#vendoring")
+		}
 	}
 
 	return nil

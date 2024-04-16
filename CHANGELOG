@@ -1,3 +1,21 @@
+v1.8.24 Apr 16, 2024
+=====================
+
+* Add node 18.20.2, remove node 18.19.0 (#717)
+  for stack(s) cflinuxfs3, cflinuxfs4
+  (https://www.pivotaltracker.com/story/show/187406609)
+
+* Add node 20.12.2, remove node 20.11.0 (#716)
+  for stack(s) cflinuxfs4, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/187406689)
+
+* Add python 3.11.9, removes python 3.11.8 (#712)
+  for stack(s) cflinuxfs4, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/187354849)
+
+* Updating github-config (#706)
+
+
 v1.8.23 Mar 04, 2024
 =====================
 

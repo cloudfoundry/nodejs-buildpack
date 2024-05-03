@@ -930,7 +930,9 @@ func (s *Supplier) OverrideCacheFromApp() error {
 		os.RemoveAll(filepath.Join(s.Stager.CacheDir(), name))
 	}
 
-	pkgMgrCacheDirs := []string{".cache/yarn", ".npm"}
+	yarnCacheFolder := s.Yarn.GetYarnCacheFolder(s.Stager.BuildDir())
+
+	pkgMgrCacheDirs := []string{".cache/yarn", ".npm", yarnCacheFolder}
 	if err := copyAll(s.Stager.BuildDir(), s.Stager.CacheDir(), pkgMgrCacheDirs); err != nil {
 		return err
 	}

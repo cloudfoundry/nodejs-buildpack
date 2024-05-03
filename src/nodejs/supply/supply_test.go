@@ -1082,6 +1082,9 @@ var _ = Describe("Supply", func() {
 	})
 
 	Describe("OverrideCacheFromApp", func() {
+		BeforeEach(func() {
+			mockYarn.EXPECT().GetYarnCacheFolder(gomock.Any()).Return(buildDir + "/.yarn/cache")
+		})
 		Context("cache dir has deprecated bower_components directory", func() {
 			BeforeEach(func() {
 				Expect(os.MkdirAll(filepath.Join(cacheDir, "bower_components", "subdir"), 0755)).To(Succeed())

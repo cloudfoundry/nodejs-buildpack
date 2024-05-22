@@ -1,3 +1,15 @@
+v1.8.25 May 22, 2024
+=====================
+
+* Add node 18.20.3, remove node 18.19.1
+  for stack(s) cflinuxfs3, cflinuxfs4
+  (https://www.pivotaltracker.com/story/show/187642410)
+
+* Add node 20.13.1, remove node 20.11.1 (#722)
+  for stack(s) cflinuxfs4, cflinuxfs3
+  (https://www.pivotaltracker.com/story/show/187563723)
+
+
 v1.8.24 Apr 16, 2024
 =====================
 

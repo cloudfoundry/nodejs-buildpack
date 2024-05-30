@@ -107,8 +107,8 @@ dependencies:
   source_sha256: f01109d3102754ac360fcf25aa588f3bef5c090a8eed3fb1d0be194149c46cf2
 - name: node
   version: 22.2.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_22.2.0_linux_x64_cflinuxfs4_b1432cb4.tgz
-  sha256: b1432cb49cee107fd15fbf4f757a2d26f70b79a8477d4f1b22ebd2e3f7dc7476
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_22.2.0_linux_x64_cflinuxfs4_09924ab3.tgz
+  sha256: '09924ab3d0c78706005803f796c0c6770120bd2c13d6088231f6d892460807c9'
   cf_stacks:
   - cflinuxfs4
   source: https://nodejs.org/dist/v22.2.0/node-v22.2.0.tar.gz

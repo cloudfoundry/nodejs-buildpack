@@ -783,14 +783,42 @@ var _ = Describe("Supply", func() {
 		Context("yarn.lock exists", func() {
 			BeforeEach(func() {
 				Expect(os.WriteFile(filepath.Join(buildDir, "yarn.lock"), []byte("{}"), 0644)).To(Succeed())
+				mockYarn.EXPECT().GetYarnCacheFolder(gomock.Any()).Return(buildDir + "/.yarn/cache")
+				mockYarn.EXPECT().GetYarnVersion(gomock.Any()).Return("4.1.0")
+				mockYarn.EXPECT().GetYarnNodeLinker(gomock.Any()).Return("pnp")
 			})
+
+			It("sets UseYarn to true", func() {
+				Expect(supplier.ReadPackageJSON()).To(Succeed())
+				Expect(supplier.UseYarn).To(BeTrue())
+				Expect(supplier.IsVendored).To(BeFalse())
+			})
+
+			It("sets IsVendored to true", func() {
+				Expect(os.MkdirAll(filepath.Join(buildDir, ".yarn"), 0755)).To(Succeed())
+				Expect(os.MkdirAll(filepath.Join(buildDir, ".yarn", "cache"), 0755)).To(Succeed())
+
+				Expect(supplier.ReadPackageJSON()).To(Succeed())
+				Expect(supplier.UseYarn).To(BeTrue())
+				Expect(supplier.IsVendored).To(BeTrue())
+			})
+		})
+
+		Context(".yarn folder exists", func() {
+			BeforeEach(func() {
+				Expect(os.MkdirAll(filepath.Join(buildDir, ".yarn"), 0755)).To(Succeed())
+				mockYarn.EXPECT().GetYarnCacheFolder(gomock.Any()).Return(".yarn/cache")
+				mockYarn.EXPECT().GetYarnVersion(gomock.Any()).Return("4.1.0")
+				mockYarn.EXPECT().GetYarnNodeLinker(gomock.Any()).Return("pnp")
+			})
+
 			It("sets UseYarn to true", func() {
 				Expect(supplier.ReadPackageJSON()).To(Succeed())
 				Expect(supplier.UseYarn).To(BeTrue())
 			})
 		})
 
-		Context("yarn.lock does not exist", func() {
+		Context("yarn.lock nor .yarn folder exists", func() {
 			It("sets UseYarn to false", func() {
 				Expect(supplier.ReadPackageJSON()).To(Succeed())
 				Expect(supplier.UseYarn).To(BeFalse())
@@ -1054,6 +1082,9 @@ var _ = Describe("Supply", func() {
 	})
 
 	Describe("OverrideCacheFromApp", func() {
+		BeforeEach(func() {
+			mockYarn.EXPECT().GetYarnCacheFolder(gomock.Any()).Return(buildDir + "/.yarn/cache")
+		})
 		Context("cache dir has deprecated bower_components directory", func() {
 			BeforeEach(func() {
 				Expect(os.MkdirAll(filepath.Join(cacheDir, "bower_components", "subdir"), 0755)).To(Succeed())
@@ -1089,18 +1120,28 @@ var _ = Describe("Supply", func() {
 		Context("using yarn", func() {
 			BeforeEach(func() {
 				supplier.UseYarn = true
+			})
+
+			It("runs yarn build when node_modules does not exist", func() {
 				mockYarn.EXPECT().Build(buildDir, cacheDir).DoAndReturn(func(string, string) error {
 					Expect(os.MkdirAll(filepath.Join(buildDir, "node_modules"), 0755)).To(Succeed())
 					return nil
 				})
+				Expect(supplier.BuildDependencies()).To(Succeed())
 			})
 
-			It("runs yarn build", func() {
+			It("runs yarn rebuild, when node_modules exists", func() {
+				supplier.IsVendored = true
+				mockYarn.EXPECT().Rebuild(buildDir, cacheDir).Return(nil)
 				Expect(supplier.BuildDependencies()).To(Succeed())
 			})
 
 			It("runs the prebuild script, when prebuild is specified", func() {
 				supplier.PreBuild = "prescriptive"
+				mockYarn.EXPECT().Build(buildDir, cacheDir).DoAndReturn(func(string, string) error {
+					Expect(os.MkdirAll(filepath.Join(buildDir, "node_modules"), 0755)).To(Succeed())
+					return nil
+				})
 				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "run", "heroku-prebuild")
 				Expect(supplier.BuildDependencies()).To(Succeed())
 				Expect(buffer.String()).To(ContainSubstring("Running heroku-prebuild (yarn)"))
@@ -1108,6 +1149,10 @@ var _ = Describe("Supply", func() {
 
 			It("runs the postbuild script, when postbuild is specified", func() {
 				supplier.PostBuild = "descriptive"
+				mockYarn.EXPECT().Build(buildDir, cacheDir).DoAndReturn(func(string, string) error {
+					Expect(os.MkdirAll(filepath.Join(buildDir, "node_modules"), 0755)).To(Succeed())
+					return nil
+				})
 				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "run", "heroku-postbuild")
 				Expect(supplier.BuildDependencies()).To(Succeed())
 				Expect(buffer.String()).To(ContainSubstring("Running heroku-postbuild (yarn)"))

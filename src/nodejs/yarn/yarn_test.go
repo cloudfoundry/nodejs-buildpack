@@ -90,7 +90,7 @@ var _ = Describe("Yarn", func() {
 
 			It("tells the user it is running in offline mode", func() {
 				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
-				Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
+				Expect(buffer.String()).To(ContainSubstring("Installing dependencies (yarn)"))
 				Expect(buffer.String()).To(ContainSubstring("Found yarn mirror directory " + filepath.Join(buildDir, "npm-packages-offline-cache")))
 				Expect(buffer.String()).To(ContainSubstring("Running yarn in offline mode"))
 			})
@@ -119,9 +119,9 @@ var _ = Describe("Yarn", func() {
 		Context("NO npm-packages-offline-cache directory", func() {
 			It("tells the user it is running in online mode", func() {
 				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
-				Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
+				Expect(buffer.String()).To(ContainSubstring("Installing dependencies (yarn)"))
 				Expect(buffer.String()).To(ContainSubstring("Running yarn in online mode"))
-				Expect(buffer.String()).To(ContainSubstring("To run yarn in offline mode, see: https://yarnpkg.com/blog/2016/11/24/offline-mirror"))
+				Expect(buffer.String()).To(ContainSubstring("To run yarn in offline mode, see: https://classic.yarnpkg.com/blog/2016/11/24/offline-mirror/"))
 			})
 
 			It("runs yarn config", func() {
@@ -141,6 +141,84 @@ var _ = Describe("Yarn", func() {
 					"--cache-folder", filepath.Join(cacheDir, ".cache/yarn"),
 					"--check-files",
 				}))
+			})
+		})
+
+		Context("Yarn Berry", func() {
+			BeforeEach(func() {
+				// Sets the yarn version to yarn berry regardless of the version installed by the user globally
+				cmd := exec.Command("yarn", "set", "version", "berry")
+				cmd.Dir = buildDir
+
+				err := cmd.Run()
+				if err != nil {
+					return
+				}
+			})
+
+			Context("local cache enabled", func() {
+				JustBeforeEach(func() {
+					// Disabled global cache
+					cmd := exec.Command("yarn", "config", "set", "enableGlobalCache", "false")
+					cmd.Dir = buildDir
+
+					err := cmd.Run()
+					if err != nil {
+						return
+					}
+				})
+
+				It("tells the user it is running with local cache", func() {
+					Expect(y.Build(buildDir, cacheDir)).To(Succeed())
+					Expect(buffer.String()).To(ContainSubstring("Installing dependencies (yarn)"))
+					Expect(buffer.String()).To(ContainSubstring("Yarn is using local cache, enabling immutable cache"))
+				})
+
+				It("runs yarn install", func() {
+					Expect(y.Build(buildDir, cacheDir)).To(Succeed())
+					Expect(yarnInstallArgs).To(Equal([]string{
+						"yarn", "install",
+						"--immutable",
+						"--immutable-cache",
+					}))
+				})
+			})
+
+			Context("NO local cache enabled", func() {
+				JustBeforeEach(func() {
+					// Enables global cache
+					cmd := exec.Command("yarn", "config", "set", "enableGlobalCache", "true")
+					cmd.Dir = buildDir
+
+					err := cmd.Run()
+					if err != nil {
+						return
+					}
+				})
+
+				It("tells the user it is running with global cache", func() {
+					Expect(y.Build(buildDir, cacheDir)).To(Succeed())
+					Expect(buffer.String()).To(ContainSubstring("Installing dependencies (yarn)"))
+					Expect(buffer.String()).To(ContainSubstring("Yarn is using global cache, cache is allowed to be mutable"))
+					Expect(buffer.String()).To(ContainSubstring("To run yarn with local cache, see: https://yarnpkg.com/configuration/yarnrc#enableGlobalCache"))
+				})
+
+				It("runs yarn install", func() {
+					Expect(y.Build(buildDir, cacheDir)).To(Succeed())
+					Expect(yarnInstallArgs).To(Equal([]string{
+						"yarn", "install",
+						"--immutable",
+					}))
+				})
+			})
+
+			Context("Rebuilds when vendored modules are present", func() {
+
+				It("Tells user that native dependencies are being rebuilt", func() {
+					Expect(y.Rebuild(buildDir, cacheDir)).To(Succeed())
+					Expect(buffer.String()).NotTo(ContainSubstring("Installing dependencies (yarn)"))
+					Expect(buffer.String()).To(ContainSubstring("Rebuilding native dependencies"))
+				})
 			})
 		})
 	})

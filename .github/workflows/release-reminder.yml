@@ -53,7 +53,7 @@ jobs:
           echo "window_close_date=$window_close_date" >> "${GITHUB_OUTPUT}"
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.CF_BOT_GITHUB_TOKEN }}
           ref: develop

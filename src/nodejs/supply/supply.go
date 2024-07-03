@@ -741,7 +741,7 @@ func nodeVersionRequiresSSLEnvVars(version string) (bool, error) {
 
 func (s *Supplier) InstallNPM() error {
 	buffer := new(bytes.Buffer)
-	if err := s.Command.Execute(s.Stager.BuildDir(), buffer, buffer, "npm", "--version"); err != nil {
+	if err := s.Command.Execute(s.Stager.BuildDir(), buffer, buffer, "npm", "--version", "--loglevel", "notice"); err != nil {
 		s.Log.Error(strings.TrimSuffix(strings.TrimSpace(buffer.String()), "\n"))
 		return err
 	}

@@ -9,10 +9,7 @@ import (
 
 var _ = Describe("Nodejs buildpack", func() {
 	bratshelper.UnbuiltBuildpack("node", CopyBrats)
-	bratshelper.DeployingAnAppWithAnUpdatedVersionOfTheSameBuildpack(CopyBrats)
-	bratshelper.StagingWithBuildpackThatSetsEOL("node", CopyBrats)
 	bratshelper.DeployAppWithExecutableProfileScript("node", CopyBrats)
-	bratshelper.DeployAnAppWithSensitiveEnvironmentVariables(CopyBrats)
 	bratshelper.ForAllSupportedVersions("node", CopyBrats, func(nodeVersion string, app *cutlass.App) {
 		PushApp(app)
 

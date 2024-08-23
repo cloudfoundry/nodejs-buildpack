@@ -789,7 +789,7 @@ func (s *Supplier) InstallYarn() error {
 	}
 
 	buffer := new(bytes.Buffer)
-	if err := s.Command.Execute(s.Stager.BuildDir(), buffer, buffer, "yarn", "--version"); err != nil {
+	if err := s.Command.Execute(s.Stager.BuildDir(), buffer, buffer, "yarn", "--version", "--loglevel", "notice"); err != nil {
 		return err
 	}
 

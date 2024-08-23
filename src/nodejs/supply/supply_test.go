@@ -596,7 +596,7 @@ var _ = Describe("Supply", func() {
 			BeforeEach(func() {
 				mockInstaller.EXPECT().InstallOnlyVersion("yarn", yarnInstallDir).Do(installOnlyYarn).Return(nil)
 
-				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "--version").Do(func(_ string, buffer io.Writer, _ io.Writer, _ string, _ string) {
+				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "--version", "--loglevel", "notice").Do(func(_ string, buffer io.Writer, _ io.Writer, _ string, _ ...string) {
 					buffer.Write([]byte("0.32.5\n"))
 				}).Return(nil)
 			})
@@ -630,7 +630,7 @@ var _ = Describe("Supply", func() {
 				mockManifest.EXPECT().AllDependencyVersions("yarn").Return(versions)
 				mockInstaller.EXPECT().InstallOnlyVersion("yarn", yarnInstallDir).Do(installOnlyYarn).Return(nil)
 
-				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "--version").Do(func(_ string, buffer io.Writer, _ io.Writer, _ string, _ string) {
+				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "--version", "--loglevel", "notice").Do(func(_ string, buffer io.Writer, _ io.Writer, _ string, _ ...string) {
 					buffer.Write([]byte("0.32.5\n"))
 				}).Return(nil)
 			})
@@ -661,7 +661,7 @@ var _ = Describe("Supply", func() {
 
 	Describe("InstallNPM", func() {
 		BeforeEach(func() {
-			mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "npm", "--version").Do(func(_ string, buffer io.Writer, _ io.Writer, _ string, _ string) {
+			mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "npm", "--version", "--loglevel", "notice").Do(func(_ string, buffer io.Writer, _ io.Writer, _ string, _ ...string) {
 				buffer.Write([]byte("1.2.3\n"))
 			}).Return(nil)
 		})

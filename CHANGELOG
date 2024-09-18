@@ -1,3 +1,13 @@
+v1.8.29 Sep 18, 2024
+=====================
+
+* Add node 22.8.0, remove node 22.5.0
+  for stack(s) cflinuxfs4
+
+* Add python 3.11.10, remove python 3.11.9
+  for stack(s) cflinuxfs4, cflinuxfs3
+
+
 v1.8.28 Aug 26, 2024
 =====================
 

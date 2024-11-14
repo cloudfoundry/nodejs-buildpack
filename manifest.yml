@@ -42,22 +42,6 @@ dependency_deprecation_dates:
   link: https://www.python.org/dev/peps/pep-0664/
 dependencies:
 - name: node
-  version: 18.20.3
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.3_linux_x64_cflinuxfs3_ec703d6e.tgz
-  sha256: ec703d6ee03faf1c190b9cbfeea92fd67ab82e290eb4beb75e04d89f02794788
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v18.20.3/node-v18.20.3.tar.gz
-  source_sha256: f35c9b9923c7b2e9243e7e2d10cd9ae61fbd5b925df3debbb72d5a70dbff555d
-- name: node
-  version: 18.20.3
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.3_linux_x64_cflinuxfs4_d8565231.tgz
-  sha256: d85652314f9d0ffe03fc430144c9f4727afcbd2a3bf5e6f82580fdbc93afddf3
-  cf_stacks:
-  - cflinuxfs4
-  source: https://nodejs.org/dist/v18.20.3/node-v18.20.3.tar.gz
-  source_sha256: f35c9b9923c7b2e9243e7e2d10cd9ae61fbd5b925df3debbb72d5a70dbff555d
-- name: node
   version: 18.20.4
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.4_linux_x64_cflinuxfs3_6a2a98d9.tgz
   sha256: 6a2a98d9046cb7c1d1a08edbc22d5b1b4f3919a2e9f376f3ccf28ec603dcec21
@@ -73,6 +57,22 @@ dependencies:
   - cflinuxfs4
   source: https://nodejs.org/dist/v18.20.4/node-v18.20.4.tar.gz
   source_sha256: 349259af6821f730bc4ca3a0e6576efc75ba86e546d118629a5b75eb8ebc3a0b
+- name: node
+  version: 18.20.5
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.5_linux_x64_cflinuxfs3_a9c257fa.tgz
+  sha256: a9c257fa2487c22ba7a3d5907c3c239c9e972886eee8b0f52a657d41403f416e
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v18.20.5/node-v18.20.5.tar.gz
+  source_sha256: 938735364745b7d4cd650b9325df6f2d2ec4240c56f9318e38638af910a820c6
+- name: node
+  version: 18.20.5
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.5_linux_x64_cflinuxfs4_fe44be06.tgz
+  sha256: fe44be06ef9d8e14bb04f11bb09cdf63dacff431777c0dd76312372135df121b
+  cf_stacks:
+  - cflinuxfs4
+  source: https://nodejs.org/dist/v18.20.5/node-v18.20.5.tar.gz
+  source_sha256: 938735364745b7d4cd650b9325df6f2d2ec4240c56f9318e38638af910a820c6
 - name: node
   version: 20.16.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.16.0_linux_x64_cflinuxfs3_95c59578.tgz

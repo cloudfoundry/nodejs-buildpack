@@ -42,22 +42,6 @@ dependency_deprecation_dates:
   link: https://www.python.org/dev/peps/pep-0664/
 dependencies:
 - name: node
-  version: 18.20.3
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.3_linux_x64_cflinuxfs3_ec703d6e.tgz
-  sha256: ec703d6ee03faf1c190b9cbfeea92fd67ab82e290eb4beb75e04d89f02794788
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v18.20.3/node-v18.20.3.tar.gz
-  source_sha256: f35c9b9923c7b2e9243e7e2d10cd9ae61fbd5b925df3debbb72d5a70dbff555d
-- name: node
-  version: 18.20.3
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.3_linux_x64_cflinuxfs4_d8565231.tgz
-  sha256: d85652314f9d0ffe03fc430144c9f4727afcbd2a3bf5e6f82580fdbc93afddf3
-  cf_stacks:
-  - cflinuxfs4
-  source: https://nodejs.org/dist/v18.20.3/node-v18.20.3.tar.gz
-  source_sha256: f35c9b9923c7b2e9243e7e2d10cd9ae61fbd5b925df3debbb72d5a70dbff555d
-- name: node
   version: 18.20.4
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.4_linux_x64_cflinuxfs3_6a2a98d9.tgz
   sha256: 6a2a98d9046cb7c1d1a08edbc22d5b1b4f3919a2e9f376f3ccf28ec603dcec21
@@ -74,6 +58,21 @@ dependencies:
   source: https://nodejs.org/dist/v18.20.4/node-v18.20.4.tar.gz
   source_sha256: 349259af6821f730bc4ca3a0e6576efc75ba86e546d118629a5b75eb8ebc3a0b
 - name: node
+  version: 18.20.5
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.5_linux_x64_cflinuxfs3_a9c257fa.tgz
+  sha256: a9c257fa2487c22ba7a3d5907c3c239c9e972886eee8b0f52a657d41403f416e
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v18.20.5/node-v18.20.5.tar.gz
+  source_sha256: 938735364745b7d4cd650b9325df6f2d2ec4240c56f9318e38638af910a820c6
+- name: node
+  version: 18.20.5
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.5_linux_x64_cflinuxfs4_fe44be06.tgz
+  sha256: fe44be06ef9d8e14bb04f11bb09cdf63dacff431777c0dd76312372135df121b
+  cf_stacks:
+  - cflinuxfs4
+  source: https://nodejs.org/dist/v18.20.5/node-v18.20.5.tar.gz
+  source_sha256: 938735364745b7d4cd650b9325df6f2d2ec4240c56f9318e38638af910a820c6
   version: 20.18.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.18.0_linux_x64_cflinuxfs3_ad15f048.tgz
   sha256: ad15f0488099bf73f0a30850dbe06ee320324d641324ae4561734c96bc849c92
@@ -122,21 +121,21 @@ dependencies:
   source: https://nodejs.org/dist/v22.11.0/node-v22.11.0.tar.gz
   source_sha256: 24e5130fa7bc1eaab218a0c9cb05e03168fa381bb9e3babddc6a11f655799222
 - name: python
-  version: 3.11.10
-  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.10_linux_x64_cflinuxfs3_e3f4c672.tgz
-  sha256: e3f4c672926fffb060f025c6460e5978d5fc81da30a2716afa39b0f9a9da8f7f
+  version: 3.11.11
+  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.11_linux_x64_cflinuxfs3_8edcee58.tgz
+  sha256: 8edcee5893341e0cf470d0055fdac614fa719cf2bff124cc05cbad219c6a4d48
   cf_stacks:
   - cflinuxfs3
-  source: https://www.python.org/ftp/python/3.11.10/Python-3.11.10.tgz
-  source_sha256: 92f2faf242681bfa406d53a51e17d42c5373affe23a130cd9697e132ef574706
+  source: https://www.python.org/ftp/python/3.11.11/Python-3.11.11.tgz
+  source_sha256: 883bddee3c92fcb91cf9c09c5343196953cbb9ced826213545849693970868ed
 - name: python
-  version: 3.11.10
-  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.10_linux_x64_cflinuxfs4_3bbfe1c5.tgz
-  sha256: 3bbfe1c5a910b361e8a3af069ed49093088ed0f62522e14c4afe8b4684eb3338
+  version: 3.11.11
+  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.11_linux_x64_cflinuxfs4_bf6747f7.tgz
+  sha256: bf6747f7b6da115da483ede222e44ce03e78e0abb1209305d56e18b27c0ac72b
   cf_stacks:
   - cflinuxfs4
-  source: https://www.python.org/ftp/python/3.11.10/Python-3.11.10.tgz
-  source_sha256: 92f2faf242681bfa406d53a51e17d42c5373affe23a130cd9697e132ef574706
+  source: https://www.python.org/ftp/python/3.11.11/Python-3.11.11.tgz
+  source_sha256: 883bddee3c92fcb91cf9c09c5343196953cbb9ced826213545849693970868ed
 - name: yarn
   version: 1.22.19
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.19_linux_noarch_any-stack_32d0e82e.tgz

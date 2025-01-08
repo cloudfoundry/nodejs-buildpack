@@ -23,10 +23,14 @@ func (cli *Client) postHijacked(ctx context.Context, path string, query url.Valu
 	if err != nil {
 		return types.HijackedResponse{}, err
 	}
-	req, err := cli.buildRequest(http.MethodPost, cli.getAPIPath(ctx, path, query), bodyEncoded, headers)
+
+	apiPath := cli.getAPIPath(ctx, path, query)
+	req, err := http.NewRequest(http.MethodPost, apiPath, bodyEncoded)
 	if err != nil {
 		return types.HijackedResponse{}, err
 	}
+	req = cli.addHeaders(req, headers)
+
 	conn, mediaType, err := cli.setupHijackConn(ctx, req, "tcp")
 	if err != nil {
 		return types.HijackedResponse{}, err
@@ -60,6 +64,7 @@ func fallbackDial(proto, addr string, tlsConfig *tls.Config) (net.Conn, error) {
 }
 
 func (cli *Client) setupHijackConn(ctx context.Context, req *http.Request, proto string) (net.Conn, string, error) {
+	req.Host = cli.addr
 	req.Header.Set("Connection", "Upgrade")
 	req.Header.Set("Upgrade", proto)
 
@@ -75,8 +80,8 @@ func (cli *Client) setupHijackConn(ctx context.Context, req *http.Request, proto
 	// state. Setting TCP KeepAlive on the socket connection will prohibit
 	// ECONNTIMEOUT unless the socket connection truly is broken
 	if tcpConn, ok := conn.(*net.TCPConn); ok {
-		_ = tcpConn.SetKeepAlive(true)
-		_ = tcpConn.SetKeepAlivePeriod(30 * time.Second)
+		tcpConn.SetKeepAlive(true)
+		tcpConn.SetKeepAlivePeriod(30 * time.Second)
 	}
 
 	clientconn := httputil.NewClientConn(conn, nil)
@@ -91,7 +96,7 @@ func (cli *Client) setupHijackConn(ctx context.Context, req *http.Request, proto
 			return nil, "", err
 		}
 		if resp.StatusCode != http.StatusSwitchingProtocols {
-			_ = resp.Body.Close()
+			resp.Body.Close()
 			return nil, "", fmt.Errorf("unable to upgrade to %s, received %d", proto, resp.StatusCode)
 		}
 	}

@@ -333,6 +333,11 @@ func (s Setup) Run(log io.Writer, home, name, source string) (string, error) {
 		args = append(args, "-c", s.startCommand)
 	}
 
+	_, err = os.Stat(filepath.Join(source, "manifest.yml"))
+	if err == nil {
+		args = append(args, "-f", filepath.Join(source, "manifest.yml"))
+	}
+
 	err = s.cli.Execute(pexec.Execution{
 		Args:   args,
 		Stdout: log,

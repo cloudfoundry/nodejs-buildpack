@@ -15,16 +15,32 @@ type ServeMatcher struct {
 	expected interface{}
 	endpoint string
 	response string
+
+	basicAuthUsername  string
+	basicAuthPassword  string
+	expectedStatusCode int
 }
 
 func Serve(expected interface{}) *ServeMatcher {
 	return &ServeMatcher{
-		expected: expected,
+		expected:           expected,
+		expectedStatusCode: http.StatusOK,
 	}
 }
 
 func (sm *ServeMatcher) WithEndpoint(endpoint string) *ServeMatcher {
 	sm.endpoint = endpoint
+	return sm
+}
+
+func (sm *ServeMatcher) WithExpectedStatusCode(expectedStatusCode int) *ServeMatcher {
+	sm.expectedStatusCode = expectedStatusCode
+	return sm
+}
+
+func (sm *ServeMatcher) WithBasicAuth(username, password string) *ServeMatcher {
+	sm.basicAuthUsername = username
+	sm.basicAuthPassword = password
 	return sm
 }
 
@@ -41,7 +57,18 @@ func (sm *ServeMatcher) Match(actual interface{}) (success bool, err error) {
 
 	uri.Path = sm.endpoint
 
-	response, err := http.Get(uri.String())
+	req, err := http.NewRequest("GET", uri.String(), nil)
+	if err != nil {
+		// This untested as it is too hard to force this specific error.
+		// We use a known good HTTP Method; the uri is already escaped; and the body is always nil
+		return false, err
+	}
+
+	if sm.basicAuthUsername != "" && sm.basicAuthPassword != "" {
+		req.SetBasicAuth(sm.basicAuthUsername, sm.basicAuthPassword)
+	}
+
+	response, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return false, err
 	}
@@ -54,7 +81,7 @@ func (sm *ServeMatcher) Match(actual interface{}) (success bool, err error) {
 
 	sm.response = string(content)
 
-	if response.StatusCode != http.StatusOK {
+	if response.StatusCode != sm.expectedStatusCode {
 		return false, nil
 	}
 

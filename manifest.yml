@@ -74,22 +74,6 @@ dependencies:
   source: https://nodejs.org/dist/v18.20.6/node-v18.20.6.tar.gz
   source_sha256: e7ddfeabea3d1f7cc622cc9861d2fb0955b9e60940dbbedbed6f2f821ab3e4c7
 - name: node
-  version: 20.18.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.18.1_linux_x64_cflinuxfs3_8944ccef.tgz
-  sha256: 8944ccefdd8f18adb4562b324e6b694e6fe9d01aeda2163d7c74ff3615f9f3c9
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v20.18.1/node-v20.18.1.tar.gz
-  source_sha256: 5bad8ced873eef3b32e7daee703156bce9224920ac6044f4232f5393df0628b8
-- name: node
-  version: 20.18.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.18.1_linux_x64_cflinuxfs4_7e6fa8a7.tgz
-  sha256: 7e6fa8a70a50634285bde6a50f149b792c718f550f37b82a1a3c1db263c5aecd
-  cf_stacks:
-  - cflinuxfs4
-  source: https://nodejs.org/dist/v20.18.1/node-v20.18.1.tar.gz
-  source_sha256: 5bad8ced873eef3b32e7daee703156bce9224920ac6044f4232f5393df0628b8
-- name: node
   version: 20.18.2
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.18.2_linux_x64_cflinuxfs3_46326719.tgz
   sha256: 463267190a8015e340fe7fadd369fcc346bc9a085464eee5163d9c65fdf3fbeb
@@ -105,6 +89,22 @@ dependencies:
   - cflinuxfs4
   source: https://nodejs.org/dist/v20.18.2/node-v20.18.2.tar.gz
   source_sha256: cf3ef49fafbfee3cdcd936a0d6031341b73bfa6b26a484ea0a4936c26d24b829
+- name: node
+  version: 20.18.3
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.18.3_linux_x64_cflinuxfs3_f61d9fec.tgz
+  sha256: f61d9fec06aebfc6a3feabd5595d5fb9d5369b0d7e0d678a3fbeb4aa340788a8
+  cf_stacks:
+  - cflinuxfs3
+  source: https://nodejs.org/dist/v20.18.3/node-v20.18.3.tar.gz
+  source_sha256: eba088fa562735140b283c7bb33f53e026ccd5febe68c52c5737ef6e577ec874
+- name: node
+  version: 20.18.3
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.18.3_linux_x64_cflinuxfs4_29f82ed1.tgz
+  sha256: 29f82ed16c3d261f0dce5ad2029e1ec0863569659982c1032f1a42cae6744df5
+  cf_stacks:
+  - cflinuxfs4
+  source: https://nodejs.org/dist/v20.18.3/node-v20.18.3.tar.gz
+  source_sha256: eba088fa562735140b283c7bb33f53e026ccd5febe68c52c5737ef6e577ec874
 - name: node
   version: 22.13.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_22.13.0_linux_x64_cflinuxfs4_cacca6c4.tgz

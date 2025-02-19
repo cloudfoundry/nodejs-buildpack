@@ -123,16 +123,16 @@ dependencies:
   source_sha256: 6c4e31ed5702dc45cfd8c435af56a36a474427e1bd7afe74c346136060beba8a
 - name: python
   version: 3.11.11
-  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.11_linux_x64_cflinuxfs3_8edcee58.tgz
-  sha256: 8edcee5893341e0cf470d0055fdac614fa719cf2bff124cc05cbad219c6a4d48
+  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.11_linux_x64_cflinuxfs3_2d5aa26d.tgz
+  sha256: 2d5aa26d1ac896182023398c187543f90aea9105f1b6f342709911ad6fa39083
   cf_stacks:
   - cflinuxfs3
   source: https://www.python.org/ftp/python/3.11.11/Python-3.11.11.tgz
   source_sha256: 883bddee3c92fcb91cf9c09c5343196953cbb9ced826213545849693970868ed
 - name: python
   version: 3.11.11
-  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.11_linux_x64_cflinuxfs4_bf6747f7.tgz
-  sha256: bf6747f7b6da115da483ede222e44ce03e78e0abb1209305d56e18b27c0ac72b
+  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.11_linux_x64_cflinuxfs4_13c4c2b4.tgz
+  sha256: 13c4c2b436a474bdb667314968e0296e09a01151e1db220ba40f58aefc0bda97
   cf_stacks:
   - cflinuxfs4
   source: https://www.python.org/ftp/python/3.11.11/Python-3.11.11.tgz

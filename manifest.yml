@@ -138,12 +138,12 @@ dependencies:
   source: https://www.python.org/ftp/python/3.11.11/Python-3.11.11.tgz
   source_sha256: 883bddee3c92fcb91cf9c09c5343196953cbb9ced826213545849693970868ed
 - name: yarn
-  version: 1.22.19
-  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.19_linux_noarch_any-stack_32d0e82e.tgz
-  sha256: 32d0e82e05c7c1382bbf1e007eae1da1dfb6d648144cb0f5719e2e09def3fd3f
+  version: 1.22.22
+  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.22_linux_noarch_any-stack_83bda680.tgz
+  sha256: 83bda680b9e7a528172fa88746faa233351068df6bcaf610fedcb34b1803d19a
   cf_stacks:
   - cflinuxfs4
   - cflinuxfs3
-  source: https://github.com/yarnpkg/yarn/releases/download/v1.22.19/yarn-v1.22.19.tar.gz
-  source_sha256: 732620bac8b1690d507274f025f3c6cfdc3627a84d9642e38a07452cc00e0f2e
+  source: https://github.com/yarnpkg/yarn/releases/download/v1.22.22/yarn-v1.22.22.tar.gz
+  source_sha256: 88268464199d1611fcf73ce9c0a6c4d44c7d5363682720d8506f6508addf36a0
 pre_package: scripts/build.sh

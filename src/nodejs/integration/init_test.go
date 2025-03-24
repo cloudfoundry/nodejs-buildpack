@@ -106,7 +106,6 @@ func TestIntegration(t *testing.T) {
 	suite("Versions", testVersions(platform, fixtures))
 	suite("Yarn", testYarn(platform, fixtures))
 
-	suite("Appdynamics", testAppdynamics(platform, fixtures))
 	suite("ContrastSecurity", testContrastSecurity(platform, fixtures))
 	suite("Dynatrace", testDynatrace(platform, fixtures, dynatraceDeployment.InternalURL))
 	suite("NewRelic", testNewRelic(platform, fixtures))

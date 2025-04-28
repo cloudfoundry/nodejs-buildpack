@@ -38,7 +38,7 @@ func testDefault(platform switchblade.Platform, fixtures string) func(*testing.T
 				Execute(name, filepath.Join(fixtures, "simple"))
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(logs).To(ContainLines(MatchRegexp("Installing node 18\\.\\d+\\.\\d+")))
+			Expect(logs).To(ContainLines(MatchRegexp("Installing node 22\\.\\d+\\.\\d+")))
 
 			Eventually(deployment).Should(Serve("Hello world!"))
 

@@ -57,7 +57,7 @@ func testDefault(platform switchblade.Platform, fixtures string) func(*testing.T
 			}
 			Expect(json.NewDecoder(response.Body).Decode(&process)).To(Succeed())
 
-			Expect(process.Version).To(MatchRegexp(`v18\.\d+\.\d+`))
+			Expect(process.Version).To(MatchRegexp(`v22\.\d+\.\d+`))
 			Expect(process.Env.NodeOptions).To(BeEmpty())
 			Expect(process.Env.NodeHome).To(Equal("/home/vcap/deps/0/node"))
 			Expect(process.Env.NodeEnv).To(Equal("production"))

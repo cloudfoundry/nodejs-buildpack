@@ -60,6 +60,7 @@ type SealightsParameters struct {
 	ProxyPassword      string
 	ProjectRoot        string
 	TestStage          string
+	NpmRunScript       string
 }
 
 type SealightsRunOptions struct {
@@ -155,8 +156,17 @@ func (sl *SealightsHook) SetApplicationStartInProcfile(stager *libbuildpack.Stag
 	originalStartCommand := string(bytes)
 	_, usePackageJson := sl.usePackageJson(originalStartCommand, stager)
 	if usePackageJson {
+		// Extract script name from command or use configured default
+		scriptName, err := sl.extractNpmRunScriptName(originalStartCommand)
+		if err != nil {
+			sl.Log.Warning("Failed to extract script name from command '%s', using configured default: %s", originalStartCommand, err)
+			scriptName = sl.parameters.NpmRunScript
+			if scriptName == "" {
+				scriptName = "start"
+			}
+		}
 		// move to package json scenario
-		return sl.SetApplicationStartInPackageJson(stager)
+		return sl.SetApplicationStartInPackageJson(stager, scriptName)
 	}
 
 	// we suppose that format is "web: node <application>"
@@ -179,6 +189,62 @@ func (sl *SealightsHook) SetApplicationStartInProcfile(stager *libbuildpack.Stag
 		return err
 	}
 
+	return nil
+}
+
+func (sl *SealightsHook) extractNpmRunScriptName(command string) (string, error) {
+	// Remove leading "web:" prefix if present
+	cleanCommand := strings.TrimSpace(command)
+	if strings.HasPrefix(cleanCommand, "web:") {
+		cleanCommand = strings.TrimSpace(cleanCommand[4:])
+	}
+	
+	// Handle commands with cd prefix (e.g., "cd app && npm run start")
+	if strings.Contains(cleanCommand, "&&") {
+		parts := strings.Split(cleanCommand, "&&")
+		if len(parts) >= 2 {
+			cleanCommand = strings.TrimSpace(parts[len(parts)-1])
+		}
+	}
+	
+	// Extract script name from npm commands
+	// Patterns to match:
+	// - "npm start" -> "start"
+	// - "npm run start-dev" -> "start-dev"
+	// - "npm run dev" -> "dev"
+	patterns := []string{
+		`^npm\s+run\s+([a-zA-Z0-9\-_]+)`,     // npm run <script>
+		`^npm\s+([a-zA-Z0-9\-_]+)`,           // npm <script>
+	}
+	
+	for _, pattern := range patterns {
+		re, err := regexp.Compile(pattern)
+		if err != nil {
+			sl.Log.Warning("Failed to compile regex pattern %s: %s", pattern, err)
+			continue
+		}
+		
+		matches := re.FindStringSubmatch(cleanCommand)
+		if len(matches) >= 2 {
+			scriptName := matches[1]
+			sl.Log.Debug("Extracted npm script name: %s from command: %s", scriptName, command)
+			return scriptName, nil
+		}
+	}
+	
+	return "", fmt.Errorf("failed to extract npm script name from command: %s", command)
+}
+
+func (sl *SealightsHook) validateNpmRunScript(packageJson map[string]interface{}, scriptName string) error {
+	scripts, ok := packageJson["scripts"].(map[string]interface{})
+	if !ok || scripts == nil {
+		return fmt.Errorf("no scripts section found in package.json")
+	}
+	
+	if _, exists := scripts[scriptName]; !exists {
+		return fmt.Errorf("script '%s' not found in package.json", scriptName)
+	}
+	
 	return nil
 }
 
@@ -251,26 +317,43 @@ func (sl *SealightsHook) getSealightsOptions(app string) *SealightsRunOptions {
 	return o
 }
 
-func (sl *SealightsHook) SetApplicationStartInPackageJson(stager *libbuildpack.Stager) error {
+func (sl *SealightsHook) SetApplicationStartInPackageJson(stager *libbuildpack.Stager, targetScript string) error {
 	packageJson, err := sl.ReadPackageJson(stager)
 	if err != nil {
 		return err
 	}
-	scripts, _ := packageJson["scripts"].(map[string]interface{})
-	if scripts == nil {
-		return fmt.Errorf("failed to read scripts from %s", PackageJsonFile)
+	
+	// Validate that the target script exists
+	err = sl.validateNpmRunScript(packageJson, targetScript)
+	if err != nil {
+		// Try fallback to "start" if configured script doesn't exist
+		if targetScript != "start" {
+			sl.Log.Warning("Script '%s' not found, falling back to 'start': %s", targetScript, err)
+			fallbackErr := sl.validateNpmRunScript(packageJson, "start")
+			if fallbackErr != nil {
+				return fmt.Errorf("target script '%s' not found and fallback to 'start' failed: %s", targetScript, fallbackErr)
+			}
+			targetScript = "start"
+		} else {
+			return err
+		}
 	}
-	originalStartScript, _ := scripts["start"].(string)
+	
+	scripts := packageJson["scripts"].(map[string]interface{})
+	originalStartScript, _ := scripts[targetScript].(string)
 	if originalStartScript == "" {
-		return fmt.Errorf("failed to read start from scripts in %s", PackageJsonFile)
+		return fmt.Errorf("failed to read %s script from %s", targetScript, PackageJsonFile)
 	}
-	// we suppose that format is "start: node <application>"
+	
+	// Update the command with Sealights injection
 	var newCmd string
 	newCmd, err = sl.updateStartCommand(originalStartScript)
 	if err != nil {
 		return err
 	}
-	packageJson["scripts"].(map[string]interface{})["start"] = newCmd
+	
+	sl.Log.Debug("Injecting Sealights into '%s' script: %s -> %s", targetScript, originalStartScript, newCmd)
+	scripts[targetScript] = newCmd
 
 	err = libbuildpack.NewJSON().Write(filepath.Join(stager.BuildDir(), PackageJsonFile), packageJson)
 	if err != nil {
@@ -303,8 +386,17 @@ func (sl *SealightsHook) SetApplicationStartInManifest(stager *libbuildpack.Stag
 
 	_, usePackageJson := sl.usePackageJson(originalStartCommand, stager)
 	if usePackageJson {
+		// Extract script name from command or use configured default
+		scriptName, err := sl.extractNpmRunScriptName(originalStartCommand)
+		if err != nil {
+			sl.Log.Warning("Failed to extract script name from command '%s', using configured default: %s", originalStartCommand, err)
+			scriptName = sl.parameters.NpmRunScript
+			if scriptName == "" {
+				scriptName = "start"
+			}
+		}
 		// move to package json scenario
-		return sl.SetApplicationStartInPackageJson(stager)
+		return sl.SetApplicationStartInPackageJson(stager, scriptName)
 	}
 
 	// we suppose that format is "start: node <application>"
@@ -438,7 +530,12 @@ func (sl *SealightsHook) injectSealights(stager *libbuildpack.Stager) error {
 		return sl.SetApplicationStartInManifest(stager)
 	} else {
 		sl.Log.Info("Integrating sealights into package.json")
-		return sl.SetApplicationStartInPackageJson(stager)
+		// Use configured script name or default to "start"
+		scriptName := sl.parameters.NpmRunScript
+		if scriptName == "" {
+			scriptName = "start"
+		}
+		return sl.SetApplicationStartInPackageJson(stager, scriptName)
 	}
 }
 
@@ -487,6 +584,7 @@ func (sl *SealightsHook) parseVcapServices() {
 				ProxyPassword:      queryString("proxyPassword"),
 				ProjectRoot:        queryString("projectRoot"),
 				TestStage:          queryString("testStage"),
+				NpmRunScript:          queryString("npmRunScript"),
 			}
 
 			// write warning in case token is not provided

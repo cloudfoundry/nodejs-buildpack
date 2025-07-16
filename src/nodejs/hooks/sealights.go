@@ -157,7 +157,7 @@ func (sl *SealightsHook) SetApplicationStartInProcfile(stager *libbuildpack.Stag
 	_, usePackageJson := sl.usePackageJson(originalStartCommand, stager)
 	if usePackageJson {
 		// Extract script name from command or use configured default
-		scriptName, err := sl.extractNpmRunScriptName(originalStartCommand)
+		scriptName, err := sl.ExtractNpmRunScriptName(originalStartCommand)
 		if err != nil {
 			sl.Log.Warning("Failed to extract script name from command '%s', using configured default: %s", originalStartCommand, err)
 			scriptName = sl.parameters.NpmRunScript
@@ -192,7 +192,7 @@ func (sl *SealightsHook) SetApplicationStartInProcfile(stager *libbuildpack.Stag
 	return nil
 }
 
-func (sl *SealightsHook) extractNpmRunScriptName(command string) (string, error) {
+func (sl *SealightsHook) ExtractNpmRunScriptName(command string) (string, error) {
 	// Remove leading "web:" prefix if present
 	cleanCommand := strings.TrimSpace(command)
 	if strings.HasPrefix(cleanCommand, "web:") {
@@ -235,7 +235,7 @@ func (sl *SealightsHook) extractNpmRunScriptName(command string) (string, error)
 	return "", fmt.Errorf("failed to extract npm script name from command: %s", command)
 }
 
-func (sl *SealightsHook) validateNpmRunScript(packageJson map[string]interface{}, scriptName string) error {
+func (sl *SealightsHook) ValidateNpmRunScript(packageJson map[string]interface{}, scriptName string) error {
 	scripts, ok := packageJson["scripts"].(map[string]interface{})
 	if !ok || scripts == nil {
 		return fmt.Errorf("no scripts section found in package.json")
@@ -324,12 +324,12 @@ func (sl *SealightsHook) SetApplicationStartInPackageJson(stager *libbuildpack.S
 	}
 	
 	// Validate that the target script exists
-	err = sl.validateNpmRunScript(packageJson, targetScript)
+	err = sl.ValidateNpmRunScript(packageJson, targetScript)
 	if err != nil {
 		// Try fallback to "start" if configured script doesn't exist
 		if targetScript != "start" {
 			sl.Log.Warning("Script '%s' not found, falling back to 'start': %s", targetScript, err)
-			fallbackErr := sl.validateNpmRunScript(packageJson, "start")
+			fallbackErr := sl.ValidateNpmRunScript(packageJson, "start")
 			if fallbackErr != nil {
 				return fmt.Errorf("target script '%s' not found and fallback to 'start' failed: %s", targetScript, fallbackErr)
 			}
@@ -387,7 +387,7 @@ func (sl *SealightsHook) SetApplicationStartInManifest(stager *libbuildpack.Stag
 	_, usePackageJson := sl.usePackageJson(originalStartCommand, stager)
 	if usePackageJson {
 		// Extract script name from command or use configured default
-		scriptName, err := sl.extractNpmRunScriptName(originalStartCommand)
+		scriptName, err := sl.ExtractNpmRunScriptName(originalStartCommand)
 		if err != nil {
 			sl.Log.Warning("Failed to extract script name from command '%s', using configured default: %s", originalStartCommand, err)
 			scriptName = sl.parameters.NpmRunScript

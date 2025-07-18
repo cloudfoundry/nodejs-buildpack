@@ -367,9 +367,9 @@ func (sl *SealightsHook) SetApplicationStartInPackageJson(stager *libbuildpack.S
 func (sl *SealightsHook) ReadPackageJson(stager *libbuildpack.Stager) (map[string]interface{}, error) {
 	p := map[string]interface{}{}
 
-	if err := libbuildpack.NewJSON().Load(filepath.Join(stager.BuildDir(), "package.json"), &p); err != nil {
+	if err := libbuildpack.NewJSON().Load(filepath.Join(stager.BuildDir(), PackageJsonFile), &p); err != nil {
 		if err != nil {
-			sl.Log.Error("failed to read %s error: %s", Procfile, err.Error())
+			sl.Log.Error("failed to read %s error: %s", PackageJsonFile, err.Error())
 			return nil, err
 		}
 	}
@@ -399,7 +399,7 @@ func (sl *SealightsHook) SetApplicationStartInManifest(stager *libbuildpack.Stag
 		return sl.SetApplicationStartInPackageJson(stager, scriptName)
 	}
 
-	// we suppose that format is "start: node <application>"
+	// we suppose that format is "node <application>"
 	var newCmd string
 	newCmd, err = sl.updateStartCommand(originalStartCommand)
 	if err != nil {
@@ -529,13 +529,13 @@ func (sl *SealightsHook) injectSealights(stager *libbuildpack.Stager) error {
 		sl.Log.Info("Integrating sealights into manifest.yml")
 		return sl.SetApplicationStartInManifest(stager)
 	} else {
-		sl.Log.Info("Integrating sealights into package.json")
-		// Use configured script name or default to "start"
-		scriptName := sl.parameters.NpmRunScript
-		if scriptName == "" {
-			scriptName = "start"
-		}
-		return sl.SetApplicationStartInPackageJson(stager, scriptName)
+	sl.Log.Info("Integrating sealights into package.json")
+	// Use configured script name or default to "start"
+	scriptName := sl.parameters.NpmRunScript
+	if scriptName == "" {
+		scriptName = "start"
+	}
+	return sl.SetApplicationStartInPackageJson(stager, scriptName)
 	}
 }
 
@@ -584,7 +584,7 @@ func (sl *SealightsHook) parseVcapServices() {
 				ProxyPassword:      queryString("proxyPassword"),
 				ProjectRoot:        queryString("projectRoot"),
 				TestStage:          queryString("testStage"),
-				NpmRunScript:          queryString("npmRunScript"),
+				NpmRunScript:       queryString("npmRunScript"),
 			}
 
 			// write warning in case token is not provided

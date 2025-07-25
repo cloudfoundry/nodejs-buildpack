@@ -129,7 +129,7 @@ func testSealights(platform switchblade.Platform, fixtures string) func(*testing
 				).WithEndpoint("/fs/package.json"))
 			})
 
-			it("modifies the package.json command", func() {
+			it("modifies the defined npm command", func() {
 				deployment, _, err := platform.Deploy.
 					WithEnv(map[string]string{"SL_BUILD_SESSION_ID": "bs1"}).
 					WithServices(map[string]switchblade.Service{
@@ -142,7 +142,7 @@ func testSealights(platform switchblade.Platform, fixtures string) func(*testing
 				Expect(err).NotTo(HaveOccurred())
 
 				Eventually(deployment).Should(Serve(
-					ContainSubstring(`"start-app":"./node_modules/.bin/slnodejs run  --useinitialcolor true  --token token1 --buildsessionid bs1  server.js"`),
+					ContainSubstring(`"start-app":"./node_modules/.bin/slnodejs run  --useinitialcolor true  --token token1 --buildsessionid bs1  app.js"`),
 				).WithEndpoint("/fs/package.json"))
 			})
 		})

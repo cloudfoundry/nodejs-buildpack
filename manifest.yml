@@ -134,13 +134,13 @@ dependencies:
   source: https://nodejs.org/dist/v24.3.0/node-v24.3.0.tar.gz
   source_sha256: f8cc1dcde9b76fa380765204fefbb98e51123e52c919ba4adcf4ccd235bbf70b
 - name: node
-  version: 24.9.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.9.0_linux_x64_cflinuxfs4_1b8e21a0.tgz
-  sha256: 1b8e21a0493fda962689ce3622a0a9be537d02b1103ca808a6b022150365e559
+  version: 24.10.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.10.0_linux_x64_cflinuxfs4_11fdc5e5.tgz
+  sha256: 11fdc5e508cdbd66e2b17b46daace72c171082333111b4e12312abb2b0e56993
   cf_stacks:
   - cflinuxfs4
-  source: https://github.com/nodejs/node/archive/v24.9.0.tar.gz
-  source_sha256: 5a6b7b3cdbab6bebd121d51558c4bd888bf89f5f272a6e1ea7d9f6f1b29a40dd
+  source: https://github.com/nodejs/node/archive/v24.10.0.tar.gz
+  source_sha256: e549f1e3d6f2ba0ced319a11624cdfe31a0ac35f9e1abf6f80c1d86cf5d86f51
 - name: python
   version: 3.11.14
   uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.14_linux_x64_cflinuxfs3_6d5446f5.tgz

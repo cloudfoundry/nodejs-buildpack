@@ -24,10 +24,6 @@ include_files:
 - profile/newrelic-setup.sh
 - profile/nodejs.sh
 dependency_deprecation_dates:
-- version_line: 18.x.x
-  name: node
-  date: 2025-04-30
-  link: https://github.com/nodejs/Release
 - version_line: 20.x.x
   name: node
   date: 2026-04-30
@@ -45,38 +41,6 @@ dependency_deprecation_dates:
   date: 2027-10-24
   link: https://www.python.org/dev/peps/pep-0664/
 dependencies:
-- name: node
-  version: 18.20.7
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.7_linux_x64_cflinuxfs3_3454218f.tgz
-  sha256: 3454218faa6000ff415b649a35996d3ad7501d726fc30cf03b7bab92f508167c
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v18.20.7/node-v18.20.7.tar.gz
-  source_sha256: f2f2f1ac616d8e253ed69cf0b44de7d4843c40d8a614f64c776ee59ff0047031
-- name: node
-  version: 18.20.7
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.7_linux_x64_cflinuxfs4_cd7a6534.tgz
-  sha256: cd7a6534666f4bd23fa31f763b2fdc470be861f39675ca76f46ba9da329b6d78
-  cf_stacks:
-  - cflinuxfs4
-  source: https://nodejs.org/dist/v18.20.7/node-v18.20.7.tar.gz
-  source_sha256: f2f2f1ac616d8e253ed69cf0b44de7d4843c40d8a614f64c776ee59ff0047031
-- name: node
-  version: 18.20.8
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.8_linux_x64_cflinuxfs3_9ebc5f70.tgz
-  sha256: 9ebc5f707d425f2e4b227c53dc04ea704cd71a2a8b64c7beb23adc3c3880ec82
-  cf_stacks:
-  - cflinuxfs3
-  source: https://nodejs.org/dist/v18.20.8/node-v18.20.8.tar.gz
-  source_sha256: ec60a6d2344ef9e1f093991ca1bb6bbe92c61c29d1762c4b99e08f87dbb91e2f
-- name: node
-  version: 18.20.8
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_18.20.8_linux_x64_cflinuxfs4_826e3a8e.tgz
-  sha256: 826e3a8e94c5ee13162093f750f4b3569f96980b6ccc5818b1346a02d76f08eb
-  cf_stacks:
-  - cflinuxfs4
-  source: https://nodejs.org/dist/v18.20.8/node-v18.20.8.tar.gz
-  source_sha256: ec60a6d2344ef9e1f093991ca1bb6bbe92c61c29d1762c4b99e08f87dbb91e2f
 - name: node
   version: 20.19.3
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.19.3_linux_x64_cflinuxfs3_96fdc321.tgz

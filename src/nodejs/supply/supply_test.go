@@ -279,8 +279,8 @@ var _ = Describe("Supply", func() {
 				defer os.Remove(nvmrcFile)
 
 				testCases := [][]string{
-					{"lts/hydrogen", "18.*.*"},
-					{"lts/*", "18.*.*"},
+					{"lts/iron", "20.*.*"},
+					{"lts/jod", "22.*.*"},
 				}
 
 				for _, testCase := range testCases {
@@ -435,7 +435,7 @@ var _ = Describe("Supply", func() {
 
 		Context("given valid .nvmrc", func() {
 			It("validate should succeed", func() {
-				validVersions := []string{"11.4", "node", "lts/*", "lts/hydrogen", "10", "10.1.1"}
+				validVersions := []string{"11.4", "node", "lts/*", "lts/iron", "10", "10.1.1"}
 				for _, version := range validVersions {
 					Expect(os.WriteFile(filepath.Join(buildDir, ".nvmrc"), []byte(version), 0777)).To(Succeed())
 					Expect(supplier.LoadNvmrc()).To(Succeed())
@@ -543,9 +543,9 @@ var _ = Describe("Supply", func() {
 			})
 		})
 
-		Context("Installing Node >=18", func() {
+		Context("Installing Node >=20", func() {
 			It("SSL_CERT_DIR env variable is set", func() {
-				dep := libbuildpack.Dependency{Name: "node", Version: "18.0.0"}
+				dep := libbuildpack.Dependency{Name: "node", Version: "20.0.0"}
 				mockManifest.EXPECT().DefaultVersion("node").Return(dep, nil)
 				mockManifest.EXPECT().AllDependencyVersions(gomock.Any())
 				mockInstaller.EXPECT().InstallDependency(dep, nodeDir).Do(installNode).Return(nil)
@@ -564,7 +564,7 @@ var _ = Describe("Supply", func() {
 			})
 		})
 
-		Context("Installing Node <18", func() {
+		Context("Installing Node <20", func() {
 			It("SSL_CERT_DIR env variable is not set", func() {
 				dep := libbuildpack.Dependency{Name: "node", Version: "16.0.0"}
 				mockManifest.EXPECT().DefaultVersion("node").Return(dep, nil)
@@ -1344,7 +1344,7 @@ var _ = Describe("Supply", func() {
 		})
 	})
 
-	Describe("CreateDefaultEnv for Node <18", func() {
+	Describe("CreateDefaultEnv for Node <20", func() {
 		BeforeEach(func() {
 			supplier.NodeVersion = "16.0.0"
 		})
@@ -1421,9 +1421,9 @@ export PATH=$PATH:"$HOME/bin":$NODE_PATH/.bin
 		})
 	})
 
-	Describe("CreateDefaultEnv for Node >=18", func() {
+	Describe("CreateDefaultEnv for Node >=20", func() {
 		BeforeEach(func() {
-			supplier.NodeVersion = "18.0.0"
+			supplier.NodeVersion = "20.0.0"
 		})
 
 		It("writes an env file for NODE_HOME", func() {

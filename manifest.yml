@@ -95,16 +95,16 @@ dependencies:
   source_sha256: 4c9f238ad7c57af35efa6ba6259521aebbe20c2f91f6d846860a861c97fc6b99
 - name: node
   version: 20.19.5
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.19.5_linux_x64_cflinuxfs3_eaa43770.tgz
-  sha256: eaa43770cc5e10c3f2bb2ef73ecbf605ed225fd33fb289ae4eeb2486c0bc7e1a
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.19.5_linux_x64_cflinuxfs3_186f2ba5.tgz
+  sha256: 186f2ba5e2e16b0617d17d1410ddbc5900dc4ac4b6860160b0b21c963d9116d3
   cf_stacks:
   - cflinuxfs3
   source: https://nodejs.org/dist/v20.19.5/node-v20.19.5.tar.gz
   source_sha256: b34d3f57666d91deb6a148b604d7f2f4051d540087e9f6c627dedc1fcb866d5a
 - name: node
   version: 20.19.5
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.19.5_linux_x64_cflinuxfs4_857aacce.tgz
-  sha256: 857aacce72ab9e7d114e03d14705ebf2cc0291f12b2deca6d38aab3150858b1b
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_20.19.5_linux_x64_cflinuxfs4_ceee89a1.tgz
+  sha256: ceee89a1bba81a492af9c1175926e8db05bb6404dbfecb3594c54337706d14fe
   cf_stacks:
   - cflinuxfs4
   source: https://nodejs.org/dist/v20.19.5/node-v20.19.5.tar.gz

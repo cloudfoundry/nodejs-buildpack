@@ -4,7 +4,7 @@
 	"description": "hello, world",
 	"main": "server.js",
 	"engines": {
-		"node": "18.x"
+		"node": "20.x"
 	},
 	"dependencies": {
 		"bcrypt": "*",

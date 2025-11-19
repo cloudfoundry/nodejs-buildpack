@@ -289,6 +289,39 @@ var _ = Describe("Sealights hook", func() {
 				expectedCommand := strings.ReplaceAll("./node_modules/.bin/slnodejs run --useinitialcolor true --token good_token --buildsessionid goodBsid --proxy goodProxy --proxyUsername goodName --proxyPassword goodPassword --labid goodLab --projectroot ./ --teststage \"Good tests\" index.js --build 192 --name Good", " ", "")
 				Expect(cleanResult).To(Equal("web:" + expectedCommand))
 			})
+
+			It("should use custom npmRunScript parameter for npm commands", func() {
+				err = os.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte("web: npm run dev"), 0755)
+				Expect(err).To(BeNil())
+				
+				customPackageJson := "{\n    \"scripts\": {\n        \"dev\": \"" + originalStartCommand + "\",\n        \"start\": \"node index.js\"\n    }\n}"
+				err = os.WriteFile(filepath.Join(stager.BuildDir(), packageJsonName), []byte(customPackageJson), 0755)
+				Expect(err).To(BeNil())
+
+				vcapTemplate := `{
+					"user-provided":[{
+						"label": "user-provided",
+						"name": "sealights",
+						"credentials": {
+							"token": "` + token + `",
+							"buildSessionId": "` + bsid + `",
+							"npmRunScript": "dev"
+						}
+					}]
+				}`
+				err = os.Setenv("VCAP_SERVICES", vcapTemplate)
+				Expect(err).To(BeNil())
+
+				err = sealights.AfterCompile(stager)
+				Expect(err).To(BeNil())
+				
+				packageJson, err := sealights.ReadPackageJson(stager)
+				Expect(err).To(BeNil())
+				
+				devScript := packageJson["scripts"].(map[string]interface{})["dev"].(string)
+				Expect(devScript).To(ContainSubstring("slnodejs"))
+				Expect(devScript).To(ContainSubstring("index.js --build 192 --name Good"))
+			})
 		})
 
 		Context("Sealights injection", func() {
@@ -363,7 +396,7 @@ var _ = Describe("Sealights hook", func() {
 				})
 
 				It("fail to find scripts section in package.json", func() {
-					err = sealights.SetApplicationStartInPackageJson(stager)
+					err = sealights.SetApplicationStartInPackageJson(stager, "start")
 					Expect(err).ShouldNot(BeNil())
 				})
 			})
@@ -379,7 +412,7 @@ var _ = Describe("Sealights hook", func() {
 				})
 
 				It("fail to start under scripts section in package.json", func() {
-					err = sealights.SetApplicationStartInPackageJson(stager)
+					err = sealights.SetApplicationStartInPackageJson(stager, "start")
 					Expect(err).ShouldNot(BeNil())
 				})
 			})
@@ -397,7 +430,7 @@ var _ = Describe("Sealights hook", func() {
 					Expect(err).To(BeNil())
 					err = os.Setenv("SL_TEST_STAGE", stage)
 					Expect(err).To(BeNil())
-					err = sealights.SetApplicationStartInPackageJson(stager)
+					err = sealights.SetApplicationStartInPackageJson(stager, "start")
 					Expect(err).To(BeNil())
 					packageJson, err := sealights.ReadPackageJson(stager)
 					Expect(err).To(BeNil())
@@ -409,7 +442,7 @@ var _ = Describe("Sealights hook", func() {
 					Expect(err).NotTo(HaveOccurred())
 					err = os.Setenv("SL_BUILD_SESSION_ID_FILE", "")
 					Expect(err).NotTo(HaveOccurred())
-					err = sealights.SetApplicationStartInPackageJson(stager)
+					err = sealights.SetApplicationStartInPackageJson(stager, "start")
 					Expect(err).To(MatchError(ContainSubstring(hooks.EmptyBuildError)))
 				})
 				It("test application run cmd creation", func() {
@@ -422,7 +455,7 @@ var _ = Describe("Sealights hook", func() {
 					err = os.Setenv("SL_BUILD_SESSION_ID_FILE", "")
 					Expect(err).NotTo(HaveOccurred())
 					Expect(err).To(BeNil())
-					err = sealights.SetApplicationStartInPackageJson(stager)
+					err = sealights.SetApplicationStartInPackageJson(stager, "start")
 					packageJson, err := sealights.ReadPackageJson(stager)
 					Expect(err).To(BeNil())
 					cleanResult := strings.ReplaceAll(packageJson["scripts"].(map[string]interface{})["start"].(string), " ", "")
@@ -569,6 +602,153 @@ var _ = Describe("Sealights hook", func() {
 
 				Expect(err).To(BeNil())
 				Expect(command.args[1]).To(Equal("slnodejs@" + customVersion))
+			})
+		})
+
+		Context("extractNpmRunScriptName function", func() {
+			It("should extract script name from npm run command", func() {
+				scriptName, err := sealights.ExtractNpmRunScriptName("web: npm run start-dev")
+				Expect(err).To(BeNil())
+				Expect(scriptName).To(Equal("start-dev"))
+			})
+
+			It("should extract script name from npm command without run", func() {
+				scriptName, err := sealights.ExtractNpmRunScriptName("web: npm start")
+				Expect(err).To(BeNil())
+				Expect(scriptName).To(Equal("start"))
+			})
+
+			It("should extract script name from command with cd prefix", func() {
+				scriptName, err := sealights.ExtractNpmRunScriptName("web: cd app && npm run dev")
+				Expect(err).To(BeNil())
+				Expect(scriptName).To(Equal("dev"))
+			})
+
+			It("should extract script name from simple npm run command", func() {
+				scriptName, err := sealights.ExtractNpmRunScriptName("npm run test")
+				Expect(err).To(BeNil())
+				Expect(scriptName).To(Equal("test"))
+			})
+
+			It("should handle commands with hyphens and underscores", func() {
+				scriptName, err := sealights.ExtractNpmRunScriptName("npm run start-prod_env")
+				Expect(err).To(BeNil())
+				Expect(scriptName).To(Equal("start-prod_env"))
+			})
+
+			It("should fail for non-npm commands", func() {
+				_, err := sealights.ExtractNpmRunScriptName("web: node server.js")
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("failed to extract npm script name"))
+			})
+		})
+
+		Context("validateNpmRunScript function", func() {
+			var packageJson map[string]interface{}
+
+			BeforeEach(func() {
+				packageJson = map[string]interface{}{
+					"scripts": map[string]interface{}{
+						"start":    "node server.js",
+						"test":     "mocha",
+						"dev":      "nodemon server.js",
+						"build":    "webpack",
+					},
+				}
+			})
+
+			It("should validate existing script", func() {
+				err := sealights.ValidateNpmRunScript(packageJson, "start")
+				Expect(err).To(BeNil())
+			})
+
+			It("should validate existing custom script", func() {
+				err := sealights.ValidateNpmRunScript(packageJson, "dev")
+				Expect(err).To(BeNil())
+			})
+
+			It("should fail for non-existing script", func() {
+				err := sealights.ValidateNpmRunScript(packageJson, "nonexistent")
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("script 'nonexistent' not found"))
+			})
+
+			It("should fail for package.json without scripts section", func() {
+				packageJsonWithoutScripts := map[string]interface{}{
+					"name": "test-app",
+				}
+				err := sealights.ValidateNpmRunScript(packageJsonWithoutScripts, "start")
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("no scripts section found"))
+			})
+
+			It("should fail for package.json with null scripts section", func() {
+				packageJsonWithNullScripts := map[string]interface{}{
+					"scripts": nil,
+				}
+				err := sealights.ValidateNpmRunScript(packageJsonWithNullScripts, "start")
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("no scripts section found"))
+			})
+		})
+
+		Context("custom npm script support", func() {
+			BeforeEach(func() {
+				err = os.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte("web: npm run custom-script"), 0755)
+				Expect(err).To(BeNil())
+				
+				customPackageJson := "{\n    \"scripts\": {\n        \"custom-script\": \"" + originalStartCommand + "\",\n        \"start\": \"node index.js\"\n    }\n}"
+				err = os.WriteFile(filepath.Join(stager.BuildDir(), packageJsonName), []byte(customPackageJson), 0755)
+				Expect(err).To(BeNil())
+
+				os.Setenv("VCAP_SERVICES", `{"user-provided":[
+					{ 
+						"label": "user-provided",
+						"name": "sealights",
+						"credentials": {
+							"token": "`+token+`"
+						}
+					}
+				]}`)
+			})
+
+			AfterEach(func() {
+				os.Remove(filepath.Join(stager.BuildDir(), packageJsonName))
+			})
+
+			It("should inject sealights into custom npm script", func() {
+				err = os.Setenv("SL_LAB_ID", lab)
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_PROJECT_ROOT", root)
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_TEST_STAGE", stage)
+				Expect(err).To(BeNil())
+				err = os.Setenv("SL_BUILD_SESSION_ID_FILE", "")
+				Expect(err).NotTo(HaveOccurred())
+
+				err = sealights.SetApplicationStartInProcfile(stager)
+				Expect(err).To(BeNil())
+
+				packageJson, err := sealights.ReadPackageJson(stager)
+				Expect(err).To(BeNil())
+				
+				customScript := packageJson["scripts"].(map[string]interface{})["custom-script"].(string)
+				cleanResult := strings.ReplaceAll(customScript, " ", "")
+				Expect(cleanResult).To(Equal(expected))
+			})
+
+			It("should fallback to start script when custom script doesn't exist", func() {
+				err = os.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte("web: npm run nonexistent"), 0755)
+				Expect(err).To(BeNil())
+
+				err = sealights.SetApplicationStartInPackageJson(stager, "nonexistent")
+				Expect(err).To(BeNil())
+
+				packageJson, err := sealights.ReadPackageJson(stager)
+				Expect(err).To(BeNil())
+				
+				startScript := packageJson["scripts"].(map[string]interface{})["start"].(string)
+				Expect(startScript).To(ContainSubstring("slnodejs"))
 			})
 		})
 	})

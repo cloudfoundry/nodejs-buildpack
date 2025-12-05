@@ -20,7 +20,7 @@ github.com/blang/semver
 # github.com/cenkalti/backoff/v4 v4.3.0
 ## explicit; go 1.18
 github.com/cenkalti/backoff/v4
-# github.com/cloudfoundry/libbuildpack v0.0.0-20240717165421-f2ae8069fcba
+# github.com/cloudfoundry/libbuildpack v0.0.0-20251203175254-7be530ec9fef
 ## explicit; go 1.22.5
 github.com/cloudfoundry/libbuildpack
 github.com/cloudfoundry/libbuildpack/ansicleaner
@@ -30,21 +30,23 @@ github.com/cloudfoundry/libbuildpack/cutlass
 github.com/cloudfoundry/libbuildpack/cutlass/docker
 github.com/cloudfoundry/libbuildpack/cutlass/glow
 github.com/cloudfoundry/libbuildpack/packager
-# github.com/cloudfoundry/switchblade v0.9.0
+# github.com/cloudfoundry/switchblade v0.9.1
 ## explicit; go 1.23.0
 github.com/cloudfoundry/switchblade
 github.com/cloudfoundry/switchblade/internal/cloudfoundry
 github.com/cloudfoundry/switchblade/internal/docker
 github.com/cloudfoundry/switchblade/matchers
-# github.com/docker/distribution v2.8.3+incompatible => github.com/docker/distribution v2.8.2+incompatible
-## explicit
-github.com/docker/distribution/digestset
-github.com/docker/distribution/reference
-# github.com/docker/docker v27.4.1+incompatible => github.com/docker/docker v24.0.2+incompatible
+# github.com/containerd/log v0.1.0
+## explicit; go 1.20
+# github.com/distribution/reference v0.6.0
+## explicit; go 1.20
+github.com/distribution/reference
+# github.com/docker/docker v27.5.1+incompatible
 ## explicit
 github.com/docker/docker/api
 github.com/docker/docker/api/types
 github.com/docker/docker/api/types/blkiodev
+github.com/docker/docker/api/types/checkpoint
 github.com/docker/docker/api/types/container
 github.com/docker/docker/api/types/events
 github.com/docker/docker/api/types/filters
@@ -55,11 +57,13 @@ github.com/docker/docker/api/types/registry
 github.com/docker/docker/api/types/strslice
 github.com/docker/docker/api/types/swarm
 github.com/docker/docker/api/types/swarm/runtime
+github.com/docker/docker/api/types/system
 github.com/docker/docker/api/types/time
 github.com/docker/docker/api/types/versions
 github.com/docker/docker/api/types/volume
 github.com/docker/docker/client
 github.com/docker/docker/errdefs
+github.com/docker/docker/internal/multierror
 github.com/docker/docker/pkg/stdcopy
 # github.com/docker/go-connections v0.5.0
 ## explicit; go 1.18
@@ -74,6 +78,9 @@ github.com/docker/go-units
 github.com/elazarl/goproxy
 github.com/elazarl/goproxy/internal/http1parser
 github.com/elazarl/goproxy/internal/signer
+# github.com/felixge/httpsnoop v1.0.4
+## explicit; go 1.13
+github.com/felixge/httpsnoop
 # github.com/fsnotify/fsnotify v1.8.0
 ## explicit; go 1.17
 github.com/fsnotify/fsnotify
@@ -84,6 +91,13 @@ github.com/gabriel-vasile/mimetype
 github.com/gabriel-vasile/mimetype/internal/charset
 github.com/gabriel-vasile/mimetype/internal/json
 github.com/gabriel-vasile/mimetype/internal/magic
+# github.com/go-logr/logr v1.4.2
+## explicit; go 1.18
+github.com/go-logr/logr
+github.com/go-logr/logr/funcr
+# github.com/go-logr/stdr v1.2.2
+## explicit; go 1.16
+github.com/go-logr/stdr
 # github.com/gogo/protobuf v1.3.2
 ## explicit; go 1.15
 github.com/gogo/protobuf/proto
@@ -97,6 +111,9 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
+# github.com/moby/docker-image-spec v1.3.1
+## explicit; go 1.18
+github.com/moby/docker-image-spec/specs-go/v1
 # github.com/nxadm/tail v1.4.11
 ## explicit; go 1.13
 github.com/nxadm/tail
@@ -182,6 +199,38 @@ github.com/ulikunitz/xz
 github.com/ulikunitz/xz/internal/hash
 github.com/ulikunitz/xz/internal/xlog
 github.com/ulikunitz/xz/lzma
+# go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.57.0
+## explicit; go 1.22
+go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/request
+go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/semconv
+go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/semconvutil
+# go.opentelemetry.io/otel v1.32.0
+## explicit; go 1.22
+go.opentelemetry.io/otel
+go.opentelemetry.io/otel/attribute
+go.opentelemetry.io/otel/baggage
+go.opentelemetry.io/otel/codes
+go.opentelemetry.io/otel/internal
+go.opentelemetry.io/otel/internal/attribute
+go.opentelemetry.io/otel/internal/baggage
+go.opentelemetry.io/otel/internal/global
+go.opentelemetry.io/otel/propagation
+go.opentelemetry.io/otel/semconv/v1.20.0
+go.opentelemetry.io/otel/semconv/v1.26.0
+# go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.32.0
+## explicit; go 1.22
+# go.opentelemetry.io/otel/metric v1.32.0
+## explicit; go 1.22
+go.opentelemetry.io/otel/metric
+go.opentelemetry.io/otel/metric/embedded
+go.opentelemetry.io/otel/metric/noop
+# go.opentelemetry.io/otel/sdk v1.32.0
+## explicit; go 1.22
+# go.opentelemetry.io/otel/trace v1.32.0
+## explicit; go 1.22
+go.opentelemetry.io/otel/trace
+go.opentelemetry.io/otel/trace/embedded
 # golang.org/x/net v0.34.0
 ## explicit; go 1.18
 golang.org/x/net/html
@@ -229,5 +278,5 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
-# github.com/docker/docker => github.com/docker/docker v24.0.2+incompatible
 # github.com/docker/distribution => github.com/docker/distribution v2.8.2+incompatible
+# google.golang.org/genproto => google.golang.org/genproto v0.0.0-20240513163218-0867130af1f8

@@ -148,7 +148,7 @@ function util::tools::cf::install() {
       exit 1
   esac
 
-  # Check if cf is already available in PATH (e.g., from system/Docker image)
+# Check if cf is already available in PATH (e.g., from system/Docker image)
   if command -v cf &> /dev/null; then
     util::print::title "CF CLI already installed (using system version)"
     cf version

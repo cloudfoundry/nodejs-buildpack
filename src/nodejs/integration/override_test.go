@@ -23,6 +23,7 @@ func testOverride(platform switchblade.Platform, fixtures string) func(*testing.
 			var err error
 			name, err = switchblade.RandomName()
 			Expect(err).NotTo(HaveOccurred())
+			println(name)
 		})
 
 		it.After(func() {

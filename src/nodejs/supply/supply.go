@@ -439,12 +439,10 @@ func (s *Supplier) ReadPackageJSON() error {
 }
 
 func (s *Supplier) NoPackageLockTip() error {
+	// Only consider npm lockfiles for this check.
 	lockFiles := []string{"package-lock.json", "npm-shrinkwrap.json"}
-	if s.UseYarn {
-		lockFiles = []string{"yarn.lock"}
-	}
 
-	// First determine whether any of the supported lock files exist.
+	// Determine whether any of the supported npm lock files exist.
 	anyExists := false
 	for _, lockFile := range lockFiles {
 		exists, err := libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), lockFile))
@@ -457,13 +455,9 @@ func (s *Supplier) NoPackageLockTip() error {
 		}
 	}
 
-	// Only warn if none of the lockfiles exist and the app has vendored deps.
+	// Only warn if none of the npm lockfiles exist and the app has vendored deps.
 	if !anyExists && s.IsVendored {
-		if s.UseYarn {
-			s.Log.Protip("Warning: yarn.lock not found. The buildpack may reach out to the internet to download module updates, even if they are vendored.", "https://docs.cloudfoundry.org/buildpacks/node/index.html#offline_environments")
-		} else {
-			s.Log.Protip("Warning: package-lock.json or npm-shrinkwrap.json not found. The buildpack may reach out to the internet to download module updates, even if they are vendored.", "https://docs.cloudfoundry.org/buildpacks/node/index.html#offline_environments")
-		}
+		s.Log.Protip("Warning: package-lock.json or npm-shrinkwrap.json not found. The buildpack may reach out to the internet to download module updates, even if they are vendored.", "https://docs.cloudfoundry.org/buildpacks/node/index.html#offline_environments")
 	}
 
 	return nil

@@ -115,8 +115,8 @@ dependencies:
   source_sha256: 563d2a1b2a5ba5d5409b5ecd05a0e1bf9b028cf3e6a6f0c87a5dc8dc3f2d9182
 - name: python
   version: 3.11.14
-  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.14_linux_x64_cflinuxfs4_5d0a9d8b.tgz
-  sha256: 5d0a9d8bcea9ab75ffb927285f4ae79f3a47189a31d4eceac7842ec9131c8146
+  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.14_linux_x64_cflinuxfs4_66f53248.tgz
+  sha256: 66f532488f868c421702755ad9e1e65e802b48f3881f1d198d66f9ff52ea463e
   cf_stacks:
   - cflinuxfs4
   source: https://www.python.org/ftp/python/3.11.14/Python-3.11.14.tgz

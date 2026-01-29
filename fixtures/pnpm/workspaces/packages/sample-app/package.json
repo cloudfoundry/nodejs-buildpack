@@ -1,0 +1,12 @@
+{
+    "name": "@sample/sample-app",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+        "express": "^5.2.1",
+        "@sample/sample-lib": "workspace:*"
+    },
+    "scripts": {
+        "start": "node index.js"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "name": "unmet-pnpm",
+    "version": "1.0.0",
+    "dependencies": {
+        "react-dom": "19.2.4"
+    },
+    "engines": {
+        "node": "22.x"
+    }
+}

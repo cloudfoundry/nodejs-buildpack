@@ -692,7 +692,7 @@ var _ = Describe("Supply", func() {
 		Context("pnpm version is not set", func() {
 			It("installs latest pnpm via npm", func() {
 				supplier.UsePNPM = true
-				
+
 				// Mock corepack check failure to fallback to npm
 				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "corepack", "enable").Return(fmt.Errorf("not found"))
 
@@ -708,7 +708,7 @@ var _ = Describe("Supply", func() {
 		Context("pnpm version is set", func() {
 			It("installs requested pnpm version via npm", func() {
 				supplier.UsePNPM = true
-				
+
 				// Mock corepack check failure to fallback to npm
 				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "corepack", "enable").Return(fmt.Errorf("not found"))
 

@@ -47,7 +47,7 @@ func testPNPM(platform switchblade.Platform, fixtures string) func(*testing.T, s
 			Expect(logs).To(ContainLines(
 				ContainSubstring("Installing node modules (pnpm-lock.yaml)"),
 			))
-			
+
 			// Verify store directory is used
 			Expect(logs).To(ContainLines(
 				ContainSubstring("Using pnpm store directory:"),
@@ -70,7 +70,7 @@ func testPNPM(platform switchblade.Platform, fixtures string) func(*testing.T, s
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(filepath.Join(source, "node_modules")).ToNot(BeADirectory())
-				
+
 				Expect(logs).To(ContainLines(
 					ContainSubstring("Installing node modules (pnpm-lock.yaml)"),
 				))

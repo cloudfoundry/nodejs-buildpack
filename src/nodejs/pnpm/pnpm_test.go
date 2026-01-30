@@ -126,7 +126,7 @@ var _ = Describe("PNPM", func() {
 
 				Expect(buffer.String()).To(ContainSubstring("Found vendored pnpm store"))
 				Expect(buffer.String()).To(ContainSubstring("Running pnpm in offline mode"))
-				
+
 				Expect(pnpmConfig).To(HaveKeyWithValue("store-dir", filepath.Join(buildDir, ".pnpm-store")))
 				Expect(pnpmInstallArgs).To(ContainElement("--offline"))
 			})

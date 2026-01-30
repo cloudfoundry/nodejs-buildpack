@@ -198,7 +198,7 @@ func (sl *SealightsHook) ExtractNpmRunScriptName(command string) (string, error)
 	if strings.HasPrefix(cleanCommand, "web:") {
 		cleanCommand = strings.TrimSpace(cleanCommand[4:])
 	}
-	
+
 	// Handle commands with cd prefix (e.g., "cd app && npm run start")
 	if strings.Contains(cleanCommand, "&&") {
 		parts := strings.Split(cleanCommand, "&&")
@@ -206,24 +206,24 @@ func (sl *SealightsHook) ExtractNpmRunScriptName(command string) (string, error)
 			cleanCommand = strings.TrimSpace(parts[len(parts)-1])
 		}
 	}
-	
+
 	// Extract script name from npm commands
 	// Patterns to match:
 	// - "npm start" -> "start"
 	// - "npm run start-dev" -> "start-dev"
 	// - "npm run dev" -> "dev"
 	patterns := []string{
-		`^npm\s+run\s+([a-zA-Z0-9\-_]+)`,     // npm run <script>
-		`^npm\s+([a-zA-Z0-9\-_]+)`,           // npm <script>
+		`^npm\s+run\s+([a-zA-Z0-9\-_]+)`, // npm run <script>
+		`^npm\s+([a-zA-Z0-9\-_]+)`,       // npm <script>
 	}
-	
+
 	for _, pattern := range patterns {
 		re, err := regexp.Compile(pattern)
 		if err != nil {
 			sl.Log.Warning("Failed to compile regex pattern %s: %s", pattern, err)
 			continue
 		}
-		
+
 		matches := re.FindStringSubmatch(cleanCommand)
 		if len(matches) >= 2 {
 			scriptName := matches[1]
@@ -231,7 +231,7 @@ func (sl *SealightsHook) ExtractNpmRunScriptName(command string) (string, error)
 			return scriptName, nil
 		}
 	}
-	
+
 	return "", fmt.Errorf("failed to extract npm script name from command: %s", command)
 }
 
@@ -240,11 +240,11 @@ func (sl *SealightsHook) ValidateNpmRunScript(packageJson map[string]interface{}
 	if !ok || scripts == nil {
 		return fmt.Errorf("no scripts section found in package.json")
 	}
-	
+
 	if _, exists := scripts[scriptName]; !exists {
 		return fmt.Errorf("script '%s' not found in package.json", scriptName)
 	}
-	
+
 	return nil
 }
 
@@ -322,7 +322,7 @@ func (sl *SealightsHook) SetApplicationStartInPackageJson(stager *libbuildpack.S
 	if err != nil {
 		return err
 	}
-	
+
 	// Validate that the target script exists
 	err = sl.ValidateNpmRunScript(packageJson, targetScript)
 	if err != nil {
@@ -338,20 +338,20 @@ func (sl *SealightsHook) SetApplicationStartInPackageJson(stager *libbuildpack.S
 			return err
 		}
 	}
-	
+
 	scripts := packageJson["scripts"].(map[string]interface{})
 	originalStartScript, _ := scripts[targetScript].(string)
 	if originalStartScript == "" {
 		return fmt.Errorf("failed to read %s script from %s", targetScript, PackageJsonFile)
 	}
-	
+
 	// Update the command with Sealights injection
 	var newCmd string
 	newCmd, err = sl.updateStartCommand(originalStartScript)
 	if err != nil {
 		return err
 	}
-	
+
 	sl.Log.Debug("Injecting Sealights into '%s' script: %s -> %s", targetScript, originalStartScript, newCmd)
 	scripts[targetScript] = newCmd
 
@@ -529,13 +529,13 @@ func (sl *SealightsHook) injectSealights(stager *libbuildpack.Stager) error {
 		sl.Log.Info("Integrating sealights into manifest.yml")
 		return sl.SetApplicationStartInManifest(stager)
 	} else {
-	sl.Log.Info("Integrating sealights into package.json")
-	// Use configured script name or default to "start"
-	scriptName := sl.parameters.NpmRunScript
-	if scriptName == "" {
-		scriptName = "start"
-	}
-	return sl.SetApplicationStartInPackageJson(stager, scriptName)
+		sl.Log.Info("Integrating sealights into package.json")
+		// Use configured script name or default to "start"
+		scriptName := sl.parameters.NpmRunScript
+		if scriptName == "" {
+			scriptName = "start"
+		}
+		return sl.SetApplicationStartInPackageJson(stager, scriptName)
 	}
 }
 

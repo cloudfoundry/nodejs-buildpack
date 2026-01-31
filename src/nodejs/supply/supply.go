@@ -502,7 +502,7 @@ func (s *Supplier) NoPackageLockTip() error {
 		}
 
 		if s.IsVendored {
-			s.Log.Protip("Warning: package-lock.json not found. The buildpack may reach out to the internet to download module updates, even if they are vendored.", "https://docs.cloudfoundry.org/buildpacks/node/index.html#offline_environments")
+			s.Log.Protip(fmt.Sprintf("Warning: %s not found. The buildpack may reach out to the internet to download module updates, even if they are vendored.", strings.Join(lockFiles, " or ")), "https://docs.cloudfoundry.org/buildpacks/node/index.html#offline_environments")
 		}
 	}
 
@@ -853,30 +853,69 @@ func (s *Supplier) InstallPNPM() error {
 		return nil
 	}
 
-	installTarget := "pnpm"
+	versions := s.Manifest.AllDependencyVersions("pnpm")
+	selectedVersion := ""
 	if s.PNPMVersion != "" {
-		// Basic security validation for version string to prevent command injection
-		// Allow digits, dots, 'v' prefix, alphabetic tags (beta, rc), hyphens, and asterisk.
-		validVersion := regexp.MustCompile(`^[v0-9a-zA-Z\.\-\*]+$`)
-		if !validVersion.MatchString(s.PNPMVersion) {
-			s.Log.Warning("Invalid pnpm version specified in package.json: '%s'. Ignoring and using default.", s.PNPMVersion)
-		} else {
-			installTarget = "pnpm@" + s.PNPMVersion
+		matchedVersion, err := libbuildpack.FindMatchingVersion(s.PNPMVersion, versions)
+		if err != nil {
+			return fmt.Errorf("package.json requested %s, buildpack only includes pnpm version %s", s.PNPMVersion, strings.Join(versions, ", "))
+		}
+		selectedVersion = matchedVersion
+	} else {
+		if len(versions) == 0 {
+			return fmt.Errorf("no versions of pnpm found")
+		}
+		if len(versions) > 1 {
+			return fmt.Errorf("pnpm version not specified and more than one version available: %s", strings.Join(versions, ", "))
+		}
+		selectedVersion = versions[0]
+	}
+
+	pnpmInstallDir := filepath.Join(s.Stager.DepDir(), "pnpm")
+	if err := s.Installer.InstallOnlyVersion("pnpm", pnpmInstallDir); err != nil {
+		return err
+	}
+
+	binDir := filepath.Join(pnpmInstallDir, "bin")
+	pnpmBin := filepath.Join(binDir, "pnpm")
+
+	if exists, err := libbuildpack.FileExists(pnpmBin); err != nil {
+		return err
+	} else if !exists {
+		entry, err := s.Manifest.GetEntry(libbuildpack.Dependency{Name: "pnpm", Version: selectedVersion})
+		if err != nil {
+			return err
+		}
+		candidate := filepath.Join(pnpmInstallDir, filepath.Base(entry.URI))
+		candidateExists, err := libbuildpack.FileExists(candidate)
+		if err != nil {
+			return err
+		}
+		if !candidateExists {
+			return fmt.Errorf("pnpm binary not found after install")
+		}
+		if err := os.MkdirAll(binDir, 0755); err != nil {
+			return err
+		}
+		if err := os.Rename(candidate, pnpmBin); err != nil {
+			return err
+		}
+		if err := os.Chmod(pnpmBin, 0755); err != nil {
+			return err
 		}
 	}
 
-	s.Log.Info("Installing %s via npm...", installTarget)
-
-	nodeDir := filepath.Join(s.Stager.DepDir(), "node")
-	npmArgs := []string{"install", "--unsafe-perm", "--quiet", "-g", installTarget, "--prefix", nodeDir, "--userconfig", filepath.Join(s.Stager.BuildDir(), ".npmrc")}
-	if err := s.Command.Execute(s.Stager.BuildDir(), s.Log.Output(), s.Log.Output(), "npm", npmArgs...); err != nil {
-		s.Log.Error("Unable to install pnpm: %s", err.Error())
+	if err := s.Stager.LinkDirectoryInDepDir(binDir, "bin"); err != nil {
 		return err
 	}
 
-	if err := s.Stager.LinkDirectoryInDepDir(filepath.Join(nodeDir, "bin"), "bin"); err != nil {
+	buffer := new(bytes.Buffer)
+	if err := s.Command.Execute(s.Stager.BuildDir(), buffer, buffer, "pnpm", "--version"); err != nil {
 		return err
 	}
+
+	pnpmVersion := strings.TrimSpace(buffer.String())
+	s.Log.Info("Installed pnpm %s", pnpmVersion)
 
 	return nil
 }

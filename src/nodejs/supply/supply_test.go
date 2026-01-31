@@ -38,6 +38,7 @@ var _ = Describe("Supply", func() {
 		mockCommand     *MockCommand
 		installNode     func(libbuildpack.Dependency, string)
 		installOnlyYarn func(string, string)
+		installOnlyPNPM func(string, string)
 	)
 
 	BeforeEach(func() {
@@ -88,6 +89,14 @@ var _ = Describe("Supply", func() {
 			Expect(err).To(BeNil())
 
 			err = os.WriteFile(filepath.Join(yarnDir, "bin", "yarnpkg"), []byte("yarnpkg exe"), 0644)
+			Expect(err).To(BeNil())
+		}
+
+		installOnlyPNPM = func(_ string, pnpmDir string) {
+			err := os.MkdirAll(filepath.Join(pnpmDir, "bin"), 0755)
+			Expect(err).To(BeNil())
+
+			err = os.WriteFile(filepath.Join(pnpmDir, "bin", "pnpm"), []byte("pnpm exe"), 0644)
 			Expect(err).To(BeNil())
 		}
 
@@ -689,36 +698,72 @@ var _ = Describe("Supply", func() {
 	})
 
 	Describe("InstallPNPM", func() {
-		Context("pnpm version is not set", func() {
-			It("installs latest pnpm via npm", func() {
+		var pnpmInstallDir string
+
+		BeforeEach(func() {
+			pnpmInstallDir = filepath.Join(depsDir, depsIdx, "pnpm")
+		})
+
+		Context("pnpm version is unset", func() {
+			BeforeEach(func() {
+				mockInstaller.EXPECT().InstallOnlyVersion("pnpm", pnpmInstallDir).Do(installOnlyPNPM).Return(nil)
+
+				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "pnpm", "--version").Do(func(_ string, buffer io.Writer, _ io.Writer, _ string, _ ...string) {
+					buffer.Write([]byte("10.28.2\n"))
+				}).Return(nil)
+			})
+
+			It("installs the only version in the manifest", func() {
 				supplier.UsePNPM = true
-
-				// Mock corepack check failure to fallback to npm
-				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "corepack", "enable").Return(fmt.Errorf("not found"))
-
-				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(),
-					"npm", "install", "--unsafe-perm", "--quiet", "-g", "pnpm",
-					"--userconfig", filepath.Join(buildDir, ".npmrc")).Return(nil)
-
+				supplier.PNPMVersion = ""
 				err = supplier.InstallPNPM()
 				Expect(err).To(BeNil())
+				Expect(buffer.String()).To(ContainSubstring("Installed pnpm 10.28.2"))
+			})
+
+			It("creates a symlink in <depDir>/bin", func() {
+				supplier.UsePNPM = true
+				err = supplier.InstallPNPM()
+				Expect(err).To(BeNil())
+
+				link, err := os.Readlink(filepath.Join(depsDir, depsIdx, "bin", "pnpm"))
+				Expect(err).To(BeNil())
+				Expect(link).To(Equal("../pnpm/bin/pnpm"))
 			})
 		})
 
-		Context("pnpm version is set", func() {
-			It("installs requested pnpm version via npm", func() {
+		Context("requested pnpm version is in manifest", func() {
+			BeforeEach(func() {
+				versions := []string{"10.28.2"}
+				mockManifest.EXPECT().AllDependencyVersions("pnpm").Return(versions)
+				mockInstaller.EXPECT().InstallOnlyVersion("pnpm", pnpmInstallDir).Do(installOnlyPNPM).Return(nil)
+
+				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "pnpm", "--version").Do(func(_ string, buffer io.Writer, _ io.Writer, _ string, _ ...string) {
+					buffer.Write([]byte("10.28.2\n"))
+				}).Return(nil)
+			})
+
+			It("installs the correct version from the manifest", func() {
 				supplier.UsePNPM = true
-
-				// Mock corepack check failure to fallback to npm
-				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "corepack", "enable").Return(fmt.Errorf("not found"))
-
-				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(),
-					"npm", "install", "--unsafe-perm", "--quiet", "-g", "pnpm@1.2.3",
-					"--userconfig", filepath.Join(buildDir, ".npmrc")).Return(nil)
-
-				supplier.PNPMVersion = "1.2.3"
+				supplier.PNPMVersion = "10.28.x"
 				err = supplier.InstallPNPM()
 				Expect(err).To(BeNil())
+				Expect(buffer.String()).To(ContainSubstring("Installed pnpm 10.28.2"))
+			})
+		})
+
+		Context("requested pnpm version is not in manifest", func() {
+			BeforeEach(func() {
+				versions := []string{"10.28.2"}
+				mockManifest.EXPECT().AllDependencyVersions("pnpm").Return(versions)
+			})
+
+			It("returns an error", func() {
+				supplier.UsePNPM = true
+				supplier.PNPMVersion = "9.0.x"
+				err = supplier.InstallPNPM()
+				Expect(err).ToNot(BeNil())
+				Expect(err.Error()).To(Equal("package.json requested 9.0.x, buildpack only includes pnpm version 10.28.2"))
 			})
 		})
 

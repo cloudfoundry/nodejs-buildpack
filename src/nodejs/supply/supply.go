@@ -48,6 +48,10 @@ type Yarn interface {
 	Build(string, string) error
 }
 
+type PNPM interface {
+	Build(string, string) error
+}
+
 type Stager interface {
 	BuildDir() string
 	CacheDir() string
@@ -71,14 +75,18 @@ type Supplier struct {
 	NvmrcNodeVersion       string
 	YarnVersion            string
 	NPMVersion             string
+	PNPMVersion            string
 	PreBuild               string
 	StartScript            string
 	HasDevDependencies     bool
 	PostBuild              string
 	UseYarn                bool
+	UsePNPM                bool
 	UsesYarnWorkspaces     bool
+	UsesPNPMWorkspaces     bool
 	IsVendored             bool
 	Yarn                   Yarn
+	PNPM                   PNPM
 	NPM                    NPM
 }
 
@@ -99,6 +107,11 @@ func Run(s *Supplier) error {
 
 		if err := s.LoadPackageJSON(); err != nil {
 			s.Log.Error("Unable to load package.json: %s", err.Error())
+			return err
+		}
+
+		if err := s.ReadPackageJSON(); err != nil {
+			s.Log.Error("Failed parsing package.json: %s", err.Error())
 			return err
 		}
 
@@ -129,6 +142,11 @@ func Run(s *Supplier) error {
 			return err
 		}
 
+		if err := s.InstallPNPM(); err != nil {
+			s.Log.Error("Unable to install pnpm: %s", err.Error())
+			return err
+		}
+
 		if err := s.CreateDefaultEnv(); err != nil {
 			s.Log.Error("Unable to setup default environment: %s", err.Error())
 			return err
@@ -137,11 +155,6 @@ func Run(s *Supplier) error {
 		if err := s.Stager.SetStagingEnvironment(); err != nil {
 			s.Log.Error("Unable to setup environment variables: %s", err.Error())
 			os.Exit(11)
-		}
-
-		if err := s.ReadPackageJSON(); err != nil {
-			s.Log.Error("Failed parsing package.json: %s", err.Error())
-			return err
 		}
 
 		if err := s.TipVendorDependencies(); err != nil {
@@ -172,7 +185,7 @@ func Run(s *Supplier) error {
 			return err
 		}
 
-		if !s.UseYarn || !s.UsesYarnWorkspaces {
+		if (!s.UseYarn || !s.UsesYarnWorkspaces) && (!s.UsePNPM || !s.UsesPNPMWorkspaces) {
 			if err := s.MoveDependencyArtifacts(); err != nil {
 				s.Log.Error("Unable to move dependencies: %s", err.Error())
 				return err
@@ -235,7 +248,7 @@ func (s *Supplier) BootstrapPython() error {
 }
 
 func (s *Supplier) WarnUnmetDependencies(deps string) {
-	unmetLogEntries := []string{UnmetDependency, UnmetPeerDependency}
+	unmetLogEntries := []string{UnmetDependency, UnmetPeerDependency, "missing peer"}
 	unmet := false
 
 	for _, s := range unmetLogEntries {
@@ -249,6 +262,8 @@ func (s *Supplier) WarnUnmetDependencies(deps string) {
 		pkgMan := "npm"
 		if s.UseYarn {
 			pkgMan = "yarn"
+		} else if s.UsePNPM {
+			pkgMan = "pnpm"
 		}
 
 		warning := "Unmet dependencies don't fail " + pkgMan + " install but may cause runtime issues\n"
@@ -261,7 +276,15 @@ func (s *Supplier) ListDependencies() (string, error) {
 	var result string
 	var buf bytes.Buffer
 
-	err := s.Command.Execute(s.Stager.BuildDir(), &buf, io.Discard, "npm", "ls", "--depth=0")
+	cmd := "npm"
+	args := []string{"ls", "--depth=0"}
+
+	if s.UsePNPM {
+		cmd = "pnpm"
+		args = []string{"list", "--depth=0"}
+	}
+
+	err := s.Command.Execute(s.Stager.BuildDir(), &buf, io.Discard, cmd, args...)
 	if err != nil && !isExitError(err) {
 		return "", err
 	}
@@ -285,7 +308,7 @@ func (s *Supplier) runPostbuild(tool string) error {
 
 func (s *Supplier) runScript(script, tool string) error {
 	args := []string{"run", script}
-	if tool == "npm" {
+	if tool == "npm" || tool == "pnpm" {
 		args = append(args, "--if-present")
 	}
 
@@ -307,6 +330,8 @@ func (s *Supplier) BuildDependencies() error {
 	tool := "npm"
 	if s.UseYarn {
 		tool = "yarn"
+	} else if s.UsePNPM {
+		tool = "pnpm"
 	}
 
 	s.Log.BeginStep("Building dependencies")
@@ -318,6 +343,11 @@ func (s *Supplier) BuildDependencies() error {
 	switch {
 	case s.UseYarn:
 		if err := s.Yarn.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
+			return err
+		}
+
+	case s.UsePNPM:
+		if err := s.PNPM.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
 			return err
 		}
 
@@ -400,6 +430,21 @@ func (s *Supplier) ReadPackageJSON() error {
 		return err
 	}
 
+	if s.UsePNPM, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "pnpm-lock.yaml")); err != nil {
+		return err
+	}
+	if s.PNPMVersion != "" {
+		s.UsePNPM = true
+	}
+
+	if s.UsePNPM {
+		if workspaceExists, err := libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "pnpm-workspace.yaml")); err != nil {
+			return err
+		} else if workspaceExists {
+			s.UsesPNPMWorkspaces = true
+		}
+	}
+
 	if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "node_modules")); err != nil {
 		return err
 	}
@@ -442,6 +487,8 @@ func (s *Supplier) NoPackageLockTip() error {
 	lockFiles := []string{"package-lock.json", "npm-shrinkwrap.json"}
 	if s.UseYarn {
 		lockFiles = []string{"yarn.lock"}
+	} else if s.UsePNPM {
+		lockFiles = []string{"pnpm-lock.yaml"}
 	}
 
 	for _, lockFile := range lockFiles {
@@ -455,7 +502,7 @@ func (s *Supplier) NoPackageLockTip() error {
 		}
 
 		if s.IsVendored {
-			s.Log.Protip("Warning: package-lock.json not found. The buildpack may reach out to the internet to download module updates, even if they are vendored.", "https://docs.cloudfoundry.org/buildpacks/node/index.html#offline_environments")
+			s.Log.Protip(fmt.Sprintf("Warning: %s not found. The buildpack may reach out to the internet to download module updates, even if they are vendored.", strings.Join(lockFiles, " or ")), "https://docs.cloudfoundry.org/buildpacks/node/index.html#offline_environments")
 		}
 	}
 
@@ -580,6 +627,7 @@ func (s *Supplier) LoadPackageJSON() error {
 	s.PackageJSONNodeVersion = p.Engines.Node
 	s.NPMVersion = p.Engines.NPM
 	s.YarnVersion = p.Engines.Yarn
+	s.PNPMVersion = p.Engines.PNPM
 
 	return nil
 }
@@ -799,6 +847,79 @@ func (s *Supplier) InstallYarn() error {
 	return nil
 }
 
+func (s *Supplier) InstallPNPM() error {
+	if !s.UsePNPM {
+		s.Log.Debug("Skipping pnpm installation (UsePNPM is false)")
+		return nil
+	}
+
+	versions := s.Manifest.AllDependencyVersions("pnpm")
+	selectedVersion := ""
+	if s.PNPMVersion != "" {
+		matchedVersion, err := libbuildpack.FindMatchingVersion(s.PNPMVersion, versions)
+		if err != nil {
+			return fmt.Errorf("package.json requested %s, buildpack only includes pnpm version %s", s.PNPMVersion, strings.Join(versions, ", "))
+		}
+		selectedVersion = matchedVersion
+	} else {
+		if len(versions) == 0 {
+			return fmt.Errorf("no versions of pnpm found")
+		}
+		if len(versions) > 1 {
+			return fmt.Errorf("pnpm version not specified and more than one version available: %s", strings.Join(versions, ", "))
+		}
+		selectedVersion = versions[0]
+	}
+
+	pnpmInstallDir := filepath.Join(s.Stager.DepDir(), "pnpm")
+	if err := s.Installer.InstallOnlyVersion("pnpm", pnpmInstallDir); err != nil {
+		return err
+	}
+
+	binDir := filepath.Join(pnpmInstallDir, "bin")
+	pnpmBin := filepath.Join(binDir, "pnpm")
+
+	if exists, err := libbuildpack.FileExists(pnpmBin); err != nil {
+		return err
+	} else if !exists {
+		entry, err := s.Manifest.GetEntry(libbuildpack.Dependency{Name: "pnpm", Version: selectedVersion})
+		if err != nil {
+			return err
+		}
+		candidate := filepath.Join(pnpmInstallDir, filepath.Base(entry.URI))
+		candidateExists, err := libbuildpack.FileExists(candidate)
+		if err != nil {
+			return err
+		}
+		if !candidateExists {
+			return fmt.Errorf("pnpm binary not found after install")
+		}
+		if err := os.MkdirAll(binDir, 0755); err != nil {
+			return err
+		}
+		if err := os.Rename(candidate, pnpmBin); err != nil {
+			return err
+		}
+		if err := os.Chmod(pnpmBin, 0755); err != nil {
+			return err
+		}
+	}
+
+	if err := s.Stager.LinkDirectoryInDepDir(binDir, "bin"); err != nil {
+		return err
+	}
+
+	buffer := new(bytes.Buffer)
+	if err := s.Command.Execute(s.Stager.BuildDir(), buffer, buffer, "pnpm", "--version"); err != nil {
+		return err
+	}
+
+	pnpmVersion := strings.TrimSpace(buffer.String())
+	s.Log.Info("Installed pnpm %s", pnpmVersion)
+
+	return nil
+}
+
 func (s *Supplier) CreateDefaultEnv() error {
 	var environmentDefaults = map[string]string{
 		"NODE_ENV":              "production",
@@ -887,7 +1008,7 @@ func (s *Supplier) OverrideCacheFromApp() error {
 		os.RemoveAll(filepath.Join(s.Stager.CacheDir(), name))
 	}
 
-	pkgMgrCacheDirs := []string{".cache/yarn", ".npm"}
+	pkgMgrCacheDirs := []string{".cache/yarn", ".npm", ".pnpm-store"}
 	if err := copyAll(s.Stager.BuildDir(), s.Stager.CacheDir(), pkgMgrCacheDirs); err != nil {
 		return err
 	}

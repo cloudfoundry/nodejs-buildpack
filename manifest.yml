@@ -114,4 +114,13 @@ dependencies:
   - cflinuxfs3
   source: https://github.com/yarnpkg/yarn/releases/download/v1.22.22/yarn-v1.22.22.tar.gz
   source_sha256: 88268464199d1611fcf73ce9c0a6c4d44c7d5363682720d8506f6508addf36a0
+- name: pnpm
+  version: 10.28.2
+  uri: https://github.com/pnpm/pnpm/releases/download/v10.28.2/pnpm-linux-x64
+  sha256: 9f38396f660cd3b1f71e0b0af0b7ba22dd1fd446dc37840a1b6a025868557390
+  cf_stacks:
+  - cflinuxfs4
+  - cflinuxfs3
+  source: https://github.com/pnpm/pnpm/archive/refs/tags/v10.28.2.tar.gz
+  source_sha256: f5078e3376b449ee18842fce49d3c26db2f04d164b0da674b40234ee8d4db583
 pre_package: scripts/build.sh

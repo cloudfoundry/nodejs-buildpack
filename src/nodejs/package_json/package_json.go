@@ -14,6 +14,7 @@ type Engines struct {
 	Node string `json:"node"`
 	Yarn string `json:"yarn"`
 	NPM  string `json:"npm"`
+	PNPM string `json:"pnpm"`
 	Iojs string `json:"iojs"`
 }
 
@@ -43,6 +44,12 @@ func LoadPackageJSON(path string, logger logger) (PackageJSON, error) {
 		logger.Info("engines.npm (package.json): %s", p.Engines.NPM)
 	} else {
 		logger.Info("engines.npm (package.json): unspecified (use default)")
+	}
+
+	if p.Engines.PNPM != "" {
+		logger.Info("engines.pnpm (package.json): %s", p.Engines.PNPM)
+	} else {
+		logger.Info("engines.pnpm (package.json): unspecified (use default)")
 	}
 
 	return p, nil

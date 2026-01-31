@@ -1497,4 +1497,25 @@ export PATH=$PATH:"$HOME/bin":$NODE_PATH/.bin
 			Expect(string(contents)).To(ContainSubstring("export SSL_CERT_DIR=${SSL_CERT_DIR:-/etc/ssl/certs}"))
 		})
 	})
+
+	Describe("NoPackageLockTip", func() {
+		It("does not log when npm-shrinkwrap.json exists and vendored", func() {
+			Expect(os.WriteFile(filepath.Join(buildDir, "npm-shrinkwrap.json"), []byte("{}"), 0644)).To(Succeed())
+			supplier.IsVendored = true
+			err = supplier.NoPackageLockTip()
+			Expect(err).To(BeNil())
+			Expect(buffer.String()).To(Equal(""))
+		})
+
+		It("logs when no lockfile exists and vendored", func() {
+			// Ensure no lock files are present
+			os.Remove(filepath.Join(buildDir, "package-lock.json"))
+			os.Remove(filepath.Join(buildDir, "npm-shrinkwrap.json"))
+			supplier.IsVendored = true
+			buffer.Reset()
+			err = supplier.NoPackageLockTip()
+			Expect(err).To(BeNil())
+			Expect(buffer.String()).To(ContainSubstring("not found"))
+		})
+	})
 })

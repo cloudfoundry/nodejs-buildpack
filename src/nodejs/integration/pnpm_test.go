@@ -78,5 +78,23 @@ func testPNPM(platform switchblade.Platform, fixtures string) func(*testing.T, s
 				Eventually(deployment).Should(Serve(ContainSubstring("Hello from Workspace! Hello from sample-lib")))
 			})
 		})
+
+		context("when there are unmet dependencies", func() {
+			it.Before(func() {
+				var err error
+				source, err = switchblade.Source(filepath.Join(fixtures, "pnpm", "unmet"))
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			it("prints a warning", func() {
+				_, logs, err := platform.Deploy.
+					Execute(name, source)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(logs).To(ContainLines(
+					ContainSubstring("Unmet dependencies don't fail pnpm install but may cause runtime issues"),
+				))
+			})
+		})
 	}
 }

@@ -55,5 +55,18 @@ func testProxy(platform switchblade.Platform, fixtures, uri string) func(*testin
 
 			Eventually(deployment).Should(Serve(ContainSubstring("Hello, World!")))
 		})
+
+		it("installs pnpm packages through a proxy", func() {
+			deployment, _, err := platform.Deploy.
+				WithEnv(map[string]string{
+					"HTTP_PROXY":  uri,
+					"HTTPS_PROXY": uri,
+				}).
+				WithoutInternetAccess().
+				Execute(name, filepath.Join(fixtures, "pnpm", "simple"))
+			Expect(err).NotTo(HaveOccurred())
+
+			Eventually(deployment).Should(Serve(ContainSubstring("Hello, World!")))
+		})
 	}
 }

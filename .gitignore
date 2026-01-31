@@ -8,4 +8,3 @@
 /pkg/
 !vendor/**
 build
-node_modules

@@ -18,6 +18,10 @@ type PNPM struct {
 }
 
 func (p *PNPM) Build(buildDir, cacheDir string) error {
+	originalCI := os.Getenv("CI")
+	defer os.Setenv("CI", originalCI)
+	os.Setenv("CI", "true")
+
 	p.Log.Info("Installing node modules (pnpm-lock.yaml)")
 
 	storeDir := filepath.Join(cacheDir, ".pnpm-store")

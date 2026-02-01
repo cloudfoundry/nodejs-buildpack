@@ -32,6 +32,7 @@ type Command interface {
 type Manifest interface {
 	AllDependencyVersions(string) []string
 	DefaultVersion(string) (libbuildpack.Dependency, error)
+	GetEntry(libbuildpack.Dependency) (*libbuildpack.ManifestEntry, error)
 }
 
 type Installer interface {

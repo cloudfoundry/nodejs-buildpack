@@ -25,8 +25,9 @@ type Command interface {
 	Execute(string, io.Writer, io.Writer, string, ...string) error
 }
 
-// credentials represent the user settings extracted from the environment.
-type credentials struct {
+// Credentials represent the user settings extracted from the environment.
+// Exported for testing purposes.
+type Credentials struct {
 	ServiceName       string
 	EnvironmentID     string
 	CustomOneAgentURL string
@@ -37,6 +38,9 @@ type credentials struct {
 	EnableFIPS        bool
 	AddTechnologies   string
 }
+
+// credentials is an alias for backward compatibility
+type credentials = Credentials
 
 // Hook implements libbuildpack.Hook. It downloads and install the Dynatrace OneAgent.
 type Hook struct {
@@ -139,6 +143,11 @@ func (h *Hook) AfterCompile(stager *libbuildpack.Stager) error {
 
 // getCredentials returns the configuration from the environment, or nil if not found. The credentials are represented
 // as a JSON object in the VCAP_SERVICES environment variable.
+// GetCredentials is exported for testing purposes.
+func (h *Hook) GetCredentials() *credentials {
+	return h.getCredentials()
+}
+
 func (h *Hook) getCredentials() *credentials {
 	// Represent the structure of the JSON object in VCAP_SERVICES for parsing.
 
@@ -147,7 +156,23 @@ func (h *Hook) getCredentials() *credentials {
 		Credentials map[string]interface{} `json:"credentials"`
 	}
 
-	if err := json.Unmarshal([]byte(os.Getenv("VCAP_SERVICES")), &vcapServices); err != nil {
+	var vcapServicesContent string
+
+	// Check if VCAP_SERVICES_FILE_PATH is set
+	if filePath := os.Getenv("VCAP_SERVICES_FILE_PATH"); filePath != "" {
+		h.Log.Debug("Reading VCAP_SERVICES from file: %s", filePath)
+		fileContent, err := os.ReadFile(filePath)
+		if err != nil {
+			h.Log.Debug("Failed to read VCAP_SERVICES file at %s: %s", filePath, err)
+			return nil
+		}
+		vcapServicesContent = string(fileContent)
+	} else {
+		// Fall back to VCAP_SERVICES environment variable
+		vcapServicesContent = os.Getenv("VCAP_SERVICES")
+	}
+
+	if err := json.Unmarshal([]byte(vcapServicesContent), &vcapServices); err != nil {
 		h.Log.Debug("Failed to unmarshal VCAP_SERVICES: %s", err)
 		return nil
 	}

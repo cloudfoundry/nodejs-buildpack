@@ -176,5 +176,28 @@ func testDynatrace(platform switchblade.Platform, fixtures, uri string) func(*te
 				))
 			})
 		})
+
+		context("when VCAP_SERVICES_FILE_PATH environment variable is set", func() {
+			it("reads VCAP_SERVICES from the file path", func() {
+				vcapServicesFile := filepath.Join(fixtures, "util", "dynatrace", "vcap_services.json")
+
+				_, logs, err := platform.Deploy.
+					WithEnv(map[string]string{
+						"BP_DEBUG": "true",
+						"VCAP_SERVICES_FILE_PATH": vcapServicesFile,
+					}).
+					Execute(name, filepath.Join(fixtures, "simple"))
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(logs.String()).To(SatisfyAll(
+					ContainSubstring("Reading VCAP_SERVICES from file"),
+					ContainSubstring("Dynatrace service credentials found. Setting up Dynatrace OneAgent."),
+					ContainSubstring("Starting Dynatrace OneAgent installer"),
+					ContainSubstring("Copy dynatrace-env.sh"),
+					ContainSubstring("Dynatrace OneAgent installed."),
+					ContainSubstring("Dynatrace OneAgent injection is set up."),
+				))
+			})
+		})
 	}
 }

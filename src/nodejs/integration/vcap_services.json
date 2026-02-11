@@ -1,0 +1,12 @@
+{
+  "some-dynatrace": [
+    {
+      "name": "some-dynatrace",
+      "credentials": {
+        "apitoken": "secretpaastoken",
+        "apiurl": "http://localhost:8080",
+        "environmentid": "envid"
+      }
+    }
+  ]
+}

@@ -114,4 +114,13 @@ dependencies:
   - cflinuxfs3
   source: https://github.com/yarnpkg/yarn/releases/download/v1.22.22/yarn-v1.22.22.tar.gz
   source_sha256: 88268464199d1611fcf73ce9c0a6c4d44c7d5363682720d8506f6508addf36a0
+- name: yarn
+  version: 1.22.22
+  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.22_linux_noarch_any-stack_df064301.tgz
+  sha256: df064301db0f1c0cac4ecf195103495de55e9b06226a38d867b1839103137916
+  cf_stacks:
+  - cflinuxfs4
+  - cflinuxfs5
+  source: https://github.com/yarnpkg/yarn/releases/download/v1.22.22/yarn-v1.22.22.tar.gz
+  source_sha256: 88268464199d1611fcf73ce9c0a6c4d44c7d5363682720d8506f6508addf36a0
 pre_package: scripts/build.sh

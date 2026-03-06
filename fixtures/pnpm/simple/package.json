@@ -1,0 +1,14 @@
+{
+    "name": "node_web_app_with_pnpm",
+    "version": "1.0.0",
+    "main": "server.js",
+    "author": "CF Buildpacks Team",
+    "dependencies": {
+        "logfmt": "^1.4.0",
+        "express": "^5.2.1"
+    },
+    "engines": {
+        "node": "22.x",
+        "pnpm": "*"
+    }
+}

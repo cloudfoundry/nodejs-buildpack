@@ -31,15 +31,19 @@ var _ = Describe("Supply", func() {
 		buffer          *bytes.Buffer
 		mockCtrl        *gomock.Controller
 		mockYarn        *MockYarn
+		mockPNPM        *MockPNPM
 		mockNPM         *MockNPM
 		mockManifest    *MockManifest
 		mockInstaller   *MockInstaller
 		mockCommand     *MockCommand
 		installNode     func(libbuildpack.Dependency, string)
 		installOnlyYarn func(string, string)
+		installOnlyPNPM func(string, string)
 	)
 
 	BeforeEach(func() {
+		Expect(os.Unsetenv("NODE_PATH")).To(Succeed())
+
 		depsDir, err = os.MkdirTemp("", "nodejs-buildpack.deps.")
 		Expect(err).To(BeNil())
 		cacheDir, err = os.MkdirTemp("", "nodejs-buildpack.cache.")
@@ -63,6 +67,7 @@ var _ = Describe("Supply", func() {
 		mockInstaller = NewMockInstaller(mockCtrl)
 		mockCommand = NewMockCommand(mockCtrl)
 		mockYarn = NewMockYarn(mockCtrl)
+		mockPNPM = NewMockPNPM(mockCtrl)
 		mockNPM = NewMockNPM(mockCtrl)
 
 		installNode = func(dep libbuildpack.Dependency, nodeDir string) {
@@ -87,12 +92,21 @@ var _ = Describe("Supply", func() {
 			Expect(err).To(BeNil())
 		}
 
+		installOnlyPNPM = func(_ string, pnpmDir string) {
+			err := os.MkdirAll(filepath.Join(pnpmDir, "bin"), 0755)
+			Expect(err).To(BeNil())
+
+			err = os.WriteFile(filepath.Join(pnpmDir, "bin", "pnpm"), []byte("pnpm exe"), 0644)
+			Expect(err).To(BeNil())
+		}
+
 		args := []string{buildDir, cacheDir, depsDir, depsIdx}
 		stager := libbuildpack.NewStager(args, logger, &libbuildpack.Manifest{})
 
 		supplier = &supply.Supplier{
 			Stager:    stager,
 			Yarn:      mockYarn,
+			PNPM:      mockPNPM,
 			NPM:       mockNPM,
 			Log:       logger,
 			Manifest:  mockManifest,
@@ -169,6 +183,30 @@ var _ = Describe("Supply", func() {
 
 					Expect(buffer.String()).To(ContainSubstring("engines.node (package.json): node-y"))
 					Expect(buffer.String()).To(ContainSubstring("engines.npm (package.json): npm-x"))
+				})
+
+				Context("the engines section contains pnpm", func() {
+					BeforeEach(func() {
+						packageJSON = `
+{
+  "engines" : {
+		"pnpm" : "1.2.3"
+	}
+}
+`
+					})
+
+					It("loads the pnpm version", func() {
+						err = supplier.LoadPackageJSON()
+						Expect(err).To(BeNil())
+						Expect(supplier.PNPMVersion).To(Equal("1.2.3"))
+					})
+
+					It("logs the pnpm version", func() {
+						err = supplier.LoadPackageJSON()
+						Expect(err).To(BeNil())
+						Expect(buffer.String()).To(ContainSubstring("engines.pnpm (package.json): 1.2.3"))
+					})
 				})
 
 				Context("the engines section contains iojs", func() {
@@ -659,6 +697,85 @@ var _ = Describe("Supply", func() {
 		})
 	})
 
+	Describe("InstallPNPM", func() {
+		var pnpmInstallDir string
+
+		BeforeEach(func() {
+			pnpmInstallDir = filepath.Join(depsDir, depsIdx, "pnpm")
+		})
+
+		Context("pnpm version is unset", func() {
+			BeforeEach(func() {
+				mockInstaller.EXPECT().InstallOnlyVersion("pnpm", pnpmInstallDir).Do(installOnlyPNPM).Return(nil)
+
+				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "pnpm", "--version").Do(func(_ string, buffer io.Writer, _ io.Writer, _ string, _ ...string) {
+					buffer.Write([]byte("10.28.2\n"))
+				}).Return(nil)
+			})
+
+			It("installs the only version in the manifest", func() {
+				supplier.UsePNPM = true
+				supplier.PNPMVersion = ""
+				err = supplier.InstallPNPM()
+				Expect(err).To(BeNil())
+				Expect(buffer.String()).To(ContainSubstring("Installed pnpm 10.28.2"))
+			})
+
+			It("creates a symlink in <depDir>/bin", func() {
+				supplier.UsePNPM = true
+				err = supplier.InstallPNPM()
+				Expect(err).To(BeNil())
+
+				link, err := os.Readlink(filepath.Join(depsDir, depsIdx, "bin", "pnpm"))
+				Expect(err).To(BeNil())
+				Expect(link).To(Equal("../pnpm/bin/pnpm"))
+			})
+		})
+
+		Context("requested pnpm version is in manifest", func() {
+			BeforeEach(func() {
+				versions := []string{"10.28.2"}
+				mockManifest.EXPECT().AllDependencyVersions("pnpm").Return(versions)
+				mockInstaller.EXPECT().InstallOnlyVersion("pnpm", pnpmInstallDir).Do(installOnlyPNPM).Return(nil)
+
+				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "pnpm", "--version").Do(func(_ string, buffer io.Writer, _ io.Writer, _ string, _ ...string) {
+					buffer.Write([]byte("10.28.2\n"))
+				}).Return(nil)
+			})
+
+			It("installs the correct version from the manifest", func() {
+				supplier.UsePNPM = true
+				supplier.PNPMVersion = "10.28.x"
+				err = supplier.InstallPNPM()
+				Expect(err).To(BeNil())
+				Expect(buffer.String()).To(ContainSubstring("Installed pnpm 10.28.2"))
+			})
+		})
+
+		Context("requested pnpm version is not in manifest", func() {
+			BeforeEach(func() {
+				versions := []string{"10.28.2"}
+				mockManifest.EXPECT().AllDependencyVersions("pnpm").Return(versions)
+			})
+
+			It("returns an error", func() {
+				supplier.UsePNPM = true
+				supplier.PNPMVersion = "9.0.x"
+				err = supplier.InstallPNPM()
+				Expect(err).ToNot(BeNil())
+				Expect(err.Error()).To(Equal("package.json requested 9.0.x, buildpack only includes pnpm version 10.28.2"))
+			})
+		})
+
+		Context("UsePNPM is false", func() {
+			It("does nothing", func() {
+				supplier.UsePNPM = false
+				err = supplier.InstallPNPM()
+				Expect(err).To(BeNil())
+			})
+		})
+	})
+
 	Describe("InstallNPM", func() {
 		BeforeEach(func() {
 			mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "npm", "--version", "--loglevel", "notice").Do(func(_ string, buffer io.Writer, _ io.Writer, _ string, _ ...string) {
@@ -797,6 +914,27 @@ var _ = Describe("Supply", func() {
 			})
 		})
 
+		Context("pnpm-lock.yaml exists", func() {
+			BeforeEach(func() {
+				Expect(os.WriteFile(filepath.Join(buildDir, "pnpm-lock.yaml"), []byte("{}"), 0644)).To(Succeed())
+			})
+			It("sets UsePNPM to true", func() {
+				Expect(supplier.ReadPackageJSON()).To(Succeed())
+				Expect(supplier.UsePNPM).To(BeTrue())
+			})
+		})
+
+		Context("pnpm-workspace.yaml exists", func() {
+			BeforeEach(func() {
+				Expect(os.WriteFile(filepath.Join(buildDir, "pnpm-lock.yaml"), []byte("{}"), 0644)).To(Succeed())
+				Expect(os.WriteFile(filepath.Join(buildDir, "pnpm-workspace.yaml"), []byte("{}"), 0644)).To(Succeed())
+			})
+			It("sets UsesPNPMWorkspaces to true", func() {
+				Expect(supplier.ReadPackageJSON()).To(Succeed())
+				Expect(supplier.UsesPNPMWorkspaces).To(BeTrue())
+			})
+		})
+
 		Context("node_modules exists", func() {
 			BeforeEach(func() {
 				Expect(os.MkdirAll(filepath.Join(buildDir, "node_modules"), 0755)).To(Succeed())
@@ -835,6 +973,32 @@ var _ = Describe("Supply", func() {
 			It("sets HasDevDependencies to false", func() {
 				Expect(supplier.ReadPackageJSON()).To(Succeed())
 				Expect(supplier.HasDevDependencies).To(BeFalse())
+			})
+		})
+	})
+
+	Describe("NoPackageLockTip", func() {
+		Context("when pnpm-lock.yaml exists", func() {
+			BeforeEach(func() {
+				supplier.UsePNPM = true
+				Expect(os.WriteFile(filepath.Join(buildDir, "pnpm-lock.yaml"), []byte("{}"), 0644)).To(Succeed())
+			})
+
+			It("does not log a warning", func() {
+				Expect(supplier.NoPackageLockTip()).To(Succeed())
+				Expect(buffer.String()).To(BeEmpty())
+			})
+		})
+
+		Context("when pnpm-lock.yaml does not exist and UsePNPM is true", func() {
+			BeforeEach(func() {
+				supplier.UsePNPM = true
+			})
+
+			It("logs a warning if vendored", func() {
+				supplier.IsVendored = true
+				Expect(supplier.NoPackageLockTip()).To(Succeed())
+				Expect(buffer.String()).To(ContainSubstring("Warning: package-lock.json not found"))
 			})
 		})
 	})
@@ -1083,6 +1247,17 @@ var _ = Describe("Supply", func() {
 				Expect(filepath.Join(cacheDir, ".cache", "yarn", "subdir")).To(BeADirectory())
 			})
 		})
+
+		Context("app has '.pnpm-store' directory", func() {
+			BeforeEach(func() {
+				Expect(os.MkdirAll(filepath.Join(buildDir, ".pnpm-store", "subdir"), 0755)).To(Succeed())
+			})
+			It("copies directory to cache", func() {
+				Expect(supplier.OverrideCacheFromApp()).To(Succeed())
+				Expect(filepath.Join(buildDir, ".pnpm-store", "subdir")).To(BeADirectory())
+				Expect(filepath.Join(cacheDir, ".pnpm-store", "subdir")).To(BeADirectory())
+			})
+		})
 	})
 
 	Describe("BuildDependencies", func() {
@@ -1111,6 +1286,27 @@ var _ = Describe("Supply", func() {
 				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "run", "heroku-postbuild")
 				Expect(supplier.BuildDependencies()).To(Succeed())
 				Expect(buffer.String()).To(ContainSubstring("Running heroku-postbuild (yarn)"))
+			})
+		})
+
+		Context("using pnpm", func() {
+			BeforeEach(func() {
+				supplier.UsePNPM = true
+				mockPNPM.EXPECT().Build(buildDir, cacheDir).DoAndReturn(func(string, string) error {
+					Expect(os.MkdirAll(filepath.Join(buildDir, "node_modules"), 0755)).To(Succeed())
+					return nil
+				})
+			})
+
+			It("runs pnpm build", func() {
+				Expect(supplier.BuildDependencies()).To(Succeed())
+			})
+
+			It("runs the prebuild script with --if-present", func() {
+				supplier.PreBuild = "prescriptive"
+				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "pnpm", "run", "heroku-prebuild", "--if-present")
+				Expect(supplier.BuildDependencies()).To(Succeed())
+				Expect(buffer.String()).To(ContainSubstring("Running heroku-prebuild (pnpm)"))
 			})
 		})
 

@@ -1,0 +1,12 @@
+{
+  "name": "@sample/pnpm-workspace-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node packages/sample-app/index.js"
+  },
+  "engines": {
+    "node": "22.x",
+    "pnpm": "*"
+  }
+}

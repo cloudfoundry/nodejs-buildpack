@@ -293,7 +293,7 @@ var _ = Describe("Sealights hook", func() {
 			It("should use custom npmRunScript parameter for npm commands", func() {
 				err = os.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte("web: npm run dev"), 0755)
 				Expect(err).To(BeNil())
-				
+
 				customPackageJson := "{\n    \"scripts\": {\n        \"dev\": \"" + originalStartCommand + "\",\n        \"start\": \"node index.js\"\n    }\n}"
 				err = os.WriteFile(filepath.Join(stager.BuildDir(), packageJsonName), []byte(customPackageJson), 0755)
 				Expect(err).To(BeNil())
@@ -314,10 +314,10 @@ var _ = Describe("Sealights hook", func() {
 
 				err = sealights.AfterCompile(stager)
 				Expect(err).To(BeNil())
-				
+
 				packageJson, err := sealights.ReadPackageJson(stager)
 				Expect(err).To(BeNil())
-				
+
 				devScript := packageJson["scripts"].(map[string]interface{})["dev"].(string)
 				Expect(devScript).To(ContainSubstring("slnodejs"))
 				Expect(devScript).To(ContainSubstring("index.js --build 192 --name Good"))
@@ -649,10 +649,10 @@ var _ = Describe("Sealights hook", func() {
 			BeforeEach(func() {
 				packageJson = map[string]interface{}{
 					"scripts": map[string]interface{}{
-						"start":    "node server.js",
-						"test":     "mocha",
-						"dev":      "nodemon server.js",
-						"build":    "webpack",
+						"start": "node server.js",
+						"test":  "mocha",
+						"dev":   "nodemon server.js",
+						"build": "webpack",
 					},
 				}
 			})
@@ -696,7 +696,7 @@ var _ = Describe("Sealights hook", func() {
 			BeforeEach(func() {
 				err = os.WriteFile(filepath.Join(stager.BuildDir(), procfileName), []byte("web: npm run custom-script"), 0755)
 				Expect(err).To(BeNil())
-				
+
 				customPackageJson := "{\n    \"scripts\": {\n        \"custom-script\": \"" + originalStartCommand + "\",\n        \"start\": \"node index.js\"\n    }\n}"
 				err = os.WriteFile(filepath.Join(stager.BuildDir(), packageJsonName), []byte(customPackageJson), 0755)
 				Expect(err).To(BeNil())
@@ -731,7 +731,7 @@ var _ = Describe("Sealights hook", func() {
 
 				packageJson, err := sealights.ReadPackageJson(stager)
 				Expect(err).To(BeNil())
-				
+
 				customScript := packageJson["scripts"].(map[string]interface{})["custom-script"].(string)
 				cleanResult := strings.ReplaceAll(customScript, " ", "")
 				Expect(cleanResult).To(Equal(expected))
@@ -746,7 +746,7 @@ var _ = Describe("Sealights hook", func() {
 
 				packageJson, err := sealights.ReadPackageJson(stager)
 				Expect(err).To(BeNil())
-				
+
 				startScript := packageJson["scripts"].(map[string]interface{})["start"].(string)
 				Expect(startScript).To(ContainSubstring("slnodejs"))
 			})

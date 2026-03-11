@@ -40,6 +40,10 @@ dependency_deprecation_dates:
   name: python
   date: 2027-10-24
   link: https://www.python.org/dev/peps/pep-0664/
+- version_line: 3.13.x
+  name: python
+  date: 2029-10-07
+  link: https://peps.python.org/pep-0719/
 dependencies:
 - name: node
   version: 20.19.3
@@ -105,6 +109,22 @@ dependencies:
   - cflinuxfs4
   source: https://www.python.org/ftp/python/3.11.14/Python-3.11.14.tgz
   source_sha256: 563d2a1b2a5ba5d5409b5ecd05a0e1bf9b028cf3e6a6f0c87a5dc8dc3f2d9182
+- name: python
+  version: 3.13.9
+  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.13.9_linux_x64_cflinuxfs4_ec0866a7.tgz
+  sha256: ec0866a7a9483e12724a995d554ee898d1d192819e0b1bd18483d9371563183e
+  cf_stacks:
+  - cflinuxfs4
+  source: https://www.python.org/ftp/python/3.13.9/Python-3.13.9.tgz
+  source_sha256: c4c066af19c98fb7835d473bebd7e23be84f6e9874d47db9e39a68ee5d0ce35c
+- name: python
+  version: 3.13.9
+  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.13.9_linux_x64_cflinuxfs5_42c6d33a.tgz
+  sha256: 42c6d33a0b69becf0ab8c27a7b0c94454672d76bea4c0965627f71053a276e21
+  cf_stacks:
+  - cflinuxfs5
+  source: https://www.python.org/ftp/python/3.13.9/Python-3.13.9.tgz
+  source_sha256: c4c066af19c98fb7835d473bebd7e23be84f6e9874d47db9e39a68ee5d0ce35c
 - name: yarn
   version: 1.22.22
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.22_linux_noarch_any-stack_4911d0a6.tgz

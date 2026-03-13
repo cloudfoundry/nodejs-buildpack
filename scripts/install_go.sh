@@ -5,7 +5,7 @@ set -u
 set -o pipefail
 
 function main() {
-  if [[ "${CF_STACK:-}" != "cflinuxfs3" && "${CF_STACK:-}" != "cflinuxfs4" ]]; then
+  if [[ "${CF_STACK:-}" != "cflinuxfs3" && "${CF_STACK:-}" != "cflinuxfs4" && "${CF_STACK:-}" != "cflinuxfs5" ]]; then
     echo "       **ERROR** Unsupported stack"
     echo "                 See https://docs.cloudfoundry.org/devguide/deploy-apps/stacks.html for more info"
     exit 1
@@ -20,7 +20,8 @@ function main() {
 
   if [[ ! -f "${dir}/bin/go" ]]; then
     local url
-    url="https://buildpacks.cloudfoundry.org/dependencies/go/go_${version}_linux_x64_${CF_STACK}_${expected_sha:0:8}.tgz"
+    # TODO: use exact stack based dep, when go is built for all supported stacks
+    url="https://buildpacks.cloudfoundry.org/dependencies/go/go_${version}_linux_x64_cflinuxfs4_${expected_sha:0:8}.tgz"
 
     echo "-----> Download go ${version}"
     curl "${url}" \

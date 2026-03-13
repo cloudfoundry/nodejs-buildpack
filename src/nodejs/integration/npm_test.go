@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/cloudfoundry/switchblade"
@@ -83,6 +84,13 @@ func testNPM(platform switchblade.Platform, fixtures string) func(*testing.T, sp
 				content, err := json.Marshal(pkg)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(os.WriteFile(filepath.Join(source, "package.json"), content, 0600)).To(Succeed())
+
+				// Also remove the require('cpu-features') from server.js so the
+				// app doesn't crash at startup trying to load the missing module.
+				serverJS, err := os.ReadFile(filepath.Join(source, "server.js"))
+				Expect(err).NotTo(HaveOccurred())
+				serverJS = []byte(strings.Replace(string(serverJS), "const features = require('cpu-features')();\n", "", 1))
+				Expect(os.WriteFile(filepath.Join(source, "server.js"), serverJS, 0600)).To(Succeed())
 			})
 
 			it.After(func() {

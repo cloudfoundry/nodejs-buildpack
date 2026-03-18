@@ -171,11 +171,11 @@ dependencies:
   source_sha256: 12e7cb170ad2d1a69aee96a1cc7fc8de5b1e97a2bdac51683a3db016ec9a2996
 - name: yarn
   version: 1.22.22
-  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.22_linux_noarch_any-stack_4911d0a6.tgz
-  sha256: 4911d0a6ccea0b992648fbba16a687917511233552ab87cb8ff4b80259ddfac2
+  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.22_linux_noarch_any-stack_b6132b86.tgz
+  sha256: b6132b864c1948174385b4efec842d21cb964c2ae1e79fedcb4eb783ffdaa8a5
   cf_stacks:
   - cflinuxfs4
-  - cflinuxfs3
+  - cflinuxfs5
   source: https://github.com/yarnpkg/yarn/releases/download/v1.22.22/yarn-v1.22.22.tar.gz
   source_sha256: 88268464199d1611fcf73ce9c0a6c4d44c7d5363682720d8506f6508addf36a0
 pre_package: scripts/build.sh

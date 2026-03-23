@@ -8,3 +8,4 @@ nodejs:
     cf_stacks:
     - cflinuxfs3
     - cflinuxfs4
+    - cflinuxfs5

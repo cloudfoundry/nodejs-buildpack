@@ -4,7 +4,7 @@ default_versions:
 - name: node
   version: 22.x
 - name: python
-  version: 3.11.x
+  version: 3.13.x
 include_files:
 - CHANGELOG
 - CONTRIBUTING.md
@@ -48,6 +48,10 @@ dependency_deprecation_dates:
   name: python
   date: 2029-10-07
   link: https://peps.python.org/pep-0719/
+- version_line: 3.14.x
+  name: python
+  date: 2030-10-07
+  link: https://peps.python.org/pep-0745/
 dependencies:
 - name: node
   version: 20.19.3
@@ -167,8 +171,24 @@ dependencies:
   sha256: d923c02aa27386583a1ecea31220a1aaadb7cc323be32dc8f71b1dd5ba81af62
   cf_stacks:
   - cflinuxfs5
-  source: https://www.python.org/ftp/python/3.13.12/Python-3.13.12.tgz
-  source_sha256: 12e7cb170ad2d1a69aee96a1cc7fc8de5b1e97a2bdac51683a3db016ec9a2996
+  source: https://www.python.org/ftp/python/3.13.9/Python-3.13.9.tgz
+  source_sha256: c4c066af19c98fb7835d473bebd7e23be84f6e9874d47db9e39a68ee5d0ce35c
+- name: python
+  version: 3.14.3
+  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.14.3_linux_x64_cflinuxfs4_a54b3e20.tgz
+  sha256: a54b3e20698a979d70fdc15af5a426b6bcf861ba6f37055e1da535c6562a8122
+  cf_stacks:
+  - cflinuxfs4
+  source: https://www.python.org/ftp/python/3.14.3/Python-3.14.3.tgz
+  source_sha256: d7fe130d0501ae047ca318fa92aa642603ab6f217901015a1df6ce650d5470cd
+- name: python
+  version: 3.14.3
+  uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.14.3_linux_x64_cflinuxfs5_62e6a7a7.tgz
+  sha256: 62e6a7a7a369c77412c1db87799128cd87a27bbfd14969c01ff4719a7bd7049f
+  cf_stacks:
+  - cflinuxfs5
+  source: https://www.python.org/ftp/python/3.14.3/Python-3.14.3.tgz
+  source_sha256: d7fe130d0501ae047ca318fa92aa642603ab6f217901015a1df6ce650d5470cd
 - name: yarn
   version: 1.22.22
   uri: https://buildpacks.cloudfoundry.org/dependencies/yarn/yarn_1.22.22_linux_noarch_any-stack_b6132b86.tgz

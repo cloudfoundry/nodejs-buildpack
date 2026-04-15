@@ -2,7 +2,7 @@ package packager
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -12,7 +12,7 @@ import (
 
 func Summary(bpDir string) (string, error) {
 	manifest := Manifest{}
-	data, err := ioutil.ReadFile(filepath.Join(bpDir, "manifest.yml"))
+	data, err := os.ReadFile(filepath.Join(bpDir, "manifest.yml"))
 	if err != nil {
 		return "", err
 	}
@@ -59,6 +59,18 @@ func Summary(bpDir string) (string, error) {
 		out += "| name | version |\n|-|-|\n"
 		for _, d := range manifest.Defaults {
 			out += fmt.Sprintf("| %s | %s |\n", d.Name, d.Version)
+		}
+	}
+
+	if len(manifest.PackagingProfiles) > 0 {
+		out += "\nPackaging profiles:\n\n"
+		profileNames := make([]string, 0, len(manifest.PackagingProfiles))
+		for name := range manifest.PackagingProfiles {
+			profileNames = append(profileNames, name)
+		}
+		sort.Strings(profileNames)
+		for _, name := range profileNames {
+			out += fmt.Sprintf("  %-12s %s\n", name, manifest.PackagingProfiles[name].Description)
 		}
 	}
 

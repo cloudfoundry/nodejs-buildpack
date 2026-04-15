@@ -3,7 +3,7 @@ package hooks_test
 import (
 	"testing"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	"gopkg.in/jarcoal/httpmock.v1"

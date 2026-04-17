@@ -110,6 +110,14 @@ dependencies:
   source: https://nodejs.org/dist/v22.22.0/node-v22.22.0.tar.gz
   source_sha256: 5a4585d7f26bfb283267194b299243efea5ee6edd2fbf887825469b4ac94aece
 - name: node
+  version: 22.22.2
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_22.22.2_linux_x64_cflinuxfs5_43855512.tgz
+  sha256: 438555129d19377bbb65373c37808121203bc4a670b1018c924bc631aacb2c9b
+  cf_stacks:
+  - cflinuxfs5
+  source: https://nodejs.org/dist/v22.22.2/node-v22.22.2.tar.gz
+  source_sha256: f4b9606f33aef725a77b6292460102b48b80902571a8bb94cd769837ee0577df
+- name: node
   version: 24.13.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.13.0_linux_x64_cflinuxfs4_add175c5.tgz
   sha256: add175c54500abfb8a125b2893f10eb535f4c1e224d29c71ad5a8355f480b081

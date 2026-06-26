@@ -82,22 +82,6 @@ dependencies:
   source: https://nodejs.org/dist/v22.23.1/node-v22.23.1.tar.gz
   source_sha256: f40ff2e6b99196271caffae2b240e9148d66675994afd00e522dad7ecce6f27b
 - name: node
-  version: 24.14.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.14.0_linux_x64_cflinuxfs4_d8daa33a.tgz
-  sha256: d8daa33a8983513807de8e4105004e562806520f522ecf3d33a9f329fa768a64
-  cf_stacks:
-  - cflinuxfs4
-  source: https://nodejs.org/dist/v24.14.0/node-v24.14.0.tar.gz
-  source_sha256: 852c73dd5b6ba15b231d036da6312dbcdabd6295adc3940586f3187b77731cf3
-- name: node
-  version: 24.14.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.14.0_linux_x64_cflinuxfs5_16c6405c.tgz
-  sha256: 16c6405c1acd2b3fb2bdc1a9899ba3ec43cc4ee7c4c185e898c57c1b1ba73c61
-  cf_stacks:
-  - cflinuxfs5
-  source: https://nodejs.org/dist/v24.14.0/node-v24.14.0.tar.gz
-  source_sha256: 852c73dd5b6ba15b231d036da6312dbcdabd6295adc3940586f3187b77731cf3
-- name: node
   version: 24.15.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.15.0_linux_x64_cflinuxfs4_1a62d98b.tgz
   sha256: 1a62d98bd21e0bdf79fec37ec000be04955b8733af40c2acbf8da8f064cea912
@@ -113,6 +97,22 @@ dependencies:
   - cflinuxfs5
   source: https://nodejs.org/dist/v24.15.0/node-v24.15.0.tar.gz
   source_sha256: 729de494dd2872e5a3a6c32a1cd156a5413d4aca2772b2d873ee86bb5531bcd9
+- name: node
+  version: 24.18.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.18.0_linux_x64_cflinuxfs4_cdfed650.tgz
+  sha256: cdfed650f33a4cb7abbd8ace99fd1519b863a7a67ec9da247aaac315992e1b09
+  cf_stacks:
+  - cflinuxfs4
+  source: https://nodejs.org/dist/v24.18.0/node-v24.18.0.tar.gz
+  source_sha256: c8348067b41d8739ec69fd4da615cd8995ad6a76eb53e84a7fa7291c8a477eb7
+- name: node
+  version: 24.18.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.18.0_linux_x64_cflinuxfs5_220cd0c9.tgz
+  sha256: 220cd0c93368f8bbfa3ac72f8a985967b1c57f45675acd2c98eb680922d37532
+  cf_stacks:
+  - cflinuxfs5
+  source: https://nodejs.org/dist/v24.18.0/node-v24.18.0.tar.gz
+  source_sha256: c8348067b41d8739ec69fd4da615cd8995ad6a76eb53e84a7fa7291c8a477eb7
 - name: python
   version: 3.11.14
   uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.14_linux_x64_cflinuxfs3_6d5446f5.tgz

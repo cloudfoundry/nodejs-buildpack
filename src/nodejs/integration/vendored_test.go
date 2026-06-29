@@ -77,6 +77,23 @@ func testVendored(platform switchblade.Platform, fixtures string) func(*testing.
 			})
 		})
 
+		context("with an app with a pnpm-lock.yaml and vendored dependencies", func() {
+			it("deploys without hitting the internet", func() {
+				source := filepath.Join(fixtures, "vendored", "pnpm")
+				deployment, logs, err := platform.Deploy.
+					WithEnv(map[string]string{"BP_DEBUG": "true"}).
+					Execute(name, source)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(filepath.Join(source, "node_modules")).To(BeADirectory())
+
+				Eventually(deployment).Should(Serve(ContainSubstring("Hello, World!")))
+				Expect(logs).To(ContainLines(
+					ContainSubstring("Running pnpm in offline mode"),
+				))
+			})
+		})
+
 		context("with an incomplete node_modules directory", func() {
 			var source string
 

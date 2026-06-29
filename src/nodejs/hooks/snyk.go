@@ -49,7 +49,7 @@ func init() {
 	})
 }
 
-//Snyk hook
+// Snyk hook
 func (h SnykHook) AfterCompile(stager *libbuildpack.Stager) error {
 	if h.isTokenExists() == false {
 		h.Log.Debug("Snyk token wasn't found...")

@@ -245,6 +245,43 @@ func (mr *MockYarnMockRecorder) Build(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockYarn)(nil).Build), arg0, arg1)
 }
 
+// MockPNPM is a mock of PNPM interface.
+type MockPNPM struct {
+	ctrl     *gomock.Controller
+	recorder *MockPNPMMockRecorder
+}
+
+// MockPNPMMockRecorder is the mock recorder for MockPNPM.
+type MockPNPMMockRecorder struct {
+	mock *MockPNPM
+}
+
+// NewMockPNPM creates a new mock instance.
+func NewMockPNPM(ctrl *gomock.Controller) *MockPNPM {
+	mock := &MockPNPM{ctrl: ctrl}
+	mock.recorder = &MockPNPMMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockPNPM) EXPECT() *MockPNPMMockRecorder {
+	return m.recorder
+}
+
+// Build mocks base method.
+func (m *MockPNPM) Build(arg0, arg1 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Build", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Build indicates an expected call of Build.
+func (mr *MockPNPMMockRecorder) Build(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockPNPM)(nil).Build), arg0, arg1)
+}
+
 // MockStager is a mock of Stager interface.
 type MockStager struct {
 	ctrl     *gomock.Controller

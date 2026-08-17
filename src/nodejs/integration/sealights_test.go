@@ -103,7 +103,7 @@ func testSealights(platform switchblade.Platform, fixtures string) func(*testing
 				Expect(json.Unmarshal(content, &pkg)).To(Succeed())
 
 				pkg["scripts"] = map[string]string{
-					"start": "node server.js",
+					"start":     "node server.js",
 					"start-app": "node app.js",
 				}
 
@@ -134,7 +134,7 @@ func testSealights(platform switchblade.Platform, fixtures string) func(*testing
 					WithEnv(map[string]string{"SL_BUILD_SESSION_ID": "bs1"}).
 					WithServices(map[string]switchblade.Service{
 						"sealights-service": {
-							"token": "token1",
+							"token":        "token1",
 							"npmRunScript": "start-app",
 						},
 					}).

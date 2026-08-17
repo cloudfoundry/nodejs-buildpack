@@ -47,5 +47,14 @@ func testOffline(platform switchblade.Platform, fixtures string) func(*testing.T
 
 			Eventually(deployment).Should(Serve("Hello, World!"))
 		})
+
+		it("builds pnpm apps without internet access", func() {
+			deployment, _, err := platform.Deploy.
+				WithoutInternetAccess().
+				Execute(name, filepath.Join(fixtures, "vendored", "pnpm"))
+			Expect(err).NotTo(HaveOccurred())
+
+			Eventually(deployment).Should(Serve("Hello, World!"))
+		})
 	}
 }

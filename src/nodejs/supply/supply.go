@@ -84,6 +84,8 @@ type Supplier struct {
 	UsePNPM                bool
 	UsesPNPMWorkspaces     bool
 	UsesYarnBerry          bool
+	UsePNPM                bool
+	UsesPNPMWorkspaces     bool
 	IsVendored             bool
 	Yarn                   Yarn
 	PNPM                   PNPM
@@ -435,6 +437,10 @@ func (s *Supplier) ReadPackageJSON() error {
   if s.UsePNPM, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "pnpm-lock.yaml")); err != nil {
 		return err
   }
+
+	if s.UsePNPM, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "pnpm-lock.yaml")); err != nil {
+		return err
+	}
 
 	if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "node_modules")); err != nil {
 		return err

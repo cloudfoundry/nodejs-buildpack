@@ -162,4 +162,13 @@ dependencies:
   - cflinuxfs5
   source: https://github.com/yarnpkg/yarn/releases/download/v1.22.22/yarn-v1.22.22.tar.gz
   source_sha256: 88268464199d1611fcf73ce9c0a6c4d44c7d5363682720d8506f6508addf36a0
+- name: yarn-berry
+  version: 4.18.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/yarn-berry/yarn-berry_4.18.0_linux_noarch_any-stack_fb8b1d20.tgz
+  sha256: fb8b1d20be72a0b544a35bcec4c7ed0ff55a9b173c01f191b02ba164b2051db5
+  cf_stacks:
+  - cflinuxfs4
+  - cflinuxfs5
+  source: https://repo.yarnpkg.com/4.18.0/packages/yarnpkg-cli/bin/yarn.js
+  source_sha256: fb8b1d20be72a0b544a35bcec4c7ed0ff55a9b173c01f191b02ba164b2051db5
 pre_package: scripts/build.sh

@@ -45,7 +45,7 @@ type NPM interface {
 }
 
 type Yarn interface {
-	Build(string, string) error
+	Build(buildDir, cacheDir string, isBerry bool) error
 }
 
 type Stager interface {
@@ -77,6 +77,7 @@ type Supplier struct {
 	PostBuild              string
 	UseYarn                bool
 	UsesYarnWorkspaces     bool
+	UsesYarnBerry          bool
 	IsVendored             bool
 	Yarn                   Yarn
 	NPM                    NPM
@@ -124,9 +125,16 @@ func Run(s *Supplier) error {
 			return err
 		}
 
-		if err := s.InstallYarn(); err != nil {
-			s.Log.Error("Unable to install yarn: %s", err.Error())
-			return err
+		if s.UsesYarnBerry {
+			if err := s.InstallYarnBerry(); err != nil {
+				s.Log.Error("Unable to install yarn (berry): %s", err.Error())
+				return err
+			}
+		} else {
+			if err := s.InstallYarn(); err != nil {
+				s.Log.Error("Unable to install yarn: %s", err.Error())
+				return err
+			}
 		}
 
 		if err := s.CreateDefaultEnv(); err != nil {
@@ -317,7 +325,7 @@ func (s *Supplier) BuildDependencies() error {
 
 	switch {
 	case s.UseYarn:
-		if err := s.Yarn.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
+		if err := s.Yarn.Build(s.Stager.BuildDir(), s.Stager.CacheDir(), s.UsesYarnBerry); err != nil {
 			return err
 		}
 
@@ -398,6 +406,16 @@ func (s *Supplier) ReadPackageJSON() error {
 
 	if s.UseYarn, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "yarn.lock")); err != nil {
 		return err
+	}
+
+	if s.UseYarn {
+		// .yarnrc.yml is the marker file Yarn Berry (2.x/3.x/4.x) itself uses to
+		// identify a project as using the "modern" (non-Classic) CLI/protocol -
+		// Yarn Classic (1.x) projects never have this file. See
+		// https://yarnpkg.com/configuration/yarnrc.
+		if s.UsesYarnBerry, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), ".yarnrc.yml")); err != nil {
+			return err
+		}
 	}
 
 	if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "node_modules")); err != nil {
@@ -795,6 +813,57 @@ func (s *Supplier) InstallYarn() error {
 
 	yarnVersion := strings.TrimSpace(buffer.String())
 	s.Log.Info("Installed yarn %s", yarnVersion)
+
+	return nil
+}
+
+// InstallYarnBerry installs the "yarn-berry" dependency (Yarn 2.x/3.x/4.x) for
+// projects whose .yarnrc.yml marks them as using the modern Yarn CLI.
+//
+// Unlike Yarn Classic, Yarn Berry is not distributed as a self-contained
+// installable tarball with a bin/ directory - it ships as a single bundled
+// CLI script (see https://repo.yarnpkg.com). InstallOnlyVersion therefore
+// just copies that file as-is into the install dir (libbuildpack falls back
+// to a plain copy for any dependency URI it doesn't recognize as an
+// archive), so a small wrapper script is created here to expose it on PATH
+// as a normal "yarn" executable via `node <script> "$@"`.
+func (s *Supplier) InstallYarnBerry() error {
+	yarnBerryInstallDir := filepath.Join(s.Stager.DepDir(), "yarn-berry")
+
+	if err := s.Installer.InstallOnlyVersion("yarn-berry", yarnBerryInstallDir); err != nil {
+		return err
+	}
+
+	matches, err := filepath.Glob(filepath.Join(yarnBerryInstallDir, "*.js"))
+	if err != nil {
+		return err
+	}
+	if len(matches) == 0 {
+		return fmt.Errorf("could not locate yarn-berry CLI script in %s", yarnBerryInstallDir)
+	}
+	yarnBerryScript := matches[0]
+
+	binDir := filepath.Join(yarnBerryInstallDir, "bin")
+	if err := os.MkdirAll(binDir, 0755); err != nil {
+		return err
+	}
+
+	shim := fmt.Sprintf("#!/usr/bin/env bash\nexec node \"%s\" \"$@\"\n", yarnBerryScript)
+	if err := os.WriteFile(filepath.Join(binDir, "yarn"), []byte(shim), 0755); err != nil {
+		return err
+	}
+
+	if err := s.Stager.LinkDirectoryInDepDir(binDir, "bin"); err != nil {
+		return err
+	}
+
+	buffer := new(bytes.Buffer)
+	if err := s.Command.Execute(s.Stager.BuildDir(), buffer, buffer, "yarn", "--version"); err != nil {
+		return err
+	}
+
+	yarnVersion := strings.TrimSpace(buffer.String())
+	s.Log.Info("Installed yarn (berry) %s", yarnVersion)
 
 	return nil
 }

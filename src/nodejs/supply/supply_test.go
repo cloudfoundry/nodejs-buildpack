@@ -658,6 +658,46 @@ var _ = Describe("Supply", func() {
 		})
 	})
 
+	Describe("InstallYarnBerry", func() {
+		var yarnBerryInstallDir string
+
+		BeforeEach(func() {
+			yarnBerryInstallDir = filepath.Join(depsDir, depsIdx, "yarn-berry")
+
+			mockInstaller.EXPECT().InstallOnlyVersion("yarn-berry", yarnBerryInstallDir).Do(func(_ string, installDir string) {
+				Expect(os.MkdirAll(installDir, 0755)).To(Succeed())
+				Expect(os.WriteFile(filepath.Join(installDir, "yarn-berry-4.18.0.js"), []byte("#!/usr/bin/env node\n"), 0644)).To(Succeed())
+			}).Return(nil)
+
+			mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "--version").Do(func(_ string, buffer io.Writer, _ io.Writer, _ string, _ ...string) {
+				buffer.Write([]byte("4.18.0\n"))
+			}).Return(nil)
+		})
+
+		It("installs the yarn-berry CLI script", func() {
+			err = supplier.InstallYarnBerry()
+			Expect(err).To(BeNil())
+			Expect(buffer.String()).To(ContainSubstring("Installed yarn (berry) 4.18.0"))
+		})
+
+		It("creates an executable wrapper script in <depDir>/bin that execs the CLI script with node", func() {
+			err = supplier.InstallYarnBerry()
+			Expect(err).To(BeNil())
+
+			link, err := os.Readlink(filepath.Join(depsDir, depsIdx, "bin", "yarn"))
+			Expect(err).To(BeNil())
+			Expect(link).To(Equal("../yarn-berry/bin/yarn"))
+
+			shimContents, err := os.ReadFile(filepath.Join(yarnBerryInstallDir, "bin", "yarn"))
+			Expect(err).To(BeNil())
+			Expect(string(shimContents)).To(ContainSubstring(`exec node "` + filepath.Join(yarnBerryInstallDir, "yarn-berry-4.18.0.js") + `" "$@"`))
+
+			info, err := os.Stat(filepath.Join(yarnBerryInstallDir, "bin", "yarn"))
+			Expect(err).To(BeNil())
+			Expect(info.Mode().Perm()&0111).ToNot(BeZero(), "shim script should be executable")
+		})
+	})
+
 	Describe("InstallNPM", func() {
 		BeforeEach(func() {
 			mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "npm", "--version", "--loglevel", "notice").Do(func(_ string, buffer io.Writer, _ io.Writer, _ string, _ ...string) {
@@ -793,6 +833,39 @@ var _ = Describe("Supply", func() {
 			It("sets UseYarn to false", func() {
 				Expect(supplier.ReadPackageJSON()).To(Succeed())
 				Expect(supplier.UseYarn).To(BeFalse())
+			})
+		})
+
+		Context("yarn.lock and .yarnrc.yml both exist", func() {
+			BeforeEach(func() {
+				Expect(os.WriteFile(filepath.Join(buildDir, "yarn.lock"), []byte("{}"), 0644)).To(Succeed())
+				Expect(os.WriteFile(filepath.Join(buildDir, ".yarnrc.yml"), []byte("yarnPath: .yarn/releases/yarn-4.18.0.cjs\n"), 0644)).To(Succeed())
+			})
+			It("sets UsesYarnBerry to true", func() {
+				Expect(supplier.ReadPackageJSON()).To(Succeed())
+				Expect(supplier.UseYarn).To(BeTrue())
+				Expect(supplier.UsesYarnBerry).To(BeTrue())
+			})
+		})
+
+		Context("yarn.lock exists but .yarnrc.yml does not", func() {
+			BeforeEach(func() {
+				Expect(os.WriteFile(filepath.Join(buildDir, "yarn.lock"), []byte("{}"), 0644)).To(Succeed())
+			})
+			It("sets UsesYarnBerry to false (Yarn Classic)", func() {
+				Expect(supplier.ReadPackageJSON()).To(Succeed())
+				Expect(supplier.UsesYarnBerry).To(BeFalse())
+			})
+		})
+
+		Context(".yarnrc.yml exists but yarn.lock does not", func() {
+			BeforeEach(func() {
+				Expect(os.WriteFile(filepath.Join(buildDir, ".yarnrc.yml"), []byte("yarnPath: .yarn/releases/yarn-4.18.0.cjs\n"), 0644)).To(Succeed())
+			})
+			It("sets UsesYarnBerry to false (not a yarn project)", func() {
+				Expect(supplier.ReadPackageJSON()).To(Succeed())
+				Expect(supplier.UseYarn).To(BeFalse())
+				Expect(supplier.UsesYarnBerry).To(BeFalse())
 			})
 		})
 
@@ -1088,7 +1161,7 @@ var _ = Describe("Supply", func() {
 		Context("using yarn", func() {
 			BeforeEach(func() {
 				supplier.UseYarn = true
-				mockYarn.EXPECT().Build(buildDir, cacheDir).DoAndReturn(func(string, string) error {
+				mockYarn.EXPECT().Build(buildDir, cacheDir, false).DoAndReturn(func(string, string, bool) error {
 					Expect(os.MkdirAll(filepath.Join(buildDir, "node_modules"), 0755)).To(Succeed())
 					return nil
 				})
@@ -1110,6 +1183,21 @@ var _ = Describe("Supply", func() {
 				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "run", "heroku-postbuild")
 				Expect(supplier.BuildDependencies()).To(Succeed())
 				Expect(buffer.String()).To(ContainSubstring("Running heroku-postbuild (yarn)"))
+			})
+		})
+
+		Context("using yarn berry", func() {
+			BeforeEach(func() {
+				supplier.UseYarn = true
+				supplier.UsesYarnBerry = true
+				mockYarn.EXPECT().Build(buildDir, cacheDir, true).DoAndReturn(func(string, string, bool) error {
+					Expect(os.MkdirAll(filepath.Join(buildDir, "node_modules"), 0755)).To(Succeed())
+					return nil
+				})
+			})
+
+			It("passes isBerry=true through to Yarn.Build", func() {
+				Expect(supplier.BuildDependencies()).To(Succeed())
 			})
 		})
 

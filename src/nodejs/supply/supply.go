@@ -48,6 +48,10 @@ type Yarn interface {
 	Build(string, string) error
 }
 
+type PNPM interface {
+	Build(string, string) error
+}
+
 type Stager interface {
 	BuildDir() string
 	CacheDir() string
@@ -77,8 +81,11 @@ type Supplier struct {
 	PostBuild              string
 	UseYarn                bool
 	UsesYarnWorkspaces     bool
+	UsePNPM                bool
+	UsesPNPMWorkspaces     bool
 	IsVendored             bool
 	Yarn                   Yarn
+	PNPM                   PNPM
 	NPM                    NPM
 }
 
@@ -307,6 +314,8 @@ func (s *Supplier) BuildDependencies() error {
 	tool := "npm"
 	if s.UseYarn {
 		tool = "yarn"
+	} else if s.UsePNPM {
+		tool = "pnpm"
 	}
 
 	s.Log.BeginStep("Building dependencies")
@@ -318,6 +327,11 @@ func (s *Supplier) BuildDependencies() error {
 	switch {
 	case s.UseYarn:
 		if err := s.Yarn.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
+			return err
+		}
+
+	case s.UsePNPM:
+		if err := s.PNPM.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
 			return err
 		}
 
@@ -400,6 +414,10 @@ func (s *Supplier) ReadPackageJSON() error {
 		return err
 	}
 
+	if s.UsePNPM, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "pnpm-lock.yaml")); err != nil {
+		return err
+	}
+
 	if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "node_modules")); err != nil {
 		return err
 	}
@@ -442,6 +460,8 @@ func (s *Supplier) NoPackageLockTip() error {
 	lockFiles := []string{"package-lock.json", "npm-shrinkwrap.json"}
 	if s.UseYarn {
 		lockFiles = []string{"yarn.lock"}
+	} else if s.UsePNPM {
+		lockFiles = []string{"pnpm-lock.yaml"}
 	}
 
 	for _, lockFile := range lockFiles {
@@ -887,7 +907,7 @@ func (s *Supplier) OverrideCacheFromApp() error {
 		os.RemoveAll(filepath.Join(s.Stager.CacheDir(), name))
 	}
 
-	pkgMgrCacheDirs := []string{".cache/yarn", ".npm"}
+	pkgMgrCacheDirs := []string{".cache/yarn", ".npm", ".pnpm-store"}
 	if err := copyAll(s.Stager.BuildDir(), s.Stager.CacheDir(), pkgMgrCacheDirs); err != nil {
 		return err
 	}

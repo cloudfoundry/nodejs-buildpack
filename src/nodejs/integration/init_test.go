@@ -102,6 +102,7 @@ func TestIntegration(t *testing.T) {
 	suite("Multibuildpack", testMultibuildpack(platform, fixtures))
 	suite("NPM", testNPM(platform, fixtures))
 	suite("Override", testOverride(platform, fixtures))
+	suite("Pnpm", testPnpm(platform, fixtures))
 	suite("Vendored", testVendored(platform, fixtures))
 	suite("Versions", testVersions(platform, fixtures))
 	suite("Yarn", testYarn(platform, fixtures))

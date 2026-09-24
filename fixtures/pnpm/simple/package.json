@@ -1,0 +1,14 @@
+{
+  "name": "node_web_app_with_pnpm",
+  "version": "1.0.0",
+  "main": "server.js",
+  "author": "CF Buildpacks Team",
+  "description": "Simple Node.js app with pnpm",
+  "dependencies": {
+    "express": "^4.18.2",
+    "logfmt": "^1.1.2"
+  },
+  "engines": {
+    "pnpm": "*"
+  }
+}

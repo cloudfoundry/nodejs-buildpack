@@ -1,0 +1,71 @@
+lockfileVersion: '6.0'
+
+dependencies:
+  express:
+    specifier: ^4.18.2
+    version: 4.18.2
+
+devDependencies:
+  jest:
+    specifier: ^29.0.0
+    version: 29.0.0
+  nodemon:
+    specifier: ^2.0.20
+    version: 2.0.20
+
+packages:
+  /accepts/1.3.8:
+    resolution: {integrity: sha512-PYAthTa2m2VKkIaido/34VQwYfzUe+XvZKsZhs63oBzLOUP3FeEtCVBX0kLf4V+u3mYJ/R9vOhAn7PlTVjk+Aw==}
+    engines: {node: '>= 0.6'}
+    dependencies:
+      mime-types: 2.1.35
+      negotiator: 0.6.3
+    dev: false
+
+  /express/4.18.2:
+    resolution: {integrity: sha512-QCDJCf7LgcqDlvdJjcG1Z536V2vNWNIqLnLznMmRdJY7nrtyvDMaJqr+0+OKd9wtkuTyStAwFVlCUvg2dDCSjg==}
+    engines: {node: '>= 0.10.0'}
+    dependencies:
+      accepts: 1.3.8
+      content-disposition: 0.5.4
+      content-type: 1.0.5
+      cookie: 0.5.0
+      cookie-signature: 1.0.6
+      debug: 2.6.9
+      depd: 2.0.0
+      encodeurl: 1.0.2
+      escape-html: 1.0.3
+      etag: 1.8.1
+      finalhandler: 1.2.0
+      fresh: 0.5.2
+      http-errors: 2.0.0
+      merge-descriptors: 1.0.1
+      methods: 1.1.2
+      on-finished: 2.4.1
+      parseurl: 1.3.3
+      path-to-regexp: 0.1.7
+      proxy-addr: 2.0.7
+      qs: 6.11.0
+      range-parser: 1.2.1
+      safe-buffer: 5.2.1
+      send: 0.18.0
+      serve-static: 1.15.0
+      setprototypeof: 1.2.0
+      statuses: 2.0.1
+      type-is: 1.6.18
+      unpipe: 1.0.0
+      utils-merge: 1.0.1
+      vary: 1.1.2
+    dev: false
+
+  /jest/29.0.0:
+    resolution: {integrity: sha512-FjdXnSVa7pVZaVfPyPzlYNUJVeXYTp1F2X6YJNyW1hLdD6hn3S8DUh82c9W5eT0sEcLZcwR3F8A7m0Y/dMpAQw==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    hasBin: true
+    dev: true
+
+  /nodemon/2.0.20:
+    resolution: {integrity: sha512-Zm5VtzpchlGEcWQwT7t/xWAYW7rfnq91guevara5fNfWn74Cte15U32DNeVlfoDE59rufYvxn8epKJriiLatQA==}
+    engines: {node: '>=8.10.0'}
+    hasBin: true
+    dev: true

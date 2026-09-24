@@ -7,6 +7,7 @@ import (
 
 	_ "github.com/cloudfoundry/nodejs-buildpack/src/nodejs/hooks"
 	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/npm"
+	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/pnpm"
 	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/supply"
 	"github.com/cloudfoundry/nodejs-buildpack/src/nodejs/yarn"
 
@@ -68,6 +69,10 @@ func main() {
 		Logfile: logfile,
 		Stager:  stager,
 		Yarn: &yarn.Yarn{
+			Command: &libbuildpack.Command{},
+			Log:     logger,
+		},
+		PNPM: &pnpm.PNPM{
 			Command: &libbuildpack.Command{},
 			Log:     logger,
 		},

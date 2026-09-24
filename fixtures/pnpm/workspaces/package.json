@@ -1,0 +1,23 @@
+{
+  "name": "@pnpm-sample/monorepo-app",
+  "version": "1.0.0",
+  "main": "packages/app/index.js",
+  "author": "CF Buildpacks Team",
+  "description": "Sample monorepo app with pnpm workspaces",
+  "scripts": {
+    "start": "node packages/app/index.js",
+    "start:app": "cd packages/app && exec npm start"
+  },
+  "private": true,
+  "engines": {
+    "pnpm": "*"
+  },
+  "pnpm": {
+    "overrides": {
+      "some-package": "^1.0.0"
+    }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

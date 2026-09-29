@@ -19,7 +19,33 @@ type Yarn struct {
 	Log     *libbuildpack.Logger
 }
 
-func (y *Yarn) Build(buildDir, cacheDir string) error {
+func (y *Yarn) Build(buildDir, cacheDir string, isBerry bool) error {
+	if isBerry {
+		return y.buildBerry(buildDir)
+	}
+	return y.buildClassic(buildDir, cacheDir)
+}
+
+// buildBerry installs dependencies using the Yarn Berry (2.x/3.x/4.x) CLI.
+//
+// Berry's CLI is not backwards compatible with Classic's flags: there is no
+// "yarn config set", "--pure-lockfile", "--ignore-engines", or
+// "--cache-folder" equivalent. Berry manages its own cache/linker behavior
+// via the project's own .yarnrc.yml, which is left untouched here. The
+// closest equivalent to Classic's "--pure-lockfile" (fail rather than
+// silently update the lockfile) is Berry's "--immutable" flag.
+func (y *Yarn) buildBerry(buildDir string) error {
+	y.Log.Info("Installing node modules (yarn.lock) [yarn berry]")
+
+	cmd := exec.Command("yarn", "install", "--immutable")
+	cmd.Dir = buildDir
+	cmd.Stdout = y.Log.Output()
+	cmd.Stderr = y.Log.Output()
+	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
+	return y.Command.Run(cmd)
+}
+
+func (y *Yarn) buildClassic(buildDir, cacheDir string) error {
 	y.Log.Info("Installing node modules (yarn.lock)")
 
 	offline, err := libbuildpack.FileExists(filepath.Join(buildDir, "npm-packages-offline-cache"))

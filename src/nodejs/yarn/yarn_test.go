@@ -89,14 +89,14 @@ var _ = Describe("Yarn", func() {
 			})
 
 			It("tells the user it is running in offline mode", func() {
-				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
+				Expect(y.Build(buildDir, cacheDir, false)).To(Succeed())
 				Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
 				Expect(buffer.String()).To(ContainSubstring("Found yarn mirror directory " + filepath.Join(buildDir, "npm-packages-offline-cache")))
 				Expect(buffer.String()).To(ContainSubstring("Running yarn in offline mode"))
 			})
 
 			It("runs yarn config", func() {
-				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
+				Expect(y.Build(buildDir, cacheDir, false)).To(Succeed())
 				Expect(yarnConfig).To(Equal(map[string]string{
 					"yarn-offline-mirror":         filepath.Join(buildDir, "npm-packages-offline-cache"),
 					"yarn-offline-mirror-pruning": "false",
@@ -104,7 +104,7 @@ var _ = Describe("Yarn", func() {
 			})
 
 			It("runs yarn install with offline arguments and npm_config_nodedir", func() {
-				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
+				Expect(y.Build(buildDir, cacheDir, false)).To(Succeed())
 				Expect(yarnInstallArgs).To(Equal([]string{
 					"yarn", "install",
 					"--pure-lockfile",
@@ -118,14 +118,14 @@ var _ = Describe("Yarn", func() {
 
 		Context("NO npm-packages-offline-cache directory", func() {
 			It("tells the user it is running in online mode", func() {
-				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
+				Expect(y.Build(buildDir, cacheDir, false)).To(Succeed())
 				Expect(buffer.String()).To(ContainSubstring("Installing node modules (yarn.lock)"))
 				Expect(buffer.String()).To(ContainSubstring("Running yarn in online mode"))
 				Expect(buffer.String()).To(ContainSubstring("To run yarn in offline mode, see: https://yarnpkg.com/blog/2016/11/24/offline-mirror"))
 			})
 
 			It("runs yarn config", func() {
-				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
+				Expect(y.Build(buildDir, cacheDir, false)).To(Succeed())
 				Expect(yarnConfig).To(Equal(map[string]string{
 					"yarn-offline-mirror":         filepath.Join(cacheDir, "npm-packages-offline-cache"),
 					"yarn-offline-mirror-pruning": "true",
@@ -133,7 +133,7 @@ var _ = Describe("Yarn", func() {
 			})
 
 			It("runs yarn install", func() {
-				Expect(y.Build(buildDir, cacheDir)).To(Succeed())
+				Expect(y.Build(buildDir, cacheDir, false)).To(Succeed())
 				Expect(yarnInstallArgs).To(Equal([]string{
 					"yarn", "install",
 					"--pure-lockfile",

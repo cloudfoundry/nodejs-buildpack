@@ -171,6 +171,11 @@ func Run(s *Supplier) error {
 			return err
 		}
 
+		if err := s.InstallPNPM(); err != nil {
+			s.Log.Error("Unable to install pnpm: %s", err.Error())
+			return err
+		}
+
 		s.ListNodeConfig(os.Environ())
 
 		if err := s.OverrideCacheFromApp(); err != nil {
@@ -266,6 +271,8 @@ func (s *Supplier) WarnUnmetDependencies(deps string) {
 		pkgMan := "npm"
 		if s.UseYarn {
 			pkgMan = "yarn"
+		} else if s.UsePNPM {
+			pkgMan = "pnpm"
 		}
 
 		warning := "Unmet dependencies don't fail " + pkgMan + " install but may cause runtime issues\n"
@@ -890,6 +897,31 @@ func (s *Supplier) InstallYarnBerry() error {
 
 	yarnVersion := strings.TrimSpace(buffer.String())
 	s.Log.Info("Installed yarn (berry) %s", yarnVersion)
+
+	return nil
+}
+
+func (s *Supplier) InstallPNPM() error {
+	if !s.UsePNPM {
+		return nil
+	}
+
+	pnpmInstallDir := filepath.Join(s.Stager.DepDir(), "pnpm")
+	if err := s.Installer.InstallOnlyVersion("pnpm", pnpmInstallDir); err != nil {
+		return err
+	}
+
+	if err := s.Stager.LinkDirectoryInDepDir(pnpmInstallDir, "bin"); err != nil {
+		return err
+	}
+
+	buffer := new(bytes.Buffer)
+	if err := s.Command.Execute(s.Stager.BuildDir(), buffer, buffer, "pnpm", "--version", "--loglevel", "notice"); err != nil {
+		return err
+	}
+
+	pnpmVersion := strings.TrimSpace(buffer.String())
+	s.Log.Info("Installed pnpm %s", pnpmVersion)
 
 	return nil
 }

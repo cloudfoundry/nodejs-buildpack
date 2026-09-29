@@ -28,7 +28,7 @@ func (p *PNPM) Build(buildDir, cacheDir string) error {
 	}
 
 	pnpmCacheDir := filepath.Join(cacheDir, ".pnpm-store")
-	installArgs := []string{"install", "--frozen-lockfile"}
+	installArgs := []string{"install", "--no-frozen-lockfile"}
 
 	if offline {
 		pnpmStore := filepath.Join(buildDir, ".pnpm-store")

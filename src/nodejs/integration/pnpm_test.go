@@ -94,7 +94,8 @@ func testPnpm(platform switchblade.Platform, fixtures string) func(*testing.T, s
 			})
 
 			it("prints a warning", func() {
-				_, logs, err := platform.Deploy.Execute(name, source)
+				_, logs, err := platform.Deploy.
+					Execute(name, source)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(logs).To(ContainLines(
@@ -111,7 +112,8 @@ func testPnpm(platform switchblade.Platform, fixtures string) func(*testing.T, s
 			})
 
 			it("successfully deploys and vendors workspace dependencies", func() {
-				deployment, _, err := platform.Deploy.Execute(name, source)
+				deployment, _, err := platform.Deploy.
+					Execute(name, source)
 				Expect(err).NotTo(HaveOccurred())
 
 				Eventually(deployment).Should(Serve(ContainSubstring("Hello from pnpm workspaces!")))
@@ -126,7 +128,8 @@ func testPnpm(platform switchblade.Platform, fixtures string) func(*testing.T, s
 			})
 
 			it("successfully deploys with dev dependencies installed", func() {
-				deployment, _, err := platform.Deploy.Execute(name, source)
+				deployment, _, err := platform.Deploy.
+					Execute(name, source)
 				Expect(err).NotTo(HaveOccurred())
 
 				Eventually(deployment).Should(Serve(ContainSubstring("Hello from dev_deps!")))

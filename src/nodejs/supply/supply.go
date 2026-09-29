@@ -84,8 +84,6 @@ type Supplier struct {
 	UsePNPM                bool
 	UsesPNPMWorkspaces     bool
 	UsesYarnBerry          bool
-	UsePNPM                bool
-	UsesPNPMWorkspaces     bool
 	IsVendored             bool
 	Yarn                   Yarn
 	PNPM                   PNPM
@@ -430,7 +428,7 @@ func (s *Supplier) ReadPackageJSON() error {
 	if s.UseYarn, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "yarn.lock")); err != nil {
 		return err
 	}
-  
+
 	if s.UseYarn {
 		// .yarnrc.yml is the marker file Yarn Berry (2.x/3.x/4.x) itself uses to
 		// identify a project as using the "modern" (non-Classic) CLI/protocol -
@@ -440,10 +438,6 @@ func (s *Supplier) ReadPackageJSON() error {
 			return err
 		}
 	}
-  
-  if s.UsePNPM, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "pnpm-lock.yaml")); err != nil {
-		return err
-  }
 
 	if s.UsePNPM, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "pnpm-lock.yaml")); err != nil {
 		return err

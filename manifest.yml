@@ -50,22 +50,6 @@ dependency_deprecation_dates:
   link: https://peps.python.org/pep-0745/
 dependencies:
 - name: node
-  version: 22.23.2
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_22.23.2_linux_x64_cflinuxfs4_8bfe78a5.tgz
-  sha256: 8bfe78a590c5312734a0a2599b870ca1b8b96e98b85f6c27a3cdbc2f0c7c52f1
-  cf_stacks:
-  - cflinuxfs4
-  source: https://nodejs.org/dist/v22.23.2/node-v22.23.2.tar.gz
-  source_sha256: cdaed46fcd8923a55974b7bbc7caaadeaaf7aed60cc137e59837b72f575ef641
-- name: node
-  version: 22.23.2
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_22.23.2_linux_x64_cflinuxfs5_61cede3c.tgz
-  sha256: 61cede3c2afaace1d29f7aa5666153e6dba59acf344d28e53ae49974c63af7e2
-  cf_stacks:
-  - cflinuxfs5
-  source: https://nodejs.org/dist/v22.23.2/node-v22.23.2.tar.gz
-  source_sha256: cdaed46fcd8923a55974b7bbc7caaadeaaf7aed60cc137e59837b72f575ef641
-- name: node
   version: 22.23.3
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_22.23.3_linux_x64_cflinuxfs4_3f5d388e.tgz
   sha256: 3f5d388e33336b7db0adbe2bf06c47012c6947ec777a6e9282a54dac091e0e04

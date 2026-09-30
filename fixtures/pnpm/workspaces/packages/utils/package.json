@@ -1,0 +1,7 @@
+{
+  "name": "@pnpm-sample/utils",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "CF Buildpacks Team",
+  "description": "Utilities package in monorepo"
+}

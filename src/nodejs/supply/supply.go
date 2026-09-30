@@ -48,6 +48,10 @@ type Yarn interface {
 	Build(buildDir, cacheDir string, isBerry bool) error
 }
 
+type PNPM interface {
+	Build(string, string) error
+}
+
 type Stager interface {
 	BuildDir() string
 	CacheDir() string
@@ -77,9 +81,12 @@ type Supplier struct {
 	PostBuild              string
 	UseYarn                bool
 	UsesYarnWorkspaces     bool
+	UsePNPM                bool
+	UsesPNPMWorkspaces     bool
 	UsesYarnBerry          bool
 	IsVendored             bool
 	Yarn                   Yarn
+	PNPM                   PNPM
 	NPM                    NPM
 }
 
@@ -159,6 +166,11 @@ func Run(s *Supplier) error {
 
 		if err := s.NoPackageLockTip(); err != nil {
 			s.Log.Error(err.Error())
+			return err
+		}
+
+		if err := s.InstallPNPM(); err != nil {
+			s.Log.Error("Unable to install pnpm: %s", err.Error())
 			return err
 		}
 
@@ -257,6 +269,8 @@ func (s *Supplier) WarnUnmetDependencies(deps string) {
 		pkgMan := "npm"
 		if s.UseYarn {
 			pkgMan = "yarn"
+		} else if s.UsePNPM {
+			pkgMan = "pnpm"
 		}
 
 		warning := "Unmet dependencies don't fail " + pkgMan + " install but may cause runtime issues\n"
@@ -315,6 +329,8 @@ func (s *Supplier) BuildDependencies() error {
 	tool := "npm"
 	if s.UseYarn {
 		tool = "yarn"
+	} else if s.UsePNPM {
+		tool = "pnpm"
 	}
 
 	s.Log.BeginStep("Building dependencies")
@@ -326,6 +342,11 @@ func (s *Supplier) BuildDependencies() error {
 	switch {
 	case s.UseYarn:
 		if err := s.Yarn.Build(s.Stager.BuildDir(), s.Stager.CacheDir(), s.UsesYarnBerry); err != nil {
+			return err
+		}
+
+	case s.UsePNPM:
+		if err := s.PNPM.Build(s.Stager.BuildDir(), s.Stager.CacheDir()); err != nil {
 			return err
 		}
 
@@ -418,6 +439,10 @@ func (s *Supplier) ReadPackageJSON() error {
 		}
 	}
 
+	if s.UsePNPM, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "pnpm-lock.yaml")); err != nil {
+		return err
+	}
+
 	if s.IsVendored, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "node_modules")); err != nil {
 		return err
 	}
@@ -460,6 +485,8 @@ func (s *Supplier) NoPackageLockTip() error {
 	lockFiles := []string{"package-lock.json", "npm-shrinkwrap.json"}
 	if s.UseYarn {
 		lockFiles = []string{"yarn.lock"}
+	} else if s.UsePNPM {
+		lockFiles = []string{"pnpm-lock.yaml"}
 	}
 
 	for _, lockFile := range lockFiles {
@@ -868,6 +895,31 @@ func (s *Supplier) InstallYarnBerry() error {
 	return nil
 }
 
+func (s *Supplier) InstallPNPM() error {
+	if !s.UsePNPM {
+		return nil
+	}
+
+	pnpmInstallDir := filepath.Join(s.Stager.DepDir(), "pnpm")
+	if err := s.Installer.InstallOnlyVersion("pnpm", pnpmInstallDir); err != nil {
+		return err
+	}
+
+	if err := s.Stager.LinkDirectoryInDepDir(pnpmInstallDir, "bin"); err != nil {
+		return err
+	}
+
+	buffer := new(bytes.Buffer)
+	if err := s.Command.Execute(s.Stager.BuildDir(), buffer, buffer, "pnpm", "--version", "--loglevel", "notice"); err != nil {
+		return err
+	}
+
+	pnpmVersion := strings.TrimSpace(buffer.String())
+	s.Log.Info("Installed pnpm %s", pnpmVersion)
+
+	return nil
+}
+
 func (s *Supplier) CreateDefaultEnv() error {
 	var environmentDefaults = map[string]string{
 		"NODE_ENV":              "production",
@@ -956,7 +1008,7 @@ func (s *Supplier) OverrideCacheFromApp() error {
 		os.RemoveAll(filepath.Join(s.Stager.CacheDir(), name))
 	}
 
-	pkgMgrCacheDirs := []string{".cache/yarn", ".npm"}
+	pkgMgrCacheDirs := []string{".cache/yarn", ".npm", ".pnpm-store"}
 	if err := copyAll(s.Stager.BuildDir(), s.Stager.CacheDir(), pkgMgrCacheDirs); err != nil {
 		return err
 	}

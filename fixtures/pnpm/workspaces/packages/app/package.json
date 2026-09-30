@@ -1,0 +1,14 @@
+{
+  "name": "@pnpm-sample/app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "CF Buildpacks Team",
+  "description": "Application package in monorepo",
+  "dependencies": {
+    "express": "^4.18.2",
+    "@pnpm-sample/utils": "workspace:*"
+  },
+  "engines": {
+    "pnpm": "*"
+  }
+}

@@ -2,6 +2,7 @@ package hooks
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 
@@ -112,20 +113,42 @@ func serviceMatchesContrast(key string, svc map[string]interface{}, query string
 	return false
 }
 
+// loadVcapServicesJSON returns the raw VCAP_SERVICES JSON from whichever
+// delivery mechanism is active. VCAP_SERVICES_FILE_PATH (file-based CF mode)
+// takes priority; VCAP_SERVICES env var is the fallback (standard CF mode).
+func (h ContrastSecurityHook) loadVcapServicesJSON() (string, error) {
+	fp := os.Getenv("VCAP_SERVICES_FILE_PATH")
+	if fp != "" {
+		data, err := os.ReadFile(fp)
+		if err != nil {
+			return "", fmt.Errorf("could not read VCAP_SERVICES_FILE_PATH %q: %w", fp, err)
+		}
+		if os.Getenv("VCAP_SERVICES") != "" {
+			h.Log.Warning("Contrast Security: both VCAP_SERVICES and VCAP_SERVICES_FILE_PATH are set; using VCAP_SERVICES_FILE_PATH.")
+		}
+		return string(data), nil
+	}
+	return os.Getenv("VCAP_SERVICES"), nil
+}
+
 func (h ContrastSecurityHook) GetCredentialsFromEnvironment() (bool, ContrastSecurityCredentials) {
 
 	type rawVcapServicesJSONValue map[string]interface{}
 
 	var vcapServices rawVcapServicesJSONValue
 
-	vcapServicesEnvironment := os.Getenv("VCAP_SERVICES")
-
-	if vcapServicesEnvironment == "" {
-		h.Log.Debug("Contrast Security could not find VCAP_SERVICES in the environment")
+	vcapServicesEnvironment, err := h.loadVcapServicesJSON()
+	if err != nil {
+		h.Log.Warning("Contrast Security: %s", err.Error())
 		return false, ContrastSecurityCredentials{}
 	}
 
-	err := json.Unmarshal([]byte(vcapServicesEnvironment), &vcapServices)
+	if vcapServicesEnvironment == "" {
+		h.Log.Debug("Contrast Security could not find VCAP_SERVICES or VCAP_SERVICES_FILE_PATH in the environment")
+		return false, ContrastSecurityCredentials{}
+	}
+
+	err = json.Unmarshal([]byte(vcapServicesEnvironment), &vcapServices)
 	if err != nil {
 		h.Log.Warning("Contrast Security could not parse VCAP_SERVICES")
 		return false, ContrastSecurityCredentials{}

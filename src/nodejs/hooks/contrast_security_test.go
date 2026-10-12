@@ -676,5 +676,95 @@ var _ = Describe("contrastSecurityHook", func() {
 				Expect(credentials.ApiToken).To(Equal("sample_api_token"))
 			})
 		})
+
+		Context("VCAP_SERVICES_FILE_PATH set to a valid file", func() {
+			var tmpFile *os.File
+
+			BeforeEach(func() {
+				var err error
+				tmpFile, err = os.CreateTemp("", "vcap_services_*.json")
+				Expect(err).To(BeNil())
+				_, err = tmpFile.WriteString(`{
+					"contrast-security": [{
+						"credentials": {
+							"api_token": "file_api_token"
+						}
+					}]
+				}`)
+				Expect(err).To(BeNil())
+				Expect(tmpFile.Close()).To(BeNil())
+
+				os.Unsetenv("VCAP_SERVICES")
+				os.Setenv("VCAP_SERVICES_FILE_PATH", tmpFile.Name())
+			})
+
+			AfterEach(func() {
+				os.Unsetenv("VCAP_SERVICES_FILE_PATH")
+				os.Remove(tmpFile.Name())
+			})
+
+			It("returns credentials read from the file", func() {
+				success, credentials := contrast.GetCredentialsFromEnvironment()
+				Expect(success).To(BeTrue())
+				Expect(credentials.ApiToken).To(Equal("file_api_token"))
+			})
+		})
+
+		Context("VCAP_SERVICES_FILE_PATH points to a missing file", func() {
+			BeforeEach(func() {
+				os.Unsetenv("VCAP_SERVICES")
+				os.Setenv("VCAP_SERVICES_FILE_PATH", "/nonexistent/path/vcap.json")
+			})
+
+			AfterEach(func() {
+				os.Unsetenv("VCAP_SERVICES_FILE_PATH")
+			})
+
+			It("fails but continues", func() {
+				success, credentials := contrast.GetCredentialsFromEnvironment()
+				Expect(success).To(BeFalse())
+				Expect(credentials).To(BeEquivalentTo(hooks.ContrastSecurityCredentials{}))
+			})
+		})
+
+		Context("both VCAP_SERVICES and VCAP_SERVICES_FILE_PATH are set", func() {
+			var tmpFile *os.File
+
+			BeforeEach(func() {
+				var err error
+				tmpFile, err = os.CreateTemp("", "vcap_services_*.json")
+				Expect(err).To(BeNil())
+				_, err = tmpFile.WriteString(`{
+					"contrast-security": [{
+						"credentials": {
+							"api_token": "file_api_token"
+						}
+					}]
+				}`)
+				Expect(err).To(BeNil())
+				Expect(tmpFile.Close()).To(BeNil())
+
+				os.Setenv("VCAP_SERVICES", `{
+					"contrast-security": [{
+						"credentials": {
+							"api_token": "env_api_token"
+						}
+					}]
+				}`)
+				os.Setenv("VCAP_SERVICES_FILE_PATH", tmpFile.Name())
+			})
+
+			AfterEach(func() {
+				os.Unsetenv("VCAP_SERVICES_FILE_PATH")
+				os.Remove(tmpFile.Name())
+			})
+
+			It("prefers VCAP_SERVICES_FILE_PATH and logs a warning", func() {
+				success, credentials := contrast.GetCredentialsFromEnvironment()
+				Expect(success).To(BeTrue())
+				Expect(credentials.ApiToken).To(Equal("file_api_token"))
+				Expect(buffer.String()).To(ContainSubstring("VCAP_SERVICES_FILE_PATH"))
+			})
+		})
 	})
 })

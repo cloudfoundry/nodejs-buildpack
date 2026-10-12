@@ -19,6 +19,16 @@ type PNPM struct {
 	Log     *libbuildpack.Logger
 }
 
+func (p *PNPM) Rebuild(buildDir string) error {
+	p.Log.Info("Rebuilding any native modules (pnpm)")
+	cmd := exec.Command("pnpm", "rebuild")
+	cmd.Dir = buildDir
+	cmd.Stdout = p.Log.Output()
+	cmd.Stderr = p.Log.Output()
+	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
+	return p.Command.Run(cmd)
+}
+
 func (p *PNPM) Build(buildDir, cacheDir string) error {
 	p.Log.Info("Installing node modules (pnpm-lock.yaml)")
 

@@ -47,8 +47,13 @@ func (h ContrastSecurityHook) AfterCompile(stager *libbuildpack.Stager) error {
 
 	h.Log.Info("Contrast Security credentials found. Configuring environment for [%s].", contrastSecurityCredentials.ContrastUrl)
 
+	url := strings.TrimRight(contrastSecurityCredentials.ContrastUrl, "/")
+	if !strings.HasSuffix(url, "/Contrast") {
+		url += "/Contrast"
+	}
+
 	var contrastSecurityScript = "export CONTRAST__API__API_KEY=" + shellQuote(contrastSecurityCredentials.ApiKey) + "\n" +
-		"export CONTRAST__API__URL=" + shellQuote(contrastSecurityCredentials.ContrastUrl + "/Contrast/") + "\n" +
+		"export CONTRAST__API__URL=" + shellQuote(url) + "\n" +
 		"export CONTRAST__API__SERVICE_KEY=" + shellQuote(contrastSecurityCredentials.ServiceKey) + "\n" +
 		"export CONTRAST__API__USER_NAME=" + shellQuote(contrastSecurityCredentials.Username) + "\n"
 

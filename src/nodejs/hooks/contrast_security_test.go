@@ -93,7 +93,7 @@ var _ = Describe("contrastSecurityHook", func() {
 
 				fileContents := string(fileBytes)
 				var sampleExportList string = "export CONTRAST__API__API_KEY='sample_api_key'\n" +
-					"export CONTRAST__API__URL='sample_teamserver_url/Contrast/'\n" +
+					"export CONTRAST__API__URL='sample_teamserver_url/Contrast'\n" +
 					"export CONTRAST__API__SERVICE_KEY='sample_service_key'\n" +
 					"export CONTRAST__API__USER_NAME='username@example.com'\n"
 				Expect(fileContents).To(Equal(sampleExportList))
@@ -150,10 +150,49 @@ var _ = Describe("contrastSecurityHook", func() {
 
 				fileContents := string(fileBytes)
 				var sampleExportList string = "export CONTRAST__API__API_KEY='sample_api_key'\n" +
-					"export CONTRAST__API__URL='sample_teamserver_url/Contrast/'\n" +
+					"export CONTRAST__API__URL='sample_teamserver_url/Contrast'\n" +
 					"export CONTRAST__API__SERVICE_KEY='sample_service_key'\n" +
 					"export CONTRAST__API__USER_NAME='username@example.com'\n"
 				Expect(fileContents).To(Equal(sampleExportList))
+			})
+		})
+
+		Context("teamserver_url already contains the /Contrast suffix", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_APPLICATION", `{}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"contrast-security": [{
+						"credentials": {
+							"api_key": "sample_api_key",
+							"service_key": "sample_service_key",
+							"teamserver_url": "https://app-agents.contrastsecurity.com/Contrast",
+							"username": "username@example.com"
+						}
+					}]
+				}`)
+			})
+
+			It("does not double the /Contrast suffix", func() {
+				err := contrast.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				profileDir := filepath.Join(stager.DepDir(), "profile.d")
+				files, err := os.ReadDir(profileDir)
+				Expect(err).To(BeNil())
+
+				var fileIndex int
+				for index, file := range files {
+					if strings.Contains(file.Name(), "contrast_security") {
+						fileIndex = index
+					}
+				}
+
+				fileBytes, err := os.ReadFile(filepath.Join(profileDir, files[fileIndex].Name()))
+				Expect(err).To(BeNil())
+
+				Expect(string(fileBytes)).To(ContainSubstring(
+					"export CONTRAST__API__URL='https://app-agents.contrastsecurity.com/Contrast'",
+				))
 			})
 		})
 

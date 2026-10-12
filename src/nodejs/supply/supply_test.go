@@ -1201,6 +1201,35 @@ var _ = Describe("Supply", func() {
 			})
 		})
 
+		Context("using yarn with vendored node_modules", func() {
+			BeforeEach(func() {
+				supplier.UseYarn = true
+				supplier.IsVendored = true
+			})
+
+			It("runs yarn rebuild instead of yarn build", func() {
+				mockYarn.EXPECT().Rebuild(buildDir).Return(nil)
+				Expect(supplier.BuildDependencies()).To(Succeed())
+				Expect(buffer.String()).To(ContainSubstring("Prebuild detected (node_modules already exists)"))
+			})
+
+			It("runs prebuild script when specified", func() {
+				supplier.PreBuild = "prescriptive"
+				mockYarn.EXPECT().Rebuild(buildDir).Return(nil)
+				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "run", "heroku-prebuild")
+				Expect(supplier.BuildDependencies()).To(Succeed())
+				Expect(buffer.String()).To(ContainSubstring("Running heroku-prebuild (yarn)"))
+			})
+
+			It("runs postbuild script when specified", func() {
+				supplier.PostBuild = "descriptive"
+				mockYarn.EXPECT().Rebuild(buildDir).Return(nil)
+				mockCommand.EXPECT().Execute(buildDir, gomock.Any(), gomock.Any(), "yarn", "run", "heroku-postbuild")
+				Expect(supplier.BuildDependencies()).To(Succeed())
+				Expect(buffer.String()).To(ContainSubstring("Running heroku-postbuild (yarn)"))
+			})
+		})
+
 		Describe("using npm", func() {
 			BeforeEach(func() {
 				supplier.UseYarn = false

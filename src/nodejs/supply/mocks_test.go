@@ -245,6 +245,20 @@ func (mr *MockYarnMockRecorder) Build(buildDir, cacheDir, isBerry interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockYarn)(nil).Build), buildDir, cacheDir, isBerry)
 }
 
+// Rebuild mocks base method.
+func (m *MockYarn) Rebuild(buildDir string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Rebuild", buildDir)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Rebuild indicates an expected call of Rebuild.
+func (mr *MockYarnMockRecorder) Rebuild(buildDir interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rebuild", reflect.TypeOf((*MockYarn)(nil).Rebuild), buildDir)
+}
+
 // MockStager is a mock of Stager interface.
 type MockStager struct {
 	ctrl     *gomock.Controller

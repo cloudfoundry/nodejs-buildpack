@@ -144,4 +144,34 @@ var _ = Describe("Yarn", func() {
 			})
 		})
 	})
+
+	Describe("Rebuild", func() {
+		var oldNodeHome string
+
+		BeforeEach(func() {
+			oldNodeHome = os.Getenv("NODE_HOME")
+			Expect(os.Setenv("NODE_HOME", "test_node_home")).To(Succeed())
+		})
+
+		AfterEach(func() {
+			Expect(os.Setenv("NODE_HOME", oldNodeHome)).To(Succeed())
+		})
+
+		It("runs yarn rebuild with NODE_HOME set", func() {
+			mockCommand.EXPECT().Run(gomock.Any()).Do(func(cmd *exec.Cmd) {
+				Expect(cmd.Args).To(Equal([]string{"yarn", "rebuild"}))
+				Expect(cmd.Dir).To(Equal(buildDir))
+				Expect(cmd.Env).To(ContainElement("npm_config_nodedir=test_node_home"))
+			})
+
+			Expect(y.Rebuild(buildDir)).To(Succeed())
+			Expect(buffer.String()).To(ContainSubstring("Rebuilding any native modules (yarn)"))
+		})
+
+		It("propagates command errors", func() {
+			mockCommand.EXPECT().Run(gomock.Any()).Return(os.ErrNotExist)
+
+			Expect(y.Rebuild(buildDir)).To(Equal(os.ErrNotExist))
+		})
+	})
 })

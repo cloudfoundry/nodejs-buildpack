@@ -46,6 +46,7 @@ type NPM interface {
 
 type Yarn interface {
 	Build(buildDir, cacheDir string, isBerry bool) error
+	Rebuild(buildDir string) error
 }
 
 type PNPM interface {
@@ -340,6 +341,12 @@ func (s *Supplier) BuildDependencies() error {
 	}
 
 	switch {
+	case s.UseYarn && s.IsVendored:
+		s.Log.Info("Prebuild detected (node_modules already exists)")
+		if err := s.Yarn.Rebuild(s.Stager.BuildDir()); err != nil {
+			return err
+		}
+
 	case s.UseYarn:
 		if err := s.Yarn.Build(s.Stager.BuildDir(), s.Stager.CacheDir(), s.UsesYarnBerry); err != nil {
 			return err

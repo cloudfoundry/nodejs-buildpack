@@ -99,3 +99,13 @@ func (y *Yarn) buildClassic(buildDir, cacheDir string) error {
 
 	return nil
 }
+
+func (y *Yarn) Rebuild(buildDir string) error {
+	y.Log.Info("Rebuilding any native modules (yarn)")
+	cmd := exec.Command("yarn", "rebuild")
+	cmd.Dir = buildDir
+	cmd.Stdout = y.Log.Output()
+	cmd.Stderr = y.Log.Output()
+	cmd.Env = append(os.Environ(), "npm_config_nodedir="+os.Getenv("NODE_HOME"))
+	return y.Command.Run(cmd)
+}

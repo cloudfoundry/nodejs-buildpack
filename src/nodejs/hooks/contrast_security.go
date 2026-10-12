@@ -15,6 +15,7 @@ type ContrastSecurityHook struct {
 
 type ContrastSecurityCredentials struct {
 	ApiKey      string
+	ApiToken    string
 	OrgUuid     string
 	ServiceKey  string
 	ContrastUrl string //formerly Teamserver URL
@@ -35,6 +36,15 @@ func shellQuote(s string) string {
 	return "'" + strings.ReplaceAll(s, "'", `'\''`) + "'"
 }
 
+// writeExport returns a shell export line for the given variable, or an empty
+// string when value is empty (so the line is simply omitted from the script).
+func writeExport(name, value string) string {
+	if value == "" {
+		return ""
+	}
+	return "export " + name + "=" + shellQuote(value) + "\n"
+}
+
 func (h ContrastSecurityHook) AfterCompile(stager *libbuildpack.Stager) error {
 	h.Log.Debug("Contrast Security after compile hook")
 
@@ -47,15 +57,20 @@ func (h ContrastSecurityHook) AfterCompile(stager *libbuildpack.Stager) error {
 
 	h.Log.Info("Contrast Security credentials found. Configuring environment for [%s].", contrastSecurityCredentials.ContrastUrl)
 
-	url := strings.TrimRight(contrastSecurityCredentials.ContrastUrl, "/")
-	if !strings.HasSuffix(url, "/Contrast") {
-		url += "/Contrast"
+	url := ""
+	if contrastSecurityCredentials.ContrastUrl != "" {
+		url = strings.TrimRight(contrastSecurityCredentials.ContrastUrl, "/")
+		if !strings.HasSuffix(url, "/Contrast") {
+			url += "/Contrast"
+		}
 	}
 
-	var contrastSecurityScript = "export CONTRAST__API__API_KEY=" + shellQuote(contrastSecurityCredentials.ApiKey) + "\n" +
-		"export CONTRAST__API__URL=" + shellQuote(url) + "\n" +
-		"export CONTRAST__API__SERVICE_KEY=" + shellQuote(contrastSecurityCredentials.ServiceKey) + "\n" +
-		"export CONTRAST__API__USER_NAME=" + shellQuote(contrastSecurityCredentials.Username) + "\n"
+	contrastSecurityScript :=
+		writeExport("CONTRAST__API__URL", url) +
+			writeExport("CONTRAST__API__API_KEY", contrastSecurityCredentials.ApiKey) +
+			writeExport("CONTRAST__API__SERVICE_KEY", contrastSecurityCredentials.ServiceKey) +
+			writeExport("CONTRAST__API__USER_NAME", contrastSecurityCredentials.Username) +
+			writeExport("CONTRAST__API__TOKEN", contrastSecurityCredentials.ApiToken)
 
 	stager.WriteProfileD("contrast_security", contrastSecurityScript)
 
@@ -136,6 +151,7 @@ func (h ContrastSecurityHook) GetCredentialsFromEnvironment() (bool, ContrastSec
 			h.Log.Debug("Contrast Security found credentials in VCAP_SERVICES")
 			return true, ContrastSecurityCredentials{
 				ApiKey:      getContrastCredentialString(credentials, "api_key"),
+				ApiToken:    getContrastCredentialString(credentials, "api_token"),
 				OrgUuid:     getContrastCredentialString(credentials, "org_uuid"),
 				ServiceKey:  getContrastCredentialString(credentials, "service_key"),
 				ContrastUrl: getContrastCredentialString(credentials, "teamserver_url"),

@@ -92,10 +92,10 @@ var _ = Describe("contrastSecurityHook", func() {
 				}
 
 				fileContents := string(fileBytes)
-				var sampleExportList string = "export CONTRAST__API__API_KEY=sample_api_key\n" +
-					"export CONTRAST__API__URL=sample_teamserver_url/Contrast/\n" +
-					"export CONTRAST__API__SERVICE_KEY=sample_service_key\n" +
-					"export CONTRAST__API__USER_NAME=username@example.com\n"
+				var sampleExportList string = "export CONTRAST__API__API_KEY='sample_api_key'\n" +
+					"export CONTRAST__API__URL='sample_teamserver_url/Contrast/'\n" +
+					"export CONTRAST__API__SERVICE_KEY='sample_service_key'\n" +
+					"export CONTRAST__API__USER_NAME='username@example.com'\n"
 				Expect(fileContents).To(Equal(sampleExportList))
 			})
 
@@ -149,11 +149,74 @@ var _ = Describe("contrastSecurityHook", func() {
 				}
 
 				fileContents := string(fileBytes)
-				var sampleExportList string = "export CONTRAST__API__API_KEY=sample_api_key\n" +
-					"export CONTRAST__API__URL=sample_teamserver_url/Contrast/\n" +
-					"export CONTRAST__API__SERVICE_KEY=sample_service_key\n" +
-					"export CONTRAST__API__USER_NAME=username@example.com\n"
+				var sampleExportList string = "export CONTRAST__API__API_KEY='sample_api_key'\n" +
+					"export CONTRAST__API__URL='sample_teamserver_url/Contrast/'\n" +
+					"export CONTRAST__API__SERVICE_KEY='sample_service_key'\n" +
+					"export CONTRAST__API__USER_NAME='username@example.com'\n"
 				Expect(fileContents).To(Equal(sampleExportList))
+			})
+		})
+
+		Context("Credentials containing special shell characters", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_APPLICATION", `{}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"contrast-security": [{
+						"binding_name": "CCC",
+						"credentials": {
+							"api_key": "malformedkey$with'special",
+							"service_key": "svc key",
+							"teamserver_url": "https://example.com",
+							"username": "user@example.com"
+						}
+					}]
+				}`)
+			})
+
+			It("single-quotes all values in the profile.d script", func() {
+				err := contrast.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				profileDir := filepath.Join(stager.DepDir(), "profile.d")
+				files, err := os.ReadDir(profileDir)
+				Expect(err).To(BeNil())
+
+				var fileIndex int
+				for index, file := range files {
+					if strings.Contains(file.Name(), "contrast_security") {
+						fileIndex = index
+					}
+				}
+
+				fileBytes, err := os.ReadFile(filepath.Join(profileDir, files[fileIndex].Name()))
+				Expect(err).To(BeNil())
+
+				fileContents := string(fileBytes)
+				// single quote escaping: ' → '\''
+				Expect(fileContents).To(ContainSubstring("export CONTRAST__API__API_KEY='malformedkey$with'\\''special'"))
+				Expect(fileContents).To(ContainSubstring("export CONTRAST__API__SERVICE_KEY='svc key'"))
+			})
+		})
+
+		Context("Non-string credential value does not panic", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_APPLICATION", `{}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"contrast-security": [{
+						"credentials": {
+							"api_key": 12345,
+							"service_key": "sample_service_key",
+							"teamserver_url": "sample_teamserver_url",
+							"username": "username@example.com"
+						}
+					}]
+				}`)
+			})
+			It("returns empty string for the non-string field and does not panic", func() {
+				success, credentials := contrast.GetCredentialsFromEnvironment()
+				Expect(success).To(BeTrue())
+				Expect(credentials.ApiKey).To(Equal(""))
+				Expect(credentials.ServiceKey).To(Equal("sample_service_key"))
 			})
 		})
 
@@ -279,7 +342,7 @@ var _ = Describe("contrastSecurityHook", func() {
 			})
 		})
 
-		Context("Multiple user-provided services defined in VCAP_SERVICES", func() {
+		Context("Contrast Security found among multiple service categories in VCAP_SERVICES", func() {
 			BeforeEach(func() {
 				os.Setenv("VCAP_APPLICATION", `{}`)
 				os.Setenv("VCAP_SERVICES", `{
@@ -326,6 +389,45 @@ var _ = Describe("contrastSecurityHook", func() {
 					ServiceKey:  "sample_service_key",
 					ContrastUrl: "sample_teamserver_url",
 					Username:    "username@example.com",
+				}))
+			})
+		})
+
+		Context("Two user-provided services where only the second matches contrast-security", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_APPLICATION", `{}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"user-provided": [
+						{
+							"label": "user-provided",
+							"name": "my-postgres",
+							"tags": [],
+							"credentials": {
+								"uri": "postgres://example.com"
+							}
+						},
+						{
+							"label": "user-provided",
+							"name": "contrast-security-service",
+							"tags": [],
+							"credentials": {
+								"api_key": "correct_api_key",
+								"service_key": "correct_service_key",
+								"teamserver_url": "correct_teamserver_url",
+								"username": "correct@example.com"
+							}
+						}
+					]
+				}`)
+			})
+			It("returns credentials from the matching service, not the first in the category", func() {
+				success, credentials := contrast.GetCredentialsFromEnvironment()
+				Expect(success).To(BeTrue())
+				Expect(credentials).To(BeEquivalentTo(hooks.ContrastSecurityCredentials{
+					ApiKey:      "correct_api_key",
+					ServiceKey:  "correct_service_key",
+					ContrastUrl: "correct_teamserver_url",
+					Username:    "correct@example.com",
 				}))
 			})
 		})

@@ -31,6 +31,7 @@ var _ = Describe("Supply", func() {
 		mockCtrl        *gomock.Controller
 		mockYarn        *MockYarn
 		mockNPM         *MockNPM
+		mockPNPM        *MockPNPM
 		mockManifest    *MockManifest
 		mockInstaller   *MockInstaller
 		mockCommand     *MockCommand
@@ -63,6 +64,7 @@ var _ = Describe("Supply", func() {
 		mockCommand = NewMockCommand(mockCtrl)
 		mockYarn = NewMockYarn(mockCtrl)
 		mockNPM = NewMockNPM(mockCtrl)
+		mockPNPM = NewMockPNPM(mockCtrl)
 
 		installNode = func(dep libbuildpack.Dependency, nodeDir string) {
 			err := os.MkdirAll(filepath.Join(nodeDir, "bin"), 0755)
@@ -93,6 +95,7 @@ var _ = Describe("Supply", func() {
 			Stager:    stager,
 			Yarn:      mockYarn,
 			NPM:       mockNPM,
+			PNPM:      mockPNPM,
 			Log:       logger,
 			Manifest:  mockManifest,
 			Installer: mockInstaller,
@@ -1197,6 +1200,31 @@ var _ = Describe("Supply", func() {
 			})
 
 			It("passes isBerry=true through to Yarn.Build", func() {
+				Expect(supplier.BuildDependencies()).To(Succeed())
+			})
+		})
+
+		Context("using pnpm", func() {
+			BeforeEach(func() {
+				supplier.UsePNPM = true
+			})
+
+			It("runs pnpm build when node_modules does not exist", func() {
+				supplier.IsVendored = false
+				mockPNPM.EXPECT().Build(buildDir, cacheDir).Return(nil)
+				Expect(supplier.BuildDependencies()).To(Succeed())
+			})
+
+			It("runs pnpm rebuild when node_modules already exists (vendored)", func() {
+				supplier.IsVendored = true
+				mockPNPM.EXPECT().Rebuild(buildDir).Return(nil)
+				Expect(supplier.BuildDependencies()).To(Succeed())
+			})
+
+			It("does NOT call npm when pnpm is vendored", func() {
+				supplier.IsVendored = true
+				mockPNPM.EXPECT().Rebuild(buildDir).Return(nil)
+				// mockNPM has no expected calls — gomock will fail if NPM.Rebuild or NPM.Build is called
 				Expect(supplier.BuildDependencies()).To(Succeed())
 			})
 		})

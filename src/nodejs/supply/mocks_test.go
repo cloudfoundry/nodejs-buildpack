@@ -208,6 +208,57 @@ func (mr *MockNPMMockRecorder) Rebuild(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rebuild", reflect.TypeOf((*MockNPM)(nil).Rebuild), arg0)
 }
 
+// MockPNPM is a mock of PNPM interface.
+type MockPNPM struct {
+	ctrl     *gomock.Controller
+	recorder *MockPNPMMockRecorder
+}
+
+// MockPNPMMockRecorder is the mock recorder for MockPNPM.
+type MockPNPMMockRecorder struct {
+	mock *MockPNPM
+}
+
+// NewMockPNPM creates a new mock instance.
+func NewMockPNPM(ctrl *gomock.Controller) *MockPNPM {
+	mock := &MockPNPM{ctrl: ctrl}
+	mock.recorder = &MockPNPMMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockPNPM) EXPECT() *MockPNPMMockRecorder {
+	return m.recorder
+}
+
+// Build mocks base method.
+func (m *MockPNPM) Build(arg0, arg1 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Build", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Build indicates an expected call of Build.
+func (mr *MockPNPMMockRecorder) Build(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockPNPM)(nil).Build), arg0, arg1)
+}
+
+// Rebuild mocks base method.
+func (m *MockPNPM) Rebuild(arg0 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Rebuild", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Rebuild indicates an expected call of Rebuild.
+func (mr *MockPNPMMockRecorder) Rebuild(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rebuild", reflect.TypeOf((*MockPNPM)(nil).Rebuild), arg0)
+}
+
 // MockYarn is a mock of Yarn interface.
 type MockYarn struct {
 	ctrl     *gomock.Controller

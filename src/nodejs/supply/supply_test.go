@@ -1221,10 +1221,11 @@ var _ = Describe("Supply", func() {
 				Expect(supplier.BuildDependencies()).To(Succeed())
 			})
 
-			It("does NOT call npm when pnpm is vendored", func() {
+			It("calls PNPM.Rebuild (not NPM) when pnpm is vendored", func() {
 				supplier.IsVendored = true
 				mockPNPM.EXPECT().Rebuild(buildDir).Return(nil)
-				// mockNPM has no expected calls — gomock will fail if NPM.Rebuild or NPM.Build is called
+				mockNPM.EXPECT().Rebuild(gomock.Any()).Times(0)
+				mockNPM.EXPECT().Build(gomock.Any(), gomock.Any()).Times(0)
 				Expect(supplier.BuildDependencies()).To(Succeed())
 			})
 		})

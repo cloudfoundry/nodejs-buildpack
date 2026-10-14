@@ -21,7 +21,7 @@ type PNPM struct {
 
 func (p *PNPM) Rebuild(buildDir string) error {
 	p.Log.Info("Rebuilding any native modules (pnpm)")
-	cmd := exec.Command("pnpm", "rebuild")
+	cmd := exec.Command("pnpm", "rebuild", "--recursive")
 	cmd.Dir = buildDir
 	cmd.Stdout = p.Log.Output()
 	cmd.Stderr = p.Log.Output()

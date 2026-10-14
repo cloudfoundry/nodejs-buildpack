@@ -105,7 +105,7 @@ var _ = Describe("PNPM", func() {
 	Describe("Rebuild", func() {
 		It("runs pnpm rebuild with NODE_HOME set", func() {
 			mockCommand.EXPECT().Run(gomock.Any()).DoAndReturn(func(cmd *exec.Cmd) error {
-				Expect(cmd.Args).To(Equal([]string{"pnpm", "rebuild"}))
+				Expect(cmd.Args).To(Equal([]string{"pnpm", "rebuild", "--recursive"}))
 				Expect(cmd.Dir).To(Equal(buildDir))
 				Expect(cmd.Env).To(ContainElement("npm_config_nodedir=test_node_home"))
 				return nil

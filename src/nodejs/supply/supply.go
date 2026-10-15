@@ -50,6 +50,7 @@ type Yarn interface {
 
 type PNPM interface {
 	Build(string, string) error
+	Rebuild(string) error
 }
 
 type Stager interface {
@@ -342,6 +343,12 @@ func (s *Supplier) BuildDependencies() error {
 	switch {
 	case s.UseYarn:
 		if err := s.Yarn.Build(s.Stager.BuildDir(), s.Stager.CacheDir(), s.UsesYarnBerry); err != nil {
+			return err
+		}
+
+	case s.UsePNPM && s.IsVendored:
+		s.Log.Info("Prebuild detected (node_modules already exists)")
+		if err := s.PNPM.Rebuild(s.Stager.BuildDir()); err != nil {
 			return err
 		}
 

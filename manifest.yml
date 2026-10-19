@@ -66,22 +66,6 @@ dependencies:
   source: https://nodejs.org/dist/v22.23.3/node-v22.23.3.tar.gz
   source_sha256: 9436c81b284889303d39f5b8bd629bf19e790c665ccb94b4994aa87220d9799a
 - name: node
-  version: 24.21.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.21.0_linux_x64_cflinuxfs4_d0fe2f14.tgz
-  sha256: d0fe2f148bf86a906011c09a74abb92ab7fbdb02e4cc31a29c5b07c2c9cf65d1
-  cf_stacks:
-  - cflinuxfs4
-  source: https://nodejs.org/dist/v24.21.0/node-v24.21.0.tar.gz
-  source_sha256: 622424efb5dc0c26c93fbb619ff10737ee289c605b837c88778e186925d82777
-- name: node
-  version: 24.21.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.21.0_linux_x64_cflinuxfs5_fd01211d.tgz
-  sha256: fd01211d93ef67f773671f59d26df9b3fc36e2e5511acec9772777c2e8a173d5
-  cf_stacks:
-  - cflinuxfs5
-  source: https://nodejs.org/dist/v24.21.0/node-v24.21.0.tar.gz
-  source_sha256: 622424efb5dc0c26c93fbb619ff10737ee289c605b837c88778e186925d82777
-- name: node
   version: 24.22.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.22.0_linux_x64_cflinuxfs4_8d0c0392.tgz
   sha256: 8d0c0392ece5bf4b20482e3e6afad7fa028b06d5fcf450df3d9dd221479d7155

@@ -81,6 +81,22 @@ dependencies:
   - cflinuxfs5
   source: https://nodejs.org/dist/v24.22.1/node-v24.22.1.tar.gz
   source_sha256: 001773d9bd53fbd27a25efd42aa6a9693ebfe500998ca9bec635e9b6ee79bc91
+- name: node
+  version: 24.22.2
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.22.2_linux_x64_cflinuxfs4_3f7df7e6.tgz
+  sha256: 3f7df7e61310d7d9529fd10fedc27232adfb2c63bffa2eea0d7ba6963ea10233
+  cf_stacks:
+  - cflinuxfs4
+  source: https://nodejs.org/dist/v24.22.2/node-v24.22.2.tar.gz
+  source_sha256: b2f5443a34a38d863e87c0f5f80c03630fc16917dfe16f26c1cec44c0b542959
+- name: node
+  version: 24.22.2
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.22.2_linux_x64_cflinuxfs5_bd9b53d0.tgz
+  sha256: bd9b53d0dfd4554ab80c1c007b31d4e9e5fdf2ea900e90417b4e0d99f10e4c04
+  cf_stacks:
+  - cflinuxfs5
+  source: https://nodejs.org/dist/v24.22.2/node-v24.22.2.tar.gz
+  source_sha256: b2f5443a34a38d863e87c0f5f80c03630fc16917dfe16f26c1cec44c0b542959
 - name: pnpm
   version: 12.15.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/pnpm/pnpm_12.15.0_linux_x64_any-stack_55b5ed00.tgz

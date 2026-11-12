@@ -109,6 +109,14 @@ dependencies:
   - cflinuxfs5
   source: https://nodejs.org/dist/v26.13.0/node-v26.13.0.tar.gz
   source_sha256: 986ead18ef18256831bae3e57d94aef680a7b84cfd4044f3e8471f833fbd7191
+- name: node
+  version: 26.13.1
+  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_26.13.1_linux_x64_cflinuxfs5_c75412a8.tgz
+  sha256: c75412a8fdfaa27b551b7559e0bba20a4e55b9bf337a41fd86dd3a4c03137add
+  cf_stacks:
+  - cflinuxfs5
+  source: https://nodejs.org/dist/v26.13.1/node-v26.13.1.tar.gz
+  source_sha256: 60c6cdf11c3e9d5932fccd0eafae77f1152661584e129047684cb8646f228d3e
 - name: pnpm
   version: 12.18.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/pnpm/pnpm_12.18.0_linux_x64_any-stack_3726060e.tgz

@@ -54,22 +54,6 @@ dependency_deprecation_dates:
   link: https://peps.python.org/pep-0790/
 dependencies:
 - name: node
-  version: 22.23.4
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_22.23.4_linux_x64_cflinuxfs4_62a63458.tgz
-  sha256: 62a63458f5c87fd63c62394fffc7ef2c33be696d6f5e95c623437eebdeed30c5
-  cf_stacks:
-  - cflinuxfs4
-  source: https://nodejs.org/dist/v22.23.4/node-v22.23.4.tar.gz
-  source_sha256: 4dd79de8cdc85d65cb32f48a75aee1067bf00bf94b96ecc8e4c2f82f6f0272c2
-- name: node
-  version: 22.23.4
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_22.23.4_linux_x64_cflinuxfs5_bcaa3e51.tgz
-  sha256: bcaa3e51eea33b0d2878c92741400ba72db4f08c9fd52614d8e1314eb1bfc0fe
-  cf_stacks:
-  - cflinuxfs5
-  source: https://nodejs.org/dist/v22.23.4/node-v22.23.4.tar.gz
-  source_sha256: 4dd79de8cdc85d65cb32f48a75aee1067bf00bf94b96ecc8e4c2f82f6f0272c2
-- name: node
   version: 22.23.5
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_22.23.5_linux_x64_cflinuxfs4_09edae1a.tgz
   sha256: '09edae1a0b362b67aae8495cdbf030a49e967bfee56ed4979a7cefd24b4db6b6'
@@ -85,22 +69,6 @@ dependencies:
   - cflinuxfs5
   source: https://nodejs.org/dist/v22.23.5/node-v22.23.5.tar.gz
   source_sha256: 5ae198a2ec0513ea8b7ef28f71094c9a7931a44e4db17b1734d76fe958e0ff36
-- name: node
-  version: 24.22.2
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.22.2_linux_x64_cflinuxfs4_3f7df7e6.tgz
-  sha256: 3f7df7e61310d7d9529fd10fedc27232adfb2c63bffa2eea0d7ba6963ea10233
-  cf_stacks:
-  - cflinuxfs4
-  source: https://nodejs.org/dist/v24.22.2/node-v24.22.2.tar.gz
-  source_sha256: b2f5443a34a38d863e87c0f5f80c03630fc16917dfe16f26c1cec44c0b542959
-- name: node
-  version: 24.22.2
-  uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.22.2_linux_x64_cflinuxfs5_bd9b53d0.tgz
-  sha256: bd9b53d0dfd4554ab80c1c007b31d4e9e5fdf2ea900e90417b4e0d99f10e4c04
-  cf_stacks:
-  - cflinuxfs5
-  source: https://nodejs.org/dist/v24.22.2/node-v24.22.2.tar.gz
-  source_sha256: b2f5443a34a38d863e87c0f5f80c03630fc16917dfe16f26c1cec44c0b542959
 - name: node
   version: 24.22.3
   uri: https://buildpacks.cloudfoundry.org/dependencies/node/node_24.22.3_linux_x64_cflinuxfs4_546645ee.tgz

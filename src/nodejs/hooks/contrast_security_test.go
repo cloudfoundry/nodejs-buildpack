@@ -92,10 +92,10 @@ var _ = Describe("contrastSecurityHook", func() {
 				}
 
 				fileContents := string(fileBytes)
-				var sampleExportList string = "export CONTRAST__API__API_KEY=sample_api_key\n" +
-					"export CONTRAST__API__URL=sample_teamserver_url/Contrast/\n" +
-					"export CONTRAST__API__SERVICE_KEY=sample_service_key\n" +
-					"export CONTRAST__API__USER_NAME=username@example.com\n"
+				var sampleExportList string = "export CONTRAST__API__URL='sample_teamserver_url/Contrast'\n" +
+					"export CONTRAST__API__API_KEY='sample_api_key'\n" +
+					"export CONTRAST__API__SERVICE_KEY='sample_service_key'\n" +
+					"export CONTRAST__API__USER_NAME='username@example.com'\n"
 				Expect(fileContents).To(Equal(sampleExportList))
 			})
 
@@ -149,11 +149,191 @@ var _ = Describe("contrastSecurityHook", func() {
 				}
 
 				fileContents := string(fileBytes)
-				var sampleExportList string = "export CONTRAST__API__API_KEY=sample_api_key\n" +
-					"export CONTRAST__API__URL=sample_teamserver_url/Contrast/\n" +
-					"export CONTRAST__API__SERVICE_KEY=sample_service_key\n" +
-					"export CONTRAST__API__USER_NAME=username@example.com\n"
+				var sampleExportList string = "export CONTRAST__API__URL='sample_teamserver_url/Contrast'\n" +
+					"export CONTRAST__API__API_KEY='sample_api_key'\n" +
+					"export CONTRAST__API__SERVICE_KEY='sample_service_key'\n" +
+					"export CONTRAST__API__USER_NAME='username@example.com'\n"
 				Expect(fileContents).To(Equal(sampleExportList))
+			})
+		})
+
+		Context("teamserver_url already contains the /Contrast suffix", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_APPLICATION", `{}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"contrast-security": [{
+						"credentials": {
+							"api_key": "sample_api_key",
+							"service_key": "sample_service_key",
+							"teamserver_url": "https://app-agents.contrastsecurity.com/Contrast",
+							"username": "username@example.com"
+						}
+					}]
+				}`)
+			})
+
+			It("does not double the /Contrast suffix", func() {
+				err := contrast.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				profileDir := filepath.Join(stager.DepDir(), "profile.d")
+				files, err := os.ReadDir(profileDir)
+				Expect(err).To(BeNil())
+
+				var fileIndex int
+				for index, file := range files {
+					if strings.Contains(file.Name(), "contrast_security") {
+						fileIndex = index
+					}
+				}
+
+				fileBytes, err := os.ReadFile(filepath.Join(profileDir, files[fileIndex].Name()))
+				Expect(err).To(BeNil())
+
+				Expect(string(fileBytes)).To(ContainSubstring(
+					"export CONTRAST__API__URL='https://app-agents.contrastsecurity.com/Contrast'",
+				))
+			})
+		})
+
+		Context("api_token in credentials writes CONTRAST__API__TOKEN", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_APPLICATION", `{}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"contrast-security": [{
+						"credentials": {
+							"api_key": "sample_api_key",
+							"api_token": "sample_api_token",
+							"service_key": "sample_service_key",
+							"teamserver_url": "sample_teamserver_url",
+							"username": "username@example.com"
+						}
+					}]
+				}`)
+			})
+
+			It("writes both legacy credentials and the token", func() {
+				err := contrast.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				profileDir := filepath.Join(stager.DepDir(), "profile.d")
+				files, err := os.ReadDir(profileDir)
+				Expect(err).To(BeNil())
+
+				var fileIndex int
+				for index, file := range files {
+					if strings.Contains(file.Name(), "contrast_security") {
+						fileIndex = index
+					}
+				}
+
+				fileBytes, err := os.ReadFile(filepath.Join(profileDir, files[fileIndex].Name()))
+				Expect(err).To(BeNil())
+
+				fileContents := string(fileBytes)
+				Expect(fileContents).To(ContainSubstring("export CONTRAST__API__API_KEY='sample_api_key'"))
+				Expect(fileContents).To(ContainSubstring("export CONTRAST__API__TOKEN='sample_api_token'"))
+			})
+		})
+
+		Context("api_token only (no legacy credentials) writes CONTRAST__API__TOKEN", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_APPLICATION", `{}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"contrast-security": [{
+						"credentials": {
+							"api_token": "sample_api_token",
+							"teamserver_url": "sample_teamserver_url"
+						}
+					}]
+				}`)
+			})
+
+			It("writes CONTRAST__API__TOKEN without legacy credential lines", func() {
+				err := contrast.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				profileDir := filepath.Join(stager.DepDir(), "profile.d")
+				files, err := os.ReadDir(profileDir)
+				Expect(err).To(BeNil())
+
+				var fileIndex int
+				for index, file := range files {
+					if strings.Contains(file.Name(), "contrast_security") {
+						fileIndex = index
+					}
+				}
+
+				fileBytes, err := os.ReadFile(filepath.Join(profileDir, files[fileIndex].Name()))
+				Expect(err).To(BeNil())
+
+				fileContents := string(fileBytes)
+				Expect(fileContents).To(ContainSubstring("export CONTRAST__API__TOKEN='sample_api_token'"))
+				Expect(fileContents).NotTo(ContainSubstring("CONTRAST__API__API_KEY"))
+				Expect(fileContents).NotTo(ContainSubstring("CONTRAST__API__SERVICE_KEY"))
+			})
+		})
+
+		Context("Credentials containing special shell characters", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_APPLICATION", `{}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"contrast-security": [{
+						"binding_name": "CCC",
+						"credentials": {
+							"api_key": "malformedkey$with'special",
+							"service_key": "svc key",
+							"teamserver_url": "https://example.com",
+							"username": "user@example.com"
+						}
+					}]
+				}`)
+			})
+
+			It("single-quotes all values in the profile.d script", func() {
+				err := contrast.AfterCompile(stager)
+				Expect(err).To(BeNil())
+
+				profileDir := filepath.Join(stager.DepDir(), "profile.d")
+				files, err := os.ReadDir(profileDir)
+				Expect(err).To(BeNil())
+
+				var fileIndex int
+				for index, file := range files {
+					if strings.Contains(file.Name(), "contrast_security") {
+						fileIndex = index
+					}
+				}
+
+				fileBytes, err := os.ReadFile(filepath.Join(profileDir, files[fileIndex].Name()))
+				Expect(err).To(BeNil())
+
+				fileContents := string(fileBytes)
+				// single quote escaping: ' → '\''
+				Expect(fileContents).To(ContainSubstring("export CONTRAST__API__API_KEY='malformedkey$with'\\''special'"))
+				Expect(fileContents).To(ContainSubstring("export CONTRAST__API__SERVICE_KEY='svc key'"))
+			})
+		})
+
+		Context("Non-string credential value does not panic", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_APPLICATION", `{}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"contrast-security": [{
+						"credentials": {
+							"api_key": 12345,
+							"service_key": "sample_service_key",
+							"teamserver_url": "sample_teamserver_url",
+							"username": "username@example.com"
+						}
+					}]
+				}`)
+			})
+			It("returns empty string for the non-string field and does not panic", func() {
+				success, credentials := contrast.GetCredentialsFromEnvironment()
+				Expect(success).To(BeTrue())
+				Expect(credentials.ApiKey).To(Equal(""))
+				Expect(credentials.ServiceKey).To(Equal("sample_service_key"))
 			})
 		})
 
@@ -279,7 +459,7 @@ var _ = Describe("contrastSecurityHook", func() {
 			})
 		})
 
-		Context("Multiple user-provided services defined in VCAP_SERVICES", func() {
+		Context("Contrast Security found among multiple service categories in VCAP_SERVICES", func() {
 			BeforeEach(func() {
 				os.Setenv("VCAP_APPLICATION", `{}`)
 				os.Setenv("VCAP_SERVICES", `{
@@ -326,6 +506,45 @@ var _ = Describe("contrastSecurityHook", func() {
 					ServiceKey:  "sample_service_key",
 					ContrastUrl: "sample_teamserver_url",
 					Username:    "username@example.com",
+				}))
+			})
+		})
+
+		Context("Two user-provided services where only the second matches contrast-security", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_APPLICATION", `{}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"user-provided": [
+						{
+							"label": "user-provided",
+							"name": "my-postgres",
+							"tags": [],
+							"credentials": {
+								"uri": "postgres://example.com"
+							}
+						},
+						{
+							"label": "user-provided",
+							"name": "contrast-security-service",
+							"tags": [],
+							"credentials": {
+								"api_key": "correct_api_key",
+								"service_key": "correct_service_key",
+								"teamserver_url": "correct_teamserver_url",
+								"username": "correct@example.com"
+							}
+						}
+					]
+				}`)
+			})
+			It("returns credentials from the matching service, not the first in the category", func() {
+				success, credentials := contrast.GetCredentialsFromEnvironment()
+				Expect(success).To(BeTrue())
+				Expect(credentials).To(BeEquivalentTo(hooks.ContrastSecurityCredentials{
+					ApiKey:      "correct_api_key",
+					ServiceKey:  "correct_service_key",
+					ContrastUrl: "correct_teamserver_url",
+					Username:    "correct@example.com",
 				}))
 			})
 		})
@@ -432,6 +651,120 @@ var _ = Describe("contrastSecurityHook", func() {
 				}))
 			})
 
+		})
+
+		Context("api_token in credentials is extracted", func() {
+			BeforeEach(func() {
+				os.Setenv("VCAP_APPLICATION", `{}`)
+				os.Setenv("VCAP_SERVICES", `{
+					"contrast-security": [{
+						"credentials": {
+							"api_key": "sample_api_key",
+							"api_token": "sample_api_token",
+							"service_key": "sample_service_key",
+							"teamserver_url": "sample_teamserver_url",
+							"username": "username@example.com"
+						}
+					}]
+				}`)
+			})
+
+			It("returns ApiToken alongside legacy credentials", func() {
+				success, credentials := contrast.GetCredentialsFromEnvironment()
+				Expect(success).To(BeTrue())
+				Expect(credentials.ApiKey).To(Equal("sample_api_key"))
+				Expect(credentials.ApiToken).To(Equal("sample_api_token"))
+			})
+		})
+
+		Context("VCAP_SERVICES_FILE_PATH set to a valid file", func() {
+			var tmpFile *os.File
+
+			BeforeEach(func() {
+				var err error
+				tmpFile, err = os.CreateTemp("", "vcap_services_*.json")
+				Expect(err).To(BeNil())
+				_, err = tmpFile.WriteString(`{
+					"contrast-security": [{
+						"credentials": {
+							"api_token": "file_api_token"
+						}
+					}]
+				}`)
+				Expect(err).To(BeNil())
+				Expect(tmpFile.Close()).To(BeNil())
+
+				os.Unsetenv("VCAP_SERVICES")
+				os.Setenv("VCAP_SERVICES_FILE_PATH", tmpFile.Name())
+			})
+
+			AfterEach(func() {
+				os.Unsetenv("VCAP_SERVICES_FILE_PATH")
+				os.Remove(tmpFile.Name())
+			})
+
+			It("returns credentials read from the file", func() {
+				success, credentials := contrast.GetCredentialsFromEnvironment()
+				Expect(success).To(BeTrue())
+				Expect(credentials.ApiToken).To(Equal("file_api_token"))
+			})
+		})
+
+		Context("VCAP_SERVICES_FILE_PATH points to a missing file", func() {
+			BeforeEach(func() {
+				os.Unsetenv("VCAP_SERVICES")
+				os.Setenv("VCAP_SERVICES_FILE_PATH", "/nonexistent/path/vcap.json")
+			})
+
+			AfterEach(func() {
+				os.Unsetenv("VCAP_SERVICES_FILE_PATH")
+			})
+
+			It("fails but continues", func() {
+				success, credentials := contrast.GetCredentialsFromEnvironment()
+				Expect(success).To(BeFalse())
+				Expect(credentials).To(BeEquivalentTo(hooks.ContrastSecurityCredentials{}))
+			})
+		})
+
+		Context("both VCAP_SERVICES and VCAP_SERVICES_FILE_PATH are set", func() {
+			var tmpFile *os.File
+
+			BeforeEach(func() {
+				var err error
+				tmpFile, err = os.CreateTemp("", "vcap_services_*.json")
+				Expect(err).To(BeNil())
+				_, err = tmpFile.WriteString(`{
+					"contrast-security": [{
+						"credentials": {
+							"api_token": "file_api_token"
+						}
+					}]
+				}`)
+				Expect(err).To(BeNil())
+				Expect(tmpFile.Close()).To(BeNil())
+
+				os.Setenv("VCAP_SERVICES", `{
+					"contrast-security": [{
+						"credentials": {
+							"api_token": "env_api_token"
+						}
+					}]
+				}`)
+				os.Setenv("VCAP_SERVICES_FILE_PATH", tmpFile.Name())
+			})
+
+			AfterEach(func() {
+				os.Unsetenv("VCAP_SERVICES_FILE_PATH")
+				os.Remove(tmpFile.Name())
+			})
+
+			It("prefers VCAP_SERVICES_FILE_PATH and logs a warning", func() {
+				success, credentials := contrast.GetCredentialsFromEnvironment()
+				Expect(success).To(BeTrue())
+				Expect(credentials.ApiToken).To(Equal("file_api_token"))
+				Expect(buffer.String()).To(ContainSubstring("VCAP_SERVICES_FILE_PATH"))
+			})
 		})
 	})
 })

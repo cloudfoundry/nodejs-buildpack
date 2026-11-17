@@ -94,14 +94,14 @@ dependencies:
   source: https://nodejs.org/dist/v26.13.1/node-v26.13.1.tar.gz
   source_sha256: 60c6cdf11c3e9d5932fccd0eafae77f1152661584e129047684cb8646f228d3e
 - name: pnpm
-  version: 12.20.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/pnpm/pnpm_12.20.0_linux_x64_any-stack_568fd50d.tgz
-  sha256: 568fd50dd174a57e80efacc04be1d6a228bb41fbebe557f2ef63a1c3a721a5f4
+  version: 12.22.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/pnpm/pnpm_12.22.0_linux_x64_any-stack_07ee196f.tgz
+  sha256: 07ee196f91af1e21edb0c794401f4152932c74b0dba5d415dc4dbd5783f3c7af
   cf_stacks:
   - cflinuxfs4
   - cflinuxfs5
-  source: https://github.com/pnpm/pnpm/releases/download/v12.20.0/pnpm-linux-x64.tar.gz
-  source_sha256: 568fd50dd174a57e80efacc04be1d6a228bb41fbebe557f2ef63a1c3a721a5f4
+  source: https://github.com/pnpm/pnpm/releases/download/v12.22.0/pnpm-linux-x64.tar.gz
+  source_sha256: 07ee196f91af1e21edb0c794401f4152932c74b0dba5d415dc4dbd5783f3c7af
 - name: python
   version: 3.11.14
   uri: https://buildpacks.cloudfoundry.org/dependencies/python/python_3.11.14_linux_x64_cflinuxfs3_6d5446f5.tgz

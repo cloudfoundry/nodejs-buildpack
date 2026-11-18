@@ -116,6 +116,13 @@ func Run(s *Supplier) error {
 			return err
 		}
 
+		// Detect the package manager before installing it: the Yarn Berry
+		// install decision depends on this, and ReadPackageJSON runs too late.
+		if err := s.DetectYarn(); err != nil {
+			s.Log.Error("Unable to detect yarn project: %s", err.Error())
+			return err
+		}
+
 		s.WarnNodeEngine()
 
 		if err := s.ChooseNodeVersion(); err != nil {
@@ -404,6 +411,30 @@ func (s *Supplier) MoveDependencyArtifacts() error {
 	return os.Setenv("NODE_PATH", nodePath)
 }
 
+// DetectYarn records whether the project uses Yarn and, when it does, whether
+// it uses the Berry CLI. Run calls it before installing a package manager, so
+// the Yarn flavor no longer depends on ReadPackageJSON, which runs later.
+func (s *Supplier) DetectYarn() error {
+	var err error
+
+	if s.UseYarn, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "yarn.lock")); err != nil {
+		return err
+	}
+
+	s.UsesYarnBerry = false
+	if !s.UseYarn {
+		return nil
+	}
+
+	// .yarnrc.yml is the marker file Yarn Berry (2.x/3.x/4.x) itself uses to
+	// identify a project as using the "modern" (non-Classic) CLI/protocol -
+	// Yarn Classic (1.x) projects never have this file. See
+	// https://yarnpkg.com/configuration/yarnrc.
+	s.UsesYarnBerry, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), ".yarnrc.yml"))
+
+	return err
+}
+
 func (s *Supplier) ReadPackageJSON() error {
 	var err error
 
@@ -432,18 +463,8 @@ func (s *Supplier) ReadPackageJSON() error {
 		Workspaces      []string          `json:"workspaces"`
 	}
 
-	if s.UseYarn, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "yarn.lock")); err != nil {
+	if err := s.DetectYarn(); err != nil {
 		return err
-	}
-
-	if s.UseYarn {
-		// .yarnrc.yml is the marker file Yarn Berry (2.x/3.x/4.x) itself uses to
-		// identify a project as using the "modern" (non-Classic) CLI/protocol -
-		// Yarn Classic (1.x) projects never have this file. See
-		// https://yarnpkg.com/configuration/yarnrc.
-		if s.UsesYarnBerry, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), ".yarnrc.yml")); err != nil {
-			return err
-		}
 	}
 
 	if s.UsePNPM, err = libbuildpack.FileExists(filepath.Join(s.Stager.BuildDir(), "pnpm-lock.yaml")); err != nil {

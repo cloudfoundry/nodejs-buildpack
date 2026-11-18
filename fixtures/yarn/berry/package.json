@@ -1,0 +1,10 @@
+{
+  "name": "node_web_app_with_yarn_berry",
+  "version": "1.0.0",
+  "private": true,
+  "main": "server.js",
+  "author": "CF Buildpacks Team",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

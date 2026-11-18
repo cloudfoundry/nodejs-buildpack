@@ -753,6 +753,42 @@ var _ = Describe("Supply", func() {
 		})
 	})
 
+	Describe("DetectYarn", func() {
+		It("detects a Yarn Classic project", func() {
+			Expect(os.WriteFile(filepath.Join(buildDir, "yarn.lock"), []byte("{}"), 0644)).To(Succeed())
+
+			Expect(supplier.DetectYarn()).To(Succeed())
+			Expect(supplier.UseYarn).To(BeTrue())
+			Expect(supplier.UsesYarnBerry).To(BeFalse())
+		})
+
+		It("detects a Yarn Berry project", func() {
+			Expect(os.WriteFile(filepath.Join(buildDir, "yarn.lock"), []byte("{}"), 0644)).To(Succeed())
+			Expect(os.WriteFile(filepath.Join(buildDir, ".yarnrc.yml"), []byte("yarnPath: .yarn/releases/yarn-4.18.1.cjs\n"), 0644)).To(Succeed())
+
+			Expect(supplier.DetectYarn()).To(Succeed())
+			Expect(supplier.UseYarn).To(BeTrue())
+			Expect(supplier.UsesYarnBerry).To(BeTrue())
+		})
+
+		It("does not treat .yarnrc.yml alone as a yarn project", func() {
+			Expect(os.WriteFile(filepath.Join(buildDir, ".yarnrc.yml"), []byte("yarnPath: .yarn/releases/yarn-4.18.1.cjs\n"), 0644)).To(Succeed())
+
+			Expect(supplier.DetectYarn()).To(Succeed())
+			Expect(supplier.UseYarn).To(BeFalse())
+			Expect(supplier.UsesYarnBerry).To(BeFalse())
+		})
+
+		It("clears a previously detected yarn flavor", func() {
+			supplier.UseYarn = true
+			supplier.UsesYarnBerry = true
+
+			Expect(supplier.DetectYarn()).To(Succeed())
+			Expect(supplier.UseYarn).To(BeFalse())
+			Expect(supplier.UsesYarnBerry).To(BeFalse())
+		})
+	})
+
 	Describe("ReadPackageJSON", func() {
 
 		Context("package.json has prebuild script", func() {

@@ -103,6 +103,28 @@ func testYarn(platform switchblade.Platform, fixtures string) func(*testing.T, s
 			})
 		})
 
+		context("with a Yarn Berry project", func() {
+			it.Before(func() {
+				var err error
+				source, err = switchblade.Source(filepath.Join(fixtures, "yarn", "berry"))
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			it("installs yarn-berry and builds with yarn install --immutable", func() {
+				deployment, logs, err := platform.Deploy.Execute(name, source)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(logs).To(ContainLines(
+					ContainSubstring("Installed yarn (berry)"),
+					ContainSubstring("Installing node modules (yarn.lock) [yarn berry]"),
+				))
+				Expect(logs).NotTo(ContainSubstring("Installed yarn 1."))
+				Expect(logs).NotTo(ContainSubstring("gzip"))
+
+				Eventually(deployment).Should(Serve(ContainSubstring("Hello, World!")))
+			})
+		})
+
 		context("deploying a Node.js app that uses yarn workspaces", func() {
 			it.Before(func() {
 				var err error
